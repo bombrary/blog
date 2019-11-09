@@ -1,4 +1,4 @@
-baseURL = "https://bombrary.github.io/"
+baseURL = "/"
 languageCode = "ja"
 title = "Chanomic Blog"
 theme = "ch-modified"
