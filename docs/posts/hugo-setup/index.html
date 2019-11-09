@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>HugoセットアップからGitHubにデプロイするまでの備忘録 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.59.1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/hugo-setup/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/hugo-setup/">HugoセットアップからGitHubにデプロイするまでの備忘録</a></h1>
+    <p class="meta"><time datetime="2019-11-09T19:33:37&#43;09:00">November 09, 2019</time></p>
+  </header>
+  
+
+<p>簡単にセットアップ方法を備忘のために書いておく</p>
+
+<h2 id="前提">前提</h2>
+
+<ul>
+<li>MacOS Mojave</li>
+<li>Homebrew 2.1.16</li>
+<li>GitHubのblogリポジトリで公開する</li>
+<li>この記事でディレクトリを表記する時は、blogローカルリポジトリの最上位を<code>/</code>で表現する</li>
+</ul>
+
+<h2 id="インストール">インストール</h2>
+
+<p>ターミナルにて以下のコマンドを叩く</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ brew install hugo</code></pre></div>
+
+<h2 id="ブログサイトの作成">ブログサイトの作成</h2>
+
+<p>blogサイトのローカルリポジトリがある前提で進める。blogディレクトリに移動して以下のコマンドを実行する。
+forceフラグをつけると、今のディレクトリに何かファイルがあった場合でもサイトを生成してくれる。僕の環境の場合はREADME.mdしかなかったので何も上書きされなかったが、hugoが生成するファイルと名前がかぶる場合は、何かファイルが上書きされる恐れがあるので注意。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ hugo new site ./ --force</code></pre></div>
+
+<p>すると、何やらたくさんファイルやディレクトリを生成してくれる。</p>
+
+<h2 id="テーマの追加">テーマの追加</h2>
+
+<p><a href="https://github.com/niklasbuschmann/contrast-hugo">contrast-hugo</a>が気に入ったのでこれを使う。</p>
+
+<p><code>/themes</code>に移動して、contrast-hugoのファイルをcloneしてくる</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ git clone https://github.com/niklasbuschmann/contrast-hugo.git</code></pre></div>
+
+<p>後でテーマをいじるので、一応テーマ名を変更しておく。<code>contrast-hugo</code>を<code>ch-modified</code>に変更する。</p>
+
+<h2 id="シンタックスハイライトの設定">シンタックスハイライトの設定</h2>
+
+<p><code>Chroma</code>というハイライターが入っているらしい。そのテーマは<a href="https://xyproto.github.io/splash/docs/">こちら</a>で見られる。今回はgithubというテーマを利用する。</p>
+
+<p><code>/config.toml</code>で<code>pygmentsStyle=github</code>と指定すると、スタイルをhtmlに直接埋め込んでくれる。しかしCSSを後で自分でいじりたいのでこの方法は用いない。その代わり、<code>pygmentsUseClasses=true</code>として、CSSを利用することにする。</p>
+
+<p><code>/themes/ch-modified/static/css</code>に移動して、以下のコマンドを実行する。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ hugo gen chromastyles --style=github &gt; syntax.css</code></pre></div>
+
+<h2 id="configの設定">configの設定</h2>
+
+<p><code>/config.toml</code>の内容を以下の通りにする</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-toml" data-lang="toml"><span class="nx">baseURL</span> <span class="p">=</span> <span class="s2">&#34;https:/[自分のgithub pagesのアドレス]/blog/&#34;</span>
+<span class="nx">languageCode</span> <span class="p">=</span> <span class="s2">&#34;ja-jp&#34;</span>
+<span class="nx">title</span> <span class="p">=</span> <span class="s2">&#34;[ブログ名]&#34;</span>
+<span class="nx">theme</span> <span class="p">=</span> <span class="s2">&#34;[テーマ名]&#34;</span>
+<span class="nx">pygmentsUseClasses</span> <span class="p">=</span> <span class="kc">true</span>
+<span class="nx">publishDir</span><span class="p">=</span><span class="s2">&#34;docs&#34;</span>
+
+<span class="p">[</span><span class="nx">taxonomies</span><span class="p">]</span>
+<span class="nx">tag</span> <span class="p">=</span> <span class="s2">&#34;tags&#34;</span>
+<span class="nx">categories</span> <span class="p">=</span> <span class="s2">&#34;categories&#34;</span></code></pre></div>
+
+<ul>
+<li>baseURL: 後でhugoコマンドで静的ページを作成するとき、cssやjsのアドレス解決のために必要。github公開後のアドレスを指定しておく。</li>
+<li>theme: テーマ名を指定する。ここでは<code>ch-modified</code>を指定。</li>
+<li>publishDir: 後でhugoコマンドで静的ページを作成したときの保存先。GitHub Pagesの表示先を<code>master/docs</code>にしたいので、このように書いている。</li>
+<li>tag、categories: タグとカテゴリーで分けられるようにしたいのでこれを指定する。taxonomiesについて詳しくはまだよく分かっていないので要勉強。</li>
+</ul>
+
+<h2 id="index-mdの作成">index.mdの作成</h2>
+
+<p><code>/contents/_index.md</code>を作成し、内容は以下のものとする。これは<code>/theme/ch-modified/layouts/_default/list.html</code>の<code>{{ .Content }}</code>に埋め込まれる。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-md" data-lang="md">---
+
+---
+
+<span class="gu">## Others
+</span><span class="gu"></span>
+<span class="k">-</span> [<span class="nt">Tags</span>](<span class="na">tags/</span>)
+- [<span class="nt">Categories</span>](<span class="na">categories/</span>)</code></pre></div>
+
+<h2 id="katexの有効化">KaTeXの有効化</h2>
+
+<p><code>/layouts/partials/math.html</code>を作成し、内容を以下のものとする。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css&#34;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&#34;sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq&#34;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&#34;anonymous&#34;</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- The loading of KaTeX is deferred to speed up page rendering --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js&#34;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&#34;sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz&#34;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&#34;anonymous&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- To automatically render math in text elements, include the auto-render extension: --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js&#34;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&#34;sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI&#34;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&#34;anonymous&#34;</span>
+                                                                                                                                                                                  <span class="na">onload</span><span class="o">=</span><span class="s">&#34;renderMathInElement(document.body);&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;DOMContentLoaded&#34;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">renderMathInElement</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">{</span><span class="nx">delimiters</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span><span class="nx">left</span><span class="o">:</span> <span class="s2">&#34;$$&#34;</span><span class="p">,</span> <span class="nx">right</span><span class="o">:</span> <span class="s2">&#34;$$&#34;</span><span class="p">,</span> <span class="nx">display</span><span class="o">:</span> <span class="kc">true</span><span class="p">},</span>
+      <span class="p">{</span><span class="nx">left</span><span class="o">:</span> <span class="s2">&#34;$&#34;</span><span class="p">,</span> <span class="nx">right</span><span class="o">:</span> <span class="s2">&#34;$&#34;</span><span class="p">,</span> <span class="nx">display</span><span class="o">:</span> <span class="kc">false</span><span class="p">}]</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></code></pre></div>
+
+<p>次に、<code>/theme/ch-modified/layouts/_default/baseof.html</code>を開き、以下の内容を見つける。
+<div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html">{{- if or .Params.math .Site.Params.math }}
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css&#34;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&#34;sha256-uT5rNa8r/qorzlARiO7fTBE7EWQiX/umLlXsq7zyQP8=&#34;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&#34;anonymous&#34;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js&#34;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&#34;sha256-TxnaXkPUeemXTVhlS5tDIVg42AvnNAotNaQjjYKK9bc=&#34;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&#34;anonymous&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js&#34;</span> <span class="na">integrity</span><span class="o">=</span><span class="s">&#34;sha256-b8diVEOgPDxUp0CuYCi7+lb5xIGcgrtIdrvE8d/oztQ=&#34;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&#34;anonymous&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+{{- end }}</code></pre></div></p>
+
+<p>これを次の記述に置き換える。
+<div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html">{{ if or .Params.math .Site.Params.math }}
+{{ partial &#34;math.html&#34; . }}
+{{ end }}</code></pre></div></p>
+
+<p>ちなみにCSSの読み込みとかは<code>baseof.html</code>で行うので、新しいCSSファイルを追加したい場合はここに追記することになる。</p>
+
+<h2 id="ブログの投稿方法">ブログの投稿方法</h2>
+
+<p>次のコマンドを実行すると、フロントマターにdateが書き込まれた状態の雛形が<code>contents/post/</code>にできる。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ hugo new post/[ファイル名].md</code></pre></div>
+
+<h2 id="githubへのデプロイ">GitHubへのデプロイ</h2>
+
+<p>以下のコマンドで静的ページを<code>docs</code>以下に作成する。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ hugo</code></pre></div>
+
+<p>あとはcommitしてリモートリポジトリにpushする。GitHub Pagesの設定で、<code>Source</code>を<code>master/docs</code>に設定すれば終わり。</p>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://blog.atusy.net/2019/05/09/katex-in-hugo/">HugoでKaTeX</a></p>
+
+</article>
+
+
+
+</html>

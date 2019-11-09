@@ -5,10 +5,29 @@
     <link>https://bombrary.github.io/blog/categories/</link>
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>ja</language>
+    <language>ja-jp</language>
+    <lastBuildDate>Sat, 09 Nov 2019 19:33:37 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>備忘録</title>
+      <link>https://bombrary.github.io/blog/categories/%E5%82%99%E5%BF%98%E9%8C%B2/</link>
+      <pubDate>Sat, 09 Nov 2019 19:33:37 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/%E5%82%99%E5%BF%98%E9%8C%B2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Others</title>
+      <link>https://bombrary.github.io/blog/categories/others/</link>
+      <pubDate>Sat, 09 Nov 2019 16:00:56 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/others/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>

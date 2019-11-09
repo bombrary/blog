@@ -1,7 +1,6 @@
 ---
 title: "HugoセットアップからGitHubにデプロイするまでの備忘録"
 date: 2019-11-09T19:33:37+09:00
-draft: true
 tags: ["Hugo", "GitHub"]
 categories: ["備忘録"]
 ---

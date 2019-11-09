@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Chanomic Blog</title>
-    <link>https://bombrary.github.io/blog/</link>
-    <description>Recent content on Chanomic Blog</description>
+    <title>Hugo on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/hugo/</link>
+    <description>Recent content in Hugo on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Sat, 09 Nov 2019 19:33:37 +0900</lastBuildDate>
     
-	<atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://bombrary.github.io/blog/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -29,18 +29,6 @@ $ git clone https://github.com/niklasbuschmann/contrast-hugo.git 後でテーマ
 /themes/ch-modified/static/cssに移動して、以下のコマンドを実行する。
 $ hugo gen chromastyles --style=github &amp;gt; syntax.css configの設定 /config.tomlの内容を以下の通りにする
 baseURL = &amp;#34;https:/[自分のgithub pagesのアドレス]/blog/&amp;#34; languageCode = &amp;#34;ja-jp&amp;#34; title = &amp;#34;[ブログ名]&amp;#34; theme = &amp;#34;[テーマ名]&amp;#34; pygmentsUseClasses = true publishDir=&amp;#34;docs&amp;#34; [taxonomies] tag = &amp;#34;tags&amp;#34; categories = &amp;#34;categories&amp;#34;  baseURL: 後でhugoコマンドで静的ページを作成するとき、cssやjsのアドレス解決のために必要。github公開後のアドレスを指定しておく。 theme: テーマ名を指定する。ここではch-modifiedを指定。 publishDir: 後でhugoコマンドで静的ページを作成したときの保存先。GitHub Pagesの表示先をmaster/docsにしたいので、このように書いている。 tag、categories: タグとカテゴリーで分けられるようにしたいのでこれを指定する。taxonomiesについて詳しくはまだよく分かっていないので要勉強。  index.</description>
-    </item>
-    
-    <item>
-      <title>Test</title>
-      <link>https://bombrary.github.io/blog/posts/my-first-post/</link>
-      <pubDate>Sat, 09 Nov 2019 16:00:56 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/posts/my-first-post/</guid>
-      <description>このブログではHugoを使っている。
- Syntax highlighting #include &amp;lt;iostream&amp;gt; int main() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello&amp;#34; &amp;lt;&amp;lt; std::endl; return 0; } 
- KaTeX
- inline: $x = 2$ block: $$ x^2 + x + 1 = 0 $$   </description>
     </item>
     
   </channel>

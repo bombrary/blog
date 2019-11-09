@@ -4,14 +4,52 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/</loc>
+    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
+    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/github/</loc>
+    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/hugo/</loc>
+    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/hugo-setup/</loc>
+    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/%E5%82%99%E5%BF%98%E9%8C%B2/</loc>
+    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/others/</loc>
+    <lastmod>2019-11-09T16:00:56+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/my-first-post/</loc>
+    <lastmod>2019-11-09T16:00:56+09:00</lastmod>
   </url>
   
 </urlset>
