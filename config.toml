@@ -1,0 +1,11 @@
+baseURL = "https://bombrary.github.io/"
+languageCode = "ja"
+title = "Chanomic Blog"
+theme = "ch-modified"
+pygmentsStyle = "github"
+pygmentsUseClasses = true
+publishDir="docs"
+
+[taxonomies]
+tag = "tags"
+categories = "categories"
