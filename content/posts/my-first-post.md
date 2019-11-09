@@ -1,7 +1,6 @@
 ---
 title: "Test"
 date: 2019-11-09T16:00:56+09:00
-draft: true
 math: true
 categories: ["Others"]
 ---

@@ -1,5 +1,5 @@
 baseURL = "https://bombrary.github.io/blog/"
-languageCode = "ja"
+languageCode = "ja-jp"
 title = "Chanomic Blog"
 theme = "ch-modified"
 pygmentsStyle = "github"
