@@ -59,25 +59,67 @@ $ hugo gen chromastyles --style=github > syntax.css
 
 ## configの設定
 
-`/config.toml`の内容を以下の通りにする
+`/config.toml`の内容を以下の通りにする。ほとんどの設定項目がデフォルトのもので、正直意味が分かっていないものもある。コメントアウトのところはAboutページのリンクを貼るものだが、Aboutページができたらコメントを外そうと思っている。
 
 {{< highlight toml >}}
-baseURL = "https:/[自分のgithub pagesのアドレス]/blog/"
+baseURL = [ブログのURL]
+title = [ブログのタイトル]
+author = [作成者]
+paginate = 3
 languageCode = "ja-jp"
-title = "[ブログ名]"
-theme = "[テーマ名]"
-pygmentsUseClasses = true
+DefaultContentLanguage = "ja"
+enableInlineShortcodes = true
+footnoteReturnLinkContents = "^"
+theme = [テーマ]
 publishDir="docs"
+pygmentsUseClasses = true
+
+[menu]
+
+# 気が向いたら設定する
+#  [[menu.main]]
+#    identifier = "about"
+#    name = "About"
+#    url = "/about/"
+#    weight = 10
 
 [taxonomies]
+category = "categories"
 tag = "tags"
-categories = "categories"
+series = "series"
+
+[privacy]
+
+  [privacy.vimeo]
+    disabled = false
+    simple = true
+
+  [privacy.twitter]
+    disabled = false
+    enableDNT = true
+    simple = true
+
+  [privacy.instagram]
+    disabled = false
+    simple = true
+
+  [privacy.youtube]
+    disabled = false
+    privacyEnhanced = true
+
+[services]
+
+  [services.instagram]
+    disableInlineCSS = true
+
+  [services.twitter]
+    disableInlineCSS = true
+
 {{< /highlight >}}
 
 - baseURL: 後でhugoコマンドで静的ページを作成するとき、cssやjsのアドレス解決のために必要。github公開後のアドレスを指定しておく。
 - theme: テーマ名を指定する。ここでは`ch-modified`を指定。
 - publishDir: 後でhugoコマンドで静的ページを作成したときの保存先。GitHub Pagesの表示先を`master/docs`にしたいので、このように書いている。
-- tag、categories: タグとカテゴリーで分けられるようにしたいのでこれを指定する。taxonomiesについて詳しくはまだよく分かっていないので要勉強。
 
 ## index.mdの作成
 
@@ -138,10 +180,10 @@ categories = "categories"
 
 ## ブログの投稿方法
 
-次のコマンドを実行すると、フロントマターにdateが書き込まれた状態の雛形が`contents/post/`にできる。
+次のコマンドを実行すると、フロントマターにdateが書き込まれた状態の雛形が`contents/posts/`にできる。
 
 {{< highlight txt >}}
-$ hugo new post/[ファイル名].md
+$ hugo new posts/[ファイル名].md
 {{< /highlight >}}
 
 

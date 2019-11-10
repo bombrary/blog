@@ -73,24 +73,65 @@ forceフラグをつけると、今のディレクトリに何かファイルが
 
 <h2 id="configの設定">configの設定</h2>
 
-<p><code>/config.toml</code>の内容を以下の通りにする</p>
+<p><code>/config.toml</code>の内容を以下の通りにする。ほとんどの設定項目がデフォルトのもので、正直意味が分かっていないものもある。コメントアウトのところはAboutページのリンクを貼るものだが、Aboutページができたらコメントを外そうと思っている。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-toml" data-lang="toml"><span class="nx">baseURL</span> <span class="p">=</span> <span class="s2">&#34;https:/[自分のgithub pagesのアドレス]/blog/&#34;</span>
+<div class="highlight"><pre class="chroma"><code class="language-toml" data-lang="toml"><span class="nx">baseURL</span> <span class="p">=</span> <span class="p">[</span><span class="nx">ブログのURL</span><span class="p">]</span>
+<span class="nx">title</span> <span class="p">=</span> <span class="p">[</span><span class="nx">ブログのタイトル</span><span class="p">]</span>
+<span class="nx">author</span> <span class="p">=</span> <span class="p">[</span><span class="nx">作成者</span><span class="p">]</span>
+<span class="nx">paginate</span> <span class="p">=</span> <span class="mi">3</span>
 <span class="nx">languageCode</span> <span class="p">=</span> <span class="s2">&#34;ja-jp&#34;</span>
-<span class="nx">title</span> <span class="p">=</span> <span class="s2">&#34;[ブログ名]&#34;</span>
-<span class="nx">theme</span> <span class="p">=</span> <span class="s2">&#34;[テーマ名]&#34;</span>
-<span class="nx">pygmentsUseClasses</span> <span class="p">=</span> <span class="kc">true</span>
+<span class="nx">DefaultContentLanguage</span> <span class="p">=</span> <span class="s2">&#34;ja&#34;</span>
+<span class="nx">enableInlineShortcodes</span> <span class="p">=</span> <span class="kc">true</span>
+<span class="nx">footnoteReturnLinkContents</span> <span class="p">=</span> <span class="s2">&#34;^&#34;</span>
+<span class="nx">theme</span> <span class="p">=</span> <span class="p">[</span><span class="nx">テーマ</span><span class="p">]</span>
 <span class="nx">publishDir</span><span class="p">=</span><span class="s2">&#34;docs&#34;</span>
+<span class="nx">pygmentsUseClasses</span> <span class="p">=</span> <span class="kc">true</span>
+
+<span class="p">[</span><span class="nx">menu</span><span class="p">]</span>
+
+<span class="c"># 気が向いたら設定する</span>
+<span class="c">#  [[menu.main]]</span>
+<span class="c">#    identifier = &#34;about&#34;</span>
+<span class="c">#    name = &#34;About&#34;</span>
+<span class="c">#    url = &#34;/about/&#34;</span>
+<span class="c">#    weight = 10</span>
 
 <span class="p">[</span><span class="nx">taxonomies</span><span class="p">]</span>
+<span class="nx">category</span> <span class="p">=</span> <span class="s2">&#34;categories&#34;</span>
 <span class="nx">tag</span> <span class="p">=</span> <span class="s2">&#34;tags&#34;</span>
-<span class="nx">categories</span> <span class="p">=</span> <span class="s2">&#34;categories&#34;</span></code></pre></div>
+<span class="nx">series</span> <span class="p">=</span> <span class="s2">&#34;series&#34;</span>
+
+<span class="p">[</span><span class="nx">privacy</span><span class="p">]</span>
+
+  <span class="p">[</span><span class="nx">privacy</span><span class="p">.</span><span class="nx">vimeo</span><span class="p">]</span>
+    <span class="nx">disabled</span> <span class="p">=</span> <span class="kc">false</span>
+    <span class="nx">simple</span> <span class="p">=</span> <span class="kc">true</span>
+
+  <span class="p">[</span><span class="nx">privacy</span><span class="p">.</span><span class="nx">twitter</span><span class="p">]</span>
+    <span class="nx">disabled</span> <span class="p">=</span> <span class="kc">false</span>
+    <span class="nx">enableDNT</span> <span class="p">=</span> <span class="kc">true</span>
+    <span class="nx">simple</span> <span class="p">=</span> <span class="kc">true</span>
+
+  <span class="p">[</span><span class="nx">privacy</span><span class="p">.</span><span class="nx">instagram</span><span class="p">]</span>
+    <span class="nx">disabled</span> <span class="p">=</span> <span class="kc">false</span>
+    <span class="nx">simple</span> <span class="p">=</span> <span class="kc">true</span>
+
+  <span class="p">[</span><span class="nx">privacy</span><span class="p">.</span><span class="nx">youtube</span><span class="p">]</span>
+    <span class="nx">disabled</span> <span class="p">=</span> <span class="kc">false</span>
+    <span class="nx">privacyEnhanced</span> <span class="p">=</span> <span class="kc">true</span>
+
+<span class="p">[</span><span class="nx">services</span><span class="p">]</span>
+
+  <span class="p">[</span><span class="nx">services</span><span class="p">.</span><span class="nx">instagram</span><span class="p">]</span>
+    <span class="nx">disableInlineCSS</span> <span class="p">=</span> <span class="kc">true</span>
+
+  <span class="p">[</span><span class="nx">services</span><span class="p">.</span><span class="nx">twitter</span><span class="p">]</span>
+    <span class="nx">disableInlineCSS</span> <span class="p">=</span> <span class="kc">true</span></code></pre></div>
 
 <ul>
 <li>baseURL: 後でhugoコマンドで静的ページを作成するとき、cssやjsのアドレス解決のために必要。github公開後のアドレスを指定しておく。</li>
 <li>theme: テーマ名を指定する。ここでは<code>ch-modified</code>を指定。</li>
 <li>publishDir: 後でhugoコマンドで静的ページを作成したときの保存先。GitHub Pagesの表示先を<code>master/docs</code>にしたいので、このように書いている。</li>
-<li>tag、categories: タグとカテゴリーで分けられるようにしたいのでこれを指定する。taxonomiesについて詳しくはまだよく分かっていないので要勉強。</li>
 </ul>
 
 <h2 id="index-mdの作成">index.mdの作成</h2>
@@ -143,9 +184,9 @@ forceフラグをつけると、今のディレクトリに何かファイルが
 
 <h2 id="ブログの投稿方法">ブログの投稿方法</h2>
 
-<p>次のコマンドを実行すると、フロントマターにdateが書き込まれた状態の雛形が<code>contents/post/</code>にできる。</p>
+<p>次のコマンドを実行すると、フロントマターにdateが書き込まれた状態の雛形が<code>contents/posts/</code>にできる。</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ hugo new post/[ファイル名].md</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ hugo new posts/[ファイル名].md</code></pre></div>
 
 <h2 id="githubへのデプロイ">GitHubへのデプロイ</h2>
 

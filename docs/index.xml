@@ -27,8 +27,8 @@ $ git clone https://github.com/niklasbuschmann/contrast-hugo.git 後でテーマ
 シンタックスハイライトの設定 Chromaというハイライターが入っているらしい。そのテーマはこちらで見られる。今回はgithubというテーマを利用する。
 /config.tomlでpygmentsStyle=githubと指定すると、スタイルをhtmlに直接埋め込んでくれる。しかしCSSを後で自分でいじりたいのでこの方法は用いない。その代わり、pygmentsUseClasses=trueとして、CSSを利用することにする。
 /themes/ch-modified/static/cssに移動して、以下のコマンドを実行する。
-$ hugo gen chromastyles --style=github &amp;gt; syntax.css configの設定 /config.tomlの内容を以下の通りにする
-baseURL = &amp;#34;https:/[自分のgithub pagesのアドレス]/blog/&amp;#34; languageCode = &amp;#34;ja-jp&amp;#34; title = &amp;#34;[ブログ名]&amp;#34; theme = &amp;#34;[テーマ名]&amp;#34; pygmentsUseClasses = true publishDir=&amp;#34;docs&amp;#34; [taxonomies] tag = &amp;#34;tags&amp;#34; categories = &amp;#34;categories&amp;#34;  baseURL: 後でhugoコマンドで静的ページを作成するとき、cssやjsのアドレス解決のために必要。github公開後のアドレスを指定しておく。 theme: テーマ名を指定する。ここではch-modifiedを指定。 publishDir: 後でhugoコマンドで静的ページを作成したときの保存先。GitHub Pagesの表示先をmaster/docsにしたいので、このように書いている。 tag、categories: タグとカテゴリーで分けられるようにしたいのでこれを指定する。taxonomiesについて詳しくはまだよく分かっていないので要勉強。  index.</description>
+$ hugo gen chromastyles --style=github &amp;gt; syntax.css configの設定 /config.tomlの内容を以下の通りにする。ほとんどの設定項目がデフォルトのもので、正直意味が分かっていないものもある。コメントアウトのところはAboutページのリンクを貼るものだが、Aboutページができたらコメントを外そうと思っている。
+baseURL = [ブログのURL] title = [ブログのタイトル] author = [作成者] paginate = 3 languageCode = &amp;#34;ja-jp&amp;#34; DefaultContentLanguage = &amp;#34;ja&amp;#34; enableInlineShortcodes = true footnoteReturnLinkContents = &amp;#34;^&amp;#34; theme = [テーマ] publishDir=&amp;#34;docs&amp;#34; pygmentsUseClasses = true [menu] # 気が向いたら設定する # [[menu.</description>
     </item>
     
     <item>

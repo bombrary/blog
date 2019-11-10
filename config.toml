@@ -1,11 +1,53 @@
 baseURL = "https://bombrary.github.io/blog/"
-languageCode = "ja-jp"
 title = "Chanomic Blog"
+author = "bombrary"
+paginate = 3
+languageCode = "ja-jp"
+DefaultContentLanguage = "ja"
+enableInlineShortcodes = true
+footnoteReturnLinkContents = "^"
 theme = "ch-modified"
-pygmentsStyle = "github"
-pygmentsUseClasses = true
 publishDir="docs"
+pygmentsUseClasses = true
+
+[menu]
+
+# 気が向いたら設定する
+#  [[menu.main]]
+#    identifier = "about"
+#    name = "About"
+#    url = "/about/"
+#    weight = 10
 
 [taxonomies]
+category = "categories"
 tag = "tags"
-categories = "categories"
+series = "series"
+
+[privacy]
+
+  [privacy.vimeo]
+    disabled = false
+    simple = true
+
+  [privacy.twitter]
+    disabled = false
+    enableDNT = true
+    simple = true
+
+  [privacy.instagram]
+    disabled = false
+    simple = true
+
+  [privacy.youtube]
+    disabled = false
+    privacyEnhanced = true
+
+[services]
+
+  [services.instagram]
+    disableInlineCSS = true
+
+  [services.twitter]
+    disableInlineCSS = true
+
