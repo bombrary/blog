@@ -9,6 +9,7 @@ footnoteReturnLinkContents = "^"
 theme = "ch-modified"
 publishDir="docs"
 pygmentsUseClasses = true
+googleAnalytics="UA-152083322-1"
 
 [menu]
 
