@@ -1,8 +1,8 @@
 ---
 title: "Elmで超簡易Todoリスト"
 date: 2019-11-10T21:08:12+09:00
-tag: ["Elm"]
-categories: ["Elm", "Programming"]
+tag: ["elm"]
+categories: ["elm", "programming"]
 ---
 
 Todoリストと言っても、フィールドに入力した内容が`li`要素として追加されるだけ。
