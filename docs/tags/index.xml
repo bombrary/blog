@@ -6,10 +6,37 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 09 Nov 2019 19:33:37 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 12 Nov 2019 10:07:09 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Permutation</title>
+      <link>https://bombrary.github.io/blog/tags/permutation/</link>
+      <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/permutation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>数学</title>
+      <link>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</link>
+      <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>置換</title>
+      <link>https://bombrary.github.io/blog/tags/%E7%BD%AE%E6%8F%9B/</link>
+      <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E7%BD%AE%E6%8F%9B/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>GitHub</title>

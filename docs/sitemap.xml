@@ -4,12 +4,52 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/</loc>
-    <lastmod>2019-11-10T21:08:12+09:00</lastmod>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2019-11-10T21:08:12+09:00</lastmod>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/permutation/</loc>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/%E4%BB%A3%E6%95%B0%E5%AD%A6/</loc>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</loc>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/%E7%BD%AE%E6%8F%9B/</loc>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/permutation/</loc>
+    <lastmod>2019-11-12T10:07:09+09:00</lastmod>
   </url>
   
   <url>
@@ -19,11 +59,6 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/posts/elm-todo-list/</loc>
-    <lastmod>2019-11-10T21:08:12+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/posts/</loc>
     <lastmod>2019-11-10T21:08:12+09:00</lastmod>
   </url>
   
@@ -49,11 +84,6 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/memo/</loc>
-    <lastmod>2019-11-09T19:33:37+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/tags/</loc>
     <lastmod>2019-11-09T19:33:37+09:00</lastmod>
   </url>
   

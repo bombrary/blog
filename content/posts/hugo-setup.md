@@ -2,7 +2,7 @@
 title: "HugoセットアップからGitHubにデプロイするまでの備忘録"
 date: 2019-11-09T19:33:37+09:00
 tags: ["Hugo", "GitHub"]
-categories: ["memo"]
+categories: ["Memo"]
 ---
 
 簡単にセットアップ方法を備忘のために書いておく

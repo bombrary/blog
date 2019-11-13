@@ -1,47 +1,98 @@
----
-title: "置換(Permutaion)の勉強メモ(1)"
-date: 2019-11-12T10:07:09+09:00
-math: true
-tags: ["置換", "Permutation", "数学"]
-categories: ["数学", "代数学"]
----
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>置換(Permutaion)の勉強メモ(1) | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.59.1" />
 
-置換について、線形代数の教科書に出てきたけど、授業ではあまり触れられなかったので自分で勉強してみる。以下はそのメモ。
 
-## 置換の定義
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/permutation/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/math.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+                                                                                                                                                                                  onload="renderMathInElement(document.body);"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}]
+    });
+  });
+</script>
+
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/permutation/">置換(Permutaion)の勉強メモ(1)</a></h1>
+    <p class="meta"><time datetime="2019-11-12T10:07:09&#43;09:00">November 12, 2019</time></p>
+  </header>
+  
+
+<p>置換について、線形代数の教科書に出てきたけど、授業ではあまり触れられなかったので自分で勉強してみる。以下はそのメモ。</p>
+
+<h2 id="置換の定義">置換の定義</h2>
 
 <div class="def">
 <h3>定義(置換)</h3>
 $X_n$は$n$個の元を持つ集合とする。このとき、全単射写像 $\sigma: X_n \rightarrow X_n$ を$X_n$上の置換(Permutation)と呼ぶ。
 </div>
 
-言い換えると、$X_n$を適当に並べたとき、置換 $\sigma$ とはそれを並び替える方法を表したものである。
+<p>言い換えると、$X_n$を適当に並べたとき、置換 $\sigma$ とはそれを並び替える方法を表したものである。</p>
 
-置換と聞くとReplacementがまず思い浮かぶけど、ここではPermutationなのね。
+<p>置換と聞くとReplacementがまず思い浮かぶけど、ここではPermutationなのね。</p>
 
 <div class="example">
 <h3>例</h3>
 $X_3 = {1,2,3}$ とする。このとき、 $X_n$ の元を並べて $(1,2,3)$ としよう。このとき、 $\sigma(1)=2,\sigma(2)=3,\sigma(3)=1$ とすれば、写像 $\sigma$ は $X_3$ 上の置換となる。このとき、 $(1,2,3)$ という列が $\sigma$ によって $(2,3,1)$ に並び替えられたように見える。
 </div>
 
-$X_n$の元はなんでも良いが、以後説明のため$X_n = \lbrace 1,2,\ldots,n \rbrace$とする。
+<p>$X_n$の元はなんでも良いが、以後説明のため$X_n = \lbrace 1,2,\ldots,n \rbrace$とする。</p>
 
-置換は以下のように表示することがある：$\sigma(i) = p_i\ (i=1,\ldots,n)$について、
+<p>置換は以下のように表示することがある：$\sigma(i) = p_i\ (i=1,\ldots,n)$について、</p>
 
-$$
+<p>$$
 \sigma = \begin{pmatrix}
-   1 & 2 & \ldots & n \\\\ 
-   p_1 & p_2 & \ldots & p_n
+   1 &amp; 2 &amp; \ldots &amp; n \\
+   p_1 &amp; p_2 &amp; \ldots &amp; p_n
 \end{pmatrix}
-$$
+$$</p>
 
-先ほど置換とは $X_n$ を適当に並べたとき、置換 $\sigma$ とはそれを並び替えたもの、と表現した。実際、$\sigma$はただの写像なので、並び替えというより対応関係だけが大事である。上の表示方法はあくまで「上の段の元と下の段の元の対応関係」にだけ着目している。従って、上の段が$1,2,\ldots n$という並びになるとは限らない。
+<p>先ほど置換とは $X_n$ を適当に並べたとき、置換 $\sigma$ とはそれを並び替えたもの、と表現した。実際、$\sigma$はただの写像なので、並び替えというより対応関係だけが大事である。上の表示方法はあくまで「上の段の元と下の段の元の対応関係」にだけ着目している。従って、上の段が$1,2,\ldots n$という並びになるとは限らない。</p>
 
-また、見やすさのため $\sigma(i)=i$ なる列は省略しても良いことにする。これを認めないといくつかの証明のときに書くのが大変。
+<p>また、見やすさのため $\sigma(i)=i$ なる列は省略しても良いことにする。これを認めないといくつかの証明のときに書くのが大変。</p>
 
-## 写像と置換
+<h2 id="写像と置換">写像と置換</h2>
 
-写像における言葉である「合成写像」、「逆写像」、「恒等写像」を、置換においては次のように表現する。
+<p>写像における言葉である「合成写像」、「逆写像」、「恒等写像」を、置換においては次のように表現する。</p>
 
 <div class="def">
 <h3>定義(積、恒等置換、逆置換)</h3>
@@ -52,9 +103,9 @@ $$
 </ul>
 </div>
 
-ここで $\sigma^0=\mathrm{Id}_{X_n}$ と約束すると、$\sigma$の $n$ 回の積 $\sigma^n$ が指数法則を満たすことが分かる。さらに、 $(\sigma^{-1})^n = (\sigma^n)^{-1}$ を満たすことも分かる。
+<p>ここで $\sigma^0=\mathrm{Id}_{X_n}$ と約束すると、$\sigma$の $n$ 回の積 $\sigma^n$ が指数法則を満たすことが分かる。さらに、 $(\sigma^{-1})^n = (\sigma^n)^{-1}$ を満たすことも分かる。</p>
 
-## 巡回置換
+<h2 id="巡回置換">巡回置換</h2>
 
 <div class="def">
 <h3>定義(サイクル、互換)</h3>
@@ -62,9 +113,9 @@ $$
 <p>また、長さ2のサイクル $(i, j)$ を互換という。</p>
 </div>
 
-つまりサイクルとは、ある元は動かさず、それ以外の元については対応関係がループするような置換のこと。互換はいわゆるスワップのことで、これは馴染み深い。
+<p>つまりサイクルとは、ある元は動かさず、それ以外の元については対応関係がループするような置換のこと。互換はいわゆるスワップのことで、これは馴染み深い。</p>
 
-サイクルについて、次の命題が成り立つ。
+<p>サイクルについて、次の命題が成り立つ。</p>
 
 <div class="prop">
 <h3>命題</h3>
@@ -141,7 +192,7 @@ $$
 </ol>
 </div>
 
-次に分離積を定義する。
+<p>次に分離積を定義する。</p>
 
 <div class="def">
 <h3>定義(分離積)</h3>
@@ -153,7 +204,7 @@ $$
 $(1,2,3)(4,5,6,7)$は分離積である。$(1,2,3)(1,4,5,6)$は分離積でない。
 </div>
 
-分離積の言葉を使って、次の命題を示す。
+<p>分離積の言葉を使って、次の命題を示す。</p>
 
 <div class="prop">
 <h3>命題</h3>
@@ -250,6 +301,12 @@ $$
 </ol>
 </div>
 
-最終的に、「どんな並び替えも有限回のスワップでできる」という割と直感的な結論が導かれた。
+<p>最終的に、「どんな並び替えも有限回のスワップでできる」という割と直感的な結論が導かれた。</p>
 
-とりあえずここまで。符号の話は気が向いたらやる。
+<p>とりあえずここまで。符号の話は気が向いたらやる。</p>
+
+</article>
+
+
+
+</html>

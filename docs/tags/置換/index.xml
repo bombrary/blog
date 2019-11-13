@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>置換 on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/%E7%BD%AE%E6%8F%9B/</link>
+    <description>Recent content in 置換 on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Tue, 12 Nov 2019 10:07:09 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/%E7%BD%AE%E6%8F%9B/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>置換(Permutaion)の勉強メモ(1)</title>
+      <link>https://bombrary.github.io/blog/posts/permutation/</link>
+      <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/permutation/</guid>
+      <description>置換について、線形代数の教科書に出てきたけど、授業ではあまり触れられなかったので自分で勉強してみる。以下はそのメモ。
+置換の定義 定義(置換) $X_n$は$n$個の元を持つ集合とする。このとき、全単射写像 $\sigma: X_n \rightarrow X_n$ を$X_n$上の置換(Permutation)と呼ぶ。  言い換えると、$X_n$を適当に並べたとき、置換 $\sigma$ とはそれを並び替える方法を表したものである。
+置換と聞くとReplacementがまず思い浮かぶけど、ここではPermutationなのね。
+例 $X_3 = {1,2,3}$ とする。このとき、 $X_n$ の元を並べて $(1,2,3)$ としよう。このとき、 $\sigma(1)=2,\sigma(2)=3,\sigma(3)=1$ とすれば、写像 $\sigma$ は $X_3$ 上の置換となる。このとき、 $(1,2,3)$ という列が $\sigma$ によって $(2,3,1)$ に並び替えられたように見える。  $X_n$の元はなんでも良いが、以後説明のため$X_n = \lbrace 1,2,\ldots,n \rbrace$とする。
+置換は以下のように表示することがある：$\sigma(i) = p_i\ (i=1,\ldots,n)$について、
+$$ \sigma = \begin{pmatrix} 1 &amp;amp; 2 &amp;amp; \ldots &amp;amp; n \\ p_1 &amp;amp; p_2 &amp;amp; \ldots &amp;amp; p_n \end{pmatrix} $$
+先ほど置換とは $X_n$ を適当に並べたとき、置換 $\sigma$ とはそれを並び替えたもの、と表現した。実際、$\sigma$はただの写像なので、並び替えというより対応関係だけが大事である。上の表示方法はあくまで「上の段の元と下の段の元の対応関係」にだけ着目している。従って、上の段が$1,2,\ldots n$という並びになるとは限らない。</description>
+    </item>
+    
+  </channel>
+</rss>
