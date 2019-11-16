@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Programming on Chanomic Blog</title>
-    <link>https://bombrary.github.io/blog/categories/programming/</link>
-    <description>Recent content in Programming on Chanomic Blog</description>
+    <title>Todoリスト on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/todo%E3%83%AA%E3%82%B9%E3%83%88/</link>
+    <description>Recent content in Todoリスト on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Fri, 15 Nov 2019 08:26:41 +0900</lastBuildDate>
     
-	<atom:link href="https://bombrary.github.io/blog/categories/programming/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://bombrary.github.io/blog/tags/todo%E3%83%AA%E3%82%B9%E3%83%88/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -23,18 +23,6 @@ $ python3 manage.py startapp todo_list  続いてmysite/settings.pyを開いて�
 INSTALLED_APPS = [ &amp;#39;todo_list.apps.TodoListConfig&amp;#39;, &amp;#39;django.contrib.admin&amp;#39;, &amp;#39;django.contrib.auth&amp;#39;, &amp;#39;django.contrib.contenttypes&amp;#39;, &amp;#39;django.contrib.sessions&amp;#39;, &amp;#39;django.contrib.messages&amp;#39;, &amp;#39;django.contrib.staticfiles&amp;#39;, ] viewの作成 mysite/todo_list/views.pyを編集する。とりあえずviewが動くかどうかだけ確認したいので、レスポンスは適当な文字列にする。
 from django.shortcuts import render # Create your views here. def index(request): return HttpResponse(&amp;#39;Hello&amp;#39;) urlの設定 まずmysite/mysite/urls.pyの設定をする。urls.pyとは「どんなurlにアクセスされたらどんなviewに処理を任せるか」を記述したものっぽい。ここでは、todo_list/で始まるurlだったらtodo_list/urls.pyに処理を任せるように書いている。
 from django.contrib import admin from django.urls import include, path urlpatterns = [ path(&amp;#39;todo_list/&amp;#39;, include(&amp;#39;todo_list.urls&amp;#39;)), path(&amp;#39;admin/&amp;#39;, admin.</description>
-    </item>
-    
-    <item>
-      <title>Elmで超簡易Todoリスト</title>
-      <link>https://bombrary.github.io/blog/posts/elm-todo-list/</link>
-      <pubDate>Sun, 10 Nov 2019 21:08:12 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/posts/elm-todo-list/</guid>
-      <description>Todoリストと言っても、フィールドに入力した内容がli要素として追加されるだけ。
-Elm習いたてなので、何か無駄があるかも。
-個人的になるほどと思った点はList.mapを利用してli要素を生成するところで、これは要素を生成する関数が子要素のリストを引数に取るから実現できる。
-import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (onClick, onInput) main = Browser.sandbox { init = init, update = update, view = view } --Model type alias Todo = { description : String } type alias Model = { todos : List Todo , input : Todo } init : Model init = { todos = [] , input = Todo &amp;#34;&amp;#34; } type Msg = Add | Change String --Update update : Msg -&amp;gt; Model -&amp;gt; Model update msg model = case msg of Add -&amp;gt; { model | todos = model.</description>
     </item>
     
   </channel>

@@ -6,10 +6,28 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 12 Nov 2019 10:07:09 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 15 Nov 2019 08:26:41 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Programming</title>
+      <link>https://bombrary.github.io/blog/categories/programming/</link>
+      <pubDate>Fri, 15 Nov 2019 08:26:41 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/programming/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>https://bombrary.github.io/blog/categories/python/</link>
+      <pubDate>Fri, 15 Nov 2019 08:26:41 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/python/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>代数学</title>
@@ -35,15 +53,6 @@
       <pubDate>Sun, 10 Nov 2019 21:08:12 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/elm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Programming</title>
-      <link>https://bombrary.github.io/blog/categories/programming/</link>
-      <pubDate>Sun, 10 Nov 2019 21:08:12 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/programming/</guid>
       <description></description>
     </item>
     
