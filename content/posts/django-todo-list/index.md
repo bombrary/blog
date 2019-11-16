@@ -5,8 +5,6 @@ tags: ["Django", "Python", "Programming", "Todoリスト"]
 categories: ["Python", "Programming"]
 ---
 
-# Djangoの勉強でTodoリストを作る
-
 ## どんなTodoリストを作るか
 
 - Todoの登録
