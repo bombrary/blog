@@ -87,7 +87,7 @@ pre {
   overflow-x: auto;
 }
 
-p code {
+p code, li code {
   font-size: .9em;
   background: #94949426;
   opacity: .75;

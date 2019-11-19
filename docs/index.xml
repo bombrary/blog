@@ -6,10 +6,26 @@
     <description>Recent content on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 15 Nov 2019 08:26:41 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 19 Nov 2019 19:54:40 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Androidアプリ開発勉強(1) - onClick/DataBinding/Fragment</title>
+      <link>https://bombrary.github.io/blog/posts/android-helloworld/</link>
+      <pubDate>Tue, 19 Nov 2019 19:54:40 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/android-helloworld/</guid>
+      <description>Android + Kotlinを用いてアプリ開発をするときの勉強メモ。勉強メモなので備忘録程度にしか書いてない。
+次のことをやった。
+ ボタンを押すとToastを表示 DataBindingを用いる Fragmentを用いる Fragment + DataBinding  Android Kotlin Fundamentals Courseでの01-03辺りを勉強した記録なので、詳しいことはそちらに載っている。
+前提  Kotlinは未学習だが雰囲気で読める Android開発は完全未経験  iPhoneアプリ開発は少しだけ経験  Android Studioの環境構築は済んでいる  エミュレータのインストールも完了している Build &amp;amp; Runの方法も知っている   プロジェクト作成 とりあえずプロジェクト名はTestProjectとする。
+左側のペインに色々ディレクトリ・ファイルがある。色々漁ってみると、次のようなものがある。
+ java/com.example.testapplication/: 基本的にはこの中にKotlinのソースコードを入れるっぽい。ディレクトリ名がjavaなのは歴史的な理由らしい。 res/: resourceの略で、画面や定数の定義がこの中に色々入っている。  res/layout: 画面の定義ファイルが入っている res/values: 定数の定義が入っている  res/values/colors.xml: 色定義 res/values/strings.xml: 文字列定数の定義 res/values/styles.xml: styleの定義。画面の部品のstyleをCSSみたいに設定するためのもの。   build.gradle: Buildの際の様々な設定を記したファイル。  ボタンの配置 res/layouts/activity_main.xmlにメイン画面の定義が書かれている。中央ペイン左下にDesign/Textを切り替えるタブがある。
+Designタブ GUIで画面の構造をいじるための画面。直感的に操作できる。色々なペインで分かれている。
+ Palette: ドラックアンドドロップできる。 Component Tree: 部品同士の階層構造を表示している。内部構造はXMLなので部品は階層構造になっている。 Attributes: 部品の様々な属性を設定。たくさんあるが、虫眼鏡マークで検索可能。便利。中でもid属性は重要。  id: 部品の識別子。プログラムからアクセスするためにここの設定が必要。   Component Treeにおいて、rootがConstraint Layoutであることに注目。これはConstraint(制約)を用いて部品の配置を設定するためのLayoutである。Constraintについてはやってみた方が早い。</description>
+    </item>
     
     <item>
       <title>Djangoの勉強でTodoリストを作る</title>
