@@ -1,7 +1,6 @@
 ---
 title: "Androidアプリ開発勉強(2) - Navigationの基本"
 date: 2019-11-20T09:03:17+09:00
-draft: true
 tags: ["Programming", "Android", "Kotlin", "アプリ開発"]
 categories: ["Programming", "Android", "Kotlin"]
 ---

@@ -6,10 +6,28 @@
     <description>Recent content in Programming on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 19 Nov 2019 19:54:40 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 20 Nov 2019 09:03:17 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/programming/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Androidアプリ開発勉強(2) - Navigationの基本</title>
+      <link>https://bombrary.github.io/blog/posts/android-navigation/</link>
+      <pubDate>Wed, 20 Nov 2019 09:03:17 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/android-navigation/</guid>
+      <description>Navigationを用いて画面遷移をやってみる。具体的には以下の処理を行う。
+ Fragment01とFragment02を用意する Fragment01でボタンが押されたらFragment02に遷移する  Android Kotlin Fundamentals Courseでの03辺りを勉強した記録なので、詳しいことはそちらに載っている。
+Navigationについて 異なるFragment間の遷移を制御する仕組み。遷移の設定を視覚的に行えるらしい。
+これ以前はIntentという仕組みを用いていたらしい。これについては必要になりそうならいつか調べる。
+プロジェクト作成 Empty Activityを選択し、名前をNavigation Testとする。
+build.gradle(Module: app)でDataBindingを有効にしておく。
+Fragmentの作成 layouts/にFragmentを作成する。&amp;rdquo;Create layout XML?&amp;ldquo;だけチェックをつけておく。Fragmentは2つ作成し、それぞれ&amp;rdquo;Fragment01&amp;rdquo;と&amp;rdquo;Fragment02&amp;rdquo;とする。xmlファイルはそれぞれfragment_fragment01.xml、fragment_fragment02.xmlとする。
+まずTextViewのtext要素に設定するための定数をstrings.xmlに内容を追加しておく。 &amp;lt;resources&amp;gt; &amp;lt;string name=&amp;#34;app_name&amp;#34;&amp;gt;NavigationTest&amp;lt;/string&amp;gt; &amp;lt;!-- TODO: Remove or change this placeholder text --&amp;gt; &amp;lt;string name=&amp;#34;hello_blank_fragment&amp;#34;&amp;gt;Hello blank fragment&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;fragment01&amp;#34;&amp;gt;Fragment01&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;fragment02&amp;#34;&amp;gt;Fragment02&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;click&amp;#34;&amp;gt;Click&amp;lt;/string&amp;gt; &amp;lt;/resources&amp;gt;
+fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し、textを@string/clickに設定する。TextViewのtextを@string/fragment01に設定する。また全体をConstraintLayoutで包み、DataBindingのためにlayoutでさらに包む。
+&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt; &amp;lt;layout xmlns:android=&amp;#34;http://schemas.android.com/apk/res/android&amp;#34; xmlns:app=&amp;#34;http://schemas.android.com/apk/res-auto&amp;#34; xmlns:tools=&amp;#34;http://schemas.android.com/tools&amp;#34; tools:context=&amp;#34;.Fragment01&amp;#34;&amp;gt; &amp;lt;androidx.constraintlayout.widget.ConstraintLayout android:layout_width=&amp;#34;match_parent&amp;#34; android:layout_height=&amp;#34;match_parent&amp;#34;&amp;gt; &amp;lt;TextView android:id=&amp;#34;@+id/text_fragment01&amp;#34; android:layout_width=&amp;#34;wrap_content&amp;#34; android:layout_height=&amp;#34;wrap_content&amp;#34; android:text=&amp;#34;@string/fragment01&amp;#34; app:layout_constraintBottom_toBottomOf=&amp;#34;parent&amp;#34; app:layout_constraintEnd_toEndOf=&amp;#34;parent&amp;#34; app:layout_constraintStart_toStartOf=&amp;#34;parent&amp;#34; app:layout_constraintTop_toTopOf=&amp;#34;parent&amp;#34; /&amp;gt; &amp;lt;Button android:id=&amp;#34;@+id/button&amp;#34; android:layout_width=&amp;#34;wrap_content&amp;#34; android:layout_height=&amp;#34;wrap_content&amp;#34; android:text=&amp;#34;@string/click&amp;#34; app:layout_constraintBottom_toTopOf=&amp;#34;@+id/text_fragment01&amp;#34; app:layout_constraintEnd_toEndOf=&amp;#34;parent&amp;#34; app:layout_constraintStart_toStartOf=&amp;#34;parent&amp;#34; app:layout_constraintTop_toTopOf=&amp;#34;parent&amp;#34; /&amp;gt; &amp;lt;/androidx.</description>
+    </item>
     
     <item>
       <title>Androidアプリ開発勉強(1) - onClick/DataBinding/Fragment</title>
