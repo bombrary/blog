@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DataBinding on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/categories/databinding/</link>
+    <description>Recent content in DataBinding on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Fri, 22 Nov 2019 08:53:21 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/categories/databinding/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Androidアプリ開発勉強(3) - データの受け渡し</title>
+      <link>https://bombrary.github.io/blog/posts/android-dataholding/</link>
+      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/android-dataholding/</guid>
+      <description>次の2つの事項について扱う。
+ DataBindingにおけるデータの受け渡し Navigationを用いた、異なるFragment間におけるデータの受け渡し  さらに具体的に言うと、次の機能を持つアプリを作る
+ MainFragmentにはEditTextが1つある。 EditTextが入力されると、TextViewが&amp;rdquo;String: [EditTextの文字列]&amp;ldquo;に変わる。 Buttonが押されると、ReverseFragmentに遷移する ReverseFragmentは、MainFragmentのテキストフィールドの文字列を受け取って、それを逆順にした文字列を表示する。  Android Kotlin Fundamentals Courseでの05辺りを勉強した記録なので、詳しいことはそちらに載っている。
+プロジェクト初期設定 &amp;ldquo;Empty Project&amp;rdquo;として作成して、名前を&amp;rdquo;DataTest&amp;rdquo;とする。
+build.gradle(module:App)について、dataBindingの設定をしておく。
+次のようにMainFragmentとReverseFragmentを作成しておく。作成時、&amp;rdquo;Create layout XML?&amp;ldquo;にのみチェックをつけておく。   MainFragmentの設定 fragment_main.xmlを次のようにする。
+&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt; &amp;lt;layout xmlns:android=&amp;#34;http://schemas.android.com/apk/res/android&amp;#34; xmlns:tools=&amp;#34;http://schemas.android.com/tools&amp;#34; tools:context=&amp;#34;.main.MainFragment&amp;#34;&amp;gt; &amp;lt;data&amp;gt; &amp;lt;variable name=&amp;#34;myMsg&amp;#34; type=&amp;#34;com.example.datatest.main.MainFragment.MyMsg&amp;#34; /&amp;gt; &amp;lt;/data&amp;gt; &amp;lt;LinearLayout android:layout_width=&amp;#34;match_parent&amp;#34; android:layout_height=&amp;#34;wrap_content&amp;#34; android:orientation=&amp;#34;vertical&amp;#34; android:layout_gravity=&amp;#34;center_vertical&amp;#34; &amp;gt; &amp;lt;EditText android:id=&amp;#34;@+id/edit_text&amp;#34; android:layout_width=&amp;#34;wrap_content&amp;#34; android:layout_height=&amp;#34;wrap_content&amp;#34; android:hint=&amp;#34;@string/hello_blank_fragment&amp;#34; android:layout_gravity=&amp;#34;center_horizontal&amp;#34; android:textAlignment=&amp;#34;center&amp;#34; /&amp;gt; &amp;lt;TextView android:id=&amp;#34;@+id/text_view&amp;#34; android:layout_width=&amp;#34;wrap_content&amp;#34; android:layout_height=&amp;#34;wrap_content&amp;#34; android:text=&amp;#34;@={myMsg.text}&amp;#34; android:layout_gravity=&amp;#34;center_horizontal&amp;#34; android:textAlignment=&amp;#34;center&amp;#34; /&amp;gt; &amp;lt;Button android:id=&amp;#34;@+id/button&amp;#34; android:layout_width=&amp;#34;wrap_content&amp;#34; android:layout_height=&amp;#34;wrap_content&amp;#34; android:layout_gravity=&amp;#34;center_horizontal&amp;#34; android:text=&amp;#34;@string/to_reverse_fragment&amp;#34; android:textAllCaps=&amp;#34;false&amp;#34; /&amp;gt; &amp;lt;/LinearLayout&amp;gt; &amp;lt;/layout&amp;gt; 重要なのは以下の部分で、これはMainFragment.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Wed, 20 Nov 2019 09:03:17 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 22 Nov 2019 08:53:21 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>Android</title>
       <link>https://bombrary.github.io/blog/tags/android/</link>
-      <pubDate>Wed, 20 Nov 2019 09:03:17 +0900</pubDate>
+      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/android/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>Kotlin</title>
       <link>https://bombrary.github.io/blog/tags/kotlin/</link>
-      <pubDate>Wed, 20 Nov 2019 09:03:17 +0900</pubDate>
+      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/kotlin/</guid>
       <description></description>
@@ -32,18 +32,36 @@
     <item>
       <title>Programming</title>
       <link>https://bombrary.github.io/blog/tags/programming/</link>
-      <pubDate>Wed, 20 Nov 2019 09:03:17 +0900</pubDate>
+      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/programming/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>アプリ開発</title>
-      <link>https://bombrary.github.io/blog/tags/%E3%82%A2%E3%83%97%E3%83%AA%E9%96%8B%E7%99%BA/</link>
+      <title>Navigation</title>
+      <link>https://bombrary.github.io/blog/tags/navigation/</link>
       <pubDate>Wed, 20 Nov 2019 09:03:17 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/tags/%E3%82%A2%E3%83%97%E3%83%AA%E9%96%8B%E7%99%BA/</guid>
+      <guid>https://bombrary.github.io/blog/tags/navigation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DataFinding</title>
+      <link>https://bombrary.github.io/blog/tags/datafinding/</link>
+      <pubDate>Tue, 19 Nov 2019 19:54:40 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/datafinding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fragment</title>
+      <link>https://bombrary.github.io/blog/tags/fragment/</link>
+      <pubDate>Tue, 19 Nov 2019 19:54:40 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/fragment/</guid>
       <description></description>
     </item>
     

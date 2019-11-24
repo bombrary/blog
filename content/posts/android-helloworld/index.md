@@ -1,7 +1,7 @@
 ---
 title: "Androidアプリ開発勉強(1) - onClick/DataBinding/Fragment"
 date: 2019-11-19T19:54:40+09:00
-tags: ["Programming", "Android", "Kotlin", "アプリ開発"]
+tags: ["Programming", "Android", "Kotlin", "DataFinding", "Fragment"]
 categories: ["Programming", "Android", "Kotlin"]
 ---
 
