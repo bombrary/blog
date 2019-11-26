@@ -1,7 +1,8 @@
 ---
 title: "gnuplotの使い方メモ"
 date: 2019-11-26T10:59:56+09:00
-draft: true
+tags: ["gnuplot", "グラフ"]
+categories: ["Visualization", "gnuplot"]
 ---
 
 備忘録に。
@@ -10,7 +11,7 @@ draft: true
 
 Macの場合はbrewでインストールできる。
 
-{{< highlight text >>}
+{{< highlight text >}}
 $ brew install gnuplot
 {{< /highlight >}}
 
@@ -32,13 +33,23 @@ $ brew install gnuplot
 
 `using X:Y`で、X番目の列を横軸、Y番目の列を縦軸にする。
 
-`replot`で、現在のグラフに重ねて出力。
+`w lp`とは"with linespoints"の略。つまり線と点を描画する。`w l`だと"with line"、`w lp lt 3 lw 2`だと"with linepoints linetype 3 linewidth 2"という意味。いろいろある。
 
 {{< highlight txt >}}
 $ set xlabel "X axis"
 $ set ylabel "Y axis"
 $ plot "data.txt" using 1:2 w pl
 {{< /highlight >}}
+
+## 軸の範囲指定
+
+例えばx軸を[0,3000]の範囲に制限して描画したいなら、次のコマンドを打つ。
+
+{{< highlight txt >}}
+$ set xrange [0:3000]
+{{< /highlight >}}
+
+こんな感じで、gnuplotは`set 属性名 値`で様々な設定をする印象がある。
 
 ## グラフの重ね書き
 
