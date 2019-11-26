@@ -6,10 +6,37 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 22 Nov 2019 08:53:21 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 24 Nov 2019 17:08:19 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>C</title>
+      <link>https://bombrary.github.io/blog/categories/c/</link>
+      <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/c/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43;</title>
+      <link>https://bombrary.github.io/blog/categories/c&#43;&#43;/</link>
+      <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/c&#43;&#43;/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network</title>
+      <link>https://bombrary.github.io/blog/categories/network/</link>
+      <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/network/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Android</title>

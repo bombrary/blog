@@ -4,7 +4,62 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/c/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/c/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/c&#43;&#43;/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/c&#43;&#43;/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/socket/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/network/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/socket/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/tcp/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
   </url>
   
   <url>
@@ -23,17 +78,7 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/categories/databinding/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/tags/kotlin/</loc>
     <lastmod>2019-11-22T08:53:21+09:00</lastmod>
   </url>
   
@@ -43,12 +88,7 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/categories/programming/</loc>
+    <loc>https://bombrary.github.io/blog/tags/kotlin/</loc>
     <lastmod>2019-11-22T08:53:21+09:00</lastmod>
   </url>
   
@@ -58,7 +98,7 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <loc>https://bombrary.github.io/blog/categories/programming/</loc>
     <lastmod>2019-11-22T08:53:21+09:00</lastmod>
   </url>
   
@@ -128,12 +168,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
+    <loc>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</loc>
     <lastmod>2019-11-12T10:07:09+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</loc>
+    <loc>https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
     <lastmod>2019-11-12T10:07:09+09:00</lastmod>
   </url>
   
