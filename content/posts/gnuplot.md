@@ -3,6 +3,7 @@ title: "gnuplotの使い方メモ"
 date: 2019-11-26T10:59:56+09:00
 tags: ["gnuplot", "グラフ"]
 categories: ["Visualization", "gnuplot"]
+layout: default
 ---
 
 備忘録に。
