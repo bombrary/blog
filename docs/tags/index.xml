@@ -6,10 +6,64 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 26 Nov 2019 10:59:56 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 28 Nov 2019 14:24:39 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Android</title>
+      <link>https://bombrary.github.io/blog/tags/android/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/android/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kotlin</title>
+      <link>https://bombrary.github.io/blog/tags/kotlin/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/kotlin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>LivaData</title>
+      <link>https://bombrary.github.io/blog/tags/livadata/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/livadata/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Programming</title>
+      <link>https://bombrary.github.io/blog/tags/programming/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/programming/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>TableLayout</title>
+      <link>https://bombrary.github.io/blog/tags/tablelayout/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/tablelayout/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>電卓アプリ</title>
+      <link>https://bombrary.github.io/blog/tags/%E9%9B%BB%E5%8D%93%E3%82%A2%E3%83%97%E3%83%AA/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E9%9B%BB%E5%8D%93%E3%82%A2%E3%83%97%E3%83%AA/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>gnuplot</title>
@@ -62,33 +116,6 @@
       <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/tcp/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Android</title>
-      <link>https://bombrary.github.io/blog/tags/android/</link>
-      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/android/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kotlin</title>
-      <link>https://bombrary.github.io/blog/tags/kotlin/</link>
-      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/kotlin/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Programming</title>
-      <link>https://bombrary.github.io/blog/tags/programming/</link>
-      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/programming/</guid>
       <description></description>
     </item>
     

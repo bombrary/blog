@@ -1,7 +1,7 @@
 ---
 title: "Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成"
 date: 2019-11-28T14:24:39+09:00
-tag: ["Programming", "Android", "Kotlin", "LivaData", "TableLayout", "電卓アプリ"]
+tags: ["Programming", "Android", "Kotlin", "LivaData", "TableLayout", "電卓アプリ"]
 categories: ["Programming", "Android", "Kotlin", "ViewModel", "DataBinding"]
 ---
 

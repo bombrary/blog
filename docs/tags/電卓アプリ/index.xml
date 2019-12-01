@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>電卓アプリ on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/%E9%9B%BB%E5%8D%93%E3%82%A2%E3%83%97%E3%83%AA/</link>
+    <description>Recent content in 電卓アプリ on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Thu, 28 Nov 2019 14:24:39 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/%E9%9B%BB%E5%8D%93%E3%82%A2%E3%83%97%E3%83%AA/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成</title>
+      <link>https://bombrary.github.io/blog/posts/android-calc/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/android-calc/</guid>
+      <description>どんなアプリを作るか 電卓を作る。
+市販の電卓とは違い、括弧が使えるようにする。なので、軽い構文解析を書くことになる。しかし今回の記事ではデータの扱い方やViewの組み方に焦点を当てているため、電卓の計算処理についてはかなり軽めに説明する。
+プロジェクト作成  プロジェクト名は&amp;rdquo;Calculator&amp;rdquo;とする。 DataBindingは有効にする  Fragmentに分ける 今回は1画面のアプリなのでわざわざFragmentに分ける必要もないのだが、「もしかしたら他にもFragmentを追加するかもしれない」というケースを想定して、一応分けてみる。
+ CalcFragmentを作成する。xmlファイルはfragment_calc.xmlとする。 activity_main.xmlの内容を以下のようにする。  &amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt; &amp;lt;merge xmlns:android=&amp;#34;http://schemas.android.com/apk/res/android&amp;#34; xmlns:app=&amp;#34;http://schemas.android.com/apk/res-auto&amp;#34; xmlns:tools=&amp;#34;http://schemas.android.com/tools&amp;#34; android:layout_width=&amp;#34;match_parent&amp;#34; android:layout_height=&amp;#34;match_parent&amp;#34; tools:context=&amp;#34;.MainActivity&amp;#34;&amp;gt; &amp;lt;fragment android:id=&amp;#34;@+id/calcFragment&amp;#34; android:layout_width=&amp;#34;match_parent&amp;#34; android:layout_height=&amp;#34;match_parent&amp;#34; android:name=&amp;#34;com.example.calculator.CalcFragment&amp;#34; /&amp;gt; &amp;lt;/merge&amp;gt; merge Android Kotlin Fundamentals 06.2で存在を初めて知った。こうするとactivity_main.xmlでLayoutを作って、fragmentの中でもまたLayoutを作るといった冗長性を排除できる。
+CalcFragmentの設定 string.xml fragment_calc.xmlに設定するための文字列定数を定義する。string.xmlを以下のようにする。
+&amp;lt;resources&amp;gt; &amp;lt;string name=&amp;#34;app_name&amp;#34;&amp;gt;Calculator&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_0&amp;#34;&amp;gt;0&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_1&amp;#34;&amp;gt;1&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_2&amp;#34;&amp;gt;2&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_3&amp;#34;&amp;gt;3&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_4&amp;#34;&amp;gt;4&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_5&amp;#34;&amp;gt;5&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_6&amp;#34;&amp;gt;6&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_7&amp;#34;&amp;gt;7&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_8&amp;#34;&amp;gt;8&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_9&amp;#34;&amp;gt;9&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_plus&amp;#34;&amp;gt;+&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_minus&amp;#34;&amp;gt;-&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_mul&amp;#34;&amp;gt;*&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_div&amp;#34;&amp;gt;/&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_ac&amp;#34;&amp;gt;AC&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_eq&amp;#34;&amp;gt;=&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_lp&amp;#34;&amp;gt;(&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;calc_rp&amp;#34;&amp;gt;)&amp;lt;/string&amp;gt; &amp;lt;/resources&amp;gt; fmagment_calc.</description>
+    </item>
+    
+  </channel>
+</rss>
