@@ -4,12 +4,47 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/</loc>
-    <lastmod>2019-11-26T10:59:56+09:00</lastmod>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/android/</loc>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/android-calc/</loc>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2019-11-26T10:59:56+09:00</lastmod>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/databinding/</loc>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/kotlin/</loc>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/programming/</loc>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/viewmodel/</loc>
+    <lastmod>2019-11-28T14:24:39+09:00</lastmod>
   </url>
   
   <url>
@@ -24,11 +59,6 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/posts/gnuplot/</loc>
-    <lastmod>2019-11-26T10:59:56+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/posts/</loc>
     <lastmod>2019-11-26T10:59:56+09:00</lastmod>
   </url>
   
@@ -88,11 +118,6 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/android/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/tags/android/</loc>
     <lastmod>2019-11-22T08:53:21+09:00</lastmod>
   </url>
@@ -103,32 +128,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/databinding/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/categories/kotlin/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/tags/kotlin/</loc>
     <lastmod>2019-11-22T08:53:21+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/programming/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/tags/programming/</loc>
-    <lastmod>2019-11-22T08:53:21+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/categories/viewmodel/</loc>
     <lastmod>2019-11-22T08:53:21+09:00</lastmod>
   </url>
   
@@ -193,12 +198,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
+    <loc>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</loc>
     <lastmod>2019-11-12T10:07:09+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</loc>
+    <loc>https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
     <lastmod>2019-11-12T10:07:09+09:00</lastmod>
   </url>
   

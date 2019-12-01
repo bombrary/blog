@@ -6,10 +6,55 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 26 Nov 2019 10:59:56 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 28 Nov 2019 14:24:39 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Android</title>
+      <link>https://bombrary.github.io/blog/categories/android/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/android/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DataBinding</title>
+      <link>https://bombrary.github.io/blog/categories/databinding/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/databinding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kotlin</title>
+      <link>https://bombrary.github.io/blog/categories/kotlin/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/kotlin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Programming</title>
+      <link>https://bombrary.github.io/blog/categories/programming/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/programming/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ViewModel</title>
+      <link>https://bombrary.github.io/blog/categories/viewmodel/</link>
+      <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/viewmodel/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>gnuplot</title>
@@ -53,51 +98,6 @@
       <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/network/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Android</title>
-      <link>https://bombrary.github.io/blog/categories/android/</link>
-      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/android/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>DataBinding</title>
-      <link>https://bombrary.github.io/blog/categories/databinding/</link>
-      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/databinding/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kotlin</title>
-      <link>https://bombrary.github.io/blog/categories/kotlin/</link>
-      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/kotlin/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Programming</title>
-      <link>https://bombrary.github.io/blog/categories/programming/</link>
-      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/programming/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ViewModel</title>
-      <link>https://bombrary.github.io/blog/categories/viewmodel/</link>
-      <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/viewmodel/</guid>
       <description></description>
     </item>
     
