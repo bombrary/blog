@@ -6,17 +6,31 @@
     <description>Recent content in Network on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 24 Nov 2019 17:08:19 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 08 Dec 2019 11:09:35 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/network/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>C/C&#43;&#43;でSocket通信の勉強(1) - ディスクリプタ/TCPによる通信</title>
-      <link>https://bombrary.github.io/blog/posts/socket/</link>
+      <title>Socket通信勉強(2) - Pythonでの書き方/HTTPサーバーもどき作成</title>
+      <link>https://bombrary.github.io/blog/posts/socket02-python/</link>
+      <pubDate>Sun, 08 Dec 2019 11:09:35 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/socket02-python/</guid>
+      <description>PythonでのSocket通信 やってることはCでやったときと同じである。サーバーとクライアントの通信手順は同じだし、関数名も同じである。しかしCで書いた場合に比べてシンプルに書ける。エラーは例外として投げられるため、自分で書く必要がない。またsockaddr_inなどの構造体が登場することはなく、Pythonでのbind関数とconnect関数の引数に直接アドレス・ポートを指定する。
+server.py 前回と同じく、以下の手順で通信を行う。
+ listen(待ち受け)用のソケット作成 - socket 「どこからの接続を待つのか」「どのポートにて待ち受けするのか」を決める - bind関数の引数 ソケットにその情報を紐つける - bind 実際に待ち受けする - listen 接続要求が来たら受け入れる - accept 4によって通信用のソケットが得られるので、それを用いてデータのやりとりをする- send/recv  import socket s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) s.bind((&amp;#34;&amp;#34;, 8000)) s.listen(5) (sock, addr) = s.accept() print(&amp;#34;Connected by&amp;#34; + str(addr)) sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) sock.close() s.close() 上のコードを見れば各関数がどんな形で引数をとって、どんな値を返すのかがわかると思う。いくつか補足しておく。
+bind (受け入れアドレス, ポート)というタプルを引数にとる。受け入れアドレスを空文字列にしておけば、どんなアドレスからの接続も受け入れる。つまりCでやったINADDR_ANYと同じ。
+s.bind((&amp;#34;&amp;#34;, 8000)) encode Pythonのstring型をそのまま送ることはできないので、byte型に変換する。これはstring.encodeで行える。
+sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) client.py  サーバーとの通信用のソケット作成 - socket サーバが待ち受けている宛先を設定 - connectの引数 2で設定した宛先に対して接続する - connect 1で作ったソケットを用いてデータのやりとりをする。 - send/recv  import socket sock = socket.</description>
+    </item>
+    
+    <item>
+      <title>Socket通信の勉強(1) - ディスクリプタ/TCPによる通信</title>
+      <link>https://bombrary.github.io/blog/posts/socket01-file-tcp/</link>
       <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/socket/</guid>
+      <guid>https://bombrary.github.io/blog/posts/socket01-file-tcp/</guid>
       <description>Socket通信を勉強する。
 前提  プログラムはMac(Mojave)で動かす。 ネットワークに関する知識はほんの少しある。 使うプログラミング言語はC++だが、ここではbetter Cの意味でしか用いない。  (寄り道) ファイル入出力 Socket通信を学んでいると、ファイルディスクリプタが出てきたので、まずはそこから勉強する。
 関数定義についてはJM Projectから引用したものを用いる。これはLinuxマニュアルと同じらしいので、恐らくmanコマンドで出力されるものと同じである(ただし英語であるが)。

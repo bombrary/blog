@@ -6,17 +6,31 @@
     <description>Recent content on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 28 Nov 2019 14:24:39 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 08 Dec 2019 11:09:35 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Socket通信勉強(2) - Pythonでの書き方/HTTPサーバーもどき作成</title>
+      <link>https://bombrary.github.io/blog/posts/socket02-python/</link>
+      <pubDate>Sun, 08 Dec 2019 11:09:35 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/socket02-python/</guid>
+      <description>PythonでのSocket通信 やってることはCでやったときと同じである。サーバーとクライアントの通信手順は同じだし、関数名も同じである。しかしCで書いた場合に比べてシンプルに書ける。エラーは例外として投げられるため、自分で書く必要がない。またsockaddr_inなどの構造体が登場することはなく、Pythonでのbind関数とconnect関数の引数に直接アドレス・ポートを指定する。
+server.py 前回と同じく、以下の手順で通信を行う。
+ listen(待ち受け)用のソケット作成 - socket 「どこからの接続を待つのか」「どのポートにて待ち受けするのか」を決める - bind関数の引数 ソケットにその情報を紐つける - bind 実際に待ち受けする - listen 接続要求が来たら受け入れる - accept 4によって通信用のソケットが得られるので、それを用いてデータのやりとりをする- send/recv  import socket s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) s.bind((&amp;#34;&amp;#34;, 8000)) s.listen(5) (sock, addr) = s.accept() print(&amp;#34;Connected by&amp;#34; + str(addr)) sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) sock.close() s.close() 上のコードを見れば各関数がどんな形で引数をとって、どんな値を返すのかがわかると思う。いくつか補足しておく。
+bind (受け入れアドレス, ポート)というタプルを引数にとる。受け入れアドレスを空文字列にしておけば、どんなアドレスからの接続も受け入れる。つまりCでやったINADDR_ANYと同じ。
+s.bind((&amp;#34;&amp;#34;, 8000)) encode Pythonのstring型をそのまま送ることはできないので、byte型に変換する。これはstring.encodeで行える。
+sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) client.py  サーバーとの通信用のソケット作成 - socket サーバが待ち受けている宛先を設定 - connectの引数 2で設定した宛先に対して接続する - connect 1で作ったソケットを用いてデータのやりとりをする。 - send/recv  import socket sock = socket.</description>
+    </item>
+    
+    <item>
       <title>Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成</title>
-      <link>https://bombrary.github.io/blog/posts/android-calc/</link>
+      <link>https://bombrary.github.io/blog/posts/android04-calc/</link>
       <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/android-calc/</guid>
+      <guid>https://bombrary.github.io/blog/posts/android04-calc/</guid>
       <description>どんなアプリを作るか 電卓を作る。
 市販の電卓とは違い、括弧が使えるようにする。なので、軽い構文解析を書くことになる。しかし今回の記事ではデータの扱い方やViewの組み方に焦点を当てているため、電卓の計算処理についてはかなり軽めに説明する。
 プロジェクト作成  プロジェクト名は&amp;rdquo;Calculator&amp;rdquo;とする。 DataBindingは有効にする  Fragmentに分ける 今回は1画面のアプリなのでわざわざFragmentに分ける必要もないのだが、「もしかしたら他にもFragmentを追加するかもしれない」というケースを想定して、一応分けてみる。
@@ -43,11 +57,11 @@ $ set xrange [0:3000] こんな感じで、gnuplotはset 属性名 値で様々�
     </item>
     
     <item>
-      <title>C/C&#43;&#43;でSocket通信の勉強(1) - ディスクリプタ/TCPによる通信</title>
-      <link>https://bombrary.github.io/blog/posts/socket/</link>
+      <title>Socket通信の勉強(1) - ディスクリプタ/TCPによる通信</title>
+      <link>https://bombrary.github.io/blog/posts/socket01-file-tcp/</link>
       <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/socket/</guid>
+      <guid>https://bombrary.github.io/blog/posts/socket01-file-tcp/</guid>
       <description>Socket通信を勉強する。
 前提  プログラムはMac(Mojave)で動かす。 ネットワークに関する知識はほんの少しある。 使うプログラミング言語はC++だが、ここではbetter Cの意味でしか用いない。  (寄り道) ファイル入出力 Socket通信を学んでいると、ファイルディスクリプタが出てきたので、まずはそこから勉強する。
 関数定義についてはJM Projectから引用したものを用いる。これはLinuxマニュアルと同じらしいので、恐らくmanコマンドで出力されるものと同じである(ただし英語であるが)。
@@ -63,10 +77,10 @@ openでファイルを開く 開きたいファイルのパスと、読み書き
     
     <item>
       <title>Androidアプリ開発勉強(3) - データの受け渡し</title>
-      <link>https://bombrary.github.io/blog/posts/android-dataholding/</link>
+      <link>https://bombrary.github.io/blog/posts/android03-dataholding/</link>
       <pubDate>Fri, 22 Nov 2019 08:53:21 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/android-dataholding/</guid>
+      <guid>https://bombrary.github.io/blog/posts/android03-dataholding/</guid>
       <description>次の2つの事項について扱う。
  DataBindingにおけるデータの受け渡し Navigationを用いた、異なるFragment間におけるデータの受け渡し  さらに具体的に言うと、次の機能を持つアプリを作る
  MainFragmentにはEditTextが1つある。 EditTextが入力されると、TextViewが&amp;rdquo;String: [EditTextの文字列]&amp;ldquo;に変わる。 Buttonが押されると、ReverseFragmentに遷移する ReverseFragmentは、MainFragmentのテキストフィールドの文字列を受け取って、それを逆順にした文字列を表示する。  Android Kotlin Fundamentals Courseでの05辺りを勉強した記録なので、詳しいことはそちらに載っている。
@@ -78,10 +92,10 @@ build.gradle(module:App)について、dataBindingの設定をしておく。
     
     <item>
       <title>Androidアプリ開発勉強(2) - Navigationの基本</title>
-      <link>https://bombrary.github.io/blog/posts/android-navigation/</link>
+      <link>https://bombrary.github.io/blog/posts/android02-navigation/</link>
       <pubDate>Wed, 20 Nov 2019 09:03:17 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/android-navigation/</guid>
+      <guid>https://bombrary.github.io/blog/posts/android02-navigation/</guid>
       <description>Navigationを用いて画面遷移をやってみる。具体的には以下の処理を行う。
  Fragment01とFragment02を用意する Fragment01でボタンが押されたらFragment02に遷移する  Android Kotlin Fundamentals Courseでの03辺りを勉強した記録なので、詳しいことはそちらに載っている。
 Navigationについて 異なるFragment間の遷移を制御する仕組み。遷移の設定を視覚的に行えるらしい。
@@ -96,10 +110,10 @@ fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し
     
     <item>
       <title>Androidアプリ開発勉強(1) - onClick/DataBinding/Fragment</title>
-      <link>https://bombrary.github.io/blog/posts/android-helloworld/</link>
+      <link>https://bombrary.github.io/blog/posts/android01-helloworld/</link>
       <pubDate>Tue, 19 Nov 2019 19:54:40 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/android-helloworld/</guid>
+      <guid>https://bombrary.github.io/blog/posts/android01-helloworld/</guid>
       <description>Android + Kotlinを用いてアプリ開発をするときの勉強メモ。勉強メモなので備忘録程度にしか書いてない。
 次のことをやった。
  ボタンを押すとToastを表示 DataBindingを用いる Fragmentを用いる Fragment + DataBinding  Android Kotlin Fundamentals Courseでの01-03辺りを勉強した記録なので、詳しいことはそちらに載っている。

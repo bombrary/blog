@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.59.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/android04-calc/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/android04-calc/">Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成</a></h1>
+    <p class="meta"><time datetime="2019-11-28T14:24:39&#43;09:00">November 28, 2019</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/programming/">Programming</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/android/">Android</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/kotlin/">Kotlin</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/livadata/">LivaData</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/tablelayout/">TableLayout</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e9%9b%bb%e5%8d%93%e3%82%a2%e3%83%97%e3%83%aa/">電卓アプリ</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/programming/">Programming</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/android/">Android</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/kotlin/">Kotlin</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/viewmodel/">ViewModel</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/databinding/">DataBinding</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+
+<h2 id="どんなアプリを作るか">どんなアプリを作るか</h2>
+
+<p>電卓を作る。</p>
+
+<p>市販の電卓とは違い、括弧が使えるようにする。なので、軽い構文解析を書くことになる。しかし今回の記事ではデータの扱い方やViewの組み方に焦点を当てているため、電卓の計算処理についてはかなり軽めに説明する。</p>
+
+<h2 id="プロジェクト作成">プロジェクト作成</h2>
+
+<ul>
+<li>プロジェクト名は&rdquo;Calculator&rdquo;とする。</li>
+<li>DataBindingは有効にする</li>
+</ul>
+
+<h2 id="fragmentに分ける">Fragmentに分ける</h2>
+
+<p>今回は1画面のアプリなのでわざわざFragmentに分ける必要もないのだが、「もしかしたら他にもFragmentを追加するかもしれない」というケースを想定して、一応分けてみる。</p>
+
+<ol>
+<li><code>CalcFragment</code>を作成する。xmlファイルは<code>fragment_calc.xml</code>とする。</li>
+<li><code>activity_main.xml</code>の内容を以下のようにする。</li>
+</ol>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class="nt">&lt;merge</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
+    <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+    <span class="na">tools:context=</span><span class="s">&#34;.MainActivity&#34;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;fragment</span>
+        <span class="na">android:id=</span><span class="s">&#34;@+id/calcFragment&#34;</span>
+        <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+        <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+        <span class="na">android:name=</span><span class="s">&#34;com.example.calculator.CalcFragment&#34;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/merge&gt;</span></code></pre></div>
+
+<h3 id="merge">merge</h3>
+
+<p><a href="https://codelabs.developers.google.com/codelabs/kotlin-android-training-coroutines-and-room/index.html?index=..%2F..android-kotlin-fundamentals#2">Android Kotlin Fundamentals 06.2</a>で存在を初めて知った。こうすると<code>activity_main.xml</code>でLayoutを作って、<code>fragment</code>の中でもまたLayoutを作るといった冗長性を排除できる。</p>
+
+<h2 id="calcfragmentの設定">CalcFragmentの設定</h2>
+
+<h3 id="string-xml">string.xml</h3>
+
+<p><code>fragment_calc.xml</code>に設定するための文字列定数を定義する。<code>string.xml</code>を以下のようにする。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;resources&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;app_name&#34;</span><span class="nt">&gt;</span>Calculator<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_0&#34;</span><span class="nt">&gt;</span>0<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_1&#34;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_2&#34;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_3&#34;</span><span class="nt">&gt;</span>3<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_4&#34;</span><span class="nt">&gt;</span>4<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_5&#34;</span><span class="nt">&gt;</span>5<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_6&#34;</span><span class="nt">&gt;</span>6<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_7&#34;</span><span class="nt">&gt;</span>7<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_8&#34;</span><span class="nt">&gt;</span>8<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_9&#34;</span><span class="nt">&gt;</span>9<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_plus&#34;</span><span class="nt">&gt;</span>+<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_minus&#34;</span><span class="nt">&gt;</span>-<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_mul&#34;</span><span class="nt">&gt;</span>*<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_div&#34;</span><span class="nt">&gt;</span>/<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_ac&#34;</span><span class="nt">&gt;</span>AC<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_eq&#34;</span><span class="nt">&gt;</span>=<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_lp&#34;</span><span class="nt">&gt;</span>(<span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_rp&#34;</span><span class="nt">&gt;</span>)<span class="nt">&lt;/string&gt;</span>
+<span class="nt">&lt;/resources&gt;</span></code></pre></div>
+
+<h3 id="fmagment-calc-xml">fmagment_calc.xml</h3>
+
+<p><code>fragment_calc.xml</code>を以下のようにする。初めて触れた要素・属性があるので、これらは後で補足する。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class="nt">&lt;layout</span>
+    <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
+    <span class="na">tools:context=</span><span class="s">&#34;.CalcFragment&#34;</span> <span class="nt">&gt;</span>
+
+    <span class="nt">&lt;androidx.constraintlayout.widget.ConstraintLayout</span>
+        <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+        <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span> <span class="nt">&gt;</span>
+        <span class="nt">&lt;TextView</span>
+            <span class="na">android:id=</span><span class="s">&#34;@+id/textView&#34;</span>
+            <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+            <span class="na">android:textSize=</span><span class="s">&#34;48sp&#34;</span>
+            <span class="na">android:paddingLeft=</span><span class="s">&#34;8dp&#34;</span>
+            <span class="na">android:paddingRight=</span><span class="s">&#34;8dp&#34;</span>
+            <span class="na">android:paddingTop=</span><span class="s">&#34;8dp&#34;</span>
+            <span class="na">android:paddingBottom=</span><span class="s">&#34;8dp&#34;</span>
+            <span class="na">android:gravity=</span><span class="s">&#34;end|center_vertical&#34;</span>
+            <span class="na">android:text=</span><span class="s">&#34;@string/calc_0&#34;</span>
+            <span class="na">app:layout_constraintTop_toTopOf=</span><span class="s">&#34;parent&#34;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;TableLayout</span>
+            <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+            <span class="na">android:layout_height=</span><span class="s">&#34;0dp&#34;</span>
+            <span class="na">app:layout_constraintLeft_toLeftOf=</span><span class="s">&#34;parent&#34;</span>
+            <span class="na">app:layout_constraintRight_toRightOf=</span><span class="s">&#34;parent&#34;</span>
+            <span class="na">app:layout_constraintBottom_toBottomOf=</span><span class="s">&#34;parent&#34;</span>
+            <span class="na">app:layout_constraintTop_toBottomOf=</span><span class="s">&#34;@+id/textView&#34;</span>
+            <span class="na">android:gravity=</span><span class="s">&#34;fill&#34;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;TableRow</span>
+                <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+                <span class="na">android:layout_height=</span><span class="s">&#34;0dp&#34;</span>
+                <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                <span class="na">android:gravity=</span><span class="s">&#34;center&#34;</span><span class="nt">&gt;</span>
+                <span class="c">&lt;!-- Dummy Button for table layout. --&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:visibility=</span><span class="s">&#34;invisible&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_lp&#34;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_rp&#34;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_ac&#34;</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;/TableRow&gt;</span>
+            <span class="nt">&lt;TableRow</span>
+                <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+                <span class="na">android:layout_height=</span><span class="s">&#34;0dp&#34;</span>
+                <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                <span class="na">android:gravity=</span><span class="s">&#34;center&#34;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_7&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button7&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_8&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button8&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_9&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button9&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_mul&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/buttonMul&#34;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/TableRow&gt;</span>
+            <span class="nt">&lt;TableRow</span>
+                <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+                <span class="na">android:layout_height=</span><span class="s">&#34;0dp&#34;</span>
+                <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                <span class="na">android:gravity=</span><span class="s">&#34;center&#34;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_4&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button4&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_5&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button5&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_6&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button6&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_div&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/buttonDiv&#34;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/TableRow&gt;</span>
+            <span class="nt">&lt;TableRow</span>
+                <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+                <span class="na">android:layout_height=</span><span class="s">&#34;0dp&#34;</span>
+                <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                <span class="na">android:gravity=</span><span class="s">&#34;center&#34;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_1&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button1&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_2&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button2&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_3&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button3&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_plus&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/buttonPlus&#34;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/TableRow&gt;</span>
+            <span class="nt">&lt;TableRow</span>
+                <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+                <span class="na">android:layout_height=</span><span class="s">&#34;0dp&#34;</span>
+                <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                <span class="na">android:gravity=</span><span class="s">&#34;center&#34;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_0&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/button0&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_period&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/buttonPeriod&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_eq&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/buttonEq&#34;</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;Button</span>
+                    <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+                    <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+                    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+                    <span class="na">android:text=</span><span class="s">&#34;@string/calc_minus&#34;</span>
+                    <span class="na">android:id=</span><span class="s">&#34;@+id/buttonMinus&#34;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/TableRow&gt;</span>
+        <span class="nt">&lt;/TableLayout&gt;</span>
+
+    <span class="nt">&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;</span>
+<span class="nt">&lt;/layout&gt;</span></code></pre></div>
+
+<h3 id="tablelayout">TableLayout</h3>
+
+<p>電卓アプリを作る場合、ボタンは格子状に並べたい。これはTableLayoutで実現できる。次のように書く。<code>TableRow</code>はテーブルの行を定義する要素で、その中に実際のセル要素を並べていく。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableLayout</span> <span class="err">...</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;TableRow</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;要素...&gt;</span>
+    ...
+  <span class="nt">&lt;/TableRow&gt;</span>
+
+  <span class="nt">&lt;TableRow</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;要素...&gt;</span>
+    ...
+  <span class="nt">&lt;/TableRow&gt;</span>
+
+  ...
+<span class="nt">&lt;/TableLayout&gt;</span></code></pre></div>
+
+<p>他に似たようなレイアウトを実現する方法にGridLayoutというものがあるらしいので、必要になったらまた勉強する。</p>
+
+<h3 id="layout-weight">layout_weight</h3>
+
+<p>テーブル幅もしくは高さの比率を設定する。例えば次のように設定されたいた場合、ボタンは1:2:1の比率で並ぶ。幅の比率を設定したいなら、<code>layout_width=&quot;0dp&quot;</code>を設定する。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;Button</span>
+  <span class="na">layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+  <span class="na">layout_width=</span><span class="s">&#34;0dp&#34;</span>
+  <span class="na">layout_weight=</span><span class="s">&#34;1&#34;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;Button</span>
+  <span class="na">layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+  <span class="na">layout_width=</span><span class="s">&#34;0dp&#34;</span>
+  <span class="na">layout_weight=</span><span class="s">&#34;2&#34;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;Button</span>
+  <span class="na">layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+  <span class="na">layout_width=</span><span class="s">&#34;0dp&#34;</span>
+  <span class="na">layout_weight=</span><span class="s">&#34;1&#34;</span><span class="nt">/&gt;</span></code></pre></div>
+
+<h3 id="layout-gravity">layout_gravity</h3>
+
+<p>位置や幅を制御するための属性。その名の通り、重力が発生していると捉えるのが適当。例えば<code>center</code>なら中央に重力が発生するため、Viewの部品は中央に移動する。</p>
+
+<p>今回の例では<code>fill</code>が設定されている。四隅に重力が発生するので、Viewの部品は全体に引き伸ばされる。前にも見た通り<code>layout_height=&quot;0dp&quot;</code>や<code>layout_width=&quot;0dp&quot;</code>は特殊な意味を持つようで、今回の場合は<code>height</code>にのみ<code>0dp</code>を設定し、上下方向だけ引き伸ばされるようにしているようだ。<code>layout_height=&quot;match_parent&quot;</code>と挙動が似ているが、こっちの方は「親要素に高さを合わせる」という意味なので微妙に異なる。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableLayout</span>
+    <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+    <span class="na">android:layout_height=</span><span class="s">&#34;0dp&#34;</span>
+    <span class="err">...</span>
+    <span class="na">android:gravity=</span><span class="s">&#34;fill&#34;</span><span class="nt">&gt;</span>
+  ...
+<span class="nt">&lt;/TableLayout&gt;</span></code></pre></div>
+
+<h3 id="visibility">visibility</h3>
+
+<p>要素の可視を設定する。<code>visible/invisible/gone</code>の3つの値が設定できる。</p>
+
+<ul>
+<li><code>visible</code>: 可視</li>
+<li><code>invisible</code>: 不可視だがView上で領域が確保される</li>
+<li><code>gone</code>: 要素は存在しないものとして扱われる。つまりView上で領域は確保されない。</li>
+</ul>
+
+<p>今回の例では、次のように設定することで、ACボタンを右寄せかつ他のテーブルセルに幅を合わせている。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableRow</span> <span class="err">...</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;Button</span>
+        <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+        <span class="na">android:layout_weight=</span><span class="s">&#34;3&#34;</span>
+        <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+        <span class="na">android:visibility=</span><span class="s">&#34;invisible&#34;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Button</span>
+        <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+        <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+        <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+        <span class="na">android:layout_column=</span><span class="s">&#34;3&#34;</span>
+        <span class="na">android:text=</span><span class="s">&#34;@string/calc_lp&#34;</span><span class="nt">/&gt;</span>
+    ...
+<span class="nt">&lt;/TableRow&gt;</span></code></pre></div>
+
+<h3 id="calcfragment-ktの設定">CalcFragment.ktの設定</h3>
+
+<p><code>CalcFragment.kt</code>の内容を以下の通りにする。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentCalcBinding</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModel</span><span class="p">:</span> <span class="n">CalcViewModel</span>
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
+        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span>
+        <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
+        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
+    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
+        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_calc</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>これでアプリを起動してみると、以下のようになっている。ボタンの設定はまだ何もしていないので、ボタンを押しても反応しない。</p>
+
+<figure>
+    <img src="./sc01.png" width="30%"/> 
+</figure>
+
+
+<h2 id="calcviewmodelの作成-livedataの利用">CalcViewModelの作成 - LiveDataの利用</h2>
+
+<p>LiveDataとは、「監視可能なデータ」のこと。監視可能、ということは、例えば「データが変更された時にある処理を行う」が簡単に記述できることになる。プログラミングで監視といえばObserverパターンだが、LiveDataの内部実装では実際にObserverパターンを用いている。</p>
+
+<p>今回のアプリでは次の目的のみで用いる。</p>
+
+<ul>
+<li>何かボタンを押したら電卓の表示が変化する</li>
+</ul>
+
+<h3 id="calcviewmodel-kt">CalcViewModel.kt</h3>
+
+<p>持たせるデータは「電卓の表示」だけで良いだろう。ここには数字だけでなく演算子の記号も入りうるので、型は<code>String</code>とする。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcViewModel</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">var</span> <span class="py">_text</span> <span class="p">=</span> <span class="n">MutableLiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;()</span>
+    <span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
+        <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span>
+    <span class="n">init</span> <span class="p">{</span>
+        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;0&#34;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>以下の記述はある種のパターンとして覚えて良いかもしれない。1行目は「読み書き可能なLiveData」で、2行目は「読み取り専用のLiveData」である。<code>fragment_calc.xml</code>や<code>CalcFragment.kt</code>では<code>text</code>の方を用いることで、データが変更されることを防いでいる。<code>CalcFragment</code>では「データ<code>CalcViewModel</code>から読み取って描画する」、<code>CalcViewModel</code>では「データに関する整形や変更の処理をする」という分業になっていることに注目。</p>
+
+<p><code>get() = _text</code>という文法は初めて見たが、これはゲッターの設定みたい。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">private</span> <span class="k">var</span> <span class="py">_text</span> <span class="p">=</span> <span class="n">MutableLiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;()</span>
+<span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
+    <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span></code></pre></div>
+
+<p>LivaDataは次のように<code>value</code>メンバ変数でアクセスできる。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;0&#34;</span></code></pre></div>
+
+<h3 id="fragment-calc-xml">fragment_calc.xml</h3>
+
+<p>DataBindingを用いて、CalcViewModelのデータを利用できるようにする。</p>
+
+<p>ViewModel自体をFragmentに結びつけるのがポイント。データに対する諸々の情報は全て<code>ViewModel</code>がまとめてくれているから、<code>variable</code>をたくさん書く必要はない。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;layout</span>
+    <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
+    <span class="na">tools:context=</span><span class="s">&#34;.CalcFragment&#34;</span> <span class="nt">&gt;</span>
+
+    <span class="nt">&lt;data&gt;</span>
+        <span class="nt">&lt;variable</span>
+            <span class="na">name=</span><span class="s">&#34;calcViewModel&#34;</span>
+            <span class="na">type=</span><span class="s">&#34;com.example.calculator.CalcViewModel&#34;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/data&gt;</span>
+    ...</code></pre></div>
+
+<p>さらに、<code>TextView</code>要素の<code>text</code>属性を変更する。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;TextView</span>
+      <span class="na">android:id=</span><span class="s">&#34;@+id/textView&#34;</span>
+      <span class="err">...</span>
+      <span class="na">android:text=</span><span class="s">&#34;@{String.valueOf(calcViewModel.text)}&#34;</span>
+      <span class="err">...</span> <span class="nt">/&gt;</span></code></pre></div>
+
+<p>LiveDataを文字列として埋め込みたいなら、<code>String.valueOf(calcViewModel.text)</code>のように書く。この場合は<code>calcViewModel.text.value</code>でなくても良い。</p>
+
+<h2 id="calcfragment-kt">CalcFragment.kt</h2>
+
+<p><code>viewModel</code>を宣言する。<code>ViewModelProviders</code>を用いて初期化するところは前回の通り。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentCalcBinding</span>
+    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModel</span><span class="p">:</span> <span class="n">CalcViewModel</span>
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
+        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span>
+        <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
+        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
+    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
+        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_calc</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+        <span class="n">viewModel</span> <span class="p">=</span> <span class="n">ViewModelProviders</span><span class="p">.</span><span class="n">of</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+            <span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">CalcViewModel</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">)</span>
+        <span class="n">binding</span><span class="p">.</span><span class="n">calcViewModel</span> <span class="p">=</span> <span class="n">viewModel</span>
+        <span class="n">binding</span><span class="p">.</span><span class="n">lifecycleOwner</span> <span class="p">=</span> <span class="k">this</span>
+        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p><code>binding.lifecycleOwner = this</code>とすると、<code>CalcViewModel.text</code>の変化を感知して<code>TextView</code>の値が変更されるようになる。</p>
+
+<p>これを設定せずにやる方法として、次の<code>observe</code>メソッドがある。これは<code>viewModel.text</code>に<code>Observer</code>を設定する。<code>fragment_calc.xml</code>に変更を反映するという目的だけなら<code>binding.lifecycleOwner = this</code>だけで良いが、それ以外のことをやりたい場合はこのメソッドを使うことになりそう。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">viewModel</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="n">observe</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">Observer</span> <span class="p">{</span> <span class="n">newText</span><span class="p">:</span> <span class="n">String</span> <span class="p">-&gt;</span>
+    <span class="n">binding</span><span class="p">.</span><span class="n">invalidateAll</span><span class="p">()</span>
+<span class="p">})</span></code></pre></div>
+
+<p>まだボタンを押した時の挙動を一切設定していないので、設定する。</p>
+
+<h2 id="ボタンを押した時の挙動">ボタンを押した時の挙動</h2>
+
+<p><code>CalcViewModel.kt</code>に次のメソッドを追加する</p>
+
+<ul>
+<li><code>onAllClearButtonClicked()</code>: ACボタンが押された時に呼び出す。<code>text_</code>の内容を<code>&quot;0&quot;</code>にするだけ。</li>
+<li><code>onEqualButtonClicked()</code>: =ボタンが押された時に呼び出す。実際に計算した結果を返す。ここは別の項で書く。</li>
+<li><code>onCharacterButtonClicked(c: String)</code>: ACと=以外のボタンが押された時に呼び出す。単に_textの末尾に文字を追加するだけ。引数は<code>calc_fragment.xml</code>で呼び出す際に使用し、これは押された文字を指定する。xmlファイルとの兼ね合いにより、「左括弧のときは<code>&quot;lp&quot;</code>、右括弧のときは<code>rp</code>が引数に渡される」と約束する。</li>
+</ul>
+
+<p><code>when</code>文は、他言語でいう<code>switch</code>文のこと。場合分けが結構シンプルに表現できて良い。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcViewModel</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">var</span> <span class="py">_text</span> <span class="p">=</span> <span class="n">MutableLiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;()</span>
+    <span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
+        <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span>
+
+    <span class="n">init</span> <span class="p">{</span>
+        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+    <span class="p">}</span>
+    <span class="k">fun</span> <span class="nf">onCharacterButtonClicked</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">when</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+            <span class="s">&#34;lp&#34;</span> <span class="p">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">+=</span> <span class="s">&#34;(&#34;</span>
+            <span class="s">&#34;rp&#34;</span> <span class="p">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">+=</span> <span class="s">&#34;)&#34;</span>
+            <span class="k">else</span> <span class="p">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">+=</span> <span class="n">c</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">fun</span> <span class="nf">onAllClearButtonClicked</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+    <span class="p">}</span>
+    <span class="k">fun</span> <span class="nf">onEqualButtonClicked</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// TODO
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<h3 id="fragment-calc-xml-1">fragment_calc.xml</h3>
+
+<p>各<code>Button</code>要素について、<code>onClick</code>属性を追加する。</p>
+
+<p>以下はACボタンについての記述。以下のように、<code>@{ラムダ式}</code>みたいな文法が使えるようだ。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
+      <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+      <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+      <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+      <span class="na">android:text=</span><span class="s">&#34;@string/calc_ac&#34;</span>
+      <span class="na">android:onClick=</span><span class="s">&#34;@{() -&gt; calcViewModel.onAllClearButtonClicked()}&#34;</span><span class="nt">/&gt;</span></code></pre></div>
+
+<p>以下は=ボタンについての記述。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
+      <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+      <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+      <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+      <span class="na">android:text=</span><span class="s">&#34;@string/calc_eq&#34;</span>
+      <span class="na">android:id=</span><span class="s">&#34;@+id/buttonEq&#34;</span>
+      <span class="na">android:onClick=</span><span class="s">&#34;@{() -&gt; calcViewModel.onEqualButtonClicked()}&#34;</span><span class="nt">/&gt;</span></code></pre></div>
+
+<p>以下は.ボタンについての記述。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
+      <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+      <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+      <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+      <span class="na">android:text=</span><span class="s">&#34;@string/calc_period&#34;</span>
+      <span class="na">android:id=</span><span class="s">&#34;@+id/buttonPeriod&#34;</span>
+      <span class="na">android:onClick=</span><span class="s">&#34;@{() -&gt; calcViewModel.onPeriodButtonClicked()}&#34;</span><span class="nt">/&gt;</span></code></pre></div>
+
+<p>以下はそれ以外のボタンについての記述。ここでは7ボタンについてを例にしているが、他のボタンもちゃんと書く。ボタン数が多くて大変だが頑張る。左括弧は<code>lp;</code>、右括弧は<code>rp;</code>と書かなければいけないことに注意。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
+      <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
+      <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
+      <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+      <span class="na">android:text=</span><span class="s">&#34;@string/calc_7&#34;</span>
+      <span class="na">android:id=</span><span class="s">&#34;@+id/button7&#34;</span>
+      <span class="na">android:onClick=</span><span class="s">&#34;@{() -&gt; calcViewModel.onCharacterButtonClicked(&amp;quot;7&amp;quot;)}&#34;</span><span class="nt">/&gt;</span></code></pre></div>
+
+<p>これでアプリを起動してみると、数字や演算子が入力できるようになっている。</p>
+
+<h2 id="計算処理の実行">計算処理の実行</h2>
+
+<p>構文解析用のクラス<code>CalcParser</code>を作って実行するという流れ。この部分については、本記事の本質的なところではないのでさらりと説明する。</p>
+
+<p>作り方については<a href="https://qiita.com/7shi/items/64261a67081d49f941e3">Java再帰下降構文解析 超入門</a>や<a href="https://gist.github.com/draftcode/1357281">構文解析HowTo</a>を参考にした。ただし前者はJava、後者はC++で書かれている。</p>
+
+<p>まず<code>State</code>クラスを作る。これは文字列に対して「今どの位置を見ているのか」「見ている位置を1つずらす」処理を持つクラスである。いわゆるイテレータである。前者は<code>peek</code>、後者は<code>next</code>というメンバ関数で実現する。<code>peek</code>について、もし位置が終端に達していたら<code>null</code>を返す。</p>
+
+<p>あとはBNFっぽいルールを作って、ルール通りに解析すれば良い。構文解析に失敗したら例外を投げるようにする。</p>
+
+<p><code>number</code>関数については補足する。連続する数字とピリオドを取得し、これを Doubleに変換する。ただしピリオドが2個以上現れるなどの不正な入力があるかもしれないので、もしDoubleへの変換に失敗したら例外を投げるようにしている。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">com.example.calculator</span>
+
+<span class="k">class</span> <span class="nc">CalcParser</span><span class="p">(</span><span class="n">str</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">class</span> <span class="nc">State</span><span class="p">(</span><span class="k">private</span> <span class="k">var</span> <span class="py">str</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">private</span> <span class="k">var</span> <span class="py">i</span><span class="p">:</span> <span class="n">Int</span> <span class="p">=</span> <span class="m">0</span>
+        <span class="k">fun</span> <span class="nf">peek</span><span class="p">():</span> <span class="n">Char</span><span class="p">?</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="p">&lt;</span> <span class="n">str</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">str</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="k">null</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">fun</span> <span class="nf">next</span><span class="p">()</span> <span class="p">{</span>
+            <span class="n">i</span><span class="p">++</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">private</span> <span class="k">var</span> <span class="py">s</span> <span class="p">=</span> <span class="n">State</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+
+    <span class="k">fun</span> <span class="nf">parse</span><span class="p">():</span> <span class="n">String</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">expr</span><span class="p">().</span><span class="n">toString</span><span class="p">()</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Exception</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">e</span><span class="p">.</span><span class="n">message</span> <span class="o">?:</span> <span class="s">&#34;Error&#34;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">private</span> <span class="k">fun</span> <span class="nf">expr</span><span class="p">():</span> <span class="n">Double</span> <span class="p">{</span>
+        <span class="k">var</span> <span class="py">ret</span> <span class="p">=</span> <span class="n">term</span><span class="p">()</span>
+        <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">val</span> <span class="py">op</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">break</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="p">==</span> <span class="sc">&#39;+&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
+                <span class="n">ret</span> <span class="p">+=</span> <span class="n">fact</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="p">==</span> <span class="sc">&#39;-&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
+                <span class="n">ret</span> <span class="p">-=</span> <span class="n">fact</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    <span class="p">}</span>
+    <span class="k">private</span> <span class="k">fun</span> <span class="nf">term</span><span class="p">():</span> <span class="n">Double</span> <span class="p">{</span>
+        <span class="k">var</span> <span class="py">ret</span> <span class="p">=</span> <span class="n">fact</span><span class="p">()</span>
+        <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">val</span> <span class="py">op</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">break</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="p">==</span> <span class="sc">&#39;*&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
+                <span class="n">ret</span> <span class="p">*=</span> <span class="n">fact</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="p">==</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
+                <span class="n">ret</span> <span class="p">/=</span> <span class="n">fact</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    <span class="p">}</span>
+    <span class="k">private</span> <span class="k">fun</span> <span class="nf">fact</span><span class="p">():</span> <span class="n">Double</span> <span class="p">{</span>
+        <span class="k">val</span> <span class="py">c</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">throw</span> <span class="n">Exception</span><span class="p">(</span><span class="s">&#34;Something wrong on fact&#34;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="p">==</span> <span class="sc">&#39;(&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="k">val</span> <span class="py">ret</span> <span class="p">=</span> <span class="n">expr</span><span class="p">()</span>
+            <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">number</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">private</span> <span class="k">fun</span> <span class="nf">number</span><span class="p">():</span> <span class="n">Double</span> <span class="p">{</span>
+        <span class="k">var</span> <span class="py">numStr</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">val</span> <span class="py">c</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">break</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">isDigit</span><span class="p">()</span> <span class="p">||</span> <span class="n">c</span> <span class="p">==</span> <span class="sc">&#39;.&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">numStr</span> <span class="p">+=</span> <span class="n">c</span>
+                <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">numStr</span><span class="p">.</span><span class="n">toDoubleOrNull</span><span class="p">()</span> <span class="o">?:</span> <span class="k">throw</span> <span class="n">Exception</span><span class="p">(</span><span class="s">&#34;Failed on number&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>最後に、<code>CalcViewModel.kt</code>の<code>onEqualButtonClicked</code>を編集すれば完成。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="k">fun</span> <span class="nf">onEqualButtonClicked</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">val</span> <span class="py">str</span> <span class="p">=</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">str</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+          <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="n">CalcParser</span><span class="p">(</span><span class="n">str</span><span class="p">).</span><span class="n">parse</span><span class="p">()</span>
+      <span class="p">}</span>
+  <span class="p">}</span></code></pre></div>
+
+<h3 id="補足">補足</h3>
+
+<p>今回は括弧の機能つきの電卓を作ったが、市販で安く売っている電卓アプリを作る場合は構文解析を明にやる必要がない。電卓のボタンが押された時の状態遷移を設計しそれに基づいてプログラムを設計すれば良さそう。</p>
+
+<p>今日はここまで。</p>
+
+</article>
+
+
+
+</html>

@@ -12,11 +12,11 @@
     
     
     <item>
-      <title>C/C&#43;&#43;でSocket通信の勉強(1) - ディスクリプタ/TCPによる通信</title>
-      <link>https://bombrary.github.io/blog/posts/socket/</link>
+      <title>Socket通信の勉強(1) - ディスクリプタ/TCPによる通信</title>
+      <link>https://bombrary.github.io/blog/posts/socket01-file-tcp/</link>
       <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/socket/</guid>
+      <guid>https://bombrary.github.io/blog/posts/socket01-file-tcp/</guid>
       <description>Socket通信を勉強する。
 前提  プログラムはMac(Mojave)で動かす。 ネットワークに関する知識はほんの少しある。 使うプログラミング言語はC++だが、ここではbetter Cの意味でしか用いない。  (寄り道) ファイル入出力 Socket通信を学んでいると、ファイルディスクリプタが出てきたので、まずはそこから勉強する。
 関数定義についてはJM Projectから引用したものを用いる。これはLinuxマニュアルと同じらしいので、恐らくmanコマンドで出力されるものと同じである(ただし英語であるが)。

@@ -13,10 +13,10 @@
     
     <item>
       <title>Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成</title>
-      <link>https://bombrary.github.io/blog/posts/android-calc/</link>
+      <link>https://bombrary.github.io/blog/posts/android04-calc/</link>
       <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/android-calc/</guid>
+      <guid>https://bombrary.github.io/blog/posts/android04-calc/</guid>
       <description>どんなアプリを作るか 電卓を作る。
 市販の電卓とは違い、括弧が使えるようにする。なので、軽い構文解析を書くことになる。しかし今回の記事ではデータの扱い方やViewの組み方に焦点を当てているため、電卓の計算処理についてはかなり軽めに説明する。
 プロジェクト作成  プロジェクト名は&amp;rdquo;Calculator&amp;rdquo;とする。 DataBindingは有効にする  Fragmentに分ける 今回は1画面のアプリなのでわざわざFragmentに分ける必要もないのだが、「もしかしたら他にもFragmentを追加するかもしれない」というケースを想定して、一応分けてみる。
