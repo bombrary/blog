@@ -6,10 +6,73 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 08 Dec 2019 11:09:35 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 15 Dec 2019 10:27:58 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>iPhone</title>
+      <link>https://bombrary.github.io/blog/tags/iphone/</link>
+      <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/iphone/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Swift</title>
+      <link>https://bombrary.github.io/blog/tags/swift/</link>
+      <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/swift/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>TableView</title>
+      <link>https://bombrary.github.io/blog/tags/tableview/</link>
+      <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/tableview/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PageViewController</title>
+      <link>https://bombrary.github.io/blog/tags/pageviewcontroller/</link>
+      <pubDate>Sat, 14 Dec 2019 22:35:31 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/pageviewcontroller/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SegmentedControl</title>
+      <link>https://bombrary.github.io/blog/tags/segmentedcontrol/</link>
+      <pubDate>Sat, 14 Dec 2019 19:44:49 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/segmentedcontrol/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Selector</title>
+      <link>https://bombrary.github.io/blog/tags/selector/</link>
+      <pubDate>Sat, 14 Dec 2019 19:44:49 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/selector/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>UIKit</title>
+      <link>https://bombrary.github.io/blog/tags/uikit/</link>
+      <pubDate>Sat, 14 Dec 2019 11:00:24 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/uikit/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>HTTP</title>

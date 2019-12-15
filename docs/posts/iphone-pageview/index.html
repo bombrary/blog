@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>iPhoneアプリ開発メモ - UIPageViewControllerの利用 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.59.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-pageview/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/iphone-pageview/">iPhoneアプリ開発メモ - UIPageViewControllerの利用</a></h1>
+    <p class="meta"><time datetime="2019-12-14T22:35:31&#43;09:00">December 14, 2019</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/iphone/">iPhone</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/swift/">Swift</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/pageviewcontroller/">PageViewController</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/iphone/">iPhone</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/swift/">Swift</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+
+<h2 id="目標">目標</h2>
+
+<p>ウォークスルーっぽいものを作る。</p>
+
+<ul>
+<li>メイン画面でボタンを押すとウォークスルー画面に飛ぶ。</li>
+<li>ウォークスルー画面では、左右にスワイプすると画面が移動する。</li>
+<li>画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。</li>
+</ul>
+
+<h2 id="登場物">登場物</h2>
+
+<ul>
+<li><code>Main.storyboard</code>と<code>ViewController.swift</code></li>
+<li><code>Walkthrough.storyboard</code>と<code>PageViewController.swift</code></li>
+</ul>
+
+<h2 id="準備">準備</h2>
+
+<p>上に書いたものをとりあえず全て作る。ただし、<code>PageViewController</code>のサブクラスは<code>UIPageViewController</code>であることに注意。</p>
+
+<h3 id="main-storyboard">Main.storyboard</h3>
+
+<p>ボタンを一つ作っておく。</p>
+
+<h3 id="walkthrough-storyboard">Walkthrough.storyboard</h3>
+
+<p>配置を次のようにする</p>
+
+<figure>
+    <img src="./storyboard_wt.png" width="100%"/> 
+</figure>
+
+
+<ul>
+<li>Page View Controllerのidentifierは<code>walk</code>とする。また、classを<code>PageViewController</code>にする。</li>
+<li>&ldquo;Page1&rdquo;と書かれたViewControllerのidentifierは<code>page1</code>とする。</li>
+<li>&ldquo;Page2&rdquo;と書かれたViewControllerのidentifierは<code>page2</code>とする。</li>
+<li>&ldquo;Page3&rdquo;と書かれたViewControllerのidentifierは<code>page3</code>とする。</li>
+</ul>
+
+<p>以下で、Transition Styleを&rdquo;Scroll&rdquo;とする。もし&rdquo;Page Curl&rdquo;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。</p>
+
+<figure>
+    <img src="./pagevc_prop.png" width="50%"/> 
+</figure>
+
+
+<h2 id="pageviewcontroller-swift">PageViewController.swift</h2>
+
+<p>次のように書く。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">PageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nv">controllers</span><span class="p">:</span> <span class="p">[</span><span class="n">UIViewController</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
+    
+    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
+
+        <span class="c1">// Do any additional setup after loading the view.</span>
+        
+        <span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="p">.</span><span class="n">black</span>
+        
+        <span class="kd">let</span> <span class="nv">stb</span> <span class="p">=</span> <span class="n">storyboard</span><span class="p">!</span>
+        <span class="kd">let</span> <span class="nv">page1</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page1&#34;</span><span class="p">)</span>
+        <span class="kd">let</span> <span class="nv">page2</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page2&#34;</span><span class="p">)</span>
+        <span class="kd">let</span> <span class="nv">page3</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page3&#34;</span><span class="p">)</span>
+        <span class="n">controllers</span> <span class="p">=</span> <span class="p">[</span><span class="n">page1</span><span class="p">,</span> <span class="n">page2</span><span class="p">,</span> <span class="n">page3</span><span class="p">]</span>
+        
+        <span class="n">setViewControllers</span><span class="p">([</span><span class="n">controllers</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">direction</span><span class="p">:</span> <span class="p">.</span><span class="n">forward</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+        <span class="n">dataSource</span> <span class="p">=</span> <span class="kc">self</span>
+    <span class="p">}</span>
+    
+
+    <span class="cm">/*
+</span><span class="cm">    // </span><span class="cs">MARK:</span><span class="cm"> - Navigation
+</span><span class="cm">
+</span><span class="cm">    // In a storyboard-based application, you will often want to do a little preparation before navigation
+</span><span class="cm">    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+</span><span class="cm">        // Get the new view controller using segue.destination.
+</span><span class="cm">        // Pass the selected object to the new view controller.
+</span><span class="cm">    }
+</span><span class="cm">    */</span>
+
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="nc">PageViewController</span><span class="p">:</span> <span class="n">UIPageViewControllerDataSource</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="kc">_</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerBefore</span> <span class="n">viewController</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewController</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="kd">let</span> <span class="nv">index</span> <span class="p">=</span> <span class="n">controllers</span><span class="p">.</span><span class="n">firstIndex</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span><span class="o">-</span><span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">controllers</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">nil</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="kc">_</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerAfter</span> <span class="n">viewController</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewController</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="kd">let</span> <span class="nv">index</span> <span class="p">=</span> <span class="n">controllers</span><span class="p">.</span><span class="n">firstIndex</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">controllers</span><span class="p">.</span><span class="bp">count</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">controllers</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">nil</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="kd">func</span> <span class="nf">presentationCount</span><span class="p">(</span><span class="k">for</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="nb">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">controllers</span><span class="p">.</span><span class="bp">count</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">presentationIndex</span><span class="p">(</span><span class="k">for</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="nb">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<h3 id="説明">説明</h3>
+
+<p><code>UIPageViewController</code>は次のように利用する。</p>
+
+<ul>
+<li><code>setViewControllers</code>でページをセットする。</li>
+<li><code>UIPageViewControllerDataSource</code>で定義されたメソッド<code>func pageViewController(...)</code>を実装して、前ページ、後ページのViewが誰なのかを教える。これによって、スワイプした時にページが切り替わるようになる。</li>
+<li><code>UIPageViewControllerDataSource</code>で定義されたメソッド<code>presentationCount/presentationIndex</code>を実装して、現在何ページ目なのかを教える。これによって、何ページ目なのかがPageControlによってわかるようになる。</li>
+</ul>
+
+<h2 id="viewcontroller-swift">ViewController.swift</h2>
+
+<p>次のように書く。Segueを利用しないで遷移する場合は、以下のように<code>present</code>メソッドを利用する。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+
+    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
+        <span class="c1">// Do any additional setup after loading the view.</span>
+    <span class="p">}</span>
+
+    <span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">buttonTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nv">stb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s">&#34;Walkthrough&#34;</span><span class="p">,</span> <span class="n">bundle</span> <span class="p">:</span><span class="kc">nil</span><span class="p">)</span>
+        <span class="kd">let</span> <span class="nv">pageVC</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;walk&#34;</span><span class="p">)</span>
+        <span class="n">pageVC</span><span class="p">.</span><span class="n">modalPresentationStyle</span> <span class="p">=</span> <span class="p">.</span><span class="n">currentContext</span>
+        <span class="n">present</span><span class="p">(</span><span class="n">pageVC</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+<span class="p">}</span></code></pre></div>
+
+<p><code>pageVC.modalPresentationStyle = .currentContext</code>とすると、遷移元のViewを覆う形でViewが配置される。</p>
+
+<p>以下はその設定の比較。左は未設定の場合で、右は<code>.currentContext</code>を設定した場合。未設定の場合は、<code>.automatic</code>が設定されている。<code>.automatic</code>は多くの場合<code>.pageSheet</code>というスタイルになっているらしい。</p>
+
+<figure>
+<img src="./sc02.png" width="30%"/>
+<img src="./sc01.png" width="30%"/>
+</figure>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://developer.apple.com/documentation/uikit/uipageviewcontroller">UIPageViewController - Apple Developer Documentation</a></li>
+<li><a href="https://qiita.com/abouch/items/53d570ec35a451f1074a">Swift5 UIPageViewControllerの使い方</a></li>
+<li><a href="https://scior.hatenablog.com/entry/2019/04/01/201738">今さらUIPageViewController詳解 - しおめも</a></li>
+<li><a href="https://swiswiswift.com/2018-06-21/">PageViewControllerとPageControl - すいすいSwift</a></li>
+</ul>
+
+</article>
+
+
+
+</html>

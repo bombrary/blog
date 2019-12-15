@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>iPhone on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/iphone/</link>
+    <description>Recent content in iPhone on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Sun, 15 Dec 2019 10:27:58 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/iphone/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - TableViewCellのスワイプ処理</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-table-swipe/</link>
+      <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-table-swipe/</guid>
+      <description>目標 スワイプしたら削除されるテーブルを作る。
+準備 TableViewに最低限の設定をしておく。
+Main.storyboardを次のようにする。
+  ViewController.swiftの内容を以下のようにする。
+class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.</description>
+    </item>
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - UIPageViewControllerの利用</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-pageview/</link>
+      <pubDate>Sat, 14 Dec 2019 22:35:31 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-pageview/</guid>
+      <description>目標 ウォークスルーっぽいものを作る。
+ メイン画面でボタンを押すとウォークスルー画面に飛ぶ。 ウォークスルー画面では、左右にスワイプすると画面が移動する。 画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。  登場物  Main.storyboardとViewController.swift Walkthrough.storyboardとPageViewController.swift  準備 上に書いたものをとりあえず全て作る。ただし、PageViewControllerのサブクラスはUIPageViewControllerであることに注意。
+Main.storyboard ボタンを一つ作っておく。
+Walkthrough.storyboard 配置を次のようにする
+   Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;rdquo;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;rdquo;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;rdquo;と書かれたViewControllerのidentifierはpage3とする。  以下で、Transition Styleを&amp;rdquo;Scroll&amp;rdquo;とする。もし&amp;rdquo;Page Curl&amp;rdquo;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
+  PageViewController.swift 次のように書く。
+class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.</description>
+    </item>
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - addTarget/SegmentedControl</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-addtarget-segmentctl/</link>
+      <pubDate>Sat, 14 Dec 2019 19:44:49 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-addtarget-segmentctl/</guid>
+      <description>目標  降順、昇順の切り替えができるTableViewを作成する。  準備 Main.storyborad 部品を以下のように配置する。
+  Segmented Controlのラベルの設定は以下で行える。
+  TableViewCellのindentifierはtestCellとする。
+ViewController.swift 後々の処理のため、TableViewに表示するデータをitems、その元データをitemsSourceと分けることにする。
+class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;#34;, &amp;#34;items2&amp;#34;, &amp;#34;items3&amp;#34;, &amp;#34;items4&amp;#34;, &amp;#34;items5&amp;#34;, &amp;#34;items6&amp;#34;, &amp;#34;items7&amp;#34;, &amp;#34;items8&amp;#34;] var items: [String] = [] @IBOutlet weak var segmentedControl: UISegmentedControl! @IBOutlet weak var tableView: UITableView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self items = itemsSource } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { return items.</description>
+    </item>
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - セミモーダルビューからの遷移</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-modal-segue/</link>
+      <pubDate>Sat, 14 Dec 2019 11:00:24 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-modal-segue/</guid>
+      <description>目標  セミモーダルビューを作成する セミモーダルビュー上のボタンを押すと、それを閉じた後に別ビューに遷移する。  登場物  Main.storyboardとViewController Menu.storyboardとMenuViewController Dest1.storyboard Dest2.storyboard  前提  今後Viewが増えていく状況を想定して、Storyboardを分割することを考える。Storyboard同士はStoryboard Referenceで結びつける。  セミモーダルビューの作成 検索して良く出てくるのはUIPresentationControllerを利用する方法。ただ今回はなるべくStoryboardで完結させたい。
+そこで、以下のページを参考して作ることを考える。
+ハンバーガーメニューを作成するには？ - Swift Life
+ファイル作成 Menu.storyboard、MenuViewController、 Menu.storyboard、Dest1.storyboard、 Dest2.storyboardの5つをあらかじめ作成しておく。
+Menu.storyboard classにはMenuViewControllerを指定する。部品配置は以下のようにする。
+全体を包むViewを親View、その中に作ったViewを子Viewと呼ぶことにすると、
+ Constraintは適当に設定する。子Viewが画面下に配置されるようにする。 StackViewにはFill Equallyの設定を行っておく。 親Viewの背景色を、黒の半透明に設定する。設定手順は以下の通り。  BackgroundをBlackに設定 BackgroundをCustomに設定し直すと、カラーピッカーが現れる。そこで透明度を50%に設定する。   また、&amp;rdquo;Initial View Controller&amp;rdquo;にチェックをつける。
+親Viewのtagを1に設定しておく。これはタッチイベントを捕捉する際に必要になる。
+  Dest1.storyboard、Dest2.storyboard Dest1.storyboardの部品配置は以下のようにする。
+&amp;ldquo;Is initial View Controller&amp;rdquo;にチェックをつける。
+  Dest2.storyboardの部品配置は以下のようにする。
+&amp;ldquo;Is initial View Controller&amp;rdquo;にチェックをつける。
+  Main.storyboard 部品配置は以下のようにする。
+  OpenButtonからStoryboard ReferenceへのSegueのActionは&amp;rdquo;Present Modally&amp;rdquo;を選択。Segueの設定は以下のようにする。</description>
+    </item>
+    
+  </channel>
+</rss>
