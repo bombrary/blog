@@ -6,10 +6,37 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 15 Dec 2019 10:27:58 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 17 Dec 2019 13:56:36 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>D3.js</title>
+      <link>https://bombrary.github.io/blog/categories/d3.js/</link>
+      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/d3.js/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data Visualization</title>
+      <link>https://bombrary.github.io/blog/categories/data-visualization/</link>
+      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/data-visualization/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://bombrary.github.io/blog/categories/javascript/</link>
+      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/javascript/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>iPhone</title>

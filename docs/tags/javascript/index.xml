@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>JavaScript on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/javascript/</link>
+    <description>Recent content in JavaScript on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Tue, 17 Dec 2019 13:56:36 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>D3.js 01信号の可視化</title>
+      <link>https://bombrary.github.io/blog/posts/d3js-01signal/</link>
+      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/d3js-01signal/</guid>
+      <description>信号に関する授業を聴いていたらふと思い立ったのでやってみた。
+コード index.html 個人的テンプレを書く。
+&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html lang=&amp;#34;ja&amp;#34;&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;title&amp;gt;0-1 Signal&amp;lt;/title&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;h1&amp;gt;0-1 Signale&amp;lt;/h1&amp;gt; &amp;lt;svg&amp;gt; &amp;lt;/svg&amp;gt; &amp;lt;script src=&amp;#34;https://d3js.org/d3.v5.min.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.js JavaScriptでflatMap使うのはこれが初めてかも。
+const format = (data, w) =&amp;gt; { const pairs = d3.pairs(data); const deltas = pairs.flatMap(e =&amp;gt; { let sig = e.toString() if (sig == &amp;#39;0,0&amp;#39;) { return [[1,0]]; } else if (sig == &amp;#39;0,1&amp;#39;) { return [[1,0],[0,-1]]; } else if (sig == &amp;#39;1,0&amp;#39;) { return [[1,0],[0,1]]; } else if (sig == &amp;#39;1,1&amp;#39;) { return [[1,0]]; } else { throw new Error(&amp;#39;invalid element.</description>
+    </item>
+    
+  </channel>
+</rss>

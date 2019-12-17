@@ -6,10 +6,46 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 15 Dec 2019 10:27:58 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 17 Dec 2019 13:56:36 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>D3.js</title>
+      <link>https://bombrary.github.io/blog/tags/d3.js/</link>
+      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/d3.js/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data Visualization</title>
+      <link>https://bombrary.github.io/blog/tags/data-visualization/</link>
+      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/data-visualization/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://bombrary.github.io/blog/tags/javascript/</link>
+      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>可視化</title>
+      <link>https://bombrary.github.io/blog/tags/%E5%8F%AF%E8%A6%96%E5%8C%96/</link>
+      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E5%8F%AF%E8%A6%96%E5%8C%96/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>iPhone</title>
