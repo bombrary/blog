@@ -122,6 +122,14 @@ Selectorで指定した関数`buttonTapped`は次のような引数で定義す�
 @IBAction func doSomething(_ sender: UIButton, for event: UIEvent)
 {{< /highlight >}}
 
+## 追記: addTargetを使わない方法
+
+Storyboardからコードへ普通にAction接続したらできることが判明した。Actionの種類を"Value Changed"にして接続すれば、上の`addTarget`と全く同じ処理が書ける。どんな種類のActionが指定できるのかは接続時のプルダウンから見られるし、また以下のように右サイドバーから見ることも可能。
+
+{{< figure src="./actions.png" width="30%" >}}
+
+`addTarget`はAction接続のコード版という立ち位置で、同じ機能が実現できるのかも。
+
 ## 参考
 
 - [UISegmentedControl - Apple Developer Documentation](https://developer.apple.com/documentation/uikit/uisegmentedcontrol)
