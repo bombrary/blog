@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>Elm/JavaScript ローカルサーバーで通信する際にハマったこと | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.59.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-with-localserver/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/elm-with-localserver/">Elm/JavaScript ローカルサーバーで通信する際にハマったこと</a></h1>
+    <p class="meta"><time datetime="2019-12-19T09:50:00&#43;09:00">December 19, 2019</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/elm/">Elm</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/javascript/">JavaScript</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/node.js/">Node.js</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/network/">Network</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/http/">HTTP</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/server/">Server</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/elm/">Elm</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/javascript/">JavaScript</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/node.js/">Node.js</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/network/">Network</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+
+<p>今回たまたまクライアント側でElmを使ったけど、これはElmに限ったことではない。</p>
+
+<h2 id="結論">結論</h2>
+
+<h3 id="client側での留意点">Client側での留意点</h3>
+
+<ul>
+<li><code>url</code>は<code>localhost:[port]</code>ではなく<code>http://localhost:[port]</code>と指定しなければならない。つまり、URLにはちゃんとスキーム名を指定する。</li>
+</ul>
+
+<h3 id="server側での留意点">Server側での留意点</h3>
+
+<ul>
+<li><code>Access-Control-Allow-Origin</code>に関連するヘッダーをちゃんと設定する。</li>
+</ul>
+
+<h2 id="成功コード">成功コード</h2>
+
+<h3 id="プログラムの内容">プログラムの内容</h3>
+
+<p>サーバーは<code>{ &quot;msg&quot; : &quot;Hello, World!&quot; }</code>という内容のJSONを送ってくるので、クライアントはその値を受け取って&rdquo;Success: Hello, World!&ldquo;を出力する。それだけ。</p>
+
+<h3 id="client-elm">Client: Elm</h3>
+
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Main</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<span class="kn">import </span><span class="nc">Browser</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<span class="kn">import </span><span class="nc">Json.Decode</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<span class="kn">import </span><span class="nc">Http</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<span class="kn">import </span><span class="nc">Html</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<span class="kn">import </span><span class="nc">Html.Attributes</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+
+<span class="kr">main </span><span class="nf">=</span> <span class="kt">Browser</span><span class="nf">.</span><span class="nv">element</span>
+  <span class="p">{</span> <span class="nv">init</span> <span class="nf">=</span> <span class="nv">init</span>
+  <span class="p">,</span> <span class="nv">update</span> <span class="nf">=</span> <span class="nv">update</span>
+  <span class="p">,</span> <span class="nv">view</span> <span class="nf">=</span> <span class="nv">view</span>
+  <span class="p">,</span> <span class="nv">subscriptions</span> <span class="nf">=</span> <span class="nv">subscriptions</span>
+  <span class="p">}</span>
+
+<span class="kr">type</span> <span class="kt">Model</span>
+  <span class="nf">=</span> <span class="kt">Loading</span>
+  <span class="nf">|</span> <span class="kt">Failed</span>
+  <span class="nf">|</span> <span class="kt">Success</span> <span class="kt">String</span>
+
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
+  <span class="p">(</span> <span class="kt">Loading</span><span class="p">,</span> <span class="nv">getServer</span> <span class="p">)</span>
+
+<span class="kr">type</span> <span class="kt">Msg</span>
+  <span class="nf">=</span> <span class="kt">GotData</span> <span class="p">(</span><span class="kt">Result</span> <span class="kt">Http</span><span class="nf">.</span><span class="kt">Error</span> <span class="kt">String</span><span class="p">)</span>
+
+<span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
+  <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
+    <span class="kt">GotData</span> <span class="nv">result</span> <span class="nf">-&gt;</span>
+      <span class="kr">case</span> <span class="nv">result</span> <span class="kr">of</span>
+        <span class="kt">Ok</span> <span class="nv">str</span> <span class="nf">-&gt;</span>
+          <span class="p">(</span><span class="kt">Success</span> <span class="nv">str</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span>
+        <span class="kt">Err</span> <span class="nv">_</span> <span class="nf">-&gt;</span>
+          <span class="p">(</span><span class="kt">Failed</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span>
+
+<span class="nv">getServer</span> <span class="nf">:</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
+<span class="nv">getServer</span> <span class="nf">=</span>
+  <span class="kt">Http</span><span class="nf">.</span><span class="nv">get</span>
+    <span class="p">{</span> <span class="nv">url</span> <span class="nf">=</span> <span class="s">&#34;http://localhost:3000&#34;</span>
+    <span class="p">,</span> <span class="nv">expect</span> <span class="nf">=</span> <span class="kt">Http</span><span class="nf">.</span><span class="nv">expectJson</span> <span class="kt">GotData</span> <span class="nv">dataDecoder</span>
+    <span class="p">}</span>
+
+<span class="nv">dataDecoder</span> <span class="nf">:</span> <span class="kt">Decoder</span> <span class="kt">String</span>
+<span class="nv">dataDecoder</span> <span class="nf">=</span>
+  <span class="nv">field</span> <span class="s">&#34;msg&#34;</span> <span class="nv">string</span>
+
+<span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
+  <span class="kr">case</span> <span class="nv">model</span> <span class="kr">of</span>
+    <span class="kt">Failed</span> <span class="nf">-&gt;</span>
+      <span class="nv">p</span> <span class="p">[]</span>
+      <span class="p">[</span> <span class="nv">text</span> <span class="s">&#34;Failed!&#34;</span> <span class="p">]</span>
+
+    <span class="kt">Loading</span> <span class="nf">-&gt;</span>
+      <span class="nv">p</span> <span class="p">[]</span>
+      <span class="p">[</span> <span class="nv">text</span> <span class="s">&#34;Loading...&#34;</span> <span class="p">]</span>
+
+    <span class="kt">Success</span> <span class="nv">str</span> <span class="nf">-&gt;</span>
+      <span class="nv">p</span> <span class="p">[]</span>
+      <span class="p">[</span> <span class="nv">text</span> <span class="p">(</span><span class="s">&#34;Success : &#34;</span> <span class="nf">++</span> <span class="nv">str</span><span class="p">)</span> <span class="p">]</span>
+
+<span class="nv">subscriptions</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Sub</span> <span class="kt">Msg</span>
+<span class="nv">subscriptions</span> <span class="nv">_</span> <span class="nf">=</span> <span class="kt">Sub</span><span class="nf">.</span><span class="nv">none</span></code></pre></div>
+
+<h3 id="server-javascript-node-js">Server: JavaScript (Node.js)</h3>
+
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kr">const</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">();</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;Access-Control-Allow-Origin&#39;</span><span class="o">:</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span>
+  <span class="p">});</span>
+  <span class="kr">const</span> <span class="nx">body</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">msg</span><span class="o">:</span> <span class="s1">&#39;Hello, World!&#39;</span>
+  <span class="p">};</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">body</span><span class="p">))</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+<span class="p">});</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+</code></pre></div>
+
+<h2 id="失敗と解決までの流れ">失敗と解決までの流れ</h2>
+
+<h3 id="http-getの引数">Http.getの引数</h3>
+
+<p>初めはサーバー側で次のようにしていた。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span> <span class="p">});</span>
+  <span class="kr">const</span> <span class="nx">body</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">msg</span><span class="o">:</span> <span class="s1">&#39;Hello, World!&#39;</span>
+  <span class="p">};</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">body</span><span class="p">))</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<p>Elm側でのGetメソッドは次のように呼び出していた。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">getServer</span> <span class="nf">:</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
+<span class="nv">getServer</span> <span class="nf">=</span>
+  <span class="kt">Http</span><span class="nf">.</span><span class="nv">get</span>
+    <span class="p">{</span> <span class="nv">url</span> <span class="nf">=</span> <span class="s">&#34;localhost:3000&#34;</span>
+    <span class="p">,</span> <span class="nv">expect</span> <span class="nf">=</span> <span class="kt">Http</span><span class="nf">.</span><span class="nv">expectJson</span> <span class="kt">GotData</span> <span class="nv">dataDecoder</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>すると、ブラウザ(Safari)のConsole上で次のようなエラーが出ていた。</p>
+
+<pre><code>Cross origin requests are only supported for HTTP.
+XMLHttpRequest cannot load localhost:3000 due to access control checks.
+</code></pre>
+
+<p>この時、「サーバー側はHTTPモジュールを使って通信してるのになんで<code>only supperted for HTTP</code>なんだ&hellip;？」と思った。</p>
+
+<p>調べても情報が見つからないので、自分でちゃんと考えてみる。「HTTPだけに対応しています」というエラーが出ているということは、サーバがHTTP通信として認識されていないということ。ではHTTP通信として認識されるための条件とは何か。</p>
+
+<p>とりあえずパッと思いついたのは「ポート番号」。HTTP通信は基本的に80番ポートで通信しているはずで、その時はポートを指定する必要が無い。</p>
+
+<p>そこで、クライアント側では以下のように変えた。サーバ側ではポートを80番で<code>listen</code>することにした。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm">  <span class="kt">Http</span><span class="nf">.</span><span class="nv">get</span>
+    <span class="p">{</span> <span class="nv">url</span> <span class="nf">=</span> <span class="s">&#34;localhost&#34;</span>
+    <span class="p">,</span> <span class="nv">expect</span> <span class="nf">=</span> <span class="kt">Http</span><span class="nf">.</span><span class="nv">expectJson</span> <span class="kt">GotData</span> <span class="nv">dataDecoder</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>今度は次のようなエラーが出た。</p>
+
+<pre><code>Failed to load resource: the server responded with a status of 404 (Not Found)   http://localhost:8000/localhost
+</code></pre>
+
+<p>意味不明なURL<code>http://localhost:8000/localhost</code>にアクセスしようとしている&hellip;。<code>elm reactor</code>で起動しているWebサーバのURL<code>http://localhost:8000</code>とNode.js側のサーバのURL<code>localhost</code>が重なってなんか変なことになっている。</p>
+
+<p>ここで、ふと「エラーメッセージだと<code>localhost</code>の前に<code>http://</code>が付いているな、これを試しにつけてみよう」と閃く。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm">  <span class="kt">Http</span><span class="nf">.</span><span class="nv">get</span>
+    <span class="p">{</span> <span class="nv">url</span> <span class="nf">=</span> <span class="s">&#34;http://localhost&#34;</span>
+    <span class="p">,</span> <span class="nv">expect</span> <span class="nf">=</span> <span class="kt">Http</span><span class="nf">.</span><span class="nv">expectJson</span> <span class="kt">GotData</span> <span class="nv">dataDecoder</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>すると、次のようなエラーに変わった。</p>
+
+<pre><code>Origin http://localhost:8000 is not allowed by Access-Control-Allow-Origin.
+XMLHttpRequest cannot load http://localhost/ due to access control checks.
+Failed to load resource: Origin http://localhost:8000 is not allowed by Access-Control-Allow-Origin.
+</code></pre>
+
+<p>このエラーは以前別の機会で調べたことがあった。サーバ側で次のようにヘッダを付加してあげると解決。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span>
+  <span class="s1">&#39;Access-Control-Allow-Origin&#39;</span><span class="o">:</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<p>これでうまく動くようになった。ここで、「実はクライアント側の問題は<code>http://</code>を付けていなかったことだけが原因？」と思い、次のように書き換えた。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm">  <span class="kt">Http</span><span class="nf">.</span><span class="nv">get</span>
+    <span class="p">{</span> <span class="nv">url</span> <span class="nf">=</span> <span class="s">&#34;http://localhost:3000&#34;</span>
+    <span class="p">,</span> <span class="nv">expect</span> <span class="nf">=</span> <span class="kt">Http</span><span class="nf">.</span><span class="nv">expectJson</span> <span class="kt">GotData</span> <span class="nv">dataDecoder</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>サーバー側もポート3000で<code>listen</code>したところ、正常に動いた。</p>
+
+<h2 id="補足検証">補足検証</h2>
+
+<p>クライアント側をElmではなくJSでやってみる。</p>
+
+<p>やっぱり以下のコードだとエラーが出た。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;localhost:3000&#39;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">msg</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">msg</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+  <span class="p">})</span>
+</code></pre></div>
+
+<p>これなら問題ない。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000&#39;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">msg</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">msg</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+  <span class="p">})</span>
+
+<span class="c1">// ちなみにasync/awaitで書くとこうなる
+</span><span class="c1"></span><span class="p">(</span><span class="nx">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="nx">res</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000&#39;</span><span class="p">);</span>
+  <span class="nx">data</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">await</span> <span class="nx">data</span><span class="p">.</span><span class="nx">msg</span><span class="p">)</span>
+<span class="p">})()</span>
+</code></pre></div>
+
+<h2 id="結果の考察">結果の考察</h2>
+
+<p><code>localhost</code>だと<code>ftp://localhost</code>とも<code>http://localhost</code>とも取れてしまうから、確かに必要だ、と後で思った。</p>
+
+<p>いつもブラウザのURL欄に<code>localhost</code>と入力してアクセスできていたため、同じように<code>http://</code>を省いて通信できるものだと無意識に思っていた。しかしこれが通用するのはブラウザだけで、恐らく「スキーマが指定されていなかったら<code>http://</code>をつけたものとみなす」という仕様なのだろう。</p>
+
+</article>
+
+
+
+</html>

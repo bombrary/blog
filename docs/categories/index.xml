@@ -6,10 +6,46 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 17 Dec 2019 13:56:36 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 19 Dec 2019 09:50:00 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Elm</title>
+      <link>https://bombrary.github.io/blog/categories/elm/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/elm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://bombrary.github.io/blog/categories/javascript/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network</title>
+      <link>https://bombrary.github.io/blog/categories/network/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/network/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Node.js</title>
+      <link>https://bombrary.github.io/blog/categories/node.js/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/node.js/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>D3.js</title>
@@ -30,15 +66,6 @@
     </item>
     
     <item>
-      <title>JavaScript</title>
-      <link>https://bombrary.github.io/blog/categories/javascript/</link>
-      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/javascript/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>iPhone</title>
       <link>https://bombrary.github.io/blog/categories/iphone/</link>
       <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
@@ -53,15 +80,6 @@
       <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/swift/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Network</title>
-      <link>https://bombrary.github.io/blog/categories/network/</link>
-      <pubDate>Sun, 08 Dec 2019 11:09:35 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/network/</guid>
       <description></description>
     </item>
     
@@ -170,15 +188,6 @@
       <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Elm</title>
-      <link>https://bombrary.github.io/blog/categories/elm/</link>
-      <pubDate>Sun, 10 Nov 2019 21:08:12 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/elm/</guid>
       <description></description>
     </item>
     

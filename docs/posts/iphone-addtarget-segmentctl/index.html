@@ -175,6 +175,17 @@
 <span class="k">#selector</span><span class="p">(</span><span class="n">doSomething</span><span class="p">(</span><span class="kc">_</span><span class="p">:</span><span class="k">for</span><span class="p">:))</span>
 <span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">doSomething</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">UIButton</span><span class="p">,</span> <span class="k">for</span> <span class="n">event</span><span class="p">:</span> <span class="n">UIEvent</span><span class="p">)</span></code></pre></div>
 
+<h2 id="追記-addtargetを使わない方法">追記: addTargetを使わない方法</h2>
+
+<p>Storyboardからコードへ普通にAction接続したらできることが判明した。Actionの種類を&rdquo;Value Changed&rdquo;にして接続すれば、上の<code>addTarget</code>と全く同じ処理が書ける。どんな種類のActionが指定できるのかは接続時のプルダウンから見られるし、また以下のように右サイドバーから見ることも可能。</p>
+
+<figure>
+    <img src="./actions.png" width="30%"/> 
+</figure>
+
+
+<p><code>addTarget</code>はAction接続のコード版という立ち位置で、同じ機能が実現できるのかも。</p>
+
 <h2 id="参考">参考</h2>
 
 <ul>

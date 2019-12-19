@@ -6,10 +6,64 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 17 Dec 2019 13:56:36 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 19 Dec 2019 09:50:00 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Elm</title>
+      <link>https://bombrary.github.io/blog/tags/elm/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/elm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>HTTP</title>
+      <link>https://bombrary.github.io/blog/tags/http/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/http/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://bombrary.github.io/blog/tags/javascript/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network</title>
+      <link>https://bombrary.github.io/blog/tags/network/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/network/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Node.js</title>
+      <link>https://bombrary.github.io/blog/tags/node.js/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/node.js/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Server</title>
+      <link>https://bombrary.github.io/blog/tags/server/</link>
+      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/server/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>D3.js</title>
@@ -26,15 +80,6 @@
       <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/data-visualization/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JavaScript</title>
-      <link>https://bombrary.github.io/blog/tags/javascript/</link>
-      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/javascript/</guid>
       <description></description>
     </item>
     
@@ -107,15 +152,6 @@
       <pubDate>Sat, 14 Dec 2019 11:00:24 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/uikit/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>HTTP</title>
-      <link>https://bombrary.github.io/blog/tags/http/</link>
-      <pubDate>Sun, 08 Dec 2019 11:09:35 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/http/</guid>
       <description></description>
     </item>
     
