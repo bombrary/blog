@@ -6,10 +6,37 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 19 Dec 2019 09:50:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 19 Dec 2019 10:01:42 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>iPhone</title>
+      <link>https://bombrary.github.io/blog/tags/iphone/</link>
+      <pubDate>Thu, 19 Dec 2019 10:01:42 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/iphone/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Swift</title>
+      <link>https://bombrary.github.io/blog/tags/swift/</link>
+      <pubDate>Thu, 19 Dec 2019 10:01:42 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/swift/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>UIPresentationController</title>
+      <link>https://bombrary.github.io/blog/tags/uipresentationcontroller/</link>
+      <pubDate>Thu, 19 Dec 2019 10:01:42 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/uipresentationcontroller/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Elm</title>
@@ -89,24 +116,6 @@
       <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/%E5%8F%AF%E8%A6%96%E5%8C%96/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>iPhone</title>
-      <link>https://bombrary.github.io/blog/tags/iphone/</link>
-      <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/iphone/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Swift</title>
-      <link>https://bombrary.github.io/blog/tags/swift/</link>
-      <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/swift/</guid>
       <description></description>
     </item>
     

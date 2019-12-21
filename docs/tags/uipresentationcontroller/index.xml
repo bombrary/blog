@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>UIPresentationController on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/uipresentationcontroller/</link>
+    <description>Recent content in UIPresentationController on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Thu, 19 Dec 2019 10:01:42 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/uipresentationcontroller/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - UIPresentationControllerの利用</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-uipresentation/</link>
+      <pubDate>Thu, 19 Dec 2019 10:01:42 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-uipresentation/</guid>
+      <description>UIPresentationControllerを利用すると、モーダル表示の方法をカスタマイズできる。これについて備忘録を残す。
+そもそもモーダル表示とは そもそもモーダル表示って何？と思ったので調べる。モーダルと検索すると「モーダルウインドウ」の話がよく出てくる。これは「ある操作を終えるまで親ウインドウの操作ができない子ウインドウ」という意味で使われているようだ。これはモーダル表示と似たような意味なのだろうか。判然としないので一次資料を漁る。
+AppleのHuman Interface GuidelineにModalityの意味が書いてあって、これを引用すると、
+ Modality is a design technique that presents content in a temporary mode that’s separate from the user&#39;s previous current context and requires an explicit action to exit. [意訳] Modalityとは、ユーザの以前の文脈から離れた一時的なモードでコンテンツを表示するデザインの手法。そのモードを終了するためには何か明示的なアクションを必要とする。  ほとんど同じ意味っぽい。
+例えば次のようなモーダル表示(Page Sheet)の場合，呼び出し元が下にあってその上に青いビューが載っている。ここでは、「上から下に引っ張る」というアクションを起こすことで、このビューを閉じることができる。
+  用意するもの  表示元のViewController 表示先のViewController UIPresentationControllerのサブクラス - これが表示先のViewControllerの表示方法を規定する。  ここでは、表示先のViewControllerのStoryboard IDをdestとする．
+準備 まずはボタンをクリックすると表示されるものだけ作る。
+Main.storyboard 表示元にはボタンを配置する。表示先はラベルを配置し、適切なConstraintを設定しておく。
+  ViewController.swift ボタンのAction接続を作る。ボタンがタップされたら遷移するようにする。
+class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view.</description>
+    </item>
+    
+  </channel>
+</rss>
