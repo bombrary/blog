@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 21 Dec 2019 20:10:36 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 22 Dec 2019 15:10:30 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>CoreGraphics</title>
       <link>https://bombrary.github.io/blog/tags/coregraphics/</link>
-      <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
+      <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/coregraphics/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>iPhone</title>
       <link>https://bombrary.github.io/blog/tags/iphone/</link>
-      <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
+      <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/iphone/</guid>
       <description></description>
@@ -32,7 +32,7 @@
     <item>
       <title>Swift</title>
       <link>https://bombrary.github.io/blog/tags/swift/</link>
-      <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
+      <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/swift/</guid>
       <description></description>
@@ -41,16 +41,25 @@
     <item>
       <title>UIKit</title>
       <link>https://bombrary.github.io/blog/tags/uikit/</link>
-      <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
+      <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/uikit/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>UIScrollView</title>
+      <link>https://bombrary.github.io/blog/tags/uiscrollview/</link>
+      <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/uiscrollview/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Visualization</title>
       <link>https://bombrary.github.io/blog/tags/visualization/</link>
-      <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
+      <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/visualization/</guid>
       <description></description>
@@ -59,7 +68,7 @@
     <item>
       <title>棒グラフ</title>
       <link>https://bombrary.github.io/blog/tags/%E6%A3%92%E3%82%B0%E3%83%A9%E3%83%95/</link>
-      <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
+      <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/%E6%A3%92%E3%82%B0%E3%83%A9%E3%83%95/</guid>
       <description></description>
