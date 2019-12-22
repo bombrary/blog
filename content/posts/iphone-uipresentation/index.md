@@ -1,7 +1,7 @@
 ---
 title: "iPhoneアプリ開発メモ - UIPresentationControllerの利用"
 date: 2019-12-19T10:01:42+09:00
-tags: ["iPhone", "Swift", "UIPresentationController"]
+tags: ["iPhone", "Swift", "UIKit", "UIPresentationController"]
 categories: ["iPhone", "Swift"]
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "iPhoneアプリ開発メモ - UIPageViewControllerの利用"
 date: 2019-12-14T22:35:31+09:00
-tags: ["iPhone", "Swift", "PageViewController"]
+tags: ["iPhone", "Swift", "UIKit", "PageViewController"]
 categories: ["iPhone", "Swift"]
 ---
 

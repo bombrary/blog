@@ -2,13 +2,13 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Visualization on Chanomic Blog</title>
-    <link>https://bombrary.github.io/blog/categories/visualization/</link>
+    <link>https://bombrary.github.io/blog/tags/visualization/</link>
     <description>Recent content in Visualization on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Sat, 21 Dec 2019 20:10:36 +0900</lastBuildDate>
     
-	<atom:link href="https://bombrary.github.io/blog/categories/visualization/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://bombrary.github.io/blog/tags/visualization/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -28,23 +28,6 @@ $$ \begin{aligned} &amp;amp; wn + \frac{w}{2}(n+1) = W \\ \Leftrightarrow&amp;am
 GraphViewのClassをGraphViewにする。新たにGraphView.swiftを作っておく。
   GraphView.swiftを作る 以下が雛形。
 class GraphView: UIView { override func awakeFromNib() { } let data: [(String, CGFloat)] = [(7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;)] override func draw(_ rect: CGRect) { } } Viewの枠線 layer.</description>
-    </item>
-    
-    <item>
-      <title>gnuplotの使い方メモ</title>
-      <link>https://bombrary.github.io/blog/posts/gnuplot/</link>
-      <pubDate>Tue, 26 Nov 2019 10:59:56 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/posts/gnuplot/</guid>
-      <description>備忘録に。
-インストール Macの場合はbrewでインストールできる。
-$ brew install gnuplot gnuplotコマンドで起動。
-ファイルをプロットする 例えばdata.txtが以下のようになっているとする。
-#x #y1 #y2 0 1 2 1 2 1 2 0 2 3 1 1 これを描画する。
-using X:Yで、X番目の列を横軸、Y番目の列を縦軸にする。
-w lpとは&amp;rdquo;with linespoints&amp;rdquo;の略。つまり線と点を描画する。w lだと&amp;rdquo;with line&amp;rdquo;、w lp lt 3 lw 2だと&amp;rdquo;with linepoints linetype 3 linewidth 2&amp;rdquo;という意味。いろいろある。
-$ set xlabel &amp;#34;X axis&amp;#34; $ set ylabel &amp;#34;Y axis&amp;#34; $ plot &amp;#34;data.txt&amp;#34; using 1:2 w pl 軸の範囲指定 例えばx軸を[0,3000]の範囲に制限して描画したいなら、次のコマンドを打つ。
-$ set xrange [0:3000] こんな感じで、gnuplotはset 属性名 値で様々な設定をする印象がある。</description>
     </item>
     
   </channel>

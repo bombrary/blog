@@ -6,10 +6,29 @@
     <description>Recent content in Swift on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 19 Dec 2019 10:01:42 +0900</lastBuildDate>
+    <lastBuildDate>Sat, 21 Dec 2019 20:10:36 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/swift/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1)</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-barchart-cg01/</link>
+      <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-barchart-cg01/</guid>
+      <description>iPhoneアプリで棒グラフを描く方法として考えられるのは次の3通り。
+ ライブラリを使う - Chartsというライブラリがある。おそらくこれが一般的な選択肢。 Viewを棒グラフに見立てる - UIStackViewをうまく使った例にこんなのがある。 CoreGraphicsを使って手で描画する - 厳密にはUIKit側でこれを扱いやすくしたものがあるみたいで、Drawingとしてまとめられている。  ここではCoreGraphicsの練習を兼ねて、3つ目の方法で棒グラフを書いてみる。
+目標  棒グラフを表示する 棒グラフの先端に値を表示する 今回用いるデータは(ラベル, 整数値)とする 整数値を棒グラフの高さとし、棒グラフの頂点にその数字を描く ラベルは棒グラフの下に描く 整数値が最も大きなものの色をオレンジ色にする 画面の大きさに関わらない図を作る  要するに以下のようなものを作る。
+  細かいレイアウト 画面の大きさに応じて棒グラフのサイズを変更する必要があるため、レイアウトについてそれなりに決めておく。テキストについては適当なサイズに設定する。
+  ビューの幅を$W$、barWidthを$w$、データの個数を$n$とする。するとpadXの個数は$n+1$である。このとから、$w$は次のように計算できる。
+$$ \begin{aligned} &amp;amp; wn + \frac{w}{2}(n+1) = W \\ \Leftrightarrow&amp;amp;\ w = \frac{2W}{3n + 1} \end{aligned} $$
+この計算結果をbarWidthとして利用する。
+準備 Main.storyboardを次のようにしておく。
+GraphViewのClassをGraphViewにする。新たにGraphView.swiftを作っておく。
+  GraphView.swiftを作る 以下が雛形。
+class GraphView: UIView { override func awakeFromNib() { } let data: [(String, CGFloat)] = [(7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;)] override func draw(_ rect: CGRect) { } } Viewの枠線 layer.</description>
+    </item>
     
     <item>
       <title>iPhoneアプリ開発メモ - UIPresentationControllerの利用</title>

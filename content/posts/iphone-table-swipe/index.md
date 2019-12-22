@@ -1,7 +1,7 @@
 ---
 title: "iPhoneアプリ開発メモ - TableViewCellのスワイプ処理"
 date: 2019-12-15T10:27:58+09:00
-tags: ["iPhone", "Swift", "TableView"]
+tags: ["iPhone", "Swift", "UIKit", "TableView"]
 categories: ["iPhone", "Swift"]
 ---
 

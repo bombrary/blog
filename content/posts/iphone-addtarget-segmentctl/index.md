@@ -1,7 +1,7 @@
 ---
 title: "iPhoneアプリ開発メモ - addTarget/SegmentedControl"
 date: 2019-12-14T19:44:49+09:00
-tags: ["iPhone", "Swift", "Selector", "SegmentedControl"]
+tags: ["iPhone", "Swift", "UIKit", "Selector", "SegmentedControl"]
 categories: ["iPhone", "Swift"]
 ---
 

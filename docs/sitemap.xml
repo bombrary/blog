@@ -4,46 +4,76 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/</loc>
-    <lastmod>2019-12-19T10:01:42+09:00</lastmod>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2019-12-19T10:01:42+09:00</lastmod>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/iphone/</loc>
-    <lastmod>2019-12-19T10:01:42+09:00</lastmod>
+    <loc>https://bombrary.github.io/blog/tags/coregraphics/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/iphone/</loc>
-    <lastmod>2019-12-19T10:01:42+09:00</lastmod>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/posts/iphone-uipresentation/</loc>
-    <lastmod>2019-12-19T10:01:42+09:00</lastmod>
+    <loc>https://bombrary.github.io/blog/tags/iphone/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/iphone-barchart-cg01/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2019-12-19T10:01:42+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/tags/swift/</loc>
-    <lastmod>2019-12-19T10:01:42+09:00</lastmod>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/swift/</loc>
-    <lastmod>2019-12-19T10:01:42+09:00</lastmod>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/swift/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/uikit/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/visualization/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/visualization/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/%E6%A3%92%E3%82%B0%E3%83%A9%E3%83%95/</loc>
+    <lastmod>2019-12-21T20:10:36+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/iphone-uipresentation/</loc>
     <lastmod>2019-12-19T10:01:42+09:00</lastmod>
   </url>
   
@@ -73,12 +103,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/javascript/</loc>
+    <loc>https://bombrary.github.io/blog/categories/javascript/</loc>
     <lastmod>2019-12-19T09:50:00+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/javascript/</loc>
+    <loc>https://bombrary.github.io/blog/tags/javascript/</loc>
     <lastmod>2019-12-19T09:50:00+09:00</lastmod>
   </url>
   
@@ -108,12 +138,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/d3.js/</loc>
+    <loc>https://bombrary.github.io/blog/tags/d3.js/</loc>
     <lastmod>2019-12-17T13:56:36+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/d3.js/</loc>
+    <loc>https://bombrary.github.io/blog/categories/d3.js/</loc>
     <lastmod>2019-12-17T13:56:36+09:00</lastmod>
   </url>
   
@@ -178,17 +208,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/uikit/</loc>
-    <lastmod>2019-12-14T11:00:24+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/categories/python/</loc>
+    <loc>https://bombrary.github.io/blog/tags/python/</loc>
     <lastmod>2019-12-08T11:09:35+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/python/</loc>
+    <loc>https://bombrary.github.io/blog/categories/python/</loc>
     <lastmod>2019-12-08T11:09:35+09:00</lastmod>
   </url>
   
@@ -208,12 +233,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/android/</loc>
+    <loc>https://bombrary.github.io/blog/tags/android/</loc>
     <lastmod>2019-11-28T14:24:39+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/android/</loc>
+    <loc>https://bombrary.github.io/blog/categories/android/</loc>
     <lastmod>2019-11-28T14:24:39+09:00</lastmod>
   </url>
   
@@ -268,22 +293,17 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/gnuplot/</loc>
-    <lastmod>2019-11-26T10:59:56+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/categories/gnuplot/</loc>
     <lastmod>2019-11-26T10:59:56+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/posts/gnuplot/</loc>
+    <loc>https://bombrary.github.io/blog/tags/gnuplot/</loc>
     <lastmod>2019-11-26T10:59:56+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/visualization/</loc>
+    <loc>https://bombrary.github.io/blog/posts/gnuplot/</loc>
     <lastmod>2019-11-26T10:59:56+09:00</lastmod>
   </url>
   
@@ -303,12 +323,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/c&#43;&#43;/</loc>
+    <loc>https://bombrary.github.io/blog/tags/c&#43;&#43;/</loc>
     <lastmod>2019-11-24T17:08:19+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/c&#43;&#43;/</loc>
+    <loc>https://bombrary.github.io/blog/categories/c&#43;&#43;/</loc>
     <lastmod>2019-11-24T17:08:19+09:00</lastmod>
   </url>
   

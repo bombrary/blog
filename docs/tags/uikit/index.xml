@@ -6,10 +6,88 @@
     <description>Recent content in UIKit on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 14 Dec 2019 11:00:24 +0900</lastBuildDate>
+    <lastBuildDate>Sat, 21 Dec 2019 20:10:36 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/uikit/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1)</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-barchart-cg01/</link>
+      <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-barchart-cg01/</guid>
+      <description>iPhoneアプリで棒グラフを描く方法として考えられるのは次の3通り。
+ ライブラリを使う - Chartsというライブラリがある。おそらくこれが一般的な選択肢。 Viewを棒グラフに見立てる - UIStackViewをうまく使った例にこんなのがある。 CoreGraphicsを使って手で描画する - 厳密にはUIKit側でこれを扱いやすくしたものがあるみたいで、Drawingとしてまとめられている。  ここではCoreGraphicsの練習を兼ねて、3つ目の方法で棒グラフを書いてみる。
+目標  棒グラフを表示する 棒グラフの先端に値を表示する 今回用いるデータは(ラベル, 整数値)とする 整数値を棒グラフの高さとし、棒グラフの頂点にその数字を描く ラベルは棒グラフの下に描く 整数値が最も大きなものの色をオレンジ色にする 画面の大きさに関わらない図を作る  要するに以下のようなものを作る。
+  細かいレイアウト 画面の大きさに応じて棒グラフのサイズを変更する必要があるため、レイアウトについてそれなりに決めておく。テキストについては適当なサイズに設定する。
+  ビューの幅を$W$、barWidthを$w$、データの個数を$n$とする。するとpadXの個数は$n+1$である。このとから、$w$は次のように計算できる。
+$$ \begin{aligned} &amp;amp; wn + \frac{w}{2}(n+1) = W \\ \Leftrightarrow&amp;amp;\ w = \frac{2W}{3n + 1} \end{aligned} $$
+この計算結果をbarWidthとして利用する。
+準備 Main.storyboardを次のようにしておく。
+GraphViewのClassをGraphViewにする。新たにGraphView.swiftを作っておく。
+  GraphView.swiftを作る 以下が雛形。
+class GraphView: UIView { override func awakeFromNib() { } let data: [(String, CGFloat)] = [(7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;)] override func draw(_ rect: CGRect) { } } Viewの枠線 layer.</description>
+    </item>
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - UIPresentationControllerの利用</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-uipresentation/</link>
+      <pubDate>Thu, 19 Dec 2019 10:01:42 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-uipresentation/</guid>
+      <description>UIPresentationControllerを利用すると、モーダル表示の方法をカスタマイズできる。これについて備忘録を残す。
+そもそもモーダル表示とは そもそもモーダル表示って何？と思ったので調べる。モーダルと検索すると「モーダルウインドウ」の話がよく出てくる。これは「ある操作を終えるまで親ウインドウの操作ができない子ウインドウ」という意味で使われているようだ。これはモーダル表示と似たような意味なのだろうか。判然としないので一次資料を漁る。
+AppleのHuman Interface GuidelineにModalityの意味が書いてあって、これを引用すると、
+ Modality is a design technique that presents content in a temporary mode that’s separate from the user&#39;s previous current context and requires an explicit action to exit. [意訳] Modalityとは、ユーザの以前の文脈から離れた一時的なモードでコンテンツを表示するデザインの手法。そのモードを終了するためには何か明示的なアクションを必要とする。  ほとんど同じ意味っぽい。
+例えば次のようなモーダル表示(Page Sheet)の場合，呼び出し元が下にあってその上に青いビューが載っている。ここでは、「上から下に引っ張る」というアクションを起こすことで、このビューを閉じることができる。
+  用意するもの  表示元のViewController 表示先のViewController UIPresentationControllerのサブクラス - これが表示先のViewControllerの表示方法を規定する。  ここでは、表示先のViewControllerのStoryboard IDをdestとする．
+準備 まずはボタンをクリックすると表示されるものだけ作る。
+Main.storyboard 表示元にはボタンを配置する。表示先はラベルを配置し、適切なConstraintを設定しておく。
+  ViewController.swift ボタンのAction接続を作る。ボタンがタップされたら遷移するようにする。
+class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view.</description>
+    </item>
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - TableViewCellのスワイプ処理</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-table-swipe/</link>
+      <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-table-swipe/</guid>
+      <description>目標 スワイプしたら削除されるテーブルを作る。
+準備 TableViewに最低限の設定をしておく。
+Main.storyboardを次のようにする。
+  ViewController.swiftの内容を以下のようにする。
+class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.</description>
+    </item>
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - UIPageViewControllerの利用</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-pageview/</link>
+      <pubDate>Sat, 14 Dec 2019 22:35:31 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-pageview/</guid>
+      <description>目標 ウォークスルーっぽいものを作る。
+ メイン画面でボタンを押すとウォークスルー画面に飛ぶ。 ウォークスルー画面では、左右にスワイプすると画面が移動する。 画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。  登場物  Main.storyboardとViewController.swift Walkthrough.storyboardとPageViewController.swift  準備 上に書いたものをとりあえず全て作る。ただし、PageViewControllerのサブクラスはUIPageViewControllerであることに注意。
+Main.storyboard ボタンを一つ作っておく。
+Walkthrough.storyboard 配置を次のようにする
+   Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;rdquo;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;rdquo;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;rdquo;と書かれたViewControllerのidentifierはpage3とする。  以下で、Transition Styleを&amp;rdquo;Scroll&amp;rdquo;とする。もし&amp;rdquo;Page Curl&amp;rdquo;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
+  PageViewController.swift 次のように書く。
+class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.</description>
+    </item>
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - addTarget/SegmentedControl</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-addtarget-segmentctl/</link>
+      <pubDate>Sat, 14 Dec 2019 19:44:49 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-addtarget-segmentctl/</guid>
+      <description>目標  降順、昇順の切り替えができるTableViewを作成する。  準備 Main.storyborad 部品を以下のように配置する。
+  Segmented Controlのラベルの設定は以下で行える。
+  TableViewCellのindentifierはtestCellとする。
+ViewController.swift 後々の処理のため、TableViewに表示するデータをitems、その元データをitemsSourceと分けることにする。
+class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;#34;, &amp;#34;items2&amp;#34;, &amp;#34;items3&amp;#34;, &amp;#34;items4&amp;#34;, &amp;#34;items5&amp;#34;, &amp;#34;items6&amp;#34;, &amp;#34;items7&amp;#34;, &amp;#34;items8&amp;#34;] var items: [String] = [] @IBOutlet weak var segmentedControl: UISegmentedControl! @IBOutlet weak var tableView: UITableView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self items = itemsSource } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { return items.</description>
+    </item>
     
     <item>
       <title>iPhoneアプリ開発メモ - セミモーダルビューからの遷移</title>
