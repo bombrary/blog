@@ -457,6 +457,34 @@
 
 <p>大変だったがなんとか完成。</p>
 
+<h2 id="追記-scrollviewのレイアウト修正">追記: ScrollViewのレイアウト修正</h2>
+
+<p>実はいまのままだと、例えばtoolbarが出たときにレイアウトが崩れる。これを解決するために、ScrollViewを別のViewで包み、それにConstraintを設定する。</p>
+
+<h3 id="main-storyboard">Main.storyboard</h3>
+
+<p>次のようにする。Viewを新しく作り、その中にScrollViewを配置する。</p>
+
+<figure>
+    <img src="./storyboard_main02.png" width="30%"/> 
+</figure>
+
+
+<h3 id="margin変数の削除">margin変数の削除</h3>
+
+<p><code>ViewController</code>において、<code>marginX</code>と<code>marginY</code>の宣言を削除する。</p>
+
+<h3 id="scrollviewのframe設定">scrollViewのframe設定</h3>
+
+<p><code>viewDidLoad</code>において、<code>scrollView.frame</code>の代入文を以下のように修正する。</p>
+
+<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>
+    <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
+<span class="p">)</span></code></pre></div>
+
 <h2 id="参考">参考</h2>
 
 <ul>

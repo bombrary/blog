@@ -413,6 +413,35 @@ init(index: Int, size: CGSize, barChartConf: BarChartConfig, barItems: [BarChart
 
 大変だったがなんとか完成。
 
+## 追記: ScrollViewのレイアウト修正
+
+実はいまのままだと、例えばtoolbarが出たときにレイアウトが崩れる。これを解決するために、ScrollViewを別のViewで包み、それにConstraintを設定する。
+
+### Main.storyboard
+
+次のようにする。Viewを新しく作り、その中にScrollViewを配置する。
+
+{{< figure src="./storyboard_main02.png" width="30%" >}}
+
+### margin変数の削除
+
+`ViewController`において、`marginX`と`marginY`の宣言を削除する。
+
+### scrollViewのframe設定
+
+`viewDidLoad`において、`scrollView.frame`の代入文を以下のように修正する。
+
+{{< highlight swift >}}
+scrollView.frame = CGRect(
+    x: 0,
+    y: 0,
+    width: scrollView.superview!.frame.width,
+    height: scrollView.superview!.frame.height
+)
+{{< /highlight >}}
+
+
+
 ## 参考
 
 - [How to split an array into chunks - Hacking With Swift](https://www.hackingwithswift.com/example-code/language/how-to-split-an-array-into-chunks)
