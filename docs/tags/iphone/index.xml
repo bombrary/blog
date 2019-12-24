@@ -6,10 +6,24 @@
     <description>Recent content in iPhone on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 22 Dec 2019 15:10:30 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 24 Dec 2019 13:07:39 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/iphone/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView)</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-barchart-view/</link>
+      <pubDate>Tue, 24 Dec 2019 13:07:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-barchart-view/</guid>
+      <description>前に頑張ってCoreGraphicsを使って棒グラフを描いたが、やはりViewを棒に見立てて扱った方が良さそうだ。考えられる利点は次の3つ。
+ タップ時に何かアクションを起こせる。例えば、棒グラフをタップしたら、そのデータに関する詳細ページに飛ぶ、などの処理が実装できる。 アニメーションについてのコードを描きやすい。例えば棒グラフの高さを0から伸ばしていくアニメーションが実現できる。 StackViewで棒を管理すれば、棒のサイズや棒同士の間隔を自動で設定してくれる  これはやるしかない。
+基本的にはこちらを参考にしながら進めていく。
+UIStackViewをコード上で使う基本 とりあえず使い方を確認する。
+Main.storyboard こんな感じにする。
+  ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.</description>
+    </item>
     
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (2)</title>

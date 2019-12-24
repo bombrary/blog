@@ -275,7 +275,7 @@ struct BarChartModel {
   var color: UIColor
     init(_ src: (Int, String), color: UIColor) {
         self.value = CGFloat(src.0)
-        self.name = CGFloat(src.1)
+        self.name = src.1
         self.color = color
     }
 }
