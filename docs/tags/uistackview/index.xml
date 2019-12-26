@@ -6,17 +6,37 @@
     <description>Recent content in UIStackView on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 24 Dec 2019 13:07:39 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 26 Dec 2019 10:00:00 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/uistackview/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView)</title>
-      <link>https://bombrary.github.io/blog/posts/iphone-barchart-view/</link>
+      <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (2) アニメーションとタップ処理</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-barchart-view02/</link>
+      <pubDate>Thu, 26 Dec 2019 10:00:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/iphone-barchart-view02/</guid>
+      <description>棒グラフをアニメーションさせたり、タップしたら詳細画面に遷移するようにしたい。
+(寄り道) StackViewのアニメーション 自分がいままでやったことがあるのは以下のような感じで、frameやlayer.positionをいじるパターン。
+UIView.animate(withDuration: 1, animations: { view.position.x += 100 view.frame.size.height += 20 }); ただし、これをAutoLayoutと混ぜて使おうとすると動かなかったり、動いたとしても変な挙動を起こす。そもそも、AutoLayoutは制約を設定して位置やサイズを決定する仕組みで、frameは位置やサイズを手動で決める仕組み。これが競合を起こすのは当たり前な気もする。
+StackViewはframeを設定しても何も反応しない。これは内部的にAutoLayoutっぽいことをやっているからなのかもしれない。例えば次のようにしてもStackViewの子要素は変更されない。
+subView.frame.size.height = 100 stackView.addArrangedSubview(subView) その代わり、次のようにすると、ちゃんと子要素の高さは100になる。
+subView.heightAnchor.constraint(equalToConstant: 100).isActive = true stackView.addArrangedSubview(subView) よって、StackViewでアニメーションするためには、AutoLayoutでのアニメーションの方法を知る必要がある。
+AutoLayoutでのアニメーション 例えば、「ボタンを押すと長方形が0から伸びる」アニメーションを実現したい。
+まずは次のように、高さ制約を0に設定しておく。ただし、それを何か変数に入れておく。
+var constraint: NSLayoutConstraint view.addSubview(view0) constraint = view0.heightAnchor.constraint(equalToConstant: 0) constraint.isActive = true アニメーションをしたいタイミングで、次のように書けば良い。
+UIView.animate(withDuration: 1, animations: { constraint.constant = 100 view.layoutIfNeeded() }) constraintにはconstantプロパティがあるので、そこで制約の定数を変更できる。layoutIfNeededは、アプリにレイアウト変更を直ちにさせるメソッド。
+画面遷移後、下から長方形が伸びてくる処理は次のように書ける。
+class ViewController: UIViewController { var constraint: NSLayoutConstraint! override func viewDidLoad() { super.viewDidLoad() let myView = UIView() myView.</description>
+    </item>
+    
+    <item>
+      <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (1)</title>
+      <link>https://bombrary.github.io/blog/posts/iphone-barchart-view01/</link>
       <pubDate>Tue, 24 Dec 2019 13:07:39 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/iphone-barchart-view/</guid>
+      <guid>https://bombrary.github.io/blog/posts/iphone-barchart-view01/</guid>
       <description>前に頑張ってCoreGraphicsを使って棒グラフを描いたが、やはりViewを棒に見立てて扱った方が良さそうだ。考えられる利点は次の3つ。
  タップ時に何かアクションを起こせる。例えば、棒グラフをタップしたら、そのデータに関する詳細ページに飛ぶ、などの処理が実装できる。 アニメーションについてのコードを描きやすい。例えば棒グラフの高さを0から伸ばしていくアニメーションが実現できる。 StackViewで棒を管理すれば、棒のサイズや棒同士の間隔を自動で設定してくれる  これはやるしかない。
 基本的にはこちらを参考にしながら進めていく。

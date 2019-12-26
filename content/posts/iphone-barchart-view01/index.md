@@ -1,5 +1,5 @@
 ---
-title: "iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView)"
+title: "iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (1)"
 date: 2019-12-24T13:07:39+09:00
 tags: ["Swift", "iPhone", "UIKit", "UIStackView", "Visualization", "棒グラフ"]
 categories: ["Swift", "iPhone", "Visualization"]

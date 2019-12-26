@@ -6,7 +6,7 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 24 Dec 2019 13:07:39 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 26 Dec 2019 10:00:00 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>iPhone</title>
       <link>https://bombrary.github.io/blog/categories/iphone/</link>
-      <pubDate>Tue, 24 Dec 2019 13:07:39 +0900</pubDate>
+      <pubDate>Thu, 26 Dec 2019 10:00:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/iphone/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>Swift</title>
       <link>https://bombrary.github.io/blog/categories/swift/</link>
-      <pubDate>Tue, 24 Dec 2019 13:07:39 +0900</pubDate>
+      <pubDate>Thu, 26 Dec 2019 10:00:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/swift/</guid>
       <description></description>
@@ -32,7 +32,7 @@
     <item>
       <title>Visualization</title>
       <link>https://bombrary.github.io/blog/categories/visualization/</link>
-      <pubDate>Tue, 24 Dec 2019 13:07:39 +0900</pubDate>
+      <pubDate>Thu, 26 Dec 2019 10:00:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/visualization/</guid>
       <description></description>
@@ -80,15 +80,6 @@
       <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/d3.js/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Data Visualization</title>
-      <link>https://bombrary.github.io/blog/categories/data-visualization/</link>
-      <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/data-visualization/</guid>
       <description></description>
     </item>
     

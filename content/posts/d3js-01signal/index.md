@@ -1,8 +1,8 @@
 ---
 title: "D3.js 01信号の可視化"
 date: 2019-12-17T13:56:36+09:00
-tags: ["D3.js", "Data Visualization", "JavaScript", "可視化"]
-categories: ["D3.js", "Data Visualization", "JavaScript"]
+tags: ["D3.js", "Visualization", "JavaScript", "可視化"]
+categories: ["D3.js", "Visualization", "JavaScript"]
 ---
 
 信号に関する授業を聴いていたらふと思い立ったのでやってみた。
