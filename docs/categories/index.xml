@@ -6,10 +6,28 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 29 Dec 2019 22:37:26 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 31 Dec 2019 09:34:25 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Elm</title>
+      <link>https://bombrary.github.io/blog/categories/elm/</link>
+      <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/elm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://bombrary.github.io/blog/categories/javascript/</link>
+      <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/javascript/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>iPhone</title>
@@ -44,24 +62,6 @@
       <pubDate>Sun, 29 Dec 2019 22:37:26 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/visualization/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Elm</title>
-      <link>https://bombrary.github.io/blog/categories/elm/</link>
-      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/elm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JavaScript</title>
-      <link>https://bombrary.github.io/blog/categories/javascript/</link>
-      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/javascript/</guid>
       <description></description>
     </item>
     

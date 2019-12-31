@@ -115,3 +115,26 @@
 .tags li a:hover, .categories li a:hover {
   opacity: .7;
 }
+
+/* ========== CUI ========== */
+
+.cui {
+  background-color: black;
+  color: white;
+  font-family: monospace;
+}
+
+.cui .magenta {
+  color: magenta;
+}
+.cui .dgray {
+  color: darkgray;
+}
+.cui .yellow {
+  color: yellow;
+}
+.cui .cyan {
+  color: cyan;
+}
+
+/* ========== /CUI ========== */

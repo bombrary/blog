@@ -6,10 +6,22 @@
     <description>Recent content on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 29 Dec 2019 22:37:26 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 31 Dec 2019 09:34:25 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>JavaScript/Elm ビット演算のときにはまったこと</title>
+      <link>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</link>
+      <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</guid>
+      <description>結論  JavaScriptにおいて、&amp;gt;&amp;gt;&amp;gt;以外のビット演算は32ビット符号付き整数値として扱われる。
+&amp;rarr; 例えば&amp;amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。  JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい  JavaScriptにおいて、x &amp;gt;&amp;gt;&amp;gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。  これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。  ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。  各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース)   検証コード $ elm init  src/MyBitwise.elmを作成し、内容を以下のようにする。
+module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&amp;gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &amp;gt; 0 then (toBinaryString rem) ++ (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。
+$ elm repl  import Bitwise  import MyBitwise exposing (.</description>
+    </item>
     
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(Chartsの利用)</title>

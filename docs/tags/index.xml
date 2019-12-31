@@ -6,10 +6,37 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 29 Dec 2019 22:37:26 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 31 Dec 2019 09:34:25 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Elm</title>
+      <link>https://bombrary.github.io/blog/tags/elm/</link>
+      <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/elm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://bombrary.github.io/blog/tags/javascript/</link>
+      <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ビット演算</title>
+      <link>https://bombrary.github.io/blog/tags/%E3%83%93%E3%83%83%E3%83%88%E6%BC%94%E7%AE%97/</link>
+      <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E3%83%93%E3%83%83%E3%83%88%E6%BC%94%E7%AE%97/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Charts</title>
@@ -102,29 +129,11 @@
     </item>
     
     <item>
-      <title>Elm</title>
-      <link>https://bombrary.github.io/blog/tags/elm/</link>
-      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/elm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>HTTP</title>
       <link>https://bombrary.github.io/blog/tags/http/</link>
       <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/http/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JavaScript</title>
-      <link>https://bombrary.github.io/blog/tags/javascript/</link>
-      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/javascript/</guid>
       <description></description>
     </item>
     
