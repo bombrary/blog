@@ -1,7 +1,7 @@
 ---
 title: "Elmメモ - ランダムな位置に円を描画する"
 date: 2020-01-01T21:03:50+09:00
-tags: ["Elm", "elm/random"]
+tags: ["Elm", "elm-random"]
 categories: ["Elm"]
 ---
 
