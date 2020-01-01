@@ -4,21 +4,46 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/</loc>
-    <lastmod>2019-12-31T09:34:25+09:00</lastmod>
+    <lastmod>2020-01-01T21:03:50+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2019-12-31T09:34:25+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/categories/elm/</loc>
-    <lastmod>2019-12-31T09:34:25+09:00</lastmod>
+    <lastmod>2020-01-01T21:03:50+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/tags/elm/</loc>
+    <lastmod>2020-01-01T21:03:50+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/elm/</loc>
+    <lastmod>2020-01-01T21:03:50+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/elm/random/</loc>
+    <lastmod>2020-01-01T21:03:50+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/elm-random-circle/</loc>
+    <lastmod>2020-01-01T21:03:50+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2020-01-01T21:03:50+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2020-01-01T21:03:50+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/javascript/</loc>
     <lastmod>2019-12-31T09:34:25+09:00</lastmod>
   </url>
   
@@ -28,22 +53,7 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/javascript/</loc>
-    <lastmod>2019-12-31T09:34:25+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</loc>
-    <lastmod>2019-12-31T09:34:25+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2019-12-31T09:34:25+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/tags/</loc>
     <lastmod>2019-12-31T09:34:25+09:00</lastmod>
   </url>
   
@@ -58,12 +68,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/iphone/</loc>
+    <loc>https://bombrary.github.io/blog/tags/iphone/</loc>
     <lastmod>2019-12-29T22:37:26+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/iphone/</loc>
+    <loc>https://bombrary.github.io/blog/categories/iphone/</loc>
     <lastmod>2019-12-29T22:37:26+09:00</lastmod>
   </url>
   
@@ -93,12 +103,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/visualization/</loc>
+    <loc>https://bombrary.github.io/blog/categories/visualization/</loc>
     <lastmod>2019-12-29T22:37:26+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/visualization/</loc>
+    <loc>https://bombrary.github.io/blog/tags/visualization/</loc>
     <lastmod>2019-12-29T22:37:26+09:00</lastmod>
   </url>
   
@@ -163,12 +173,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/network/</loc>
+    <loc>https://bombrary.github.io/blog/categories/network/</loc>
     <lastmod>2019-12-19T09:50:00+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/network/</loc>
+    <loc>https://bombrary.github.io/blog/tags/network/</loc>
     <lastmod>2019-12-19T09:50:00+09:00</lastmod>
   </url>
   
@@ -248,12 +258,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/python/</loc>
+    <loc>https://bombrary.github.io/blog/categories/python/</loc>
     <lastmod>2019-12-08T11:09:35+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/python/</loc>
+    <loc>https://bombrary.github.io/blog/tags/python/</loc>
     <lastmod>2019-12-08T11:09:35+09:00</lastmod>
   </url>
   
@@ -273,12 +283,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/android/</loc>
+    <loc>https://bombrary.github.io/blog/tags/android/</loc>
     <lastmod>2019-11-28T14:24:39+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/android/</loc>
+    <loc>https://bombrary.github.io/blog/categories/android/</loc>
     <lastmod>2019-11-28T14:24:39+09:00</lastmod>
   </url>
   
@@ -308,12 +318,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/programming/</loc>
+    <loc>https://bombrary.github.io/blog/categories/programming/</loc>
     <lastmod>2019-11-28T14:24:39+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/programming/</loc>
+    <loc>https://bombrary.github.io/blog/tags/programming/</loc>
     <lastmod>2019-11-28T14:24:39+09:00</lastmod>
   </url>
   
@@ -353,22 +363,22 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/c/</loc>
-    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/categories/c/</loc>
     <lastmod>2019-11-24T17:08:19+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/c&#43;&#43;/</loc>
+    <loc>https://bombrary.github.io/blog/tags/c/</loc>
     <lastmod>2019-11-24T17:08:19+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/c&#43;&#43;/</loc>
+    <lastmod>2019-11-24T17:08:19+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/c&#43;&#43;/</loc>
     <lastmod>2019-11-24T17:08:19+09:00</lastmod>
   </url>
   
@@ -433,12 +443,12 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</loc>
+    <loc>https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
     <lastmod>2019-11-12T10:07:09+09:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
+    <loc>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</loc>
     <lastmod>2019-11-12T10:07:09+09:00</lastmod>
   </url>
   

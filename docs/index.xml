@@ -6,10 +6,27 @@
     <description>Recent content on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 31 Dec 2019 09:34:25 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 01 Jan 2020 21:03:50 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Elmメモ - ランダムな位置に円を描画する</title>
+      <link>https://bombrary.github.io/blog/posts/elm-random-circle/</link>
+      <pubDate>Wed, 01 Jan 2020 21:03:50 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/elm-random-circle/</guid>
+      <description>乱数の練習に。
+準備 プロジェクト用のディレクトリを適当に作り、そこで以下のコマンドを実行。
+$ elm init  必要なモジュールを入れる。
+$ elm install elm/svg $ elm install elm/random  Main.elmを作成し、最低限の文を定義しておく。
+module Main exposing (..) import Browser import Svg exposing (..) import Svg.Attributes as SA exposing (..) import Svg.Events as SE exposing (..) import Random 円の描画 こんな感じの円を描画する。
+1  
+SVGでは次のように書く。
+&amp;lt;svg width=&amp;#34;100px&amp;#34; height=&amp;#34;100px&amp;#34;&amp;gt; &amp;lt;g transform=&amp;#34;translate(50, 50)&amp;#34;&amp;gt; &amp;lt;circle r=&amp;#34;10&amp;#34; fill=&amp;#34;white&amp;#34; stroke=&amp;#34;black&amp;#34; /&amp;gt; &amp;lt;text text-anchor=&amp;#34;middle&amp;#34; dominant-baseline=&amp;#34;central&amp;#34;&amp;gt;1&amp;lt;/text&amp;gt; &amp;lt;/g&amp;gt; &amp;lt;/svg&amp;gt; 円の情報で必要なのは次の4つ:
+ x座標 y座標 半径 text要素の文字列  そこで円は次のように定義する。</description>
+    </item>
     
     <item>
       <title>JavaScript/Elm ビット演算のときにはまったこと</title>
