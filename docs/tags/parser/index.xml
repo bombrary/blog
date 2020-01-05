@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Parser on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/parser/</link>
+    <description>Recent content in Parser on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Sun, 05 Jan 2020 14:29:15 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/parser/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Elmメモ - 文字列をIPアドレスに変換(2) Parserを用いる方法</title>
+      <link>https://bombrary.github.io/blog/posts/elm-ipaddr-parse/</link>
+      <pubDate>Sun, 05 Jan 2020 14:29:15 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/elm-ipaddr-parse/</guid>
+      <description>準備 前回のsrc/IPAddr.elmを全て消し、内容を以下の通りにする。
+module IPAddr exposing (..) import Parser type IPAddr = IPAddr Int Int Int Int $ elm repl  import Parser exposing (..)  import IPAddr exposing (..)  Parserの基本 以下の2つのステップに分かれる。
+ Parserを作る Parserを実行する - Parser.runを用いる  ライブラリでは、標準で用意されているParserと、それらを組み合わせて新たなParserを作るための関数が用意されている。
+ run int &#34;123&#34; Ok 123 : Result (List Parser.DeadEnd) Int  run int &#34;123abc&#34; Ok 123 : Result (List Parser.DeadEnd) Int  run int &#34;abc123abc&#34; Err [{ col = 1, problem = ExpectingInt, row = 1 }] : Result (List Parser.</description>
+    </item>
+    
+  </channel>
+</rss>

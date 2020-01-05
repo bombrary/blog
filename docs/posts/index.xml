@@ -6,10 +6,38 @@
     <description>Recent content in Posts on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Wed, 01 Jan 2020 21:03:50 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 05 Jan 2020 14:29:15 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Elmメモ - 文字列をIPアドレスに変換(2) Parserを用いる方法</title>
+      <link>https://bombrary.github.io/blog/posts/elm-ipaddr-parse/</link>
+      <pubDate>Sun, 05 Jan 2020 14:29:15 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/elm-ipaddr-parse/</guid>
+      <description>準備 前回のsrc/IPAddr.elmを全て消し、内容を以下の通りにする。
+module IPAddr exposing (..) import Parser type IPAddr = IPAddr Int Int Int Int $ elm repl  import Parser exposing (..)  import IPAddr exposing (..)  Parserの基本 以下の2つのステップに分かれる。
+ Parserを作る Parserを実行する - Parser.runを用いる  ライブラリでは、標準で用意されているParserと、それらを組み合わせて新たなParserを作るための関数が用意されている。
+ run int &#34;123&#34; Ok 123 : Result (List Parser.DeadEnd) Int  run int &#34;123abc&#34; Ok 123 : Result (List Parser.DeadEnd) Int  run int &#34;abc123abc&#34; Err [{ col = 1, problem = ExpectingInt, row = 1 }] : Result (List Parser.</description>
+    </item>
+    
+    <item>
+      <title>Elmメモ - 文字列をIPアドレスに変換(1) splitを用いる方法</title>
+      <link>https://bombrary.github.io/blog/posts/elm-ipaddr-split/</link>
+      <pubDate>Sun, 05 Jan 2020 11:27:01 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/elm-ipaddr-split/</guid>
+      <description>IPv4アドレスの文字列&amp;rdquo;192.168.1.1&amp;rdquo;をパースする方法を考える。IPAddrの内部表現は次のようにする。
+type IPAddr = IPAddr Int Int Int Int 思いつくのは次の2通り。
+ ピリオドでsplitして、整数値に変換する。 パーサを利用する。  いずれにしても結構面倒。この記事では前者だけやる。
+準備 適当なディレクトリで次のコマンドを実行。
+$ elm init $ elm install elm/parser  src/IPAddr.elmを作り、内容を以下の通りにする。
+module IPAddr exposing (..) type IPAddr = IPAddr Int Int Int Int $ elm repl  import IPAddr exposing (..)  方針 次の処理を行う関数をfromStringとして定義する。
+ 文字列を.でsplitする。 Listの要素数が4でなければ失敗。 Listの各要素にString.toIntを適用し、どれか一つでも失敗すれば全体としても失敗。 Listを[a,b,c,d]としたとき、IPAddr a b c dを返す。  traverseの実装 3の処理は、次の関数として抽象化できる: リストの各要素にfを適用し、その結果すべてがJustを返したときだけ、全体の結果を返す。
+traverse : (a -&amp;gt; Maybe b) -&amp;gt; List a -&amp;gt; Maybe List b 原始的な実装 なるべくfoldrとかを使わずに書こうとするとこんな感じになる。</description>
+    </item>
     
     <item>
       <title>Elmメモ - ランダムな位置に円を描画する</title>
