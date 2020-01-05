@@ -1,5 +1,5 @@
 ---
-title: "Elmメモ - 文字列をIPアドレスに変換する方法(1) splitを用いる方法"
+title: "Elmメモ - 文字列をIPアドレスに変換(1) splitを用いる方法"
 date: 2020-01-05T11:27:01+09:00
 draft: true
 tags: ["Elm", "IPアドレス", "IPv4"]
@@ -33,14 +33,11 @@ $ elm install elm/parser
 {{< highlight elm >}}
 module IPAddr exposing (..)
 
-import Parser exposing (..)
-
 type IPAddr = IPAddr Int Int Int Int
 {{< /highlight >}}
 
 <pre class="cui">
 $ elm repl
-> import Parser exposing (..)
 > import IPAddr exposing (..)
 </pre>
 
