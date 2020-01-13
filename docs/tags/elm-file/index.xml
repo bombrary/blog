@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>elm-file on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/elm-file/</link>
+    <description>Recent content in elm-file on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Mon, 13 Jan 2020 11:00:50 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/elm-file/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Elmメモ - 画像のプレビュー機能を作る</title>
+      <link>https://bombrary.github.io/blog/posts/elm-image-preview/</link>
+      <pubDate>Mon, 13 Jan 2020 11:00:50 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/elm-image-preview/</guid>
+      <description>Elmを利用して、画像を選択してそれを表示するアプリを作る。
+ファイル読み込みの方法 Select.file関数を利用する。これはファイル選択用のエクスプローラを開くためのCmd Msgを作成してくれる。選択したファイルはMsgに載せられる。
+適切なMIMEタイプを指定すると、エクスプローラ上にてそのタイプのファイルしか選択できなくなる。例えば、text/plainを選択しておけば、拡張子.txtのファイルしか選択できなくなる。
+Select.file &amp;#34;MIMEタイプのリスト&amp;#34; &amp;#34;Msg&amp;#34; 画像ファイルへの変換 こうして得られたファイルはFileと呼ばれる型で保持される。
+もしファイルを文字列として扱いたいなら、File.toStringを利用する。
+もし画像として扱いたいなら、File.toUrlを利用する。これは画像をBase64符号化した文字列を作る。これをimgタグのsrc属性に指定すれば、画像が表示される。
+画像を選択し、それを表示するアプリの作成 準備 プロジェクトを作成して、elm/fileをインストール。
+$ elm init $ elm install elm/file  src/Main.elmの雛形を作る。
+module Main exposing (..) import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (..) import File exposing (File) import File.Select as Select import Task main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type alias Model = { } init : () -&amp;gt; (Model, Cmd Msg) init _ = ( { } , Cmd.</description>
+    </item>
+    
+  </channel>
+</rss>
