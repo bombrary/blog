@@ -6,10 +6,37 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Mon, 13 Jan 2020 11:00:50 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 26 Jan 2020 14:00:25 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>dot2tex</title>
+      <link>https://bombrary.github.io/blog/tags/dot2tex/</link>
+      <pubDate>Sun, 26 Jan 2020 14:00:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/dot2tex/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Graphviz</title>
+      <link>https://bombrary.github.io/blog/tags/graphviz/</link>
+      <pubDate>Sun, 26 Jan 2020 14:00:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/graphviz/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>TeX</title>
+      <link>https://bombrary.github.io/blog/tags/tex/</link>
+      <pubDate>Sun, 26 Jan 2020 14:00:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/tex/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>css</title>

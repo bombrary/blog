@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dot2tex on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/dot2tex/</link>
+    <description>Recent content in dot2tex on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Sun, 26 Jan 2020 14:00:25 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/dot2tex/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>GraphvizでTeXの数式を表示する</title>
+      <link>https://bombrary.github.io/blog/posts/graphviz-tex/</link>
+      <pubDate>Sun, 26 Jan 2020 14:00:25 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/graphviz-tex/</guid>
+      <description>Graphvizはグラフを描画してくれる素晴らしいソフトなのだが、単体では数式を表示することができない。
+dot2tex dot2texを利用すると、グラフのラベルに数式が使えるようになる。
+次の手順でグラフを作る。
+ dot言語でグラフを書く dot2texでdotファイルをtexファイルに変換 texを使ってpdfなりsvgなりを作る。  pdfならplatex + dvipdfmxまたはptex2pdfを使う。 svgならplatex + dvisvgmを使う。   いやGraphviz使ってないじゃないか、と思うかもしれない。しかしDependensiesにGraphvizが含まれているから、おそらくGraphvizの描画エンジンを利用してノードの位置を決定しているのだと思う。
+インストール Python製のソフトウェアみたいで、pip経由でインストールする。
+$ pip3 install dot2tex  利用の手順 dot言語でグラフを書く 今回は次のようにする。ファイル名は適当にgraph.dotとする。
+digraph { graph [ rankdir=&amp;quot;LR&amp;quot; ] node [ shape=&amp;quot;circle&amp;quot;, fixedsize=true, height=0.6 ] Q0 [texlbl=&amp;quot;$q_0$&amp;quot;]; Q1 [texlbl=&amp;quot;$q_1$&amp;quot;]; Q2 [texlbl=&amp;quot;$q_2$&amp;quot;]; Q3 [texlbl=&amp;quot;$q_3$&amp;quot;]; Q4 [texlbl=&amp;quot;$q_4$&amp;quot;]; Q5 [texlbl=&amp;quot;$q_5$&amp;quot;]; Q6 [texlbl=&amp;quot;$q_6$&amp;quot;]; Q7 [texlbl=&amp;quot;$q_7$&amp;quot;]; Q8 [texlbl=&amp;quot;$q_8$&amp;quot;]; Q9 [texlbl=&amp;quot;$q_9$&amp;quot;]; Q10 [texlbl=&amp;quot;$q_{10}$&amp;quot;]; Q11 [texlbl=&amp;quot;$q_{11}$&amp;quot;]; Q12 [texlbl=&amp;quot;$q_{12}$&amp;quot;]; Q13 [texlbl=&amp;quot;$q_{13}$&amp;quot;]; Q0 -&amp;gt; Q1 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q0 -&amp;gt; Q4 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q0 -&amp;gt; Q7 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q1 -&amp;gt; Q2 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$a$&amp;quot;]; Q2 -&amp;gt; Q3 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$b$&amp;quot;]; Q3 -&amp;gt; Q7 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q4 -&amp;gt; Q5 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$b$&amp;quot;]; Q5 -&amp;gt; Q6 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$b$&amp;quot;]; Q6 -&amp;gt; Q7 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q7 -&amp;gt; Q8 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$a$&amp;quot;]; Q7 -&amp;gt; Q0 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q8 -&amp;gt; Q9 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q8 -&amp;gt; Q11 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q9 -&amp;gt; Q10 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$b$&amp;quot;]; Q10 -&amp;gt; Q13 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; Q11 -&amp;gt; Q12 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$c$&amp;quot;]; Q12 -&amp;gt; Q13 [label=&amp;quot; &amp;quot;, texlbl=&amp;quot;$\varepsilon$&amp;quot;]; }  texlblとはdot2texが読むための属性。おそらくtex labelの略で、これがnodeまたはedgeのラベルとして、texファイルに直接展開される。そのため、数式を描きたいなら$で囲む。もしdotファイル上にlabel属性が定義されていたら、texlblの内容に上書きされる。</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>GraphvizでTeXの数式を表示する | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.59.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/graphviz-tex/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/graphviz-tex/">GraphvizでTeXの数式を表示する</a></h1>
+    <p class="meta"><time datetime="2020-01-26T14:00:25&#43;09:00">January 26, 2020</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/graphviz/">Graphviz</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/tex/">TeX</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/dot2tex/">dot2tex</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/graphviz/">Graphviz</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/tex/">TeX</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/%e3%82%b0%e3%83%a9%e3%83%95/">グラフ</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+
+<p>Graphvizはグラフを描画してくれる素晴らしいソフトなのだが、単体では数式を表示することができない。</p>
+
+<h2 id="dot2tex">dot2tex</h2>
+
+<p>dot2texを利用すると、グラフのラベルに数式が使えるようになる。</p>
+
+<p>次の手順でグラフを作る。</p>
+
+<ol>
+<li>dot言語でグラフを書く</li>
+<li><code>dot2tex</code>でdotファイルをtexファイルに変換</li>
+<li>texを使ってpdfなりsvgなりを作る。
+
+<ul>
+<li>pdfなら<code>platex + dvipdfmx</code>または<code>ptex2pdf</code>を使う。</li>
+<li>svgなら<code>platex + dvisvgm</code>を使う。</li>
+</ul></li>
+</ol>
+
+<p>いやGraphviz使ってないじゃないか、と思うかもしれない。しかし<a href="https://dot2tex.readthedocs.io/en/latest/installation_guide.html#dependencies">Dependensies</a>にGraphvizが含まれているから、おそらくGraphvizの描画エンジンを利用してノードの位置を決定しているのだと思う。</p>
+
+<h2 id="インストール">インストール</h2>
+
+<p>Python製のソフトウェアみたいで、pip経由でインストールする。</p>
+
+<pre class="cui">
+$ pip3 install dot2tex
+</pre>
+
+<h2 id="利用の手順">利用の手順</h2>
+
+<h3 id="dot言語でグラフを書く">dot言語でグラフを書く</h3>
+
+<p>今回は次のようにする。ファイル名は適当に<code>graph.dot</code>とする。</p>
+
+<pre><code class="language-dot">digraph {
+  graph [ rankdir=&quot;LR&quot; ]
+  node [ shape=&quot;circle&quot;, fixedsize=true, height=0.6 ]
+  Q0 [texlbl=&quot;$q_0$&quot;];
+  Q1 [texlbl=&quot;$q_1$&quot;];
+  Q2 [texlbl=&quot;$q_2$&quot;];
+  Q3 [texlbl=&quot;$q_3$&quot;];
+  Q4 [texlbl=&quot;$q_4$&quot;];
+  Q5 [texlbl=&quot;$q_5$&quot;];
+  Q6 [texlbl=&quot;$q_6$&quot;];
+  Q7 [texlbl=&quot;$q_7$&quot;];
+  Q8 [texlbl=&quot;$q_8$&quot;];
+  Q9 [texlbl=&quot;$q_9$&quot;];
+  Q10 [texlbl=&quot;$q_{10}$&quot;];
+  Q11 [texlbl=&quot;$q_{11}$&quot;];
+  Q12 [texlbl=&quot;$q_{12}$&quot;];
+  Q13 [texlbl=&quot;$q_{13}$&quot;];
+  Q0 -&gt; Q1 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q0 -&gt; Q4 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q0 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q1 -&gt; Q2 [label=&quot; &quot;, texlbl=&quot;$a$&quot;];
+  Q2 -&gt; Q3 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
+  Q3 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q4 -&gt; Q5 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
+  Q5 -&gt; Q6 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
+  Q6 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q7 -&gt; Q8 [label=&quot; &quot;, texlbl=&quot;$a$&quot;];
+  Q7 -&gt; Q0 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q8 -&gt; Q9 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q8 -&gt; Q11 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q9 -&gt; Q10 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
+  Q10 -&gt; Q13 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q11 -&gt; Q12 [label=&quot; &quot;, texlbl=&quot;$c$&quot;];
+  Q12 -&gt; Q13 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+}
+</code></pre>
+
+<p><code>texlbl</code>とはdot2texが読むための属性。おそらくtex labelの略で、これがnodeまたはedgeのラベルとして、texファイルに直接展開される。そのため、数式を描きたいなら<code>$</code>で囲む。もしdotファイル上にlabel属性が定義されていたら、<code>texlbl</code>の内容に上書きされる。</p>
+
+<p>edgeに対して<code>texlbl</code>を使いたいなら、ダミー用の<code>label</code>属性をつける必要がある。これをやらないとラベルが表示されないので注意(<a href="https://dot2tex.readthedocs.io/en/latest/usage_guide.html#labels">参考</a>)。しかも、<strong>ダミーに指定するlabelの内容は空文字では駄目で、空白でも良いから1文字以上の文字列を指定する必要がある。</strong>これが分からなくて数十分はまっていた。</p>
+
+<h3 id="texに変換">texに変換</h3>
+
+<pre class="cui">
+$ dot2tex graph.dot > graph.tex
+</pre>
+
+<h3 id="svgに変換">svgに変換</h3>
+
+<pre class="cui">
+$ platex graph.tex
+$ dvisvgm graph.dvi
+</pre>
+
+<p>他にも、一旦pdfに変換してから<code>pdftocairo</code>を使ってsvgに変換するのもあり。</p>
+
+<p>出来上がった画像がこちら。</p>
+
+<figure>
+    <img src="./graph.svg"/> 
+</figure>
+
+
+<p>良い感じ。</p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://dot2tex.readthedocs.io/en/latest/">dot2tex</a></li>
+<li><a href="https://www.graphviz.org">Graphviz</a></li>
+</ul>
+
+</article>
+
+
+
+</html>
