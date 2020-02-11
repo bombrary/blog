@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>GraphvizでTeXの数式を表示する(2) - PDFにしたい場合 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.64.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/graphviz-tex02/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/graphviz-tex02/">GraphvizでTeXの数式を表示する(2) - PDFにしたい場合</a></h1>
+    <p class="meta"><time datetime="2020-02-11T21:57:47&#43;09:00">February 11, 2020</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/graphviz/">Graphviz</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/tex/">TeX</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/dot2tex/">dot2tex</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/graphviz/">Graphviz</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/tex/">TeX</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/%e3%82%b0%e3%83%a9%e3%83%95/">グラフ</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  <p>TeXのレポートに貼り付けたいが、TeXではSVG形式は扱えないのでPDFにしたくなった。やってみたら思ったより面倒だったので備忘録として残す。</p>
+<h3 id="dotファイルの用意">dotファイルの用意</h3>
+<p>前回と同じにする。ファイル名は<code>graph.dot</code>とする。</p>
+<pre><code class="language-dot" data-lang="dot">digraph {
+  graph [ rankdir=&quot;LR&quot; ];
+  node [ shape=&quot;circle&quot;, fixedsize=true, height=0.6 ];
+  Q0 [texlbl=&quot;$q_0$&quot;];
+  Q1 [texlbl=&quot;$q_1$&quot;];
+  Q2 [texlbl=&quot;$q_2$&quot;];
+  Q3 [texlbl=&quot;$q_3$&quot;];
+  Q4 [texlbl=&quot;$q_4$&quot;];
+  Q5 [texlbl=&quot;$q_5$&quot;];
+  Q6 [texlbl=&quot;$q_6$&quot;];
+  Q7 [texlbl=&quot;$q_7$&quot;];
+  Q8 [texlbl=&quot;$q_8$&quot;];
+  Q9 [texlbl=&quot;$q_9$&quot;];
+  Q10 [texlbl=&quot;$q_{10}$&quot;];
+  Q11 [texlbl=&quot;$q_{11}$&quot;];
+  Q12 [texlbl=&quot;$q_{12}$&quot;];
+  Q13 [texlbl=&quot;$q_{13}$&quot;];
+  Q0 -&gt; Q1 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q0 -&gt; Q4 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q0 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q1 -&gt; Q2 [label=&quot; &quot;, texlbl=&quot;$a$&quot;];
+  Q2 -&gt; Q3 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
+  Q3 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q4 -&gt; Q5 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
+  Q5 -&gt; Q6 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
+  Q6 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q7 -&gt; Q8 [label=&quot; &quot;, texlbl=&quot;$a$&quot;];
+  Q7 -&gt; Q0 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q8 -&gt; Q9 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q8 -&gt; Q11 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q9 -&gt; Q10 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
+  Q10 -&gt; Q13 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  Q11 -&gt; Q12 [label=&quot; &quot;, texlbl=&quot;$c$&quot;];
+  Q12 -&gt; Q13 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+}
+</code></pre><h2 id="dot-rarr-tex">dot → tex</h2>
+<pre class="cui">
+$ dot2tex graph.dot > graph.tex
+</pre>
+<h2 id="tex-rarr-pdf">tex → pdf</h2>
+<h3 id="駄目なパターン">駄目なパターン</h3>
+<pre class="cui">
+$ platex graph.tex
+$ dvipdf graph.dvi
+</pre>
+<p>これをやると、一部が画面からはみ出したグラフが作成されてしまう。</p>
+<h3 id="調査">調査</h3>
+<p><code>graph.tex</code>のプリアンブルを見てみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\documentclass</span><span class="nb">{</span>standalone<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="na">[x11names, svgnames, rgb]</span><span class="nb">{</span>xcolor<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="na">[utf8]</span><span class="nb">{</span>inputenc<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="nb">{</span>tikz<span class="nb">}</span>
+<span class="k">\usetikzlibrary</span><span class="nb">{</span>snakes,arrows,shapes<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="nb">{</span>amsmath<span class="nb">}</span>
+
+<span class="k">\begin</span><span class="nb">{</span>document<span class="nb">}</span>
+  <span class="k">\pagestyle</span><span class="nb">{</span>empty<span class="nb">}</span>
+
+  <span class="k">\enlargethispage</span><span class="nb">{</span>100cm<span class="nb">}</span>
+  ...</code></pre></div>
+<p><code>documentclass</code>が<code>article</code>になっている。この設定だと、pdfのサイズがA4になる。enlargethispageでサイズを広げているようだが、なぜかうまくいっていないようだ。</p>
+<p><code>article</code>を<code>standalone</code>に変えてみる。<code>standalone</code>のときは<code>enlargethispage</code>が使えないようなので、削除する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\documentclass</span><span class="nb">{</span>standalone<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="na">[x11names, svgnames, rgb]</span><span class="nb">{</span>xcolor<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="na">[utf8]</span><span class="nb">{</span>inputenc<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="nb">{</span>tikz<span class="nb">}</span>
+<span class="k">\usetikzlibrary</span><span class="nb">{</span>snakes,arrows,shapes<span class="nb">}</span>
+<span class="k">\usepackage</span><span class="nb">{</span>amsmath<span class="nb">}</span>
+
+<span class="k">\begin</span><span class="nb">{</span>document<span class="nb">}</span>
+  <span class="k">\pagestyle</span><span class="nb">{</span>empty<span class="nb">}</span>
+  ...</code></pre></div>
+<p>これでもう一度次のコマンドを打つと、綺麗なpdfが作成される。</p>
+<pre class="cui">
+$ platex graph.tex
+$ dvipdf graph.dvi
+</pre>
+<h3 id="自動化">自動化</h3>
+<p>いちいち<code>standalone</code>に変えて<code>enlargepagesize</code>を削除するのは面倒なので、シェルスクリプトにまとめる。</p>
+<p>例えば以下の内容を<code>dot2pdf.sh</code>として保存する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">dot2tex <span class="nv">$1</span>.dot &gt; <span class="nv">$1</span>.tex
+cat <span class="nv">$1</span>.tex<span class="se">\
+</span><span class="se"></span>  <span class="p">|</span> sed <span class="s1">&#39;s/\\documentclass{article}/\\documentclass{standalone}/&#39;</span><span class="se">\
+</span><span class="se"></span>  <span class="p">|</span> sed <span class="s1">&#39;s/\\enlargethispage.*//&#39;</span> <span class="se">\
+</span><span class="se"></span>  &gt; <span class="nv">$1</span>.tex
+platex <span class="nv">$1</span>.tex
+dvipdf <span class="nv">$1</span>.dvi</code></pre></div>
+<p><code>graph.dot</code>と同じディレクトリに置いて、次のコマンドを実行すれば、dotからpdfが一気に作成される。</p>
+<pre class="cui">
+$ sh dot2pdf.sh graph
+</pre>
+
+</article>
+
+
+
+</html>

@@ -1,5 +1,5 @@
 ---
-title: "GraphvizでTeXの数式を表示する"
+title: "GraphvizでTeXの数式を表示する(1)"
 date: 2020-01-26T14:00:25+09:00
 tags: ["Graphviz", "TeX", "dot2tex"]
 categories: ["Graphviz", "TeX", "グラフ"]
@@ -16,7 +16,7 @@ dot2texを利用すると、グラフのラベルに数式が使えるように�
 1. dot言語でグラフを書く
 2. `dot2tex`でdotファイルをtexファイルに変換
 3. texを使ってpdfなりsvgなりを作る。
-   - pdfなら`platex + dvipdfmx`または`ptex2pdf`を使う。
+   - pdfなら`platex + dvipdf`を使う(詳細は[別記事]({{< ref "/posts/graphviz-tex02/index.md" >}})にて)
    - svgなら`platex + dvisvgm`を使う。
 
 いやGraphviz使ってないじゃないか、と思うかもしれない。しかし[Dependensies](https://dot2tex.readthedocs.io/en/latest/installation_guide.html#dependencies)にGraphvizが含まれているから、おそらくGraphvizの描画エンジンを利用してノードの位置を決定しているのだと思う。
