@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Socket通信勉強(2) - Pythonでの書き方/HTTPサーバーもどき作成 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.64.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -55,16 +55,10 @@
       </div>
     </div>
   </header>
-  
-
-<h2 id="pythonでのsocket通信">PythonでのSocket通信</h2>
-
+  <h2 id="pythonでのsocket通信">PythonでのSocket通信</h2>
 <p>やってることはCでやったときと同じである。サーバーとクライアントの通信手順は同じだし、関数名も同じである。しかしCで書いた場合に比べてシンプルに書ける。エラーは例外として投げられるため、自分で書く必要がない。また<code>sockaddr_in</code>などの構造体が登場することはなく、Pythonでの<code>bind</code>関数と<code>connect</code>関数の引数に直接アドレス・ポートを指定する。</p>
-
-<h3 id="server-py">server.py</h3>
-
+<h3 id="serverpy">server.py</h3>
 <p>前回と同じく、以下の手順で通信を行う。</p>
-
 <ol>
 <li>listen(待ち受け)用のソケット作成 - socket</li>
 <li>「どこからの接続を待つのか」「どのポートにて待ち受けするのか」を決める - bind関数の引数</li>
@@ -73,207 +67,146 @@
 <li>接続要求が来たら受け入れる - accept</li>
 <li>4によって通信用のソケットが得られるので、それを用いてデータのやりとりをする- send/recv</li>
 </ol>
-
 <div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
-<span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span><span class="p">)</span>
 <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
-<span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&#34;Hello, World&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-<span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></code></pre></div>
-
+<span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Connected by</span><span class="s2">&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Hello, World</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">utf-8</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="p">)</span></code></pre></div>
 <p>上のコードを見れば各関数がどんな形で引数をとって、どんな値を返すのかがわかると思う。いくつか補足しておく。</p>
-
 <h4 id="bind">bind</h4>
-
 <p><code>(受け入れアドレス, ポート)</code>というタプルを引数にとる。受け入れアドレスを空文字列にしておけば、どんなアドレスからの接続も受け入れる。つまりCでやった<code>INADDR_ANY</code>と同じ。</p>
-
-<div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span></code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span><span class="p">)</span></code></pre></div>
 <h4 id="encode">encode</h4>
-
 <p>Pythonのstring型をそのまま送ることはできないので、byte型に変換する。これは<code>string.encode</code>で行える。</p>
-
-<div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&#34;Hello, World&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></code></pre></div>
-
-<h3 id="client-py">client.py</h3>
-
+<div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Hello, World</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">utf-8</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span></code></pre></div>
+<h3 id="clientpy">client.py</h3>
 <ol>
 <li>サーバーとの通信用のソケット作成 - socket</li>
 <li>サーバが待ち受けている宛先を設定 - connectの引数</li>
 <li>2で設定した宛先に対して接続する - connect</li>
 <li>1で作ったソケットを用いてデータのやりとりをする。 - send/recv</li>
 </ol>
-
 <div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
-<span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">localhost</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></code></pre></div>
-
+<span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="p">)</span></code></pre></div>
 <p>これも2点補足する。</p>
-
 <h4 id="connect">connect</h4>
-
 <p><code>(接続先のアドレス, ポート)</code>というタプルを指定する。接続先に<code>localhost</code>を指定すると、<code>127.0.0.1</code>と解釈される。</p>
-
-<div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span></code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">localhost</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span><span class="p">)</span></code></pre></div>
 <h4 id="recv">recv</h4>
-
 <p>引数には受け取る最大バイト数を指定する。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="n">data</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span></code></pre></div>
-
 <p>受け取ったデータのサイズが64バイト以上の場合、ソケットから先頭64バイトだけ読み取ることになるので注意。つまり残りのデータがソケットに残っている。大量のデータを受け取ることがあるなら、受け取ったデータのサイズをきちんと調べ、必要なら再度<code>sock.recv</code>を呼び出す。実際のコードは<a href="https://docs.python.org/ja/3/howto/sockets.html#using-a-socket">ソケットプログラミングHOWTO</a>に載っている。</p>
-
 <h3 id="実行結果">実行結果</h3>
-
 <p><code>server.py</code>を起動した後に、<code>client.py</code>を起動する。</p>
-
 <p><code>server.py</code>では以下の文が出力される。
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">Connected by(&#39;127.0.0.1&#39;, 51894)</code></pre></div></p>
-
 <p><code>client.py</code>では以下の文が出力される。
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">b&#39;Hello, World&#39;</code></pre></div></p>
-
 <p>なお、serverを連続で起動しようとすると「Address already in use」みたいなエラーが出る。これは前回も説明したようなエラーで、<code>setsockopt</code>関数を利用して解決できる。これについては今回は省略する。30秒くらい待つと復活するようなので我慢する。</p>
-
 <h2 id="with構文の利用">with構文の利用</h2>
-
 <p>Pythonにはwith構文というものがある。これは例えばファイルのクローズ処理を自動で行ってくれる(注意:with構文自体はファイル操作のためだけの構文ではない)。ソケットでもwith構文が利用できる。</p>
-
-<h3 id="server-py-1">server.py</h3>
-
+<h3 id="serverpy-1">server.py</h3>
 <div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span><span class="p">)</span>
     <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Connected by</span><span class="s2">&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">sock</span><span class="p">:</span>
-        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&#34;Hello, World&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></code></pre></div>
-
-<h3 id="client-py-1">client.py</h3>
-
+        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Hello, World</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">utf-8</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span></code></pre></div>
+<h3 id="clientpy-1">client.py</h3>
 <div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">sock</span><span class="p">:</span>
-    <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">localhost</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code></pre></div>
-
-<h3 id="server-py-2">server.py</h3>
-
+<h3 id="serverpy-2">server.py</h3>
 <h2 id="http通信の基礎知識">HTTP通信の基礎知識</h2>
-
 <p>PythonにはHTTP通信用のモジュールがあるのでそれを使うべきなのだが、勉強としてSocket通信でHTTP通信っぽいことをしてみる。</p>
-
 <p>HTTP通信の基本は「リクエスト」と「レスポンス」である。クライアントからサーバーに「何かデータをください」などと要求するメッセージを送る。サーバーはそれを受け取って、適切なメッセージを返す。ブラウザ上でページが表示されるのも同じ仕組みで、ここでは「このページのHTMLファイルが欲しい」とブラウザが要求し、サーバーはそれに応じてHTMLファイルを返す。</p>
-
 <figure>
     <img src="./http-model.svg"/> 
 </figure>
 
-
 <p>HTTPプロトコルとは、「サーバーはリクエストを受け取って、レスポンスを返す」「クライアントはリクエストを受け取って、レスポンスを受け取る」「リクエストはこんな書式で、レスポンスはこんな書式にしてね」などの取り決めに過ぎない。具体的な通信方法については下位のプロトコルが決めることであって、TCPやUDPでなくても構わない(もちろん、他に通信方法があればの話だが)。</p>
-
 <p>リクエストもレスポンスも、下位プロトコルにとっては結局ただのデータに過ぎないことに注意。サーバーもクライアントも、単にデータを送受信し、その前後で何か処理をしているに過ぎない。</p>
-
 <p>もう一度まとめると、サーバーは以下の動作を行う。</p>
-
 <ol>
 <li>リクエストを受け取る</li>
 <li>リクエストを解釈し、適切なレスポンスを送信する</li>
 </ol>
-
 <p>クライアントは以下の動作を行う。</p>
-
 <ol>
 <li>リクエストを送信する</li>
 <li>レスポンスを受け取る</li>
 </ol>
-
 <h2 id="httpサーバーもどきを作る">HTTPサーバーもどきを作る</h2>
-
 <p>とりあえずどんなリクエストであっても決まったレスポンスしか返さないHTTP通信もどきを作ってみる。</p>
-
 <p><code>server.py</code>を次のようにする。<code>client.py</code>は作らないことにする。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="kn">import</span> <span class="nn">socket</span>
 
-<span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span><span class="se">\
-</span><span class="se"></span><span class="s1">HTTP/1.1 200 OK
-</span><span class="s1">Content-Type: text/html
-</span><span class="s1">
-</span><span class="s1">&lt;!DOCTYPE html&gt;
-</span><span class="s1">&lt;html&gt;
-</span><span class="s1">  &lt;head&gt;
-</span><span class="s1">    &lt;meta charset=&#34;utf-8&#34;&gt;
-</span><span class="s1">    &lt;title&gt;Page Title&lt;/title&gt;
-</span><span class="s1">  &lt;/head&gt;
-</span><span class="s1">  &lt;body&gt;
-</span><span class="s1">    &lt;h1&gt;Hello, World&lt;/h1&gt;
-</span><span class="s1">  &lt;/body&gt;
-</span><span class="s1">&lt;/html&gt;
-</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="n">response</span> <span class="o">=</span> <span class="sa"></span><span class="s1">&#39;&#39;&#39;</span><span class="se">\
+</span><span class="se"></span><span class="s1">HTTP/1.1 200 OK</span><span class="s1">
+</span><span class="s1"></span><span class="s1">Content-Type: text/html</span><span class="s1">
+</span><span class="s1"></span><span class="s1">
+</span><span class="s1"></span><span class="s1">&lt;!DOCTYPE html&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">&lt;html&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">  &lt;head&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">    &lt;meta charset=</span><span class="s1">&#34;</span><span class="s1">utf-8</span><span class="s1">&#34;</span><span class="s1">&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">    &lt;title&gt;Page Title&lt;/title&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">  &lt;/head&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">  &lt;body&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">    &lt;h1&gt;Hello, World&lt;/h1&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">  &lt;/body&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">&lt;/html&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">&#39;&#39;&#39;</span>
 
 <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span><span class="p">)</span>
     <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Connected by</span><span class="s2">&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">sock</span><span class="p">:</span>
         <span class="n">request</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Request: &#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></code></pre></div>
-
+        <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Request: </span><span class="s2">&#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">utf-8</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">utf-8</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span></code></pre></div>
 <h2 id="レスポンスの書式">レスポンスの書式</h2>
-
 <p>responseは「ステータス行」「ヘッダ」「ボディ」で構成される。</p>
-
 <p>ステータス行は以下の部分。<code>HTTP/1.1</code>によってプロトコルとバージョンを識別する。後の数字で「通信に成功したか」「失敗した場合、その原因は何か」を識別する。この数字のことを「ステータスコード」と呼び、後に続くメッセージを「ステータスメッセージ」と呼ぶ。ステータスコード/メッセージの種類は多種多様である。以下の例は<code>200 OK</code>であるが、これは通信に成功したことを表す。例えばページが存在しなかった場合は<code>404 Not Found</code>が記される。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">HTTP/1.1 200 OK</code></pre></div>
-
 <p>ヘッダは<code>フィールド名: 値</code>の形式で記述される。フィールドの種類は多種多様である。</p>
-
 <p>例えば以下では、<code>Content-Type</code>というフィールドを指定している。これはボディがどんな種類のデータであるかを指定し、ここでは「ボディ部はhtmlで書かれている」ことを表している(なぜ<code>text/</code>という接頭辞がついているのかというと、htmlは<code>text</code>という分類に属しているかららしい)。単なるテキストファイルであることを明示したい場合は<code>text/plain</code>を指定する。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">Content-Type: text/html</code></pre></div>
-
 <p>続いて1行空行を空けた後に、ボディが記述される。今回はhtmlを返すことにする。
 <div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Page Title<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello, World<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>\</code></pre></div></p>
-
+<span class="p">&lt;</span><span class="nt">html</span><span class="p"></span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p"></span><span class="p">&gt;</span>Page Title<span class="p">&lt;</span><span class="p">/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="p">/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p"></span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p"></span><span class="p">&gt;</span>Hello, World<span class="p">&lt;</span><span class="p">/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="p">/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="p">/</span><span class="nt">html</span><span class="p">&gt;</span>\</code></pre></div></p>
 <p>HTTPクライアントはレスポンスを読み取り、ボディ部から欲しいデータを読み取る。</p>
-
 <h2 id="httpサーバもどきとの通信">HTTPサーバもどきとの通信</h2>
-
 <p>curlコマンドやブラウザはHTTPクライアントの一種である。試しにこれらを使って<code>server.py</code>と通信してみる。</p>
-
 <h3 id="curlコマンドの場合">curlコマンドの場合</h3>
-
 <p><code>server.py</code>を実行した後、以下のコマンドを実行する。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ curl localhost:8000</code></pre></div>
-
 <p>すると次のメッセージが出力される。curlがHTTPリクエストを<code>server.py</code>に送り、レスポンスを受け取った証拠である。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
   &lt;head&gt;
@@ -284,55 +217,35 @@
     &lt;h1&gt;Hello, World&lt;/h1&gt;
   &lt;/body&gt;
 &lt;/html&gt;</code></pre></div>
-
 <p>一方<code>server.py</code>では次の文が出力されている。これが、curlが送ってきたリクエストである。本来はこのリクエスト内容をきちんと解釈する必要があるが、HTTPサーバーもどきなのでただ受け取っているだけ。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">Request: GET / HTTP/1.1
 Host: localhost:8000
 User-Agent: curl/7.54.0
 Accept: */*</code></pre></div>
-
 <h3 id="リクエストの書式">リクエストの書式</h3>
-
 <p>リクエストは「リクエスト行」「ヘッダ」「ボディ」で構成される。</p>
-
 <p>リクエスト行は<code>Request: メソッド パス プロトコル情報</code>の書式で記述される。
 メソッドには、サーバーに対してどんな要求をするかを指定する。何か情報をもらうだけなら<code>GET</code>、サーバーに情報を送って何かしてほしい場合は<code>POST</code>を指定する。他にも<code>PUT</code>や<code>DELETE</code>などいろいろある。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">Request: GET / HTTP/1.1</code></pre></div>
-
 <p>パスには、サーバーの何に対してリクエストを送るかを指定する。例えば、「localhostにある<code>hello</code>ディレクトリの<code>foo.html</code>の内容が欲しい」というリクエストを送りたい場合、curlでは次のように送る。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ curl localhost:8000/hello/foo.html</code></pre></div>
-
 <p><code>server.py</code>では次のように出力されている。パス部分に注目。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">Request: GET /hello/foo.html HTTP/1.1
 Host: localhost:8000
 User-Agent: curl/7.54.0
 Accept: */*</code></pre></div>
-
 <p>もちろん、「どんなパスが来たらどんな処理をして、どんなレスポンスを送るか」についてはサーバーが判断する。実際、今回の場合パスのことは一切考えていないため、どんなパスでも同じHTML文書が帰ってくる。ちなみにDjangoではこれを<code>urls.py</code>で行えるように設計されていた。</p>
-
 <p>リクエスト行に続いて、ヘッダが現れる。これはレスポンスのときと同様、<code>フィールド名: 値</code>の書式で表される。</p>
-
 <p><code>POST</code>メソッドなどを利用して何かしらの情報をサーバーに送りたい場合、ヘッダの次にボディを書く。今回の例は<code>GET</code>メソッドなので、ボディには何も書かない。</p>
-
 <h3 id="ブラウザを使った場合">ブラウザを使った場合</h3>
-
 <p>今度はブラウザを利用して、<code>server.py</code>と通信してみる。</p>
-
 <p><code>server.py</code>を起動した後、ブラウザから<code>localhost:8000</code>にアクセスする。</p>
-
 <p>以下はSafariでアクセスした場合の結果。ブラウザはヘッダから<code>Content-Type: text/html</code>を見つけると、ボディ部に書かれたHTML文書を元に描画してくれる。</p>
-
 <figure>
     <img src="./browser.png"/> 
 </figure>
 
-
 <p><code>server.py</code>の出力は以下のようになる。curlコマンドに比べ、いろいろなものをヘッダに乗せてリクエストを送っていることが分かる。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">Request: GET /hello/ HTTP/1.1
 Host: localhost:8000
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
@@ -342,42 +255,37 @@ User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15
 Accept-Language: ja-jp
 Accept-Encoding: gzip, deflate
 Connection: keep-alive</code></pre></div>
-
 <h2 id="複数回の通信">複数回の通信</h2>
-
 <p>現在の<code>server.py</code>は、1人のクライアントと通信が終わると、プログラム自体が終了してしまう。これを防ぐのは簡単で、accept以下をwhileループにすれば良い。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-py" data-lang="py"><span class="kn">import</span> <span class="nn">socket</span>
 
-<span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span><span class="se">\
-</span><span class="se"></span><span class="s1">HTTP/1.1 200 OK
-</span><span class="s1">Content-Type: text/html
-</span><span class="s1">
-</span><span class="s1">&lt;!DOCTYPE html&gt;
-</span><span class="s1">&lt;html&gt;
-</span><span class="s1">  &lt;head&gt;
-</span><span class="s1">    &lt;meta charset=&#34;utf-8&#34;&gt;
-</span><span class="s1">    &lt;title&gt;Page Title&lt;/title&gt;
-</span><span class="s1">  &lt;/head&gt;
-</span><span class="s1">  &lt;body&gt;
-</span><span class="s1">    &lt;h1&gt;Hello, World&lt;/h1&gt;
-</span><span class="s1">  &lt;/body&gt;
-</span><span class="s1">&lt;/html&gt;</span><span class="se">\
+<span class="n">response</span> <span class="o">=</span> <span class="sa"></span><span class="s1">&#39;&#39;&#39;</span><span class="se">\
+</span><span class="se"></span><span class="s1">HTTP/1.1 200 OK</span><span class="s1">
+</span><span class="s1"></span><span class="s1">Content-Type: text/html</span><span class="s1">
+</span><span class="s1"></span><span class="s1">
+</span><span class="s1"></span><span class="s1">&lt;!DOCTYPE html&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">&lt;html&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">  &lt;head&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">    &lt;meta charset=</span><span class="s1">&#34;</span><span class="s1">utf-8</span><span class="s1">&#34;</span><span class="s1">&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">    &lt;title&gt;Page Title&lt;/title&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">  &lt;/head&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">  &lt;body&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">    &lt;h1&gt;Hello, World&lt;/h1&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">  &lt;/body&gt;</span><span class="s1">
+</span><span class="s1"></span><span class="s1">&lt;/html&gt;</span><span class="se">\
 </span><span class="se"></span><span class="s1">&#39;&#39;&#39;</span>
 
 <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span><span class="p">)</span>
     <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Connected by</span><span class="s2">&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">sock</span><span class="p">:</span>
             <span class="n">request</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Request: &#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-            <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></code></pre></div>
-
+            <span class="k">print</span><span class="p">(</span><span class="sa"></span><span class="s2">&#34;</span><span class="s2">Request: </span><span class="s2">&#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">utf-8</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">utf-8</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span></code></pre></div>
 <p><code>server.py</code>の終了はCtrl+Cで行う。Ctrl+CによってKeyboardInterrupt例外が投げられ、プログラムは終了する。with構文の性質上、例外が投げられたらソケットを閉じてくれる。(ソース:<a href="https://docs.python.org/ja/3/reference/compound_stmts.html#the-with-statement">with構文の説明</a>と<a href="https://docs.python.org/ja/3/library/socket.html#socket-objects">socketオブジェクト説明の2段落目</a>)</p>
-
 <p>今回はここまで。</p>
 
 </article>

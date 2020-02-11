@@ -26,7 +26,7 @@ AppleのHuman Interface GuidelineにModalityの意味が書いてあって、こ
 準備 まずはボタンをクリックすると表示されるものだけ作る。
 Main.storyboard 表示元にはボタンを配置する。表示先はラベルを配置し、適切なConstraintを設定しておく。
   ViewController.swift ボタンのAction接続を作る。ボタンがタップされたら遷移するようにする。
-class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view.</description>
+class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. } @IBAction func buttonTapped(_ sender: Any) { let vc = (storyboard?</description>
     </item>
     
   </channel>

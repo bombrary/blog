@@ -18,9 +18,9 @@
       
       <guid>https://bombrary.github.io/blog/posts/my-first-post/</guid>
       <description>このブログではHugoを使っている。
- Syntax highlighting #include &amp;lt;iostream&amp;gt; int main() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello&amp;#34; &amp;lt;&amp;lt; std::endl; return 0; } 
- KaTeX
- inline: $x = 2$ block: $$ x^2 + x + 1 = 0 $$   </description>
+  Syntax highlighting #include &amp;lt;iostream&amp;gt; int main() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello&amp;#34; &amp;lt;&amp;lt; std::endl; return 0; } 
+  KaTeX
+ inline: $x = 2$ block: $$ x^2 + x + 1 = 0 $$    </description>
     </item>
     
   </channel>

@@ -18,13 +18,13 @@
       
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/</guid>
       <description>今度は外部ライブラリChartsを利用して、棒グラフを作成してみる。
-目標  値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる  1&amp;#x301C;3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
+目標  値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる  1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
  ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。  その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。
 Chartsのインストール まず、CocoaPodsがインストールされていることが前提。
 プロジェクトフォルダで以下のコマンドを実行。
-$ pod init  podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。
-pod &amp;#39;Charts&amp;#39; プロジェクトフォルダで以下のコマンドを実行。
-$ pod install  以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。
+$ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。
+pod &#39;Charts&#39; プロジェクトフォルダで以下のコマンドを実行。
+$ pod install 以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。
 基本 import UIKit import Charts struct BarChartModel { let value: Int let name: String } class ViewController: UIViewController { let barItems = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] override func viewDidLoad() { super.</description>
     </item>
     
@@ -59,7 +59,7 @@ class ViewController: UIViewController { var constraint: NSLayoutConstraint! ove
 基本的にはこちらを参考にしながら進めていく。
 UIStackViewをコード上で使う基本 とりあえず使い方を確認する。
 Main.storyboard こんな感じにする。
-  ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.</description>
+  ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.layoutMargins.right = 20 for (color, percentage) in zip(colors, percentages) { addBar(bgColor: color, percentage: percentage) } } private func addBar(bgColor: UIColor, percentage: CGFloat ) { let view = UIView() let height = graphStackView.</description>
     </item>
     
     <item>
@@ -68,7 +68,7 @@ Main.storyboard こんな感じにする。
       <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-cg02/</guid>
-      <description>目標  前回の棒グラフを複数ページにする  今回は、1ページに最大5本の棒が並ぶ、とする。  ページは横スライドで切り替える  プロジェクトは前回のものを引き継がず、新しく作る。
+      <description>目標  前回の棒グラフを複数ページにする  今回は、1ページに最大5本の棒が並ぶ、とする。   ページは横スライドで切り替える  プロジェクトは前回のものを引き継がず、新しく作る。
 用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。
 var dataSource = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。
 UScrollViewの配置 Main.storyboardにUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。

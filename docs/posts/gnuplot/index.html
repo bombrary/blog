@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>gnuplotの使い方メモ | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.64.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -55,94 +55,58 @@
       </div>
     </div>
   </header>
-  
-
-<p>備忘録に。</p>
-
+  <p>備忘録に。</p>
 <h2 id="インストール">インストール</h2>
-
 <p>Macの場合はbrewでインストールできる。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">$ brew install gnuplot</code></pre></div>
-
 <p><code>gnuplot</code>コマンドで起動。</p>
-
 <h2 id="ファイルをプロットする">ファイルをプロットする</h2>
-
 <p>例えば<code>data.txt</code>が以下のようになっているとする。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">#x #y1 #y2
 0 1 2
 1 2 1
 2 0 2
 3 1 1</code></pre></div>
-
 <p>これを描画する。</p>
-
 <p><code>using X:Y</code>で、X番目の列を横軸、Y番目の列を縦軸にする。</p>
-
-<p><code>w lp</code>とは&rdquo;with linespoints&rdquo;の略。つまり線と点を描画する。<code>w l</code>だと&rdquo;with line&rdquo;、<code>w lp lt 3 lw 2</code>だと&rdquo;with linepoints linetype 3 linewidth 2&rdquo;という意味。いろいろある。</p>
-
+<p><code>w lp</code>とは&quot;with linespoints&quot;の略。つまり線と点を描画する。<code>w l</code>だと&quot;with line&rdquo;、<code>w lp lt 3 lw 2</code>だと&quot;with linepoints linetype 3 linewidth 2&quot;という意味。いろいろある。</p>
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ set xlabel &#34;X axis&#34;
 $ set ylabel &#34;Y axis&#34;
 $ plot &#34;data.txt&#34; using 1:2 w pl</code></pre></div>
-
 <h2 id="軸の範囲指定">軸の範囲指定</h2>
-
 <p>例えばx軸を[0,3000]の範囲に制限して描画したいなら、次のコマンドを打つ。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ set xrange [0:3000]</code></pre></div>
-
 <p>こんな感じで、gnuplotは<code>set 属性名 値</code>で様々な設定をする印象がある。</p>
-
 <h2 id="グラフの重ね書き">グラフの重ね書き</h2>
-
 <h3 id="replotを使う方法">replotを使う方法</h3>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ plot &#34;data.txt&#34; using 1:2 w pl
 $ replot &#34;data.txt&#34; using 1:3 w pl</code></pre></div>
-
 <h3 id="カンマで区切る方法">カンマで区切る方法</h3>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ plot &#34;data.txt&#34; using 1:2 w pl, &#34;data.txt&#34; using 1:3 w pl</code></pre></div>
-
 <h2 id="png形式で出力">png形式で出力</h2>
-
 <p>Macでは<code>set terminal qt</code>だったが、Linuxだと<code>set terminal x11</code>みたい。現在のterminalの確認方法については後述。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ set terminal png
 $ set output &#34;output.png&#34;
 ...(グラフを描画するためのコマンドを入力)
 $ set terminal qt
 $ set output</code></pre></div>
-
 <h3 id="グラフを重ねる場合">グラフを重ねる場合</h3>
-
 <p><code>replot</code>を用いる場合は、<code>replot</code>のたびに<code>set output &quot;output.png&quot;</code>を呼び出す必要がある。これはgnuplotの仕様らしい。</p>
-
 <p>カンマで区切る場合は問題なくできる。</p>
-
 <h2 id="おまけ-terminalの確認と一覧">(おまけ) terminalの確認と一覧</h2>
-
 <p>Macだと<code>set terminal x11</code>でエラーを起こした。<code>x11</code>は存在しないらしい。そもそもデフォルトのterminalは何か。次のコマンドで調べられる。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ show terminal</code></pre></div>
-
 <p>gnuplotが何のterminalを持っているかは、次のコマンドで調べられる。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ set terminal</code></pre></div>
-
 <h2 id="スクリプトを書く">スクリプトを書く</h2>
-
 <p>gnuplotを起動していちいちコマンドを打つのは面倒なので、あらかじめスクリプトでまとめておく。例えば以下のような感じ。拡張子はなんでも良さそうだが、とりあえず<code>test.plt</code>とする。バックスラッシュ + 改行でつなげると一つのコマンドとして認識される。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-plt" data-lang="plt"><span class="k">set</span> <span class="nb">terminal</span> <span class="n">png</span>
-<span class="k">set</span> <span class="nb">output</span> <span class="s">&#34;output.png&#34;</span>
-<span class="k">set</span> <span class="nb">xlabel</span> <span class="s">&#34;X axis&#34;</span>
-<span class="k">set</span> <span class="nb">ylabel</span> <span class="s">&#34;Y axis&#34;</span>
-<span class="k">plot</span> <span class="s">&#34;data.txt&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">2</span> <span class="nb">w</span> <span class="n">lp</span><span class="o">,</span> \
-  <span class="s">&#34;data.txt&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">3</span> <span class="nb">w</span> <span class="n">lp</span><span class="o">,</span> \
-  <span class="s">&#34;data.txt&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">4</span> <span class="nb">w</span> <span class="n">lp</span>
+<span class="k">set</span> <span class="nb">output</span> <span class="s">&#34;</span><span class="s">output.png</span><span class="s">&#34;</span>
+<span class="k">set</span> <span class="nb">xlabel</span> <span class="s">&#34;</span><span class="s">X axis</span><span class="s">&#34;</span>
+<span class="k">set</span> <span class="nb">ylabel</span> <span class="s">&#34;</span><span class="s">Y axis</span><span class="s">&#34;</span>
+<span class="k">plot</span> <span class="s">&#34;</span><span class="s">data.txt</span><span class="s">&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">2</span> <span class="nb">w</span> <span class="n">lp</span><span class="o">,</span> \
+  <span class="s">&#34;</span><span class="s">data.txt</span><span class="s">&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">3</span> <span class="nb">w</span> <span class="n">lp</span><span class="o">,</span> \
+  <span class="s">&#34;</span><span class="s">data.txt</span><span class="s">&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">4</span> <span class="nb">w</span> <span class="n">lp</span>
 <span class="k">set</span> <span class="nb">terminal</span> <span class="n">qt</span>
 <span class="k">set</span> <span class="nb">output</span></code></pre></div>
 

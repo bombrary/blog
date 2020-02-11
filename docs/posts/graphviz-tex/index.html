@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>GraphvizでTeXの数式を表示する | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.64.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -55,44 +55,30 @@
       </div>
     </div>
   </header>
-  
-
-<p>Graphvizはグラフを描画してくれる素晴らしいソフトなのだが、単体では数式を表示することができない。</p>
-
+  <p>Graphvizはグラフを描画してくれる素晴らしいソフトなのだが、単体では数式を表示することができない。</p>
 <h2 id="dot2tex">dot2tex</h2>
-
 <p>dot2texを利用すると、グラフのラベルに数式が使えるようになる。</p>
-
 <p>次の手順でグラフを作る。</p>
-
 <ol>
 <li>dot言語でグラフを書く</li>
 <li><code>dot2tex</code>でdotファイルをtexファイルに変換</li>
 <li>texを使ってpdfなりsvgなりを作る。
-
 <ul>
 <li>pdfなら<code>platex + dvipdfmx</code>または<code>ptex2pdf</code>を使う。</li>
 <li>svgなら<code>platex + dvisvgm</code>を使う。</li>
-</ul></li>
+</ul>
+</li>
 </ol>
-
 <p>いやGraphviz使ってないじゃないか、と思うかもしれない。しかし<a href="https://dot2tex.readthedocs.io/en/latest/installation_guide.html#dependencies">Dependensies</a>にGraphvizが含まれているから、おそらくGraphvizの描画エンジンを利用してノードの位置を決定しているのだと思う。</p>
-
 <h2 id="インストール">インストール</h2>
-
 <p>Python製のソフトウェアみたいで、pip経由でインストールする。</p>
-
 <pre class="cui">
 $ pip3 install dot2tex
 </pre>
-
 <h2 id="利用の手順">利用の手順</h2>
-
 <h3 id="dot言語でグラフを書く">dot言語でグラフを書く</h3>
-
 <p>今回は次のようにする。ファイル名は適当に<code>graph.dot</code>とする。</p>
-
-<pre><code class="language-dot">digraph {
+<pre><code class="language-dot" data-lang="dot">digraph {
   graph [ rankdir=&quot;LR&quot; ]
   node [ shape=&quot;circle&quot;, fixedsize=true, height=0.6 ]
   Q0 [texlbl=&quot;$q_0$&quot;];
@@ -127,38 +113,25 @@ $ pip3 install dot2tex
   Q11 -&gt; Q12 [label=&quot; &quot;, texlbl=&quot;$c$&quot;];
   Q12 -&gt; Q13 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
 }
-</code></pre>
-
-<p><code>texlbl</code>とはdot2texが読むための属性。おそらくtex labelの略で、これがnodeまたはedgeのラベルとして、texファイルに直接展開される。そのため、数式を描きたいなら<code>$</code>で囲む。もしdotファイル上にlabel属性が定義されていたら、<code>texlbl</code>の内容に上書きされる。</p>
-
-<p>edgeに対して<code>texlbl</code>を使いたいなら、ダミー用の<code>label</code>属性をつける必要がある。これをやらないとラベルが表示されないので注意(<a href="https://dot2tex.readthedocs.io/en/latest/usage_guide.html#labels">参考</a>)。しかも、<strong>ダミーに指定するlabelの内容は空文字では駄目で、空白でも良いから1文字以上の文字列を指定する必要がある。</strong>これが分からなくて数十分はまっていた。</p>
-
+</code></pre><p><code>texlbl</code>とはdot2texが読むための属性。おそらくtex labelの略で、これがnodeまたはedgeのラベルとして、texファイルに直接展開される。そのため、数式を描きたいなら<code>$</code>で囲む。もしdotファイル上にlabel属性が定義されていたら、<code>texlbl</code>の内容に上書きされる。</p>
+<p>edgeに対して<code>texlbl</code>を使いたいなら、ダミー用の<code>label</code>属性をつける必要がある。これをやらないとラベルが表示されないので注意(<a href="https://dot2tex.readthedocs.io/en/latest/usage_guide.html#labels">参考</a>)。しかも、**ダミーに指定するlabelの内容は空文字では駄目で、空白でも良いから1文字以上の文字列を指定する必要がある。**これが分からなくて数十分はまっていた。</p>
 <h3 id="texに変換">texに変換</h3>
-
 <pre class="cui">
 $ dot2tex graph.dot > graph.tex
 </pre>
-
 <h3 id="svgに変換">svgに変換</h3>
-
 <pre class="cui">
 $ platex graph.tex
 $ dvisvgm graph.dvi
 </pre>
-
 <p>他にも、一旦pdfに変換してから<code>pdftocairo</code>を使ってsvgに変換するのもあり。</p>
-
 <p>出来上がった画像がこちら。</p>
-
 <figure>
     <img src="./graph.svg"/> 
 </figure>
 
-
 <p>良い感じ。</p>
-
 <h2 id="参考">参考</h2>
-
 <ul>
 <li><a href="https://dot2tex.readthedocs.io/en/latest/">dot2tex</a></li>
 <li><a href="https://www.graphviz.org">Graphviz</a></li>

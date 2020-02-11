@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmで超簡易Todoリスト | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.64.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -49,11 +49,8 @@
     </div>
   </header>
   <p>Todoリストと言っても、フィールドに入力した内容が<code>li</code>要素として追加されるだけ。</p>
-
 <p>Elm習いたてなので、何か無駄があるかも。</p>
-
 <p>個人的になるほどと思った点は<code>List.map</code>を利用して<code>li</code>要素を生成するところで、これは要素を生成する関数が子要素の<strong>リスト</strong>を引数に取るから実現できる。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">import </span><span class="nc">Browser</span>
 <span class="kn">import </span><span class="nc">Html</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 <span class="kn">import </span><span class="nc">Html.Attributes</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
@@ -75,8 +72,8 @@
 
 <span class="nv">init</span> <span class="nf">:</span> <span class="kt">Model</span>
 <span class="nv">init</span> <span class="nf">=</span>
-  <span class="p">{</span> <span class="nv">todos</span> <span class="nf">=</span> <span class="p">[]</span>
-  <span class="p">,</span> <span class="nv">input</span> <span class="nf">=</span> <span class="kt">Todo</span> <span class="s">&#34;&#34;</span>
+  <span class="p">{</span> <span class="nv">todos</span> <span class="nf">=</span> <span class="p">[</span><span class="p">]</span>
+  <span class="p">,</span> <span class="nv">input</span> <span class="nf">=</span> <span class="kt">Todo</span> <span class="s">&#34;</span><span class="s">&#34;</span>
   <span class="p">}</span>
 
 <span class="kr">type</span> <span class="kt">Msg</span> <span class="nf">=</span> <span class="kt">Add</span> <span class="nf">|</span> <span class="kt">Change</span> <span class="kt">String</span>
@@ -95,15 +92,15 @@
 
 <span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span> 
-  <span class="nv">div</span> <span class="p">[]</span>
-    <span class="p">[</span> <span class="nv">input</span> <span class="p">[</span> <span class="nv">type_</span> <span class="s">&#34;text&#34;</span><span class="p">,</span> <span class="nv">placeholder</span> <span class="s">&#34;What will you do?&#34;</span><span class="p">,</span> <span class="nv">onInput</span> <span class="kt">Change</span><span class="p">]</span> <span class="p">[]</span>
-    <span class="p">,</span> <span class="nv">button</span> <span class="p">[</span> <span class="nv">onClick</span> <span class="kt">Add</span> <span class="p">]</span> <span class="p">[</span> <span class="nv">text</span> <span class="s">&#34;Add&#34;</span> <span class="p">]</span>
-    <span class="p">,</span> <span class="nv">ul</span> <span class="p">[]</span> <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="nv">viewLi</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">todos</span><span class="p">)</span>
+  <span class="nv">div</span> <span class="p">[</span><span class="p">]</span>
+    <span class="p">[</span> <span class="nv">input</span> <span class="p">[</span> <span class="nv">type_</span> <span class="s">&#34;</span><span class="s">t</span><span class="s">e</span><span class="s">x</span><span class="s">t</span><span class="s">&#34;</span><span class="p">,</span> <span class="nv">placeholder</span> <span class="s">&#34;</span><span class="s">W</span><span class="s">h</span><span class="s">a</span><span class="s">t</span><span class="s"> </span><span class="s">w</span><span class="s">i</span><span class="s">l</span><span class="s">l</span><span class="s"> </span><span class="s">y</span><span class="s">o</span><span class="s">u</span><span class="s"> </span><span class="s">d</span><span class="s">o</span><span class="s">?</span><span class="s">&#34;</span><span class="p">,</span> <span class="nv">onInput</span> <span class="kt">Change</span><span class="p">]</span> <span class="p">[</span><span class="p">]</span>
+    <span class="p">,</span> <span class="nv">button</span> <span class="p">[</span> <span class="nv">onClick</span> <span class="kt">Add</span> <span class="p">]</span> <span class="p">[</span> <span class="nv">text</span> <span class="s">&#34;</span><span class="s">A</span><span class="s">d</span><span class="s">d</span><span class="s">&#34;</span> <span class="p">]</span>
+    <span class="p">,</span> <span class="nv">ul</span> <span class="p">[</span><span class="p">]</span> <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="nv">viewLi</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">todos</span><span class="p">)</span>
     <span class="p">]</span>
 
 <span class="nv">viewLi</span> <span class="nf">:</span> <span class="kt">Todo</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">viewLi</span> <span class="nv">todo</span> <span class="nf">=</span>
-  <span class="nv">li</span> <span class="p">[]</span> <span class="p">[</span> <span class="nv">text</span> <span class="nv">todo</span><span class="nf">.</span><span class="nv">description</span> <span class="p">]</span></code></pre></div>
+  <span class="nv">li</span> <span class="p">[</span><span class="p">]</span> <span class="p">[</span> <span class="nv">text</span> <span class="nv">todo</span><span class="nf">.</span><span class="nv">description</span> <span class="p">]</span></code></pre></div>
 
 </article>
 

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>JavaScript/Elm ビット演算のときにはまったこと | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.59.1" />
+<meta name="generator" content="Hugo 0.64.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -55,39 +55,32 @@
       </div>
     </div>
   </header>
-  
-
-<h2 id="結論">結論</h2>
-
+  <h2 id="結論">結論</h2>
 <ul>
-<li>JavaScriptにおいて、<code>&gt;&gt;&gt;</code>以外のビット演算は32ビット符号付き整数値として扱われる。<br />
-&rarr; 例えば<code>&amp;|^~</code>の計算前に、オペランドに型変換が起こる(<a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators#Bitwise_logical_operators">ソース</a>)。
-
+<li>JavaScriptにおいて、<code>&gt;&gt;&gt;</code>以外のビット演算は32ビット符号付き整数値として扱われる。<br>
+→ 例えば<code>&amp;|^~</code>の計算前に、オペランドに型変換が起こる(<a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators#Bitwise_logical_operators">ソース</a>)。
 <ul>
 <li>JSにおいて数字は<code>Number</code>という型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい</li>
-</ul></li>
+</ul>
+</li>
 <li>JavaScriptにおいて、<code>x &gt;&gt;&gt; 0</code>を使うと符号なし整数になる。</li>
 <li>負数を2で割り続けても、コンピュータにおける2進表現にはならない。
-
 <ul>
 <li>これはすごく当たり前だった</li>
 <li>コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。</li>
-</ul></li>
+</ul>
+</li>
 <li>ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。
-
 <ul>
 <li>各種ビット演算は、JSの演算をそのまま使っているっぽい(<a href="https://github.com/elm/core/blob/1.0.4/src/Elm/Kernel/Bitwise.js">ソース</a>)</li>
-</ul></li>
 </ul>
-
+</li>
+</ul>
 <h2 id="検証コード">検証コード</h2>
-
 <pre class="cui">
 $ elm init
 </pre>
-
 <p><code>src/MyBitwise.elm</code>を作成し、内容を以下のようにする。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">MyBitwise</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 
 <span class="kn">import </span><span class="nc">Bitwise</span>
@@ -101,33 +94,25 @@ $ elm init
     <span class="p">(</span><span class="nv">toBinaryString</span> <span class="nv">rem</span><span class="p">)</span> <span class="nf">++</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span><span class="p">)</span>
   <span class="kr">else</span>
     <span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span></code></pre></div>
-
 <p>elm replを起動し、試す。まず必要なモジュールをimportする。</p>
-
 <pre class="cui">
 $ elm repl
 > import Bitwise
 > import MyBitwise exposing (..)
 </pre>
-
 <p>2<sup>32</sup>-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。</p>
-
 <pre class="cui">
 > toBinaryString 4294967295
 <span class="yellow">"11111111111111111111111111111111"</span> <span class="dgray">: String</span>
 > toBinaryString -1
 <span class="yellow">"11111111111111111111111111111111"</span> <span class="dgray">: String</span>
 </pre>
-
 <p><code>Bitwise.and</code>の計算結果は符号付き整数値とみなされるので、以下では4294967295ではなく-1と出力される。</p>
-
 <pre class="cui">
 > Bitwise.and 4294967295 4294967295
 <span class="magenta">-1</span> <span class="dgray">: Int</span>
 </pre>
-
 <p>ここで、<code>MyBitwise.elm</code>にて次の関数を定義する。ビットシフトの部分を2でのmodと割り算に置き換えただけ。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">toBinaryStringWrong</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
 <span class="nv">toBinaryStringWrong</span> <span class="nv">x</span> <span class="nf">=</span>
   <span class="kr">let</span> <span class="nv">bit</span> <span class="nf">=</span> <span class="nv">modBy</span> <span class="mi">2</span> <span class="nv">x</span>
@@ -137,33 +122,24 @@ $ elm repl
     <span class="p">(</span><span class="nv">toBinaryString</span> <span class="nv">rem</span><span class="p">)</span> <span class="nf">++</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span><span class="p">)</span>
   <span class="kr">else</span>
     <span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span></code></pre></div>
-
 <p>2つの関数の計算結果を比べてみると、<code>toBinaryStringWrong</code>の結果が1になってしまい、これはおかしい。</p>
-
 <pre class="cui">
 > toBinaryString (Bitwise.and 4294967295 4294967295)
 <span class="yellow">"11111111111111111111111111111111"</span> <span class="dgray">: String</span>
 > toBinaryStringWrong (Bitwise.and 4294967295 4294967295)
 <span class="yellow">"1"</span> <span class="dgray">: String</span>
 </pre>
-
 <p>ちなみに符号なし整数に変換するには、次のようにする。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">showAsUnsigned</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">Int</span>
 <span class="nv">showAsUnsigned</span> <span class="nv">x</span> <span class="nf">=</span>
   <span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">shiftRightZfBy</span> <span class="mi">0</span> <span class="nv">x</span></code></pre></div>
-
 <pre class="cui">
 > showAsUnsigned -1
 <span class="magenta">4294967295</span> <span class="dgray">: Int</span>
 </pre>
-
 <h2 id="考えるに至った背景">考えるに至った背景</h2>
-
 <p>IPアドレスとサブネットマスクからネットワーク部を算出するプログラムを書いていたら、この状況に出くわした。</p>
-
 <p>IPアドレスは次のように持っているものとする。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">IPAddr</span> <span class="nf">=</span> <span class="kt">IPAddr</span> <span class="kt">Int</span>
 <span class="kr">type</span> <span class="kt">DotDecimalNotation</span> <span class="nf">=</span> <span class="kt">DDN</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span>
 
@@ -172,9 +148,7 @@ $ elm repl
   <span class="kr">case</span> <span class="nv">ddn</span> <span class="kr">of</span>
     <span class="kt">DDN</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> <span class="nv">d</span> <span class="nf">-&gt;</span>
       <span class="kt">IPAddr</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">24</span><span class="nf">*</span><span class="nv">a</span> <span class="nf">+</span> <span class="mi">2</span><span class="nf">^</span><span class="mi">16</span><span class="nf">*</span><span class="nv">b</span> <span class="nf">+</span> <span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="nf">*</span><span class="nv">c</span> <span class="nf">+</span> <span class="nv">d</span><span class="p">)</span></code></pre></div>
-
 <p>サブネットマスクからネットワーク部を算出する関数を定義する。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">networkAddrBy</span> <span class="nf">:</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">IPAddr</span>
 <span class="nv">networkAddrBy</span> <span class="nv">subnet</span> <span class="nv">addr</span> <span class="nf">=</span>
   <span class="kr">case</span> <span class="nv">subnet</span> <span class="kr">of</span>
@@ -182,12 +156,10 @@ $ elm repl
       <span class="kr">case</span> <span class="nv">addr</span> <span class="kr">of</span>
         <span class="kt">IPAddr</span> <span class="nv">a</span> <span class="nf">-&gt;</span>
           <span class="kt">IPAddr</span> <span class="p">(</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">and</span> <span class="nv">s</span> <span class="nv">a</span><span class="p">)</span></code></pre></div>
-
 <p>ここまではいいのだが、次のようにしてDDNに変換する関数を定義したところ、バグらせた。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">toDDNHelp</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span>
 <span class="nv">toDDNHelp</span> <span class="nv">n</span> <span class="nf">=</span>
-  <span class="p">(</span><span class="nv">modBy</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">)</span> <span class="nv">n</span><span class="p">,</span> <span class="nv">n</span> <span class="nf">//</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">))</span>
+  <span class="p">(</span><span class="nv">modBy</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">)</span> <span class="nv">n</span><span class="p">,</span> <span class="nv">n</span> <span class="nf">//</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">)</span><span class="p">)</span>
 
 <span class="nv">toDDN</span> <span class="nf">:</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">DotDecimalNotation</span>
 <span class="nv">toDDN</span> <span class="nv">addr</span> <span class="nf">=</span>
@@ -202,9 +174,7 @@ $ elm repl
                   <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">3</span> <span class="kr">of</span>
                     <span class="p">(</span><span class="nv">a</span><span class="p">,</span> <span class="nv">_</span><span class="p">)</span> <span class="nf">-&gt;</span> 
                       <span class="kt">DDN</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> <span class="nv">d</span></code></pre></div>
-
 <p>以下で、<code>192.168.1.1</code>と<code>255.255.255.0</code>の論理和をとって<code>193.169.1.0</code>となるわけがないのでおかしい。</p>
-
 <pre class="cui">
 > networkAddrBy (fromDDN (DDN 192 168 1 1)) (fromDDN (DDN 255 255 255 0))
 <span class="cyan">IPAddr</span> <span class="magenta">-1062731520</span> <span class="dgray">: IPAddr</span>
@@ -212,23 +182,18 @@ $ elm repl
 <span class="cyan">DDN</span> <span class="magenta">193 169 1 0</span>
     <span class="dgray">: DotDecimalNotation</span>
 </pre>
-
 <p>これは<code>toDDNHelp</code>に問題があり、次のようにシフトを使って書き直すとうまくいく。</p>
-
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">toDDNHelp</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span>
 <span class="nv">toDDNHelp</span> <span class="nv">n</span> <span class="nf">=</span>
   <span class="p">(</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">and</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="nf">-</span><span class="mi">1</span><span class="p">)</span> <span class="nv">n</span>
   <span class="p">,</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">shiftRightZfBy</span> <span class="mi">8</span> <span class="nv">n</span>
   <span class="p">)</span></code></pre></div>
-
 <pre class="cui">
 > networkAddrBy (fromDDN (DDN 192 168 1 1)) (fromDDN (DDN 255 255 255 0)) |> toDDN
 <span class="cyan">DDN</span> <span class="magenta">192 168 1 0</span>
     <span class="dgray">: DotDecimalNotation</span>
 </pre>
-
 <p>はじめElmの<code>Bitwise.and</code>がバグってるんじゃないかと思ってデバッグしていたら、どうやらJSの仕様だということが判明。</p>
-
 <p>型変換の怖さを味わった良い機会だった。Elm側でIntの符号付きと符号なしの区別をうまくしてほしいな、と思った。</p>
 
 </article>

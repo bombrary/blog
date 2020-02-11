@@ -23,9 +23,10 @@ $ brew install gnuplot gnuplotコマンドで起動。
 ファイルをプロットする 例えばdata.txtが以下のようになっているとする。
 #x #y1 #y2 0 1 2 1 2 1 2 0 2 3 1 1 これを描画する。
 using X:Yで、X番目の列を横軸、Y番目の列を縦軸にする。
-w lpとは&amp;rdquo;with linespoints&amp;rdquo;の略。つまり線と点を描画する。w lだと&amp;rdquo;with line&amp;rdquo;、w lp lt 3 lw 2だと&amp;rdquo;with linepoints linetype 3 linewidth 2&amp;rdquo;という意味。いろいろある。
+w lpとは&amp;quot;with linespoints&amp;quot;の略。つまり線と点を描画する。w lだと&amp;quot;with line&amp;rdquo;、w lp lt 3 lw 2だと&amp;quot;with linepoints linetype 3 linewidth 2&amp;quot;という意味。いろいろある。
 $ set xlabel &amp;#34;X axis&amp;#34; $ set ylabel &amp;#34;Y axis&amp;#34; $ plot &amp;#34;data.txt&amp;#34; using 1:2 w pl 軸の範囲指定 例えばx軸を[0,3000]の範囲に制限して描画したいなら、次のコマンドを打つ。
-$ set xrange [0:3000] こんな感じで、gnuplotはset 属性名 値で様々な設定をする印象がある。</description>
+$ set xrange [0:3000] こんな感じで、gnuplotはset 属性名 値で様々な設定をする印象がある。
+グラフの重ね書き replotを使う方法 $ plot &amp;#34;data.</description>
     </item>
     
   </channel>

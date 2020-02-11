@@ -18,13 +18,13 @@
       
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/</guid>
       <description>今度は外部ライブラリChartsを利用して、棒グラフを作成してみる。
-目標  値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる  1&amp;#x301C;3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
+目標  値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる  1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
  ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。  その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。
 Chartsのインストール まず、CocoaPodsがインストールされていることが前提。
 プロジェクトフォルダで以下のコマンドを実行。
-$ pod init  podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。
-pod &amp;#39;Charts&amp;#39; プロジェクトフォルダで以下のコマンドを実行。
-$ pod install  以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。
+$ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。
+pod &#39;Charts&#39; プロジェクトフォルダで以下のコマンドを実行。
+$ pod install 以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。
 基本 import UIKit import Charts struct BarChartModel { let value: Int let name: String } class ViewController: UIViewController { let barItems = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] override func viewDidLoad() { super.</description>
     </item>
     
@@ -59,7 +59,7 @@ class ViewController: UIViewController { var constraint: NSLayoutConstraint! ove
 基本的にはこちらを参考にしながら進めていく。
 UIStackViewをコード上で使う基本 とりあえず使い方を確認する。
 Main.storyboard こんな感じにする。
-  ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.</description>
+  ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.layoutMargins.right = 20 for (color, percentage) in zip(colors, percentages) { addBar(bgColor: color, percentage: percentage) } } private func addBar(bgColor: UIColor, percentage: CGFloat ) { let view = UIView() let height = graphStackView.</description>
     </item>
     
     <item>
@@ -68,7 +68,7 @@ Main.storyboard こんな感じにする。
       <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-cg02/</guid>
-      <description>目標  前回の棒グラフを複数ページにする  今回は、1ページに最大5本の棒が並ぶ、とする。  ページは横スライドで切り替える  プロジェクトは前回のものを引き継がず、新しく作る。
+      <description>目標  前回の棒グラフを複数ページにする  今回は、1ページに最大5本の棒が並ぶ、とする。   ページは横スライドで切り替える  プロジェクトは前回のものを引き継がず、新しく作る。
 用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。
 var dataSource = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。
 UScrollViewの配置 Main.storyboardにUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。
@@ -114,7 +114,7 @@ AppleのHuman Interface GuidelineにModalityの意味が書いてあって、こ
 準備 まずはボタンをクリックすると表示されるものだけ作る。
 Main.storyboard 表示元にはボタンを配置する。表示先はラベルを配置し、適切なConstraintを設定しておく。
   ViewController.swift ボタンのAction接続を作る。ボタンがタップされたら遷移するようにする。
-class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view.</description>
+class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. } @IBAction func buttonTapped(_ sender: Any) { let vc = (storyboard?</description>
     </item>
     
     <item>
@@ -127,7 +127,7 @@ class ViewController: UIViewController { override func viewDidLoad() { super.vie
 準備 TableViewに最低限の設定をしておく。
 Main.storyboardを次のようにする。
   ViewController.swiftの内容を以下のようにする。
-class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.</description>
+class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.dequeueReusableCell(withIdentifier: &amp;#34;testCell&amp;#34;)! cell.</description>
     </item>
     
     <item>
@@ -140,9 +140,9 @@ class ViewController: UIViewController { @IBOutlet weak var tableView: UITableVi
  メイン画面でボタンを押すとウォークスルー画面に飛ぶ。 ウォークスルー画面では、左右にスワイプすると画面が移動する。 画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。  登場物  Main.storyboardとViewController.swift Walkthrough.storyboardとPageViewController.swift  準備 上に書いたものをとりあえず全て作る。ただし、PageViewControllerのサブクラスはUIPageViewControllerであることに注意。
 Main.storyboard ボタンを一つ作っておく。
 Walkthrough.storyboard 配置を次のようにする
-   Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;rdquo;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;rdquo;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;rdquo;と書かれたViewControllerのidentifierはpage3とする。  以下で、Transition Styleを&amp;rdquo;Scroll&amp;rdquo;とする。もし&amp;rdquo;Page Curl&amp;rdquo;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
+   Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;quot;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;quot;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;quot;と書かれたViewControllerのidentifierはpage3とする。  以下で、Transition Styleを&amp;quot;Scroll&amp;quot;とする。もし&amp;quot;Page Curl&amp;quot;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
   PageViewController.swift 次のように書く。
-class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.</description>
+class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. view.backgroundColor = .black let stb = storyboard! let page1 = stb.instantiateViewController(withIdentifier: &amp;#34;page1&amp;#34;) let page2 = stb.instantiateViewController(withIdentifier: &amp;#34;page2&amp;#34;) let page3 = stb.</description>
     </item>
     
     <item>
@@ -155,7 +155,7 @@ class PageViewController: UIPageViewController { var controllers: [UIViewControl
   Segmented Controlのラベルの設定は以下で行える。
   TableViewCellのindentifierはtestCellとする。
 ViewController.swift 後々の処理のため、TableViewに表示するデータをitems、その元データをitemsSourceと分けることにする。
-class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;#34;, &amp;#34;items2&amp;#34;, &amp;#34;items3&amp;#34;, &amp;#34;items4&amp;#34;, &amp;#34;items5&amp;#34;, &amp;#34;items6&amp;#34;, &amp;#34;items7&amp;#34;, &amp;#34;items8&amp;#34;] var items: [String] = [] @IBOutlet weak var segmentedControl: UISegmentedControl! @IBOutlet weak var tableView: UITableView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self items = itemsSource } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { return items.</description>
+class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;#34;, &amp;#34;items2&amp;#34;, &amp;#34;items3&amp;#34;, &amp;#34;items4&amp;#34;, &amp;#34;items5&amp;#34;, &amp;#34;items6&amp;#34;, &amp;#34;items7&amp;#34;, &amp;#34;items8&amp;#34;] var items: [String] = [] @IBOutlet weak var segmentedControl: UISegmentedControl! @IBOutlet weak var tableView: UITableView! override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. tableView.dataSource = self items = itemsSource } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { return items.</description>
     </item>
     
     <item>
@@ -170,14 +170,14 @@ class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;
 ファイル作成 Menu.storyboard、MenuViewController、 Menu.storyboard、Dest1.storyboard、 Dest2.storyboardの5つをあらかじめ作成しておく。
 Menu.storyboard classにはMenuViewControllerを指定する。部品配置は以下のようにする。
 全体を包むViewを親View、その中に作ったViewを子Viewと呼ぶことにすると、
- Constraintは適当に設定する。子Viewが画面下に配置されるようにする。 StackViewにはFill Equallyの設定を行っておく。 親Viewの背景色を、黒の半透明に設定する。設定手順は以下の通り。  BackgroundをBlackに設定 BackgroundをCustomに設定し直すと、カラーピッカーが現れる。そこで透明度を50%に設定する。   また、&amp;rdquo;Initial View Controller&amp;rdquo;にチェックをつける。
+ Constraintは適当に設定する。子Viewが画面下に配置されるようにする。 StackViewにはFill Equallyの設定を行っておく。 親Viewの背景色を、黒の半透明に設定する。設定手順は以下の通り。  BackgroundをBlackに設定 BackgroundをCustomに設定し直すと、カラーピッカーが現れる。そこで透明度を50%に設定する。    また、&amp;ldquo;Initial View Controller&amp;quot;にチェックをつける。
 親Viewのtagを1に設定しておく。これはタッチイベントを捕捉する際に必要になる。
   Dest1.storyboard、Dest2.storyboard Dest1.storyboardの部品配置は以下のようにする。
-&amp;ldquo;Is initial View Controller&amp;rdquo;にチェックをつける。
+&amp;ldquo;Is initial View Controller&amp;quot;にチェックをつける。
   Dest2.storyboardの部品配置は以下のようにする。
-&amp;ldquo;Is initial View Controller&amp;rdquo;にチェックをつける。
+&amp;ldquo;Is initial View Controller&amp;quot;にチェックをつける。
   Main.storyboard 部品配置は以下のようにする。
-  OpenButtonからStoryboard ReferenceへのSegueのActionは&amp;rdquo;Present Modally&amp;rdquo;を選択。Segueの設定は以下のようにする。</description>
+  OpenButtonからStoryboard ReferenceへのSegueのActionは&amp;quot;Present Modally&amp;quot;を選択。Segueの設定は以下のようにする。</description>
     </item>
     
   </channel>
