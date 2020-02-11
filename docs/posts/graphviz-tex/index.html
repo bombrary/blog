@@ -114,7 +114,7 @@ $ pip3 install dot2tex
   Q12 -&gt; Q13 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
 }
 </code></pre><p><code>texlbl</code>とはdot2texが読むための属性。おそらくtex labelの略で、これがnodeまたはedgeのラベルとして、texファイルに直接展開される。そのため、数式を描きたいなら<code>$</code>で囲む。もしdotファイル上にlabel属性が定義されていたら、<code>texlbl</code>の内容に上書きされる。</p>
-<p>edgeに対して<code>texlbl</code>を使いたいなら、ダミー用の<code>label</code>属性をつける必要がある。これをやらないとラベルが表示されないので注意(<a href="https://dot2tex.readthedocs.io/en/latest/usage_guide.html#labels">参考</a>)。しかも、**ダミーに指定するlabelの内容は空文字では駄目で、空白でも良いから1文字以上の文字列を指定する必要がある。**これが分からなくて数十分はまっていた。</p>
+<p>edgeに対して<code>texlbl</code>を使いたいなら、ダミー用の<code>label</code>属性をつける必要がある。これをやらないとラベルが表示されないので注意(<a href="https://dot2tex.readthedocs.io/en/latest/usage_guide.html#labels">参考</a>)。しかも、<strong>ダミーに指定するlabelの内容は空文字では駄目で、空白でも良いから1文字以上の文字列を指定する必要がある。</strong> これが分からなくて数十分はまっていた。</p>
 <h3 id="texに変換">texに変換</h3>
 <pre class="cui">
 $ dot2tex graph.dot > graph.tex

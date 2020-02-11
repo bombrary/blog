@@ -75,7 +75,7 @@ digraph {
 
 `texlbl`とはdot2texが読むための属性。おそらくtex labelの略で、これがnodeまたはedgeのラベルとして、texファイルに直接展開される。そのため、数式を描きたいなら`$`で囲む。もしdotファイル上にlabel属性が定義されていたら、`texlbl`の内容に上書きされる。
 
-edgeに対して`texlbl`を使いたいなら、ダミー用の`label`属性をつける必要がある。これをやらないとラベルが表示されないので注意([参考](https://dot2tex.readthedocs.io/en/latest/usage_guide.html#labels))。しかも、**ダミーに指定するlabelの内容は空文字では駄目で、空白でも良いから1文字以上の文字列を指定する必要がある。**これが分からなくて数十分はまっていた。
+edgeに対して`texlbl`を使いたいなら、ダミー用の`label`属性をつける必要がある。これをやらないとラベルが表示されないので注意([参考](https://dot2tex.readthedocs.io/en/latest/usage_guide.html#labels))。しかも、**ダミーに指定するlabelの内容は空文字では駄目で、空白でも良いから1文字以上の文字列を指定する必要がある。** これが分からなくて数十分はまっていた。
 
 ### texに変換
 
