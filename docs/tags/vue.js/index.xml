@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Vue.js on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/vue.js/</link>
+    <description>Recent content in Vue.js on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Sun, 16 Feb 2020 18:52:20 +0900</lastBuildDate>
+    
+	<atom:link href="https://bombrary.github.io/blog/tags/vue.js/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Vue.js勉強メモ(1) - 簡易Todoリストの作成</title>
+      <link>https://bombrary.github.io/blog/posts/viewjs01-todo/</link>
+      <pubDate>Sun, 16 Feb 2020 18:52:20 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/viewjs01-todo/</guid>
+      <description>公式ガイドの、コンポーネントの詳細の手前まで読み終えたので、この時点でTodoリストっぽいものを作ってみる。データベースを用意しないため、厳密にはTodoリストではない。
+コンポーネントについてはまだ学んでいないため、これから書くコードにはまだ改善の余地があるだろう。
+準備 index.htmlを用意する。
+&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html lang=&amp;#34;ja&amp;#34;&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charet=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;script src=&amp;#34;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;h1&amp;gt;Todo List&amp;lt;/h1&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; 以下の部分でVue.jsを読み込んでいる。
+&amp;lt;script src=&amp;#34;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; script.jsを作成しておく。中身はまだ空。
+実装する機能 初めにも述べたが、データベースは用意しない。以下の簡単な機能だけ実装する。
+ 入力エリア Todoリスト表示エリア  各要素に削除ボタンをつける。    勉強を兼ねて、いくらか遠回りしながら作っていく。
+配列の要素をli要素として表示 index.htmlに追記する。
+&amp;lt;div id=&amp;#34;app&amp;#34;&amp;gt; &amp;lt;ul&amp;gt; &amp;lt;li v-for=&amp;#34;todo in todos&amp;#34;&amp;gt;{{ todo }}&amp;lt;/li&amp;gt; &amp;lt;/ul&amp;gt; &amp;lt;/div&amp;gt; Vue.jsが用意したテンプレート構文をHTMLに埋め込むことによって、データとDOMを結びつけることができる。v-という接頭辞がついた属性はディレクティブと呼ばれる。今回のv-forディレクティブは、その名の通りfor文を実現する。構文から分かると思うが、JSとかPythonで使われているfor-in文と同じ文法。
+式の埋め込みは{{ 式 }}で行う。ガイドではMustache(口髭)構文と呼んでいる。良いネーミングだなと思ったけど、{{ }}の書式をそう呼ぶのはわりと一般的みたい？
+さて、そうするとtodosというデータを用意する必要がありそうだが、これはscript.jsで行う。
+const app = new Vue({ el: &amp;#39;#app&amp;#39;, data: { todos: [&amp;#39;todo1&amp;#39;, &amp;#39;todo2&amp;#39;, &amp;#39;todo3&amp;#39;, &amp;#39;todo4&amp;#39;, &amp;#39;todo5&amp;#39;] } }) elプロパティに、データと結びつく要素を指定する。これはセレクタの書式。elとは恐らくelementの略。dataプロパティに、結びつけるデータを指定する。v-forで利用するために、todosプロパティは配列にする。</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -6,10 +6,28 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 11 Feb 2020 21:57:47 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 16 Feb 2020 18:52:20 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://bombrary.github.io/blog/tags/javascript/</link>
+      <pubDate>Sun, 16 Feb 2020 18:52:20 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Vue.js</title>
+      <link>https://bombrary.github.io/blog/tags/vue.js/</link>
+      <pubDate>Sun, 16 Feb 2020 18:52:20 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/vue.js/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>dot2tex</title>
@@ -116,15 +134,6 @@
       <pubDate>Wed, 01 Jan 2020 21:03:50 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/elm-random/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JavaScript</title>
-      <link>https://bombrary.github.io/blog/tags/javascript/</link>
-      <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/javascript/</guid>
       <description></description>
     </item>
     
