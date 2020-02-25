@@ -10,7 +10,7 @@ categories: ["数学", "代数学"]
 
 ## 置換の定義
 
-<div class="def">
+<div class="math_def">
 <h3>定義(置換)</h3>
 $X_n$は$n$個の元を持つ集合とする。このとき、全単射写像 $\sigma: X_n \rightarrow X_n$ を$X_n$上の置換(Permutation)と呼ぶ。
 </div>
@@ -19,7 +19,7 @@ $X_n$は$n$個の元を持つ集合とする。このとき、全単射写像 $\
 
 置換と聞くとReplacementがまず思い浮かぶけど、ここではPermutationなのね。
 
-<div class="example">
+<div class="math_example">
 <h3>例</h3>
 $X_3 = {1,2,3}$ とする。このとき、 $X_n$ の元を並べて $(1,2,3)$ としよう。このとき、 $\sigma(1)=2,\sigma(2)=3,\sigma(3)=1$ とすれば、写像 $\sigma$ は $X_3$ 上の置換となる。このとき、 $(1,2,3)$ という列が $\sigma$ によって $(2,3,1)$ に並び替えられたように見える。
 </div>
@@ -43,7 +43,7 @@ $$
 
 写像における言葉である「合成写像」、「逆写像」、「恒等写像」を、置換においては次のように表現する。
 
-<div class="def">
+<div class="math_def">
 <h3>定義(積、恒等置換、逆置換)</h3>
 <ul>
 <li>$\sigma, \tau$ を置換とする。この時、その合成写像 $\sigma \circ \tau$ もまた置換である。この合成写像を積とみなし、$\sigma\tau$ と表す。</li>
@@ -56,7 +56,7 @@ $$
 
 ## 巡回置換
 
-<div class="def">
+<div class="math_def">
 <h3>定義(サイクル、互換)</h3>
 <p>$X_n$の元のいくつかを取り出して$\{p_1, \ldots , p_m\}$ とおく。このとき、$\{p_i\}$ に含まれていない元 $p$ については$\sigma(p)=p$であり、また $\sigma(p_i)=p_{i+1}\ (i=1,\ldots,m-1),\sigma(p_m)=p_1$ が成り立つとき、$\sigma$ をサイクル(巡回置換)と呼び、$(p_1, \ldots , p_m)$ で表す。このとき $m$ をサイクルの長さと呼ぶ。</p>
 <p>また、長さ2のサイクル $(i, j)$ を互換という。</p>
@@ -66,7 +66,7 @@ $$
 
 サイクルについて、次の命題が成り立つ。
 
-<div class="prop">
+<div class="math_prop">
 <h3>命題</h3>
 <ol>
 <li>$\sigma$がサイクルなら$\sigma^{-1}$もサイクルで、その長さは等しい。</li>
@@ -74,7 +74,7 @@ $$
 </ol>
 </div>
 
-<div class="proof-prop">
+<div class="math_proof-prop">
 <h3>証明</h3>
 <ol>
 <li>
@@ -143,19 +143,19 @@ $$
 
 次に分離積を定義する。
 
-<div class="def">
+<div class="math_def">
 <h3>定義(分離積)</h3>
 共通の文字を含まない何個か(1個でも可)のサイクルの積を分離積という。
 </div>
 
-<div class="example">
+<div class="math_example">
 <h3>例</h3>
 $(1,2,3)(4,5,6,7)$は分離積である。$(1,2,3)(1,4,5,6)$は分離積でない。
 </div>
 
 分離積の言葉を使って、次の命題を示す。
 
-<div class="prop">
+<div class="math_prop">
 <h3>命題</h3>
 <ol>
 <li>サイクルの分離積は可換である。</li>
@@ -163,7 +163,7 @@ $(1,2,3)(4,5,6,7)$は分離積である。$(1,2,3)(1,4,5,6)$は分離積でな�
 <li>任意の置換は何個かの互換の積として表せる。</li>
 </ol>
 </div>
-<div class="proof-prop">
+<div class="math_proof-prop">
 <h3>証明</h3>
 <ol>
 <li>
