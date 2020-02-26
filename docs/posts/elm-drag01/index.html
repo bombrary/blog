@@ -132,10 +132,17 @@
 <li>円の集合は<code>List Circle</code>として持つ。また、円の<code>id</code>は一意であって欲しいので、「次付与する<code>id</code>」も情報として持たせることにする。これをまとめて<code>Circles</code>と呼ぶことにする。</li>
 <li>ドラッグされている状態の<code>Circle</code>をの<code>id</code>を<code>Model</code>内に持たせる。具体的には、<code>hold : Maybe Id</code>としてレコードに持たせる。</li>
 </ul>
-<h4 id="3点目についての補足">3点目についての補足</h4>
-<p>実は<code>Circle</code>を直接持たせる方法でもやってみたが、実装が少し面倒だった。<code>Model</code>に<code>Circles</code>を持たせた場合、ドラッグ中の<code>Circle</code>と<code>Circles</code>に含まれている<code>Circle</code>とのデータの同期を取る必要がある。同期を取りたくなければ、<code>Circles</code>からドラッグ中の<code>Circle</code>を一旦削除して、ドラッグ終了後に再び戻せばよい。</p>
-<p>そんなことやるよりも、最初から<code>Model</code>にはドラッグ中の<code>Id</code>を持たせておいて、それを使って<code>Circles</code>内の<code>Circle</code>を操作すれば良さそう。ということで、今回は<code>Id</code>のみ持たせる方針とする。</p>
+<h3 id="3点目についての補足">3点目についての補足</h3>
+<p><code>Model</code>に<code>Circle</code>を直接持たせる場合、ドラッグ中の<code>Circle</code>と<code>Circles</code>に含まれている<code>Circle</code>とのデータの同期を取る必要がある。同期を取るのは面倒なので、次のようにやる方が良い。</p>
+<ul>
+<li>ドラッグ中の<code>Circle</code>と他の<code>Circle</code>を別々に管理する</li>
+<li>ドラッグ開始時、<code>Circles</code>からドラッグ中の<code>Circle</code>を一旦削除して、ドラッグ終了後に再び戻す。</li>
+<li>描画するときは、ドラッグ中の<code>Circle</code>と他の<code>Circle</code>を統合する</li>
+</ul>
+<p>個人的にはこの処理を書くのが少し面倒に感じたので、<code>Model</code>にはドラッグ中の<code>Circle</code>の<code>Id</code>だけ持たせておいて、それを使って<code>Circles</code>内の<code>Circle</code>を操作する方針を選んだ。</p>
 <p>ただし、<code>Circle</code>を持たせることが活きてくる状況として、「ドラッグ中に何か特別な情報を<code>Circle</code>に持たせる場合」が考えられる。例えば、ドラッグ中の円に対して、「ドラッグ開始時の座標が何だったか」「他の円との距離」を持たせる場合が考えられる。このような場合は、ドラッグ中の円とドラッグしていない円とで分けてデータを管理したほうが良さそう。</p>
+<h4 id="追記20200226">追記(2020/02/26)</h4>
+<p><a href="https://github.com/zaboco/elm-draggable/blob/master/examples/MultipleTargetsExample.elm">elm-draggableのサンプルの1つ</a>に、上記と似た実装があった。ただし、ここではドラッグ中の要素<code>movingBox</code>を<code>Model</code>ではなく要素の集合<code>BoxGroup</code>内に持たせている。座標を更新したいときは<code>movingBox</code>を変更すればよいだけ。この方針も悪くない、と思った。</p>
 <h2 id="circlecircles-の定義">Circle/Circles の定義</h2>
 <p><code>src/Circle.elm</code>を作成し、そちらで<code>Circle</code>と<code>Circles</code>を定義する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Circle</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
