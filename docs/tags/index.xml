@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 25 Feb 2020 19:15:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 27 Feb 2020 12:39:44 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,16 +14,25 @@
     <item>
       <title>Elm</title>
       <link>https://bombrary.github.io/blog/tags/elm/</link>
-      <pubDate>Tue, 25 Feb 2020 19:15:00 +0900</pubDate>
+      <pubDate>Thu, 27 Feb 2020 12:39:44 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/elm/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>elm-draggable</title>
+      <link>https://bombrary.github.io/blog/tags/elm-draggable/</link>
+      <pubDate>Thu, 27 Feb 2020 12:39:44 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/elm-draggable/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>elm-svg</title>
       <link>https://bombrary.github.io/blog/tags/elm-svg/</link>
-      <pubDate>Tue, 25 Feb 2020 19:15:00 +0900</pubDate>
+      <pubDate>Thu, 27 Feb 2020 12:39:44 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/elm-svg/</guid>
       <description></description>

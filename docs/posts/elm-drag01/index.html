@@ -141,8 +141,8 @@
 </ul>
 <p>個人的にはこの処理を書くのが少し面倒に感じたので、<code>Model</code>にはドラッグ中の<code>Circle</code>の<code>Id</code>だけ持たせておいて、それを使って<code>Circles</code>内の<code>Circle</code>を操作する方針を選んだ。</p>
 <p>ただし、<code>Circle</code>を持たせることが活きてくる状況として、「ドラッグ中に何か特別な情報を<code>Circle</code>に持たせる場合」が考えられる。例えば、ドラッグ中の円に対して、「ドラッグ開始時の座標が何だったか」「他の円との距離」を持たせる場合が考えられる。このような場合は、ドラッグ中の円とドラッグしていない円とで分けてデータを管理したほうが良さそう。</p>
-<h4 id="追記20200226">追記(2020/02/26)</h4>
-<p><a href="https://github.com/zaboco/elm-draggable/blob/master/examples/MultipleTargetsExample.elm">elm-draggableのサンプルの1つ</a>に、上記と似た実装があった。ただし、ここではドラッグ中の要素<code>movingBox</code>を<code>Model</code>ではなく要素の集合<code>BoxGroup</code>内に持たせている。座標を更新したいときは<code>movingBox</code>を変更すればよいだけ。この方針も悪くない、と思った。</p>
+<p><strong>追記(2020/02/26):</strong>
+<a href="https://github.com/zaboco/elm-draggable/blob/master/examples/MultipleTargetsExample.elm">elm-draggableのサンプルの1つ</a>に、上記と似た実装があった。ただし、ここではドラッグ中の要素<code>movingBox</code>を<code>Model</code>ではなく要素の集合<code>BoxGroup</code>内に持たせている。座標を更新したいときは<code>movingBox</code>を変更すればよいだけ。この方針も悪くない、と思った。</p>
 <h2 id="circlecircles-の定義">Circle/Circles の定義</h2>
 <p><code>src/Circle.elm</code>を作成し、そちらで<code>Circle</code>と<code>Circles</code>を定義する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Circle</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
@@ -284,6 +284,7 @@
 <span class="nv">translate</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nf">=</span>
     <span class="s">&#34;</span><span class="s">t</span><span class="s">r</span><span class="s">a</span><span class="s">n</span><span class="s">s</span><span class="s">l</span><span class="s">a</span><span class="s">t</span><span class="s">e</span><span class="s">(</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">x</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">,</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">y</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">)</span><span class="s">&#34;</span></code></pre></div>
 <p>ここで、<code>viewCircle</code>、<code>viewCircles</code>は<code>Model</code>を引数にとるようにした。一般に、<code>view</code>と同じく要素の描画を担う関数に関しては、<code>Model</code>を引数にとった方が、後々の修正や変更が楽になると思われる。なぜなら、<code>Model</code>こそが要素描画のための全ての情報を持っているからである。「今はCircleの情報をもとに描画してたけど、それだけじゃなくてXXの情報も必要になった」などの変更に、比較的簡単に対応できる。</p>
+<p><strong>追記(2020/03/04):</strong> ただし、<code>Model</code>を引数にとる、という情報だけでは「この関数の機能を実現するためにはどんな値が必要なのか」が分からないため、ソースコードから関数の機能を予想するのが難しくなるかもしれない。なので一概に良いとは言い切れない。</p>
 <p>ここまで実装すると、実行結果は以下のようになる。</p>
 <figure>
     <img src="./sc01.png" width="50%"/> 

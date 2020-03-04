@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>Elmメモ ドラッグ移動の実現(2) - elm-draggableの利用 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.64.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-drag02/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/elm-drag02/">Elmメモ ドラッグ移動の実現(2) - elm-draggableの利用</a></h1>
+    <p class="meta"><time datetime="2020-02-27T12:39:44&#43;09:00">February 27, 2020</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/elm/">Elm</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/elm-svg/">elm-svg</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/elm-draggable/">elm-draggable</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/elm/">Elm</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  <p><a href="https://bombrary.github.io/blog/posts/elm-drag01/">前回</a>は<code>Browsert</code>や<code>Svg</code>などの標準的なパッケージを利用してドラッグ機能を実現した。今回は<a href="https://package.elm-lang.org/packages/zaboco/elm-draggable/latest">elm-draggable</a>というパッケージを使ってドラッグ機能を実現してみる。</p>
+<h2 id="準備">準備</h2>
+<p>Elmのプロジェクトを作成して、<code>src/Main.elm</code>と<code>src/Circle.elm</code>を作成。</p>
+<h3 id="circleelm">Circle.elm</h3>
+<p>前回と同じなのでコードだけ載せる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Circle</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+
+
+<span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Id</span> <span class="nf">=</span>
+    <span class="kt">Int</span>
+
+
+<span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Circle</span> <span class="nf">=</span>
+    <span class="p">{</span> <span class="nv">id</span> <span class="nf">:</span> <span class="kt">Id</span>
+    <span class="p">,</span> <span class="nv">x</span> <span class="nf">:</span> <span class="kt">Float</span>
+    <span class="p">,</span> <span class="nv">y</span> <span class="nf">:</span> <span class="kt">Float</span>
+    <span class="p">,</span> <span class="nv">r</span> <span class="nf">:</span> <span class="kt">Float</span>
+    <span class="p">}</span>
+
+
+<span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Circles</span> <span class="nf">=</span>
+    <span class="p">{</span> <span class="nv">all</span> <span class="nf">:</span> <span class="kt">List</span> <span class="kt">Circle</span>
+    <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">:</span> <span class="kt">Id</span>
+    <span class="p">}</span>
+
+
+<span class="nv">empty</span> <span class="nf">:</span> <span class="kt">Circles</span>
+<span class="nv">empty</span> <span class="nf">=</span>
+    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="p">[</span><span class="p">]</span>
+    <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">=</span> <span class="mi">0</span>
+    <span class="p">}</span>
+
+
+<span class="kr">type</span> <span class="kr">alias</span> <span class="kt">CircleNoId</span> <span class="nf">=</span>
+    <span class="p">{</span> <span class="nv">x</span> <span class="nf">:</span> <span class="kt">Float</span>
+    <span class="p">,</span> <span class="nv">y</span> <span class="nf">:</span> <span class="kt">Float</span>
+    <span class="p">,</span> <span class="nv">r</span> <span class="nf">:</span> <span class="kt">Float</span>
+    <span class="p">}</span>
+
+
+<span class="nv">add</span> <span class="nf">:</span> <span class="kt">CircleNoId</span> <span class="nf">-&gt;</span> <span class="kt">Circles</span> <span class="nf">-&gt;</span> <span class="kt">Circles</span>
+<span class="nv">add</span> <span class="nv">c</span> <span class="nv">circles</span> <span class="nf">=</span>
+    <span class="kr">let</span>
+        <span class="nv">circle</span> <span class="nf">=</span>
+            <span class="p">{</span> <span class="nv">id</span> <span class="nf">=</span> <span class="nv">circles</span><span class="nf">.</span><span class="nv">nextId</span>
+            <span class="p">,</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span>
+            <span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span>
+            <span class="p">,</span> <span class="nv">r</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">r</span>
+            <span class="p">}</span>
+    <span class="kr">in</span>
+    <span class="p">{</span> <span class="nv">circles</span>
+        <span class="nf">|</span> <span class="nv">all</span> <span class="nf">=</span> <span class="nv">circle</span> <span class="nf">::</span> <span class="nv">circles</span><span class="nf">.</span><span class="nv">all</span>
+        <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">=</span> <span class="nv">circles</span><span class="nf">.</span><span class="nv">nextId</span> <span class="nf">+</span> <span class="mi">1</span>
+    <span class="p">}</span>
+
+
+<span class="nv">fromList</span> <span class="nf">:</span> <span class="kt">List</span> <span class="kt">CircleNoId</span> <span class="nf">-&gt;</span> <span class="kt">Circles</span>
+<span class="nv">fromList</span> <span class="nv">list</span> <span class="nf">=</span>
+    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="p">{</span> <span class="nv">id</span> <span class="nf">=</span> <span class="nv">i</span><span class="p">,</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span><span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span><span class="p">,</span> <span class="nv">r</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">r</span> <span class="p">}</span><span class="p">)</span> <span class="nv">list</span>
+    <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">=</span> <span class="kt">List</span><span class="nf">.</span><span class="nv">length</span> <span class="nv">list</span>
+    <span class="p">}</span>
+
+
+<span class="nv">toList</span> <span class="nf">:</span> <span class="kt">Circles</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="kt">Circle</span>
+<span class="nv">toList</span> <span class="nv">circles</span> <span class="nf">=</span>
+    <span class="nv">circles</span><span class="nf">.</span><span class="nv">all</span>
+
+
+<span class="nv">update</span> <span class="nf">:</span> <span class="kt">Id</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">Circles</span> <span class="nf">-&gt;</span> <span class="kt">Circles</span>
+<span class="nv">update</span> <span class="nv">id</span> <span class="nv">f</span> <span class="nv">circles</span> <span class="nf">=</span>
+    <span class="kr">let</span>
+        <span class="nv">new</span> <span class="nf">=</span>
+            <span class="kt">List</span><span class="nf">.</span><span class="nv">foldr</span>
+                <span class="p">(</span><span class="nf">\</span><span class="nv">c</span> <span class="nv">acc</span> <span class="nf">-&gt;</span>
+                    <span class="kr">if</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">id</span> <span class="nf">==</span> <span class="nv">id</span> <span class="kr">then</span>
+                        <span class="nv">f</span> <span class="nv">c</span> <span class="nf">::</span> <span class="nv">acc</span>
+
+                    <span class="kr">else</span>
+                        <span class="nv">c</span> <span class="nf">::</span> <span class="nv">acc</span>
+                <span class="p">)</span>
+                <span class="p">[</span><span class="p">]</span>
+                <span class="nv">circles</span><span class="nf">.</span><span class="nv">all</span>
+    <span class="kr">in</span>
+    <span class="p">{</span> <span class="nv">circles</span> <span class="nf">|</span> <span class="nv">all</span> <span class="nf">=</span> <span class="nv">new</span> <span class="p">}</span></code></pre></div>
+<h3 id="mainelm">Main.elm</h3>
+<p><code>Circles</code>を描画するところまで書く。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Main</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+
+<span class="kn">import </span><span class="nc">Browser</span>
+<span class="kn">import </span><span class="nc">Circle</span> <span class="kr">as</span> <span class="kt">C</span> <span class="nv">exposing</span> <span class="p">(</span><span class="kt">Circle</span><span class="p">,</span> <span class="kt">CircleNoId</span><span class="p">,</span> <span class="kt">Circles</span><span class="p">,</span> <span class="kt">Id</span><span class="p">)</span>
+<span class="kn">import </span><span class="nc">Html</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<span class="kn">import </span><span class="nc">Html.Attributes</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<span class="kn">import </span><span class="nc">Html.Events</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<span class="kn">import </span><span class="nc">Json.Decode</span> <span class="kr">as</span> <span class="kt">JD</span>
+<span class="kn">import </span><span class="nc">Svg</span> <span class="kr">as</span> <span class="kt">S</span> <span class="nv">exposing</span> <span class="p">(</span><span class="kt">Svg</span><span class="p">)</span>
+<span class="kn">import </span><span class="nc">Svg.Attributes</span> <span class="kr">as</span> <span class="kt">SA</span>
+<span class="kn">import </span><span class="nc">Svg.Events</span> <span class="kr">as</span> <span class="kt">SE</span>
+
+
+<span class="kr">main </span><span class="nf">=</span>
+    <span class="kt">Browser</span><span class="nf">.</span><span class="nv">element</span>
+        <span class="p">{</span> <span class="nv">init</span> <span class="nf">=</span> <span class="nv">init</span>
+        <span class="p">,</span> <span class="nv">update</span> <span class="nf">=</span> <span class="nv">update</span>
+        <span class="p">,</span> <span class="nv">view</span> <span class="nf">=</span> <span class="nv">view</span>
+        <span class="p">,</span> <span class="nv">subscriptions</span> <span class="nf">=</span> <span class="nv">subscriptions</span>
+        <span class="p">}</span>
+
+
+<span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
+    <span class="p">{</span> <span class="nv">circles</span> <span class="nf">:</span> <span class="kt">Circles</span>
+    <span class="p">}</span>
+
+
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
+    <span class="p">(</span> <span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span>
+            <span class="kt">C</span><span class="nf">.</span><span class="nv">fromList</span>
+                <span class="p">[</span> <span class="kt">CircleNoId</span> <span class="mi">10</span> <span class="mi">10</span> <span class="mi">10</span>
+                <span class="p">,</span> <span class="kt">CircleNoId</span> <span class="mi">20</span> <span class="mi">100</span> <span class="mi">20</span>
+                <span class="p">,</span> <span class="kt">CircleNoId</span> <span class="mi">250</span> <span class="mi">250</span> <span class="mi">30</span>
+                <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
+    <span class="p">)</span>
+
+
+<span class="kr">type</span> <span class="kt">Msg</span>
+    <span class="nf">=</span> <span class="kt">Dummy</span>
+
+
+<span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="p">(</span> <span class="nv">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span> <span class="p">)</span>
+
+
+<span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="nv">div</span> <span class="p">[</span><span class="p">]</span>
+        <span class="p">[</span> <span class="nv">viewSvg</span> <span class="nv">model</span>
+        <span class="p">]</span>
+
+
+<span class="nv">viewSvg</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
+<span class="nv">viewSvg</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="kt">S</span><span class="nf">.</span><span class="nv">svg</span>
+        <span class="p">[</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">w</span><span class="s">i</span><span class="s">d</span><span class="s">t</span><span class="s">h</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">5</span><span class="s">0</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">&#34;</span>
+        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">h</span><span class="s">e</span><span class="s">i</span><span class="s">g</span><span class="s">h</span><span class="s">t</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">5</span><span class="s">0</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">&#34;</span>
+        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">b</span><span class="s">o</span><span class="s">r</span><span class="s">d</span><span class="s">e</span><span class="s">r</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">1</span><span class="s">p</span><span class="s">x</span><span class="s"> </span><span class="s">s</span><span class="s">o</span><span class="s">l</span><span class="s">i</span><span class="s">d</span><span class="s"> </span><span class="s">#</span><span class="s">0</span><span class="s">0</span><span class="s">0</span><span class="s">&#34;</span>
+        <span class="p">]</span>
+        <span class="p">[</span> <span class="nv">viewCircles</span> <span class="nv">model</span>
+        <span class="p">]</span>
+
+
+<span class="nv">viewCircles</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
+<span class="nv">viewCircles</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[</span><span class="p">]</span>
+        <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="p">(</span><span class="nv">viewCircle</span> <span class="nv">model</span><span class="p">)</span> <span class="p">(</span><span class="kt">C</span><span class="nf">.</span><span class="nv">toList</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span><span class="p">)</span><span class="p">)</span>
+
+
+<span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
+<span class="nv">viewCircle</span> <span class="nv">model</span> <span class="nv">circle</span> <span class="nf">=</span>
+    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">transform</span> <span class="p">(</span><span class="nv">translate</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">x</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">y</span><span class="p">)</span> <span class="p">]</span>
+        <span class="p">[</span> <span class="kt">S</span><span class="nf">.</span><span class="nv">circle</span>
+            <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">r</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">r</span><span class="p">)</span>
+            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">fill</span> <span class="s">&#34;</span><span class="s">#</span><span class="s">f</span><span class="s">f</span><span class="s">f</span><span class="s">&#34;</span>
+            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">stroke</span> <span class="s">&#34;</span><span class="s">#</span><span class="s">0</span><span class="s">0</span><span class="s">0</span><span class="s">&#34;</span>
+            <span class="p">]</span>
+            <span class="p">[</span><span class="p">]</span>
+        <span class="p">]</span>
+
+
+<span class="nv">translate</span> <span class="nf">:</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
+<span class="nv">translate</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nf">=</span>
+    <span class="s">&#34;</span><span class="s">t</span><span class="s">r</span><span class="s">a</span><span class="s">n</span><span class="s">s</span><span class="s">l</span><span class="s">a</span><span class="s">t</span><span class="s">e</span><span class="s">(</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">x</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">,</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">y</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">)</span><span class="s">&#34;</span>
+
+
+<span class="nv">subscriptions</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Sub</span> <span class="kt">Msg</span>
+<span class="nv">subscriptions</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="kt">Sub</span><span class="nf">.</span><span class="nv">none</span></code></pre></div>
+<h3 id="elm-draggableのインストール">elm-draggableのインストール</h3>
+<pre class="cui">
+$ elm install zaboco/elm-draggable
+</pre>
+<p><code>src/Main.elm</code>にて、<code>Draggable</code>と<code>Draggable.Events</code>をimportする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">import </span><span class="nc">Draggable</span> <span class="kr">as</span> <span class="kt">D</span>
+<span class="kn">import </span><span class="nc">Draggable.Events</span> <span class="kr">as</span> <span class="kt">DE</span></code></pre></div>
+<h2 id="elm-draggableの仕組み">elm-draggableの仕組み</h2>
+<p><a href="https://package.elm-lang.org/packages/zaboco/elm-draggable/latest#usage">Usage</a>を読むと、次のような仕組みでドラッグを管理しているとわかる。</p>
+<ul>
+<li>ドラッグの状態は、<code>Model</code>内に<code>drag: Draggable.DragState a</code>として管理する。<code>a</code>に入るのは、ドラッグ中の要素の識別子の型。</li>
+<li>ドラッグは<code>Draggable.mouseTrigger</code>をドラッグしたい要素に指定することで可能になる。</li>
+<li>ドラッグ状態の変化は<code>subscription</code>で<code>Draggable.subscriptions</code>を指定することで待ち受ける。</li>
+<li><code>Draggable.update</code>で、<code>Model</code>内の<code>drag</code>を更新する。</li>
+<li>ドラッグ量、ドラッグ開始、ドラック終了などの細かい情報をどんな<code>Msg</code>として受けとるのかについては、<code>Draggable.customConfig</code>で指定する。<code>Draggable.update</code>の引数に乗せることによって、<code>Msg</code>を発生させているっぽい。</li>
+</ul>
+<h2 id="modelの追加">Modelの追加</h2>
+<p><code>drag</code>を追加する。ついでにドラッグ中の<code>Circle</code>の<code>id</code>を<code>hold</code>として持たせておく。<code>drag</code>は<code>Draggable.init</code>で初期化しなければいけないようなのでその通りにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
+    <span class="p">{</span> <span class="nf">..</span><span class="nf">.</span>
+    <span class="p">,</span> <span class="nv">hold</span> <span class="nf">:</span> <span class="kt">Maybe</span> <span class="kt">Id</span>
+    <span class="p">,</span> <span class="nv">drag</span> <span class="nf">:</span> <span class="kt">D</span><span class="nf">.</span><span class="kt">State</span> <span class="kt">Id</span>
+    <span class="p">}</span>
+
+
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
+    <span class="p">(</span> <span class="p">{</span> <span class="nf">..</span><span class="nf">.</span>
+      <span class="p">,</span> <span class="nv">hold</span> <span class="nf">=</span> <span class="kt">Nothing</span>
+      <span class="p">,</span> <span class="nv">drag</span> <span class="nf">=</span> <span class="kt">D</span><span class="nf">.</span><span class="nv">init</span>
+      <span class="p">}</span>
+    <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
+    <span class="p">)</span></code></pre></div>
+<h2 id="ドラッグイベントの指定">ドラッグイベントの指定</h2>
+<p><code>Draggable.mouseTrigger</code>を<code>circle</code>要素に指定する。第1引数には、ドラッグの対象となる要素の識別子を指定する。今回は<code>Circle</code>の<code>Id</code>を指定する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
+    <span class="nf">=</span> <span class="kt">DragMsg</span> <span class="p">(</span><span class="kt">D</span><span class="nf">.</span><span class="kt">Msg</span> <span class="kt">Id</span><span class="p">)</span>
+
+<span class="nf">..</span><span class="nf">.</span>
+
+<span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
+<span class="nv">viewCircle</span> <span class="nv">model</span> <span class="nv">circle</span> <span class="nf">=</span>
+    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span> <span class="p">]</span>
+        <span class="p">[</span> <span class="kt">S</span><span class="nf">.</span><span class="nv">circle</span>
+            <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span>
+            <span class="p">,</span> <span class="kt">D</span><span class="nf">.</span><span class="nv">mouseTrigger</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">id</span> <span class="kt">DragMsg</span>
+            <span class="p">]</span>
+            <span class="p">[</span><span class="p">]</span>
+        <span class="p">]</span></code></pre></div>
+<p>ドキュメントに明言はされていないが、おそらく<code>mouseTrigger</code>はマウスが押下されたときに起こるイベント。ドラッグ中は<code>Draggable.subscriptions</code>で監視する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">subscriptions</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Sub</span> <span class="kt">Msg</span>
+<span class="nv">subscriptions</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="kt">D</span><span class="nf">.</span><span class="nv">subscriptions</span> <span class="kt">DragMsg</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">drag</span></code></pre></div>
+<h2 id="ドラッグイベントを受け取る">ドラッグイベントを受け取る</h2>
+<p><code>Model</code>が持つ<code>drag</code>はドラッグ状態(ドラッグ開始/中/終了など)を持っている。ただし、この状態を直接のぞくことはできない。ドラッグ状態は<code>Msg</code>として取得する。具体的には、以下のようにする。</p>
+<p>まず、どんな状態が欲しいのかを<code>Msg</code>として定義する。<code>D.Delta</code>とはマウスの移動量を表す型で、<code>(Float, Float)</code>のエイリアス。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
+    <span class="nf">=</span> <span class="kt">DragMsg</span> <span class="p">(</span><span class="kt">D</span><span class="nf">.</span><span class="kt">Msg</span> <span class="kt">Id</span><span class="p">)</span>
+    <span class="nf">|</span> <span class="kt">OnDragStart</span> <span class="kt">Id</span>
+    <span class="nf">|</span> <span class="kt">OnDragBy</span> <span class="kt">D</span><span class="nf">.</span><span class="kt">Delta</span>
+    <span class="nf">|</span> <span class="kt">OnDragEnd</span></code></pre></div>
+<p>どの<code>Msg</code>にどの状態を対応させるのかを、<code>D.customConfig</code>に定義する。<code>Draggable.Event.onDragStart</code>はドラッグ開始を意味する。<code>Draggable.Event.onDragBy</code>はドラッグ中を意味する。<code>Draggable.Event.onDragStart</code>はドラッグ終了を意味する。それぞれの状態がどんな情報を持っているのかについては<a href="https://package.elm-lang.org/packages/zaboco/elm-draggable/latest/Draggable-Events">ドキュメント</a>を読むと分かる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">dragConfig</span> <span class="nf">:</span> <span class="kt">D</span><span class="nf">.</span><span class="kt">Config</span> <span class="kt">Id</span> <span class="kt">Msg</span>
+<span class="nv">dragConfig</span> <span class="nf">=</span>
+    <span class="kt">D</span><span class="nf">.</span><span class="nv">customConfig</span>
+        <span class="p">[</span> <span class="kt">DE</span><span class="nf">.</span><span class="nv">onDragStart</span> <span class="kt">OnDragStart</span>
+        <span class="p">,</span> <span class="kt">DE</span><span class="nf">.</span><span class="nv">onDragBy</span> <span class="kt">OnDragBy</span>
+        <span class="p">,</span> <span class="kt">DE</span><span class="nf">.</span><span class="nv">onDragEnd</span> <span class="kt">OnDragEnd</span>
+        <span class="p">]</span></code></pre></div>
+<p><code>DragMsg</code>を受け取ったとき、<code>Draggable.upate</code>を用いて<code>drag</code>を更新する。この際に、上で定義した<code>dragConfig</code>を利用する。恐らくこのときに、<code>OnDragStart Id</code>、<code>OnDragBy D.Delta</code>、<code>OnDragEnd</code>のいずれかを発生させるようなコマンドが作られる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
+        <span class="kt">DragMsg</span> <span class="nv">dragMsg</span> <span class="nf">-&gt;</span>
+            <span class="kt">D</span><span class="nf">.</span><span class="nv">update</span> <span class="nv">dragConfig</span> <span class="nv">dragMsg</span> <span class="nv">model</span></code></pre></div>
+<p>そこで、各ドラッグ状態に対応した<code>Msg</code>について、<code>Model</code>の更新処理を書く。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
+        <span class="nf">..</span><span class="nf">.</span>
+
+        <span class="kt">OnDragStart</span> <span class="nv">id</span> <span class="nf">-&gt;</span>
+            <span class="p">(</span> <span class="p">{</span> <span class="nv">model</span> <span class="nf">|</span> <span class="nv">hold</span> <span class="nf">=</span> <span class="kt">Just</span> <span class="nv">id</span> <span class="p">}</span>
+            <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
+            <span class="p">)</span>
+
+        <span class="kt">OnDragBy</span> <span class="p">(</span> <span class="nv">dx</span><span class="p">,</span> <span class="nv">dy</span> <span class="p">)</span> <span class="nf">-&gt;</span>
+            <span class="p">(</span> <span class="p">{</span> <span class="nv">model</span>
+                <span class="nf">|</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="nv">updateCircles</span> <span class="nv">model</span> <span class="nv">dx</span> <span class="nv">dy</span>
+              <span class="p">}</span>
+            <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
+            <span class="p">)</span>
+
+        <span class="kt">OnDragEnd</span> <span class="nf">-&gt;</span>
+            <span class="p">(</span> <span class="p">{</span> <span class="nv">model</span> <span class="nf">|</span> <span class="nv">hold</span> <span class="nf">=</span> <span class="kt">Nothing</span> <span class="p">}</span>
+            <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
+            <span class="p">)</span>
+
+
+<span class="nv">updateCircles</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">Circles</span>
+<span class="nv">updateCircles</span> <span class="nv">model</span> <span class="nv">dx</span> <span class="nv">dy</span> <span class="nf">=</span>
+    <span class="kr">case</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">hold</span> <span class="kr">of</span>
+        <span class="kt">Nothing</span> <span class="nf">-&gt;</span>
+            <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span>
+
+        <span class="kt">Just</span> <span class="nv">id</span> <span class="nf">-&gt;</span>
+            <span class="kt">C</span><span class="nf">.</span><span class="nv">update</span> <span class="nv">id</span>
+                <span class="p">(</span><span class="nf">\</span><span class="nv">c</span> <span class="nf">-&gt;</span> <span class="p">{</span> <span class="nv">c</span> <span class="nf">|</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span> <span class="nf">+</span> <span class="nv">dx</span><span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span> <span class="nf">+</span> <span class="nv">dy</span> <span class="p">}</span><span class="p">)</span>
+                <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span></code></pre></div>
+<p>これで円をドラッグして移動できるようになった。「ドラッグ中は円の色を変える」処理については、前回とまったく同じなので省略。</p>
+<h2 id="補足-msgを発行するコマンド">補足: Msgを発行するコマンド</h2>
+<p><code>OnDragStart</code>や<code>OnDragBy</code>はどこから発行されているのか、については<a href="https://package.elm-lang.org/packages/zaboco/elm-draggable/latest/#usage">Usage</a>の最初の段落で述べられている。</p>
+<p>どうやら、任意の<code>Msg</code>を作るコマンドは、<code>Task</code>を用いて作ることができるようだ。例えば以下のようにすると、<code>Foo</code>を発行するコマンドを作成することができる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Task</span><span class="nf">.</span><span class="nv">perform</span> <span class="nv">identity</span> <span class="p">(</span><span class="kt">Task</span><span class="nf">.</span><span class="nv">succeed</span> <span class="kt">Foo</span><span class="p">)</span></code></pre></div>
+<p><code>Task.succeed Foo</code>で、常に<code>Foo</code>という値を返す<code>Task</code>を作成する。<code>Task.perform</code>は、第2引数の<code>Task</code>を実行して、その結果を第1引数に適用して<code>Msg</code>を発行する。<code>identity</code>は恒等関数なので、結局<code>Foo</code>そのものを<code>Msg</code>として発行する。</p>
+<p>この手法については<a href="http://faq.elm-community.org/#how-do-i-generate-a-new-message-as-a-command">Elm-CommunityのFAQ</a>にも載っている。しかしそこにも書かれているが、わざわざコマンドを作成して非同期処理にするよりも、単に<code>update</code>を再帰呼び出しすれば十分なことが多い。</p>
+<p>つまり、</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
+<span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="kt">Foo</span> <span class="nf">-&gt;</span>
+      <span class="nf">..</span><span class="nf">.</span>
+
+    <span class="kt">Bar</span> <span class="nf">-&gt;</span>
+      <span class="p">(</span><span class="nv">model</span>
+      <span class="p">,</span> <span class="kt">Task</span><span class="nf">.</span><span class="nv">perform</span> <span class="nv">identity</span> <span class="p">(</span><span class="kt">Task</span><span class="nf">.</span><span class="nv">succeed</span> <span class="kt">Foo</span><span class="p">)</span>
+      <span class="p">)</span></code></pre></div>
+<p>とするより、</p>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
+<span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
+    <span class="kt">Foo</span> <span class="nf">-&gt;</span>
+      <span class="nf">..</span><span class="nf">.</span>
+
+    <span class="kt">Bar</span> <span class="nf">-&gt;</span>
+      <span class="nv">update</span> <span class="kt">Foo</span> <span class="nv">model</span></code></pre></div>
+<p>とすれば十分なことが多い。</p>
+<p>ただ前者を用いた良いケースもあるようで、FAQでは、</p>
+<blockquote>
+The former option may be attractive when recursive calls to update could cause an infinite loop, or for authors of reusable components interested in creating a clean encapsulation of their library’s internal behavior.
+<p>意訳: 前者の選択肢は、updateを再帰呼び出しすると無限ループを引き起こしたり、また再利用可能なコンポーネントの作者が、ライブラリの内部状態をきれいにカプセル化することに関心がある場合に魅力的かもしれない。</p>
+</blockquote>
+<p>とある。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://package.elm-lang.org/packages/zaboco/elm-draggable/latest/">elm-draggable</a></li>
+<li><a href="https://package.elm-lang.org/packages/elm/core/latest/Task">Task</a></li>
+</ul>
+
+</article>
+
+
+
+</html>
