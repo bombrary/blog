@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>gnuplotの使い方メモ | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -101,12 +101,12 @@ $ set output</code></pre></div>
 <h2 id="スクリプトを書く">スクリプトを書く</h2>
 <p>gnuplotを起動していちいちコマンドを打つのは面倒なので、あらかじめスクリプトでまとめておく。例えば以下のような感じ。拡張子はなんでも良さそうだが、とりあえず<code>test.plt</code>とする。バックスラッシュ + 改行でつなげると一つのコマンドとして認識される。</p>
 <div class="highlight"><pre class="chroma"><code class="language-plt" data-lang="plt"><span class="k">set</span> <span class="nb">terminal</span> <span class="n">png</span>
-<span class="k">set</span> <span class="nb">output</span> <span class="s">&#34;</span><span class="s">output.png</span><span class="s">&#34;</span>
-<span class="k">set</span> <span class="nb">xlabel</span> <span class="s">&#34;</span><span class="s">X axis</span><span class="s">&#34;</span>
-<span class="k">set</span> <span class="nb">ylabel</span> <span class="s">&#34;</span><span class="s">Y axis</span><span class="s">&#34;</span>
-<span class="k">plot</span> <span class="s">&#34;</span><span class="s">data.txt</span><span class="s">&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">2</span> <span class="nb">w</span> <span class="n">lp</span><span class="o">,</span> \
-  <span class="s">&#34;</span><span class="s">data.txt</span><span class="s">&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">3</span> <span class="nb">w</span> <span class="n">lp</span><span class="o">,</span> \
-  <span class="s">&#34;</span><span class="s">data.txt</span><span class="s">&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">4</span> <span class="nb">w</span> <span class="n">lp</span>
+<span class="k">set</span> <span class="nb">output</span> <span class="s">&#34;output.png&#34;</span>
+<span class="k">set</span> <span class="nb">xlabel</span> <span class="s">&#34;X axis&#34;</span>
+<span class="k">set</span> <span class="nb">ylabel</span> <span class="s">&#34;Y axis&#34;</span>
+<span class="k">plot</span> <span class="s">&#34;data.txt&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">2</span> <span class="nb">w</span> <span class="n">lp</span><span class="o">,</span> \
+  <span class="s">&#34;data.txt&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">3</span> <span class="nb">w</span> <span class="n">lp</span><span class="o">,</span> \
+  <span class="s">&#34;data.txt&#34;</span> <span class="nb">using</span> <span class="mi">1</span><span class="o">:</span><span class="mi">4</span> <span class="nb">w</span> <span class="n">lp</span>
 <span class="k">set</span> <span class="nb">terminal</span> <span class="n">qt</span>
 <span class="k">set</span> <span class="nb">output</span></code></pre></div>
 

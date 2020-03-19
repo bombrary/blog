@@ -23,7 +23,7 @@
 Chartsのインストール まず、CocoaPodsがインストールされていることが前提。
 プロジェクトフォルダで以下のコマンドを実行。
 $ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。
-pod &#39;Charts&#39; プロジェクトフォルダで以下のコマンドを実行。
+pod &amp;#39;Charts&amp;#39; プロジェクトフォルダで以下のコマンドを実行。
 $ pod install 以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。
 基本 import UIKit import Charts struct BarChartModel { let value: Int let name: String } class ViewController: UIViewController { let barItems = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] override func viewDidLoad() { super.</description>
     </item>

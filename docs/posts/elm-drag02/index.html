@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ ドラッグ移動の実現(2) - elm-draggableの利用 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -83,7 +83,7 @@
 
 <span class="nv">empty</span> <span class="nf">:</span> <span class="kt">Circles</span>
 <span class="nv">empty</span> <span class="nf">=</span>
-    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="p">[</span><span class="p">]</span>
+    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="p">[]</span>
     <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">=</span> <span class="mi">0</span>
     <span class="p">}</span>
 
@@ -113,7 +113,7 @@
 
 <span class="nv">fromList</span> <span class="nf">:</span> <span class="kt">List</span> <span class="kt">CircleNoId</span> <span class="nf">-&gt;</span> <span class="kt">Circles</span>
 <span class="nv">fromList</span> <span class="nv">list</span> <span class="nf">=</span>
-    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="p">{</span> <span class="nv">id</span> <span class="nf">=</span> <span class="nv">i</span><span class="p">,</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span><span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span><span class="p">,</span> <span class="nv">r</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">r</span> <span class="p">}</span><span class="p">)</span> <span class="nv">list</span>
+    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="p">{</span> <span class="nv">id</span> <span class="nf">=</span> <span class="nv">i</span><span class="p">,</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span><span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span><span class="p">,</span> <span class="nv">r</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">r</span> <span class="p">})</span> <span class="nv">list</span>
     <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">=</span> <span class="kt">List</span><span class="nf">.</span><span class="nv">length</span> <span class="nv">list</span>
     <span class="p">}</span>
 
@@ -135,7 +135,7 @@
                     <span class="kr">else</span>
                         <span class="nv">c</span> <span class="nf">::</span> <span class="nv">acc</span>
                 <span class="p">)</span>
-                <span class="p">[</span><span class="p">]</span>
+                <span class="p">[]</span>
                 <span class="nv">circles</span><span class="nf">.</span><span class="nv">all</span>
     <span class="kr">in</span>
     <span class="p">{</span> <span class="nv">circles</span> <span class="nf">|</span> <span class="nv">all</span> <span class="nf">=</span> <span class="nv">new</span> <span class="p">}</span></code></pre></div>
@@ -168,7 +168,7 @@
     <span class="p">}</span>
 
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
     <span class="p">(</span> <span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span>
             <span class="kt">C</span><span class="nf">.</span><span class="nv">fromList</span>
@@ -192,7 +192,7 @@
 
 <span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
-    <span class="nv">div</span> <span class="p">[</span><span class="p">]</span>
+    <span class="nv">div</span> <span class="p">[]</span>
         <span class="p">[</span> <span class="nv">viewSvg</span> <span class="nv">model</span>
         <span class="p">]</span>
 
@@ -200,9 +200,9 @@
 <span class="nv">viewSvg</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewSvg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kt">S</span><span class="nf">.</span><span class="nv">svg</span>
-        <span class="p">[</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">w</span><span class="s">i</span><span class="s">d</span><span class="s">t</span><span class="s">h</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">5</span><span class="s">0</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">&#34;</span>
-        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">h</span><span class="s">e</span><span class="s">i</span><span class="s">g</span><span class="s">h</span><span class="s">t</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">5</span><span class="s">0</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">&#34;</span>
-        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">b</span><span class="s">o</span><span class="s">r</span><span class="s">d</span><span class="s">e</span><span class="s">r</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">1</span><span class="s">p</span><span class="s">x</span><span class="s"> </span><span class="s">s</span><span class="s">o</span><span class="s">l</span><span class="s">i</span><span class="s">d</span><span class="s"> </span><span class="s">#</span><span class="s">0</span><span class="s">0</span><span class="s">0</span><span class="s">&#34;</span>
+        <span class="p">[</span> <span class="nv">style</span> <span class="s">&#34;width&#34;</span> <span class="s">&#34;500px&#34;</span>
+        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;height&#34;</span> <span class="s">&#34;500px&#34;</span>
+        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;border&#34;</span> <span class="s">&#34;1px solid #000&#34;</span>
         <span class="p">]</span>
         <span class="p">[</span> <span class="nv">viewCircles</span> <span class="nv">model</span>
         <span class="p">]</span>
@@ -210,8 +210,8 @@
 
 <span class="nv">viewCircles</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewCircles</span> <span class="nv">model</span> <span class="nf">=</span>
-    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[</span><span class="p">]</span>
-        <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="p">(</span><span class="nv">viewCircle</span> <span class="nv">model</span><span class="p">)</span> <span class="p">(</span><span class="kt">C</span><span class="nf">.</span><span class="nv">toList</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span><span class="p">)</span><span class="p">)</span>
+    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[]</span>
+        <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="p">(</span><span class="nv">viewCircle</span> <span class="nv">model</span><span class="p">)</span> <span class="p">(</span><span class="kt">C</span><span class="nf">.</span><span class="nv">toList</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span><span class="p">))</span>
 
 
 <span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
@@ -219,16 +219,16 @@
     <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">transform</span> <span class="p">(</span><span class="nv">translate</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">x</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">y</span><span class="p">)</span> <span class="p">]</span>
         <span class="p">[</span> <span class="kt">S</span><span class="nf">.</span><span class="nv">circle</span>
             <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">r</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">r</span><span class="p">)</span>
-            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">fill</span> <span class="s">&#34;</span><span class="s">#</span><span class="s">f</span><span class="s">f</span><span class="s">f</span><span class="s">&#34;</span>
-            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">stroke</span> <span class="s">&#34;</span><span class="s">#</span><span class="s">0</span><span class="s">0</span><span class="s">0</span><span class="s">&#34;</span>
+            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">fill</span> <span class="s">&#34;#fff&#34;</span>
+            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">stroke</span> <span class="s">&#34;#000&#34;</span>
             <span class="p">]</span>
-            <span class="p">[</span><span class="p">]</span>
+            <span class="p">[]</span>
         <span class="p">]</span>
 
 
 <span class="nv">translate</span> <span class="nf">:</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
 <span class="nv">translate</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nf">=</span>
-    <span class="s">&#34;</span><span class="s">t</span><span class="s">r</span><span class="s">a</span><span class="s">n</span><span class="s">s</span><span class="s">l</span><span class="s">a</span><span class="s">t</span><span class="s">e</span><span class="s">(</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">x</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">,</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">y</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">)</span><span class="s">&#34;</span>
+    <span class="s">&#34;translate(&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">x</span> <span class="nf">++</span> <span class="s">&#34;,&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">y</span> <span class="nf">++</span> <span class="s">&#34;)&#34;</span>
 
 
 <span class="nv">subscriptions</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Sub</span> <span class="kt">Msg</span>
@@ -253,15 +253,15 @@ $ elm install zaboco/elm-draggable
 <h2 id="modelの追加">Modelの追加</h2>
 <p><code>drag</code>を追加する。ついでにドラッグ中の<code>Circle</code>の<code>id</code>を<code>hold</code>として持たせておく。<code>drag</code>は<code>Draggable.init</code>で初期化しなければいけないようなのでその通りにする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
-    <span class="p">{</span> <span class="nf">..</span><span class="nf">.</span>
+    <span class="p">{</span> <span class="nf">...</span>
     <span class="p">,</span> <span class="nv">hold</span> <span class="nf">:</span> <span class="kt">Maybe</span> <span class="kt">Id</span>
     <span class="p">,</span> <span class="nv">drag</span> <span class="nf">:</span> <span class="kt">D</span><span class="nf">.</span><span class="kt">State</span> <span class="kt">Id</span>
     <span class="p">}</span>
 
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
-    <span class="p">(</span> <span class="p">{</span> <span class="nf">..</span><span class="nf">.</span>
+    <span class="p">(</span> <span class="p">{</span> <span class="nf">...</span>
       <span class="p">,</span> <span class="nv">hold</span> <span class="nf">=</span> <span class="kt">Nothing</span>
       <span class="p">,</span> <span class="nv">drag</span> <span class="nf">=</span> <span class="kt">D</span><span class="nf">.</span><span class="nv">init</span>
       <span class="p">}</span>
@@ -272,16 +272,16 @@ $ elm install zaboco/elm-draggable
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="nf">=</span> <span class="kt">DragMsg</span> <span class="p">(</span><span class="kt">D</span><span class="nf">.</span><span class="kt">Msg</span> <span class="kt">Id</span><span class="p">)</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
 <span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewCircle</span> <span class="nv">model</span> <span class="nv">circle</span> <span class="nf">=</span>
-    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span> <span class="p">]</span>
+    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[</span> <span class="nf">...</span> <span class="p">]</span>
         <span class="p">[</span> <span class="kt">S</span><span class="nf">.</span><span class="nv">circle</span>
-            <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span>
+            <span class="p">[</span> <span class="nf">...</span>
             <span class="p">,</span> <span class="kt">D</span><span class="nf">.</span><span class="nv">mouseTrigger</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">id</span> <span class="kt">DragMsg</span>
             <span class="p">]</span>
-            <span class="p">[</span><span class="p">]</span>
+            <span class="p">[]</span>
         <span class="p">]</span></code></pre></div>
 <p>ドキュメントに明言はされていないが、おそらく<code>mouseTrigger</code>はマウスが押下されたときに起こるイベント。ドラッグ中は<code>Draggable.subscriptions</code>で監視する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">subscriptions</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Sub</span> <span class="kt">Msg</span>
@@ -313,7 +313,7 @@ $ elm install zaboco/elm-draggable
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
-        <span class="nf">..</span><span class="nf">.</span>
+        <span class="nf">...</span>
 
         <span class="kt">OnDragStart</span> <span class="nv">id</span> <span class="nf">-&gt;</span>
             <span class="p">(</span> <span class="p">{</span> <span class="nv">model</span> <span class="nf">|</span> <span class="nv">hold</span> <span class="nf">=</span> <span class="kt">Just</span> <span class="nv">id</span> <span class="p">}</span>
@@ -341,7 +341,7 @@ $ elm install zaboco/elm-draggable
 
         <span class="kt">Just</span> <span class="nv">id</span> <span class="nf">-&gt;</span>
             <span class="kt">C</span><span class="nf">.</span><span class="nv">update</span> <span class="nv">id</span>
-                <span class="p">(</span><span class="nf">\</span><span class="nv">c</span> <span class="nf">-&gt;</span> <span class="p">{</span> <span class="nv">c</span> <span class="nf">|</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span> <span class="nf">+</span> <span class="nv">dx</span><span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span> <span class="nf">+</span> <span class="nv">dy</span> <span class="p">}</span><span class="p">)</span>
+                <span class="p">(</span><span class="nf">\</span><span class="nv">c</span> <span class="nf">-&gt;</span> <span class="p">{</span> <span class="nv">c</span> <span class="nf">|</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span> <span class="nf">+</span> <span class="nv">dx</span><span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span> <span class="nf">+</span> <span class="nv">dy</span> <span class="p">})</span>
                 <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span></code></pre></div>
 <p>これで円をドラッグして移動できるようになった。「ドラッグ中は円の色を変える」処理については、前回とまったく同じなので省略。</p>
 <h2 id="補足-msgを発行するコマンド">補足: Msgを発行するコマンド</h2>
@@ -354,7 +354,7 @@ $ elm install zaboco/elm-draggable
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kt">Foo</span> <span class="nf">-&gt;</span>
-      <span class="nf">..</span><span class="nf">.</span>
+      <span class="nf">...</span>
 
     <span class="kt">Bar</span> <span class="nf">-&gt;</span>
       <span class="p">(</span><span class="nv">model</span>
@@ -364,7 +364,7 @@ $ elm install zaboco/elm-draggable
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kt">Foo</span> <span class="nf">-&gt;</span>
-      <span class="nf">..</span><span class="nf">.</span>
+      <span class="nf">...</span>
 
     <span class="kt">Bar</span> <span class="nf">-&gt;</span>
       <span class="nv">update</span> <span class="kt">Foo</span> <span class="nv">model</span></code></pre></div>

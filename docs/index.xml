@@ -6,10 +6,35 @@
     <description>Recent content on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Wed, 04 Mar 2020 13:50:16 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 19 Mar 2020 09:44:48 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>webpackに入門する - p5.jsの開発環境作り</title>
+      <link>https://bombrary.github.io/blog/posts/webpack-intro-p5/</link>
+      <pubDate>Thu, 19 Mar 2020 09:44:48 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/webpack-intro-p5/</guid>
+      <description>webpackを利用してp5.jsの開発環境を作り、ボールが弾むプログラムを作成する。
+動機 ふとしたきっかけで久々にp5.jsを触りたくなった。
+昔使っていたときは、p5.jsのファイルをダウンロードしてscriptタグに直接指定することで書いていた。しかし最近、Vue.jsのガイドを読んでいてwebpackの存在を知った。名前は知っていたのだが、具体的に何をするためのものなのかはよく分かっていなかったので調べた。
+webpackとは 以下、個人的に調べた限りの理解を書く。
+Conceptによれば、webpackとは&amp;quot;module bundler&amp;quot;の一種。bundleという意味から、「複数のモジュールを一つに束ねるツール」だと予想できる。JSのプログラムを、モジュールとして複数の単位に分割して開発する。それを一つのファイルにまとめ上げてくれるのがwebpack。
+例えばp5.jsで、ボールが弾むだけのプログラムを書こう、と思った場合、
+ ボールを管理するモジュールをBall.jsに書く スケッチを管理するモジュールをsketch.jsに書く メインの処理をindex.jsに書く  みたいにモジュールを分けられる。
+ただし、モジュールを扱うための機能であるimport/export文はES2015の仕様で標準採用され、多くのブラウザで実装されている。じゃあwebpackの他の強みは何かというと、おそらく「JS以外のファイルもまとめてくれる点」だと思う。例えばcssやsassのファイルもJSに埋め込むことができる。TypeScriptやJSXのファイルもwebpackでまとめられる。ただしwebpackの核の機能はあくまでJSのモジュールをまとめることなので、JS以外のファイルはloaderと呼ばれる変換器を通しておく必要がある。とはいえ、「このファイルはこのloaderに通してね」というのをあらかじめ設定ファイルに書いておけば、少ないコマンドで変換からbundleまでやってくれるので、便利である。
+今回はp5.jsの開発環境づくりのためにwebpackを用意するのだが、JSのモジュールしか扱うつもりはない。なのでwebpackの恩恵は少ないかもしれない。しかし練習として使ってみる。
+webpackの導入と動作確認 まず適当にプロジェクト用のディレクトリを作る。npmでプロジェクトを初期化する。
+$ mkdir p5-sandbox $ cd p5-sandbox $ npm init -y  以下、このプロジェクトのルートディレクトリを/で表す。
+webpack本体を入れる。webpackをコマンドラインから実行するためにはwebpack-cliが必要なので、それも入れる。個人で使う分にはどうでもよいと思うが、これらは開発のみに利用されるパッケージなので、--save-devをつけておく。
+$ npm install webpack webpack-cli --save-dev  ディレクトリの作成 今回は次のようにする。
+ ソースコードは/src/index.jsに書く。 bundle後のファイルは/public/js/bundle.jsとして出力されるようにする。  あらかじめディレクトリを作成しておく。
+$ mkdir src $ mkdir -p public/js  index.jsの作成 /src/index.jsを作成。動作確認のため適当に書く。
+console.log(&amp;#34;Hello, World&amp;#34;); webpackの設定 /webpack.config.jsを作成する。
+const path = require(&amp;#39;path&amp;#39;); module.exports = { mode: &amp;#39;development&amp;#39;, entry: &amp;#39;.</description>
+    </item>
     
     <item>
       <title>zipファイルの構造を少しだけ理解する</title>
@@ -183,7 +208,7 @@ module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&amp;gt; Str
 Chartsのインストール まず、CocoaPodsがインストールされていることが前提。
 プロジェクトフォルダで以下のコマンドを実行。
 $ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。
-pod &#39;Charts&#39; プロジェクトフォルダで以下のコマンドを実行。
+pod &amp;#39;Charts&amp;#39; プロジェクトフォルダで以下のコマンドを実行。
 $ pod install 以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。
 基本 import UIKit import Charts struct BarChartModel { let value: Int let name: String } class ViewController: UIViewController { let barItems = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] override func viewDidLoad() { super.</description>
     </item>
@@ -219,7 +244,7 @@ class ViewController: UIViewController { var constraint: NSLayoutConstraint! ove
 基本的にはこちらを参考にしながら進めていく。
 UIStackViewをコード上で使う基本 とりあえず使い方を確認する。
 Main.storyboard こんな感じにする。
-  ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.layoutMargins.right = 20 for (color, percentage) in zip(colors, percentages) { addBar(bgColor: color, percentage: percentage) } } private func addBar(bgColor: UIColor, percentage: CGFloat ) { let view = UIView() let height = graphStackView.</description>
+  ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.</description>
     </item>
     
     <item>
@@ -274,7 +299,7 @@ AppleのHuman Interface GuidelineにModalityの意味が書いてあって、こ
 準備 まずはボタンをクリックすると表示されるものだけ作る。
 Main.storyboard 表示元にはボタンを配置する。表示先はラベルを配置し、適切なConstraintを設定しておく。
   ViewController.swift ボタンのAction接続を作る。ボタンがタップされたら遷移するようにする。
-class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. } @IBAction func buttonTapped(_ sender: Any) { let vc = (storyboard?</description>
+class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view.</description>
     </item>
     
     <item>
@@ -310,7 +335,7 @@ const format = (data, w) =&amp;gt; { const pairs = d3.pairs(data); const deltas 
 準備 TableViewに最低限の設定をしておく。
 Main.storyboardを次のようにする。
   ViewController.swiftの内容を以下のようにする。
-class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.dequeueReusableCell(withIdentifier: &amp;#34;testCell&amp;#34;)! cell.</description>
+class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.</description>
     </item>
     
     <item>
@@ -325,7 +350,7 @@ Main.storyboard ボタンを一つ作っておく。
 Walkthrough.storyboard 配置を次のようにする
    Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;quot;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;quot;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;quot;と書かれたViewControllerのidentifierはpage3とする。  以下で、Transition Styleを&amp;quot;Scroll&amp;quot;とする。もし&amp;quot;Page Curl&amp;quot;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
   PageViewController.swift 次のように書く。
-class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. view.backgroundColor = .black let stb = storyboard! let page1 = stb.instantiateViewController(withIdentifier: &amp;#34;page1&amp;#34;) let page2 = stb.instantiateViewController(withIdentifier: &amp;#34;page2&amp;#34;) let page3 = stb.</description>
+class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.</description>
     </item>
     
     <item>
@@ -338,7 +363,7 @@ class PageViewController: UIPageViewController { var controllers: [UIViewControl
   Segmented Controlのラベルの設定は以下で行える。
   TableViewCellのindentifierはtestCellとする。
 ViewController.swift 後々の処理のため、TableViewに表示するデータをitems、その元データをitemsSourceと分けることにする。
-class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;#34;, &amp;#34;items2&amp;#34;, &amp;#34;items3&amp;#34;, &amp;#34;items4&amp;#34;, &amp;#34;items5&amp;#34;, &amp;#34;items6&amp;#34;, &amp;#34;items7&amp;#34;, &amp;#34;items8&amp;#34;] var items: [String] = [] @IBOutlet weak var segmentedControl: UISegmentedControl! @IBOutlet weak var tableView: UITableView! override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. tableView.dataSource = self items = itemsSource } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { return items.</description>
+class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;#34;, &amp;#34;items2&amp;#34;, &amp;#34;items3&amp;#34;, &amp;#34;items4&amp;#34;, &amp;#34;items5&amp;#34;, &amp;#34;items6&amp;#34;, &amp;#34;items7&amp;#34;, &amp;#34;items8&amp;#34;] var items: [String] = [] @IBOutlet weak var segmentedControl: UISegmentedControl! @IBOutlet weak var tableView: UITableView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self items = itemsSource } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { return items.</description>
     </item>
     
     <item>
@@ -457,7 +482,7 @@ Navigationについて 異なるFragment間の遷移を制御する仕組み。�
 プロジェクト作成 Empty Activityを選択し、名前をNavigation Testとする。
 build.gradle(Module: app)でDataBindingを有効にしておく。
 Fragmentの作成 layouts/にFragmentを作成する。&amp;ldquo;Create layout XML?&amp;ldquo;だけチェックをつけておく。Fragmentは2つ作成し、それぞれ&amp;quot;Fragment01&amp;quot;と&amp;quot;Fragment02&amp;quot;とする。xmlファイルはそれぞれfragment_fragment01.xml、fragment_fragment02.xmlとする。
-まずTextViewのtext要素に設定するための定数をstrings.xmlに内容を追加しておく。 &amp;lt;resources&amp;gt; &amp;lt;string name=&amp;#34;app_name&amp;#34;&amp;gt;NavigationTest&amp;lt;/string&amp;gt; &amp;lt;!--TODO: Remove or change this placeholder text --&amp;gt; &amp;lt;string name=&amp;#34;hello_blank_fragment&amp;#34;&amp;gt;Hello blank fragment&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;fragment01&amp;#34;&amp;gt;Fragment01&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;fragment02&amp;#34;&amp;gt;Fragment02&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;click&amp;#34;&amp;gt;Click&amp;lt;/string&amp;gt; &amp;lt;/resources&amp;gt;
+まずTextViewのtext要素に設定するための定数をstrings.xmlに内容を追加しておく。 &amp;lt;resources&amp;gt; &amp;lt;string name=&amp;#34;app_name&amp;#34;&amp;gt;NavigationTest&amp;lt;/string&amp;gt; &amp;lt;!-- TODO: Remove or change this placeholder text --&amp;gt; &amp;lt;string name=&amp;#34;hello_blank_fragment&amp;#34;&amp;gt;Hello blank fragment&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;fragment01&amp;#34;&amp;gt;Fragment01&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;fragment02&amp;#34;&amp;gt;Fragment02&amp;lt;/string&amp;gt; &amp;lt;string name=&amp;#34;click&amp;#34;&amp;gt;Click&amp;lt;/string&amp;gt; &amp;lt;/resources&amp;gt;
 fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し、textを@string/clickに設定する。TextViewのtextを@string/fragment01に設定する。また全体をConstraintLayoutで包み、DataBindingのためにlayoutでさらに包む。
 &amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt; &amp;lt;layout xmlns:android=&amp;#34;http://schemas.android.com/apk/res/android&amp;#34; xmlns:app=&amp;#34;http://schemas.android.com/apk/res-auto&amp;#34; xmlns:tools=&amp;#34;http://schemas.android.com/tools&amp;#34; tools:context=&amp;#34;.Fragment01&amp;#34;&amp;gt; &amp;lt;androidx.constraintlayout.widget.ConstraintLayout android:layout_width=&amp;#34;match_parent&amp;#34; android:layout_height=&amp;#34;match_parent&amp;#34;&amp;gt; &amp;lt;TextView android:id=&amp;#34;@+id/text_fragment01&amp;#34; android:layout_width=&amp;#34;wrap_content&amp;#34; android:layout_height=&amp;#34;wrap_content&amp;#34; android:text=&amp;#34;@string/fragment01&amp;#34; app:layout_constraintBottom_toBottomOf=&amp;#34;parent&amp;#34; app:layout_constraintEnd_toEndOf=&amp;#34;parent&amp;#34; app:layout_constraintStart_toStartOf=&amp;#34;parent&amp;#34; app:layout_constraintTop_toTopOf=&amp;#34;parent&amp;#34; /&amp;gt; &amp;lt;Button android:id=&amp;#34;@+id/button&amp;#34; android:layout_width=&amp;#34;wrap_content&amp;#34; android:layout_height=&amp;#34;wrap_content&amp;#34; android:text=&amp;#34;@string/click&amp;#34; app:layout_constraintBottom_toTopOf=&amp;#34;@+id/text_fragment01&amp;#34; app:layout_constraintEnd_toEndOf=&amp;#34;parent&amp;#34; app:layout_constraintStart_toStartOf=&amp;#34;parent&amp;#34; app:layout_constraintTop_toTopOf=&amp;#34;parent&amp;#34; /&amp;gt; &amp;lt;/androidx.</description>
     </item>

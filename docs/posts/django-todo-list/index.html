@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Djangoの勉強でTodoリストを作る | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -73,39 +73,39 @@
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ python3 manage.py startapp todo_list
 </code></pre></div><p>続いて<code>mysite/settings.py</code>を開いて、<code>INSTALL_APPS</code>を以下の記述にする。<code>'todo_list.apps.TodoListConfig'</code>を追加しただけ。これはデータベース作成やテンプレート作成のために、djangoがtodo_listのディレクトリを教えているっぽい。<code>Todo_listConfig</code>かと思ったが違うらしい(エラーで「TodoListConfigだよ」と教えてくれた。優しい)。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list.apps.TodoListConfig</span><span class="s1">&#39;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s1">&#39;</span><span class="s1">django.contrib.admin</span><span class="s1">&#39;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s1">&#39;</span><span class="s1">django.contrib.auth</span><span class="s1">&#39;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s1">&#39;</span><span class="s1">django.contrib.contenttypes</span><span class="s1">&#39;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s1">&#39;</span><span class="s1">django.contrib.sessions</span><span class="s1">&#39;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s1">&#39;</span><span class="s1">django.contrib.messages</span><span class="s1">&#39;</span><span class="p">,</span>
-    <span class="sa"></span><span class="s1">&#39;</span><span class="s1">django.contrib.staticfiles</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;todo_list.apps.TodoListConfig&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
 <span class="p">]</span></code></pre></div>
 <h2 id="viewの作成">viewの作成</h2>
 <p><code>mysite/todo_list/views.py</code>を編集する。とりあえずviewが動くかどうかだけ確認したいので、レスポンスは適当な文字列にする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">shortcuts</span> <span class="k">import</span> <span class="n">render</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
 
 <span class="c1"># Create your views here.</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">)</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">Hello</span><span class="s1">&#39;</span><span class="p">)</span></code></pre></div>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span></code></pre></div>
 <h2 id="urlの設定">urlの設定</h2>
 <p>まず<code>mysite/mysite/urls.py</code>の設定をする。<code>urls.py</code>とは「どんなurlにアクセスされたらどんなviewに処理を任せるか」を記述したものっぽい。ここでは、<code>todo_list/</code>で始まるurlだったら<code>todo_list/urls.py</code>に処理を任せるように書いている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">contrib</span> <span class="k">import</span> <span class="n">admin</span>
-<span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">urls</span> <span class="k">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">path</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">path</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list/</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list.urls</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">)</span><span class="p">,</span>
-    <span class="n">path</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">admin/</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">)</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;todo_list/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;todo_list.urls&#39;</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
 <span class="p">]</span></code></pre></div>
 <p>ということで<code>mysite/todo_list/urls.py</code>の設定をする。恐らく存在しないので新しく作成する。<code>todo_list/</code>以降に何も指定されなかったら表示を<code>views.py</code>の<code>index</code>関数に任せるように書いている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">urls</span> <span class="k">import</span> <span class="n">path</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">path</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">views</span>
 
-<span class="n">app_name</span> <span class="o">=</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list</span><span class="s1">&#39;</span>
+<span class="n">app_name</span> <span class="o">=</span> <span class="s1">&#39;todo_list&#39;</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">index</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">),</span>
 <span class="p">]</span></code></pre></div>
 <h2 id="動かしてみる">動かしてみる</h2>
 <pre><code>$ python3 manage.py runserver
@@ -113,11 +113,11 @@
 <h2 id="model作成">Model作成</h2>
 <p><code>Todo</code>の内容を保存しておくためのデータベースが必要である。Djangoでは、データベースのテーブル要素をModelとして定義する。</p>
 <p><code>mysite/todo_list/model.py</code>の内容を以下のように編集する。今回扱うのはただのテキストだけなので、<code>models.CharField</code>しか用意しない。ただし、内部的には<code>text</code>だけでなく<code>id</code>変数も追加される。これはテーブルの要素を識別するためのもので、後で削除機能を実装する時に利用する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">db</span> <span class="k">import</span> <span class="n">models</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
 
 <span class="c1"># Create your models here.</span>
 
-<span class="k">class</span> <span class="nc">Todo</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">)</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">Todo</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span> <span class="o">=</span> <span class="mi">500</span><span class="p">)</span></code></pre></div>
 <p>テーブルを自動作成するためにマイグレーションという作業が必要らしいので、それをやる。<code>Ctrl+C</code>でサーバーを終了した後、次の2コマンドを実行。</p>
 <pre><code>$ python3 manage.py makemigrations
@@ -126,111 +126,111 @@ $ python3 manage.py migrate
 <h2 id="templates作成">Templates作成</h2>
 <p><code>mysite/todo_list/templates/todo_list/index.html</code>を作成し、内容を以下の通りにする。ディレクトリも適当に作成する。<code>todo_list/templates/todo_list</code>というディレクトリ構成が気持ち悪いが、名前空間云々の理由で仕方ない(<a href="https://docs.djangoproject.com/ja/2.2/intro/tutorial03/#s-write-views-that-actually-do-something">参考</a>)。</p>
 <div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p"></span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">head</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">title</span><span class="p"></span><span class="p">&gt;</span>Todo List<span class="p">&lt;</span><span class="p">/</span><span class="nt">title</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">head</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">body</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">h1</span><span class="p"></span><span class="p">&gt;</span>Todo List<span class="p">&lt;</span><span class="p">/</span><span class="nt">h1</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">body</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="p">/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Todo List<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Todo List<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p><code>mysite/todo_list/views.py</code>を編集する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">shortcuts</span> <span class="k">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
 
 <span class="c1"># Create your views here.</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">)</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list/index.html</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{</span><span class="p">}</span><span class="p">)</span></code></pre></div>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;todo_list/index.html&#39;</span><span class="p">,</span> <span class="p">{})</span></code></pre></div>
 <h2 id="モデルが表示できるようにする">モデルが表示できるようにする</h2>
 <p><code>mysite/todo_list/models.py</code>の<code>Todo</code>クラスをインポートして、<code>Todo.objects.all()</code>でTodoの全要素が取得できるらしい。この情報をrenderに渡すと、前項で作ったTemplateでそれが利用できるようになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">shortcuts</span> <span class="k">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
 
-<span class="kn">from</span> <span class="nn">.</span><span class="nn">models</span> <span class="k">import</span> <span class="n">Todo</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">Todo</span>
 
 <span class="c1"># Create your views here.</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">)</span><span class="p">:</span>
-    <span class="n">todos</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">todos</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">todos</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list/index.html</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{</span><span class="n">todos</span><span class="p">:</span> <span class="n">todos</span><span class="p">}</span><span class="p">)</span></code></pre></div>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;todo_list/index.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="n">todos</span><span class="p">:</span> <span class="n">todos</span><span class="p">})</span></code></pre></div>
 <p>ということで<code>mysite/todo_list/templates/todo_list/index.html</code>を編集する。djangoのtemplate構文を利用して、<code>for-in</code>文が書ける。便利。</p>
 <div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p"></span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">head</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">title</span><span class="p"></span><span class="p">&gt;</span>Todo List<span class="p">&lt;</span><span class="p">/</span><span class="nt">title</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">head</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">body</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">h1</span><span class="p"></span><span class="p">&gt;</span>Todo List<span class="p">&lt;</span><span class="p">/</span><span class="nt">h1</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">ul</span><span class="p"></span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Todo List<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Todo List<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
       {% for todo in todos %}
-      <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span>{{ todo }}<span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>{{ todo }}<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
       {% endfor %}
-    <span class="p">&lt;</span><span class="p">/</span><span class="nt">ul</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">body</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="p">/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p>しかしTodoにまだ何も要素が追加されていないので、表示されない。</p>
 <h2 id="todo追加と削除機能を追加">Todo追加と削除機能を追加</h2>
 <p>テキストエリアでEnterが押された時に<code>todo_list/add</code>にアクセスするようにする。<code>Todo</code>のテーブルに要素を追加する処理を書くつもり。また、Todoリストの各要素がクリックされた時に<code>todo_list/[TodoのId]/remove</code>にアクセスするようにする。ここでは<code>Todo</code>のテーブルから要素を削除する処理を書くつもり。</p>
 <p>とりあえず外見だけ作ろう。<code>mysite/todo_list/templates/todo_list/index.html</code>を編集する。</p>
 <p><code>{% url 'todo_list:name' %}</code>を用いると、<code>urls.py</code>に書かれている<code>name</code>と照合してurlを生成してくれる。<code>{% csrf_token %}</code>はセキュリティ対策のために用いられるものらしいけど、この辺はまだ詳しくない。<code>{% url 'todo_list:name' todo.id %}</code>については<code>urls.py</code>にて説明する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p"></span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">head</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">title</span><span class="p"></span><span class="p">&gt;</span>Todo List<span class="p">&lt;</span><span class="p">/</span><span class="nt">title</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">head</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">body</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">h1</span><span class="p"></span><span class="p">&gt;</span>Todo List<span class="p">&lt;</span><span class="p">/</span><span class="nt">h1</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;{% url &#39;todo_list:add&#39; %}&#34;</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p"></span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Todo List<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Todo List<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;{% url &#39;todo_list:add&#39; %}&#34;</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
       {% csrf_token %}
-      <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;What will you do?&#34;</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="p">/</span><span class="nt">form</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">ul</span><span class="p"></span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;What will you do?&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
       {% for todo in todos %}
-      <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{% url &#39;todo_list:remove&#39; todo.id %}&#34;</span><span class="p"></span><span class="p">&gt;</span>{{ todo.text }}<span class="p">&lt;</span><span class="p">/</span><span class="nt">a</span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{% url &#39;todo_list:remove&#39; todo.id %}&#34;</span><span class="p">&gt;</span>{{ todo.text }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
       {% endfor %}
-    <span class="p">&lt;</span><span class="p">/</span><span class="nt">ul</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">body</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="p">/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p><code>mysite/todo_list/urls.py</code>を編集する。<code>&lt;int:todo_id&gt;</code>は特殊な文法で、ここには何かしらの整数が入る。この<code>todo_id</code>は``views.py<code>の引数として指定する。また</code>index.html<code>で書いていた</code>{% url &lsquo;todo_list:remove<code> todo.id %}</code>の<code>todo.id</code>に当たる数字がここに入って、<code>todo_list/[todo.idの値]/remove</code>というurlに解釈される。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">urls</span> <span class="k">import</span> <span class="n">path</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">path</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">views</span>
 
-<span class="n">app_name</span> <span class="o">=</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list</span><span class="s1">&#39;</span>
+<span class="n">app_name</span> <span class="o">=</span> <span class="s1">&#39;todo_list&#39;</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">path</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">index</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">,</span>
-    <span class="n">path</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">add/</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">add</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">,</span>
-    <span class="n">path</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">&lt;int:todo_id&gt;/remove/</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">remove</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">remove</span><span class="s1">&#39;</span><span class="p">)</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;add/&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;&lt;int:todo_id&gt;/remove/&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">remove</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">),</span>
 <span class="p">]</span></code></pre></div>
 <p><code>mysite/todo_list/views.py</code>を編集する。</p>
 <p><code>add</code>ビューではテーブルに要素を追加する。フォーム要素から<code>request.POST[name]</code>で、form部品の情報を取得できる。ここでのnameとは、form部品のname属性である。</p>
 <p><code>remove</code>ビューでは引数に<code>todo_id</code>を指定している。これは<code>urls.py</code>で指定していた<code>&lt;int:todo_id&gt;</code>と同じものである。<code>get_object_or_404</code>でTodoテーブルから<code>id==todo_id</code>となるものを探し出し、もし見つからなかったら<code>404</code>ページを表示する。<code>pk</code>というのはおそらく<code>primary key</code>の略で、デフォルトでは<code>id</code>が主キーになっているのだろう。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">shortcuts</span> <span class="k">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
-<span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">http</span> <span class="k">import</span> <span class="n">HttpResponse</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span>
-<span class="kn">from</span> <span class="nn">django</span><span class="nn">.</span><span class="nn">urls</span> <span class="k">import</span> <span class="n">reverse</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
 
-<span class="kn">from</span> <span class="nn">.</span><span class="nn">models</span> <span class="k">import</span> <span class="n">Todo</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">Todo</span>
 
 <span class="c1"># Create your views here.</span>
 
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">)</span><span class="p">:</span>
-    <span class="n">todos</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list/index.html</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">todos</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">todos</span><span class="p">}</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">todos</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;todo_list/index.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;todos&#39;</span><span class="p">:</span> <span class="n">todos</span><span class="p">})</span>
 
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">request</span><span class="p">)</span><span class="p">:</span>
-    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">text</span><span class="s1">&#39;</span><span class="p">]</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list:index</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">])</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;todo_list:index&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()))</span>
 
-<span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">)</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">):</span>
     <span class="n">todo</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Todo</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">todo_id</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="sa"></span><span class="s1">&#39;</span><span class="s1">todo_list:index</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="p">)</span></code></pre></div>
+    <span class="n">todo</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;todo_list:index&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()))</span></code></pre></div>
 <p>これでまともなTodoリストができた。
 <figure>
     <img src="./01.png" width="50%"/> 
@@ -241,27 +241,27 @@ $ python3 manage.py migrate
 <p><code>mysite/todo_list/templates/todo_list/index.html</code>を編集する。<code>{% load static %}</code>で、<code>static</code>ディレクトリ以下をデータの探索対象に含めてくれるっぽい？<code>{% static 'todo_list/style.css' %}</code>は<code>/todo_list/style.css</code>と解釈されるっぽい。</p>
 <div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html">{% load static %}
 <span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p"></span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">head</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{% static &#39;todo_list/style.css&#39; %}&#34;</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">title</span><span class="p"></span><span class="p">&gt;</span>Todo List<span class="p">&lt;</span><span class="p">/</span><span class="nt">title</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">head</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">body</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;wrapper&#34;</span><span class="p"></span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">h1</span><span class="p"></span><span class="p">&gt;</span>Todo List<span class="p">&lt;</span><span class="p">/</span><span class="nt">h1</span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;{% url &#39;todo_list:add&#39; %}&#34;</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p"></span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text/css&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{% static &#39;todo_list/style.css&#39; %}&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Todo List<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;wrapper&#34;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Todo List<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;{% url &#39;todo_list:add&#39; %}&#34;</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
         {% csrf_token %}
-        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;What will you do?&#34;</span><span class="p"></span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="p">/</span><span class="nt">form</span><span class="p">&gt;</span>
-      <span class="p">&lt;</span><span class="nt">ul</span><span class="p"></span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;What will you do?&#34;</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
         {% for todo in todos %}
-        <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{% url &#39;todo_list:remove&#39; todo.id %}&#34;</span><span class="p"></span><span class="p">&gt;</span>{{ todo.text }}<span class="p">&lt;</span><span class="p">/</span><span class="nt">a</span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{% url &#39;todo_list:remove&#39; todo.id %}&#34;</span><span class="p">&gt;</span>{{ todo.text }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
         {% endfor %}
-      <span class="p">&lt;</span><span class="p">/</span><span class="nt">ul</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">body</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="p">/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
+      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p>HTML上で<code>todo_list/style.css</code>と解釈されているファイルは、実際には<code>mysite/todo_list/static/todo_list/style.css</code>に置かれている。ということでそれを作成し、内容を以下のようにする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-css" data-lang="css"><span class="o">*</span> <span class="p">{</span>
   <span class="k">box-sizing</span><span class="p">:</span> <span class="kc">border-box</span><span class="p">;</span>
@@ -279,7 +279,7 @@ $ python3 manage.py migrate
   <span class="k">justify-content</span><span class="p">:</span> <span class="kc">center</span><span class="p">;</span>
   <span class="k">background-color</span><span class="p">:</span> <span class="mh">#fff</span><span class="p">;</span>
   <span class="k">border-radius</span><span class="p">:</span> <span class="mi">10</span><span class="kt">px</span><span class="p">;</span>
-  <span class="k">box-shadow</span><span class="p">:</span> <span class="mi">5</span><span class="kt">px</span> <span class="mi">5</span><span class="kt">px</span> <span class="mi">5</span><span class="kt">px</span> <span class="nb">rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span><span class="p">;</span>
+  <span class="k">box-shadow</span><span class="p">:</span> <span class="mi">5</span><span class="kt">px</span> <span class="mi">5</span><span class="kt">px</span> <span class="mi">5</span><span class="kt">px</span> <span class="nb">rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">);</span>
 <span class="p">}</span>
 <span class="nt">h1</span> <span class="p">{</span>
   <span class="k">color</span><span class="p">:</span> <span class="mh">#333</span><span class="p">;</span>

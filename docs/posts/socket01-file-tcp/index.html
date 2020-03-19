@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Socket通信の勉強(1) - ディスクリプタ/TCPによる通信 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -74,18 +74,18 @@
 
 <h3 id="ファイルの読み込み">ファイルの読み込み</h3>
 <p>ファイルディスクリプタを用いてファイルを読み込む例を以下に示す。以下は、<code>test.txt</code>を読み込んで、そのファイルディスクリプタとファイルの内容を出力するプログラムである。</p>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">test.txt</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">)</span><span class="p">;</span>
-  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span><span class="p">;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&#34;test.txt&#34;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">);</span>
+  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
 
-  <span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">fd: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fd</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;fd: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fd</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
 
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
@@ -98,15 +98,15 @@ Hello, World</code></pre></div>
 <p>以下説明するopen/read/closeは関数ではなく、全てシステムコールである。</p>
 <h3 id="openでファイルを開く">openでファイルを開く</h3>
 <p>開きたいファイルのパスと、読み書きの方法を引数に指定する。成功するとファイルディスクリプタを返す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span><span class="p">;</span>
+<span class="kt">int</span> <span class="nf">open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
 </code></pre></div>
 <h3 id="readで読み込む">readで読み込む</h3>
 <p>ファイルディスクリプタと、読み取った値を保持しておくためのバッファ、また読み取るデータの長さを指定する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="n">ssize_t</span> <span class="nf">read</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">count</span><span class="p">)</span><span class="p">;</span>
+<span class="n">ssize_t</span> <span class="nf">read</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">count</span><span class="p">);</span>
 </code></pre></div>
 <h3 id="closeでディスクリプタを解放する">closeでディスクリプタを解放する</h3>
 <p>openで結びつけられたファイルディスクリプタはcloseで解放しなければならないことに注意。低級寄りの処理なだけあって、自動では解放してくれない。</p>
@@ -157,72 +157,72 @@ Hello, World</code></pre></div>
 <h2 id="実際に書いてみる">実際に書いてみる</h2>
 <p><code>server.cpp</code>と<code>client.cpp</code>を用意する。</p>
 <h3 id="servercpp">server.cpp</h3>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="c1">// 1.
-</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock_listen</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock_listen</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 
   <span class="c1">// 2.
-</span><span class="c1"></span>  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
   <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">);</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
 
   <span class="c1">// 3.
-</span><span class="c1"></span>  <span class="n">bind</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="n">bind</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">));</span>
 
   <span class="c1">// 4.
-</span><span class="c1"></span>  <span class="n">listen</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="n">listen</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
 
   <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">client_addr</span><span class="p">;</span>
-  <span class="n">socklen_t</span> <span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr_in</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">socklen_t</span> <span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr_in</span><span class="p">);</span>
   <span class="c1">// 5.
-</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">accepted.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;accepted.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 
   <span class="c1">// 6.
-</span><span class="c1"></span>  <span class="kt">char</span> <span class="n">msg</span><span class="p">[</span><span class="p">]</span> <span class="o">=</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">Hello, World</span><span class="s">&#34;</span><span class="p">;</span>
-  <span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;Hello, World&#34;</span><span class="p">;</span>
+  <span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">));</span>
 
-  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">close</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">);</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">);</span>
 
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="clientcpp">client.cpp</h3>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="c1">// 1.
-</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 
   <span class="c1">// 2.
-</span><span class="c1"></span>  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
   <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">inet_addr</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">127.0.0.1</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">inet_addr</span><span class="p">(</span><span class="s">&#34;127.0.0.1&#34;</span><span class="p">);</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
 
   <span class="c1">// 3.
-</span><span class="c1"></span>  <span class="n">connect</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="n">connect</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">));</span>
 
   <span class="c1">// 4.
-</span><span class="c1"></span>  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span><span class="p">;</span>
-  <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+  <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
 
-  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">);</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -241,7 +241,7 @@ $ gcc client.c -o client</code></pre></div>
 <li>第3引数: とりあえず0でいいっぽい。複数プロトコルに対応させる場合はここをいじるっぽい？</li>
 </ul>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="c1">// 1.
-</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock_listen</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock_listen</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </code></pre></div>
 <h4 id="sockaddr_in構造体">sockaddr_in構造体</h4>
 <p>クライアントから通信を受け入れるためのアドレス、ポートの設定をする。<code>sockaddr_in</code>構造体はIPv4のための構造体らしい。</p>
@@ -252,10 +252,10 @@ $ gcc client.c -o client</code></pre></div>
 <li><code>sin_port = htons(8000)</code>: ポートを設定する。<code>htons</code>は整数値の表現方法を変える関数。PCによって値の表現方法が異なるのを解決するための手段。</li>
 </ul>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="c1">// 2.
-</span><span class="c1"></span>  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
   <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">);</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
 </code></pre></div>
 <h4 id="bind">bind</h4>
 <p>ソケットにアドレス、ポートの情報を結びつける。</p>
@@ -265,7 +265,7 @@ $ gcc client.c -o client</code></pre></div>
 <li><code>sizeof(server_addr)</code>: <code>server_addr</code>のサイズ。<code>sizeof(struct sockaddr_in)</code>と同義。</li>
 </ul>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="c1">// 3.
-</span><span class="c1"></span>  <span class="n">bind</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="n">bind</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">));</span>
 </code></pre></div>
 <h4 id="listen">listen</h4>
 <p>待ち受けを開始する</p>
@@ -274,7 +274,7 @@ $ gcc client.c -o client</code></pre></div>
 <li><code>5</code>: これは複数クライアントからの接続に対応するものらしい。</li>
 </ul>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="c1">// 4.
-</span><span class="c1"></span>  <span class="n">listen</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="n">listen</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
 </code></pre></div>
 <h4 id="accept">accept</h4>
 <p>クライアントからの要求を受け入れ、通信を確立する</p>
@@ -285,8 +285,8 @@ $ gcc client.c -o client</code></pre></div>
 <li><code>&amp;len</code>: <code>client_addr</code>のサイズがここに格納されてくる。</li>
 </ul>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="c1">// 5.
-</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">accepted.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;accepted.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </code></pre></div>
 <h4 id="write">write</h4>
 <p>ここではメッセージを送るために利用している。</p>
@@ -296,13 +296,13 @@ $ gcc client.c -o client</code></pre></div>
 <li><code>sizeof(msg)</code>: メッセージのサイズ</li>
 </ul>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="c1">// 6.
-</span><span class="c1"></span>  <span class="kt">char</span> <span class="n">msg</span><span class="p">[</span><span class="p">]</span> <span class="o">=</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">Hello, World</span><span class="s">&#34;</span><span class="p">;</span>
-  <span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;Hello, World&#34;</span><span class="p">;</span>
+  <span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">));</span>
 </code></pre></div>
 <h4 id="close">close</h4>
 <p>作ったソケットは<code>close</code>を用いて破棄しなければならない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">close</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">)</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">);</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">);</span>
 </code></pre></div>
 <h3 id="clientcppの説明">client.cppの説明</h3>
 <h4 id="sockaddr_in構造体-1">sockaddr_in構造体</h4>
@@ -310,10 +310,10 @@ $ gcc client.c -o client</code></pre></div>
 <ul>
 <li><code>server_addr.sin_addr.s_addr = inet_addr(&quot;127.0.0.1&quot;)</code>: 今回はローカルホスト(自身のPC)と接続するため、<code>127.0.0.1</code>をIPアドレスとしている。</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
   <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">inet_addr</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">127.0.0.1</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">inet_addr</span><span class="p">(</span><span class="s">&#34;127.0.0.1&#34;</span><span class="p">);</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
 </code></pre></div>
 <h4 id="connect">connect</h4>
 <p>サーバーに接続する</p>
@@ -322,105 +322,105 @@ $ gcc client.c -o client</code></pre></div>
 <li><code>(struct sockaddr *)&amp;server_addr</code>: サーバーのアドレス。</li>
 <li><code>sizeof(server_addr)</code>: <code>server_addr</code>のサイズ。<code>sizeof(sturct sockaddr_in)</code>と同義</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="n">connect</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="n">connect</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">));</span>
 </code></pre></div>
 <h4 id="read">read</h4>
 <p>ここでは、サーバーからのメッセージを受信する意味で用いる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span><span class="p">;</span>
-  <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+  <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
 </code></pre></div>
 <p><code>read</code>は返り値として「実際に受け取ったデータのバイト数」を返す。<code>buf</code>一杯にデータを受け取っているとは限らないことに注意。</p>
 <h2 id="エラーをつける">エラーをつける</h2>
 <p>今回出てきたすべての関数/システムコールは、失敗すると-1を返す。</p>
 <p><code>perror</code>は、何かしらの失敗のメッセージのうち最新のものを出力する関数。<code>perror(&quot;name&quot;)</code>で、<code>name: エラーメッセージ</code>と出力される。</p>
 <h3 id="servercppの内容">server.cppの内容</h3>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">sock_listen</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">sock_listen</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">sock_listen</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">socket</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;socket&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 
-  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
   <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">);</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="n">bind</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">)</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">bind</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">bind</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;bind&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="n">listen</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">listen</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;listen&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 
   <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">client_addr</span><span class="p">;</span>
-  <span class="n">socklen_t</span> <span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr_in</span><span class="p">)</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">socklen_t</span> <span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr_in</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">sock</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">accept</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;accept&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 
-  <span class="kt">char</span> <span class="n">msg</span><span class="p">[</span><span class="p">]</span> <span class="o">=</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">Hello, World</span><span class="s">&#34;</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">write</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;Hello, World&#34;</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;write&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 
-  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">close</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">);</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">);</span>
 
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="clientcppの内容">client.cppの内容</h3>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="cp">#</span><span class="cp">include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;netinet/in.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="c1">// 1.
 </span><span class="c1"></span>  <span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span><span class="p">;</span>
   <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">inet_addr</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">127.0.0.1</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">inet_addr</span><span class="p">(</span><span class="s">&#34;127.0.0.1&#34;</span><span class="p">);</span>
+  <span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
 
   <span class="c1">// 2.
-</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">sock</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">socket</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;socket&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 
   <span class="c1">// 3.
-</span><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="n">connect</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">)</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">connect</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="n">connect</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;connect&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 
   <span class="c1">// 4.
-</span><span class="c1"></span>  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">read</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;read&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
-  <span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
 
-  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span><span class="p">;</span>
+  <span class="n">close</span><span class="p">(</span><span class="n">sock</span><span class="p">);</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -439,27 +439,27 @@ $ gcc client.c -o client</code></pre></div>
 </ul>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// これより上でソケットを定義しておく
 </span><span class="c1"></span><span class="kt">int</span> <span class="n">optval</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="n">setsockopt</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">optval</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">optval</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+<span class="n">setsockopt</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">optval</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">optval</span><span class="p">));</span>
 <span class="c1">// これより下でbind関数を呼び出す。
 </span></code></pre></div>
 <p>setsockoptはエラーを出すと-1を返すので、エラー処理をちゃんと書こうとすると次のようになる。
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// これより上でソケットを定義しておく
 </span><span class="c1"></span><span class="kt">int</span> <span class="n">optval</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">optval</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">optval</span><span class="p">)</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">setsockopt</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">sock_listen</span><span class="p">,</span> <span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">optval</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">optval</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">perror</span><span class="p">(</span><span class="s">&#34;setsockopt&#34;</span><span class="p">);</span>
+  <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">// これより下でbind関数を呼び出す。
 </span></code></pre></div></p>
 <h2 id="ブロッキング">ブロッキング</h2>
 <p>実はサーバー側がwriteするまで、クライアントはreadを待ってくれる。このような仕組みをブロッキングという。いわゆる同期通信である。</p>
 <p>例えば、次のように<code>server</code>で、<code>write</code>の前に5秒待つとしよう。</p>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="n">printf</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">Wait for 5 seconds.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-  <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="p">;</span>
-  <span class="kt">char</span> <span class="n">msg</span><span class="p">[</span><span class="p">]</span> <span class="o">=</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">Hello, World</span><span class="s">&#34;</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">write</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Wait for 5 seconds.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+  <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;Hello, World&#34;</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;write&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 </code></pre></div>
 <p>すると、<code>client</code>と通信が確立した後、<code>server</code>は<code>Hello, World</code>を送る前に5秒間待機する。この時、<code>client</code>はそれを待ってくれる。</p>
@@ -467,17 +467,17 @@ $ gcc client.c -o client</code></pre></div>
 <h2 id="recvsend">recv/send</h2>
 <p><code>read/write</code>を用いる代わりに、<code>recv/send</code>を用いる、という選択肢がある。これはソケットのために作られた関数だ。</p>
 <p><code>server</code>の<code>write</code>に関するコードは以下のように置き換えられる。
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="kt">char</span> <span class="n">msg</span><span class="p">[</span><span class="p">]</span> <span class="o">=</span> <span class="sa"></span><span class="s">&#34;</span><span class="s">Hello, World</span><span class="s">&#34;</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">write</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;Hello, World&#34;</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;write&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 </code></pre></div></p>
 <p><code>client</code>の<code>read</code>に関するコードは以下のように置き換えられる
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">recv</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">perror</span><span class="p">(</span><span class="sa"></span><span class="s">&#34;</span><span class="s">read</span><span class="s">&#34;</span><span class="p">)</span><span class="p">;</span>
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">;</span>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">recv</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;read&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="p">}</span>
 </code></pre></div></p>
 <p>第4引数に0が加わっただけのように見える。第4引数には通信に関するオプションが指定できる。何もなければ0を指定し、この場合は<code>read/write</code>関数と全く同じ動作をする。</p>

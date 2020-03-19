@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ - 画像のプレビュー機能を作る | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -59,7 +59,7 @@
 <h2 id="ファイル読み込みの方法">ファイル読み込みの方法</h2>
 <p><code>Select.file</code>関数を利用する。これはファイル選択用のエクスプローラを開くための<code>Cmd Msg</code>を作成してくれる。選択したファイルは<code>Msg</code>に載せられる。</p>
 <p>適切なMIMEタイプを指定すると、エクスプローラ上にてそのタイプのファイルしか選択できなくなる。例えば、<code>text/plain</code>を選択しておけば、拡張子<code>.txt</code>のファイルしか選択できなくなる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Select</span><span class="nf">.</span><span class="nv">file</span> <span class="s">&#34;</span><span class="s">M</span><span class="s">I</span><span class="s">M</span><span class="s">E</span><span class="s">タ</span><span class="s">イ</span><span class="s">プ</span><span class="s">の</span><span class="s">リ</span><span class="s">ス</span><span class="s">ト</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">M</span><span class="s">s</span><span class="s">g</span><span class="s">&#34;</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Select</span><span class="nf">.</span><span class="nv">file</span> <span class="s">&#34;MIMEタイプのリスト&#34;</span> <span class="s">&#34;Msg&#34;</span></code></pre></div>
 <h2 id="画像ファイルへの変換">画像ファイルへの変換</h2>
 <p>こうして得られたファイルは<code>File</code>と呼ばれる型で保持される。</p>
 <p>もしファイルを文字列として扱いたいなら、<code>File.toString</code>を利用する。</p>
@@ -94,7 +94,7 @@ $ elm install elm/file
   <span class="p">{</span>
   <span class="p">}</span>
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
   <span class="p">(</span> <span class="p">{</span>
     <span class="p">}</span>
@@ -112,7 +112,7 @@ $ elm install elm/file
 
 <span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
-  <span class="nv">div</span> <span class="p">[</span><span class="p">]</span>
+  <span class="nv">div</span> <span class="p">[]</span>
     <span class="p">[</span>
     <span class="p">]</span>
 
@@ -125,21 +125,21 @@ $ elm make src/Main.elm --output=main.js
 </pre>
 <p><code>index.html</code>を作成し、次のようにする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">html</span><span class="p"></span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">head</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;style.css&#34;</span><span class="p"></span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">head</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">body</span><span class="p"></span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;elm&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;main.js&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">script</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">script</span><span class="p"></span><span class="p">&gt;</span>
-      <span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">Elm</span><span class="p">.</span><span class="nx">Main</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="p">{</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;style.css&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;elm&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;main.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+      <span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">Elm</span><span class="p">.</span><span class="nx">Main</span><span class="p">.</span><span class="nx">init</span><span class="p">({</span>
         <span class="nx">node</span><span class="o">:</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;elm&#39;</span><span class="p">)</span>
-      <span class="p">}</span><span class="p">)</span>
-    <span class="p">&lt;</span><span class="p">/</span><span class="nt">script</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="p">/</span><span class="nt">body</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="p">/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
+      <span class="p">})</span>
+    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p><code>style.css</code>も作っておく。</p>
 <div class="highlight"><pre class="chroma"><code class="language-css" data-lang="css"><span class="p">@</span><span class="k">charset</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">;</span></code></pre></div>
 <p>これでelm reactorで見ると、真っ白なページが表示されているはず。</p>
@@ -150,7 +150,7 @@ $ elm make src/Main.elm --output=main.js
   <span class="p">{</span> <span class="nv">url</span> <span class="nf">:</span> <span class="kt">Maybe</span> <span class="kt">String</span>
   <span class="p">}</span></code></pre></div>
 <p>それに応じて<code>init</code>も編集。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
   <span class="p">(</span> <span class="p">{</span> <span class="nv">url</span> <span class="nf">=</span> <span class="kt">Nothing</span>
     <span class="p">}</span>
@@ -161,11 +161,11 @@ $ elm make src/Main.elm --output=main.js
 <p>もし<code>model.url</code>が存在すれば、<code>src</code>属性にそれを指定して画像を表示する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
-  <span class="nv">div</span> <span class="p">[</span><span class="p">]</span>
+  <span class="nv">div</span> <span class="p">[]</span>
     <span class="p">[</span> <span class="nv">button</span>
         <span class="p">[</span> <span class="nv">onClick</span> <span class="kt">ImageRequested</span>
         <span class="p">]</span>
-        <span class="p">[</span> <span class="nv">text</span> <span class="s">&#34;</span><span class="s">S</span><span class="s">e</span><span class="s">l</span><span class="s">e</span><span class="s">c</span><span class="s">t</span><span class="s"> </span><span class="s">I</span><span class="s">m</span><span class="s">a</span><span class="s">g</span><span class="s">e</span><span class="s">&#34;</span>
+        <span class="p">[</span> <span class="nv">text</span> <span class="s">&#34;Select Image&#34;</span>
         <span class="p">]</span>
     <span class="p">,</span> <span class="nv">viewImage</span> <span class="nv">model</span>
     <span class="p">]</span>
@@ -174,14 +174,14 @@ $ elm make src/Main.elm --output=main.js
 <span class="nv">viewImage</span> <span class="nv">model</span> <span class="nf">=</span>
   <span class="kr">case</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">url</span> <span class="kr">of</span>
     <span class="kt">Nothing</span> <span class="nf">-&gt;</span>
-      <span class="nv">p</span> <span class="p">[</span><span class="p">]</span>
-        <span class="p">[</span> <span class="nv">text</span> <span class="s">&#34;</span><span class="s">N</span><span class="s">o</span><span class="s"> </span><span class="s">i</span><span class="s">m</span><span class="s">a</span><span class="s">g</span><span class="s">e</span><span class="s">&#34;</span> <span class="p">]</span>
+      <span class="nv">p</span> <span class="p">[]</span>
+        <span class="p">[</span> <span class="nv">text</span> <span class="s">&#34;No image&#34;</span> <span class="p">]</span>
 
     <span class="kt">Just</span> <span class="nv">url</span> <span class="nf">-&gt;</span>
       <span class="nv">img</span>
         <span class="p">[</span> <span class="nv">src</span> <span class="nv">url</span>
         <span class="p">]</span>
-        <span class="p">[</span><span class="p">]</span></code></pre></div>
+        <span class="p">[]</span></code></pre></div>
 <h3 id="update定義">update定義</h3>
 <p>先ほど書いた<code>ImageRequested</code>に加え、ファイルが取得できたときに送られるメッセージ<code>ImageSelected</code>とファイルをurlに変換した時に送られるメッセージ<code>ImageLoaded</code>を定義する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
@@ -198,7 +198,7 @@ $ elm make src/Main.elm --output=main.js
   <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
     <span class="kt">ImageRequested</span> <span class="nf">-&gt;</span>
       <span class="p">(</span> <span class="nv">model</span>
-      <span class="p">,</span> <span class="kt">Select</span><span class="nf">.</span><span class="nv">file</span> <span class="p">[</span><span class="s">&#34;</span><span class="s">i</span><span class="s">m</span><span class="s">a</span><span class="s">g</span><span class="s">e</span><span class="s">/</span><span class="s">p</span><span class="s">n</span><span class="s">g</span><span class="s">&#34;</span><span class="p">]</span> <span class="kt">ImageSelected</span>
+      <span class="p">,</span> <span class="kt">Select</span><span class="nf">.</span><span class="nv">file</span> <span class="p">[</span><span class="s">&#34;image/png&#34;</span><span class="p">]</span> <span class="kt">ImageSelected</span>
       <span class="p">)</span>
 
     <span class="kt">ImageSelected</span> <span class="nv">file</span> <span class="nf">-&gt;</span>
@@ -220,29 +220,29 @@ $ elm make src/Main.elm --output=main.js
 <p>×ボタンはa要素で表現し、記号はCSSで表現することにする。a要素は画像の右上に重なるように配置したいため、CSSで<code>position: absolute</code>を指定することになる。などいろいろ考えた結果、以下のように要素を構成する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewImage</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">viewImage</span> <span class="nv">model</span> <span class="nf">=</span>
-    <span class="nf">..</span><span class="nf">.</span>
+    <span class="nf">...</span>
     <span class="kt">Just</span> <span class="nv">url</span> <span class="nf">-&gt;</span>
       <span class="nv">div</span>
-        <span class="p">[</span> <span class="nv">class</span> <span class="s">&#34;</span><span class="s">i</span><span class="s">m</span><span class="s">a</span><span class="s">g</span><span class="s">e</span><span class="s">-</span><span class="s">w</span><span class="s">r</span><span class="s">a</span><span class="s">p</span><span class="s">p</span><span class="s">e</span><span class="s">r</span><span class="s">&#34;</span>
+        <span class="p">[</span> <span class="nv">class</span> <span class="s">&#34;image-wrapper&#34;</span>
         <span class="p">]</span>
         <span class="p">[</span> <span class="nv">div</span> 
-            <span class="p">[</span> <span class="nv">class</span> <span class="s">&#34;</span><span class="s">i</span><span class="s">m</span><span class="s">a</span><span class="s">g</span><span class="s">e</span><span class="s">-</span><span class="s">c</span><span class="s">o</span><span class="s">n</span><span class="s">t</span><span class="s">a</span><span class="s">i</span><span class="s">n</span><span class="s">e</span><span class="s">r</span><span class="s">&#34;</span>
+            <span class="p">[</span> <span class="nv">class</span> <span class="s">&#34;image-container&#34;</span>
             <span class="p">]</span>
             <span class="p">[</span> <span class="nv">a</span>
-                <span class="p">[</span> <span class="nv">class</span> <span class="s">&#34;</span><span class="s">d</span><span class="s">e</span><span class="s">l</span><span class="s">-</span><span class="s">b</span><span class="s">t</span><span class="s">n</span><span class="s">&#34;</span>
+                <span class="p">[</span> <span class="nv">class</span> <span class="s">&#34;del-btn&#34;</span>
                 <span class="p">,</span> <span class="nv">onClick</span> <span class="kt">DeleteClicked</span>
                 <span class="p">]</span>
-                <span class="p">[</span><span class="p">]</span>
+                <span class="p">[]</span>
             <span class="p">,</span> <span class="nv">img</span>
                 <span class="p">[</span> <span class="nv">src</span> <span class="nv">url</span>
                 <span class="p">]</span>
-                <span class="p">[</span><span class="p">]</span>
+                <span class="p">[]</span>
             <span class="p">]</span>
         <span class="p">]</span></code></pre></div>
 <p><code>Msg</code>に<code>DeleteClicked</code>を追加し、<code>update</code>関数にも追加をする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
-  <span class="nf">=</span> <span class="nf">..</span><span class="nf">.</span>
-    <span class="nf">..</span><span class="nf">.</span>
+  <span class="nf">=</span> <span class="nf">...</span>
+    <span class="nf">...</span>
   <span class="nf">|</span> <span class="kt">DeleteClicked</span>
 
 
@@ -250,7 +250,7 @@ $ elm make src/Main.elm --output=main.js
 <span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
   <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
-    <span class="nf">..</span><span class="nf">.</span>
+    <span class="nf">...</span>
 
     <span class="kt">DeleteClicked</span> <span class="nf">-&gt;</span>
       <span class="p">(</span> <span class="p">{</span> <span class="nv">model</span> <span class="nf">|</span> <span class="nv">url</span> <span class="nf">=</span> <span class="kt">Nothing</span> <span class="p">}</span>
@@ -284,7 +284,7 @@ $ elm make src/Main.elm --output=main.js
   <span class="k">position</span><span class="p">:</span> <span class="kc">absolute</span><span class="p">;</span>
   <span class="k">top</span><span class="p">:</span> <span class="mi">15</span><span class="kt">px</span><span class="p">;</span>
   <span class="k">left</span><span class="p">:</span> <span class="mi">5</span><span class="kt">px</span><span class="p">;</span>
-  <span class="k">transform</span><span class="p">:</span> <span class="nb">rotate</span><span class="p">(</span><span class="mi">45</span><span class="kt">deg</span><span class="p">)</span><span class="p">;</span>
+  <span class="k">transform</span><span class="p">:</span> <span class="nb">rotate</span><span class="p">(</span><span class="mi">45</span><span class="kt">deg</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="p">.</span><span class="nc">del-btn</span><span class="p">::</span><span class="nd">after</span> <span class="p">{</span>
@@ -295,7 +295,7 @@ $ elm make src/Main.elm --output=main.js
   <span class="k">position</span><span class="p">:</span> <span class="kc">absolute</span><span class="p">;</span>
   <span class="k">top</span><span class="p">:</span> <span class="mi">15</span><span class="kt">px</span><span class="p">;</span>
   <span class="k">left</span><span class="p">:</span> <span class="mi">5</span><span class="kt">px</span><span class="p">;</span>
-  <span class="k">transform</span><span class="p">:</span> <span class="nb">rotate</span><span class="p">(</span><span class="mi">-45</span><span class="kt">deg</span><span class="p">)</span><span class="p">;</span>
+  <span class="k">transform</span><span class="p">:</span> <span class="nb">rotate</span><span class="p">(</span><span class="mi">-45</span><span class="kt">deg</span><span class="p">);</span>
 <span class="p">}</span></code></pre></div>
 <p>いい感じ。</p>
 <figure>

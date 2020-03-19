@@ -21,7 +21,7 @@
 準備 TableViewに最低限の設定をしておく。
 Main.storyboardを次のようにする。
   ViewController.swiftの内容を以下のようにする。
-class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() //Doanyadditionalsetupafterloadingtheview. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.dequeueReusableCell(withIdentifier: &amp;#34;testCell&amp;#34;)! cell.</description>
+class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.</description>
     </item>
     
   </channel>

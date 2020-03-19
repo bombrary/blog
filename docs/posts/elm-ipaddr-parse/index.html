@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ - 文字列をIPアドレスに変換(2) Parserを用いる方法 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -103,9 +103,9 @@ $ elm repl
 <span class="nv">parser</span> <span class="nf">:</span> <span class="kt">Parser</span> <span class="kt">Int</span>
 <span class="nv">parser</span> <span class="nf">=</span>
   <span class="nv">succeed</span> <span class="nv">add</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">spaces</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span></code></pre></div>
+    <span class="nf">|=</span> <span class="nv">int</span>
+    <span class="nf">|.</span> <span class="nv">spaces</span>
+    <span class="nf">|=</span> <span class="nv">int</span></code></pre></div>
 <pre class="cui">
 > run parser "1 2"
 <span class="cyan">Ok</span> <span class="magenta">3</class> <span class="dgray">: Result (List DeadEnd) Int</span>
@@ -114,25 +114,25 @@ $ elm repl
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">succeed</span> <span class="nv">add</span></code></pre></div>
 <p>左辺の<code>Parser (Int -&gt; Int -&gt; Int)</code>の値に右辺の<code>Parser Int</code>の値<code>Int</code>を適用すると、結果の型は<code>Parser (Int -&gt; Int)</code>となる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">succeed</span> <span class="nv">add</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span> </code></pre></div>
+    <span class="nf">|=</span> <span class="nv">int</span> </code></pre></div>
 <p><code>|. spaces</code>によって、スペースはパースの結果に影響しない。結果の型は<code>Parser (Int -&gt; Int)</code>のまま。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">succeed</span> <span class="nv">add</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span> 
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">spaces</span></code></pre></div>
+    <span class="nf">|=</span> <span class="nv">int</span> 
+    <span class="nf">|.</span> <span class="nv">spaces</span></code></pre></div>
 <p>左辺の<code>Parser (Int -&gt; Int)</code>の値に右辺の<code>Parser Int</code>の値<code>Int</code>を適用すると、結果の型は<code>Parser Int</code>となる。
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">succeed</span> <span class="nv">add</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span> 
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">spaces</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span> </code></pre></div></p>
+    <span class="nf">|=</span> <span class="nv">int</span> 
+    <span class="nf">|.</span> <span class="nv">spaces</span>
+    <span class="nf">|=</span> <span class="nv">int</span> </code></pre></div></p>
 <p>カスタム型やレコードも関数みたいなものなので、次のようにしてパース結果を各フィールドに入れることができる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">TwoInt</span> <span class="nf">=</span> <span class="kt">TwoInt</span> <span class="kt">Int</span> <span class="kt">Int</span>
 
 <span class="nv">parser</span> <span class="nf">:</span> <span class="kt">Parser</span> <span class="kt">TwoInt</span>
 <span class="nv">parser</span> <span class="nf">=</span>
   <span class="nv">succeed</span> <span class="kt">TwoInt</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">spaces</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span></code></pre></div>
+    <span class="nf">|=</span> <span class="nv">int</span>
+    <span class="nf">|.</span> <span class="nv">spaces</span>
+    <span class="nf">|=</span> <span class="nv">int</span></code></pre></div>
 <pre class="cui">
 > run parser "1 2"
 <span class="cyan">Ok</span> (<span class="cyan">TwoInt</span> <span class="magenta">1</span> <span class="magenta">2</span>)
@@ -152,14 +152,14 @@ $ elm repl
 <span class="nv">ipParser</span> <span class="nf">:</span> <span class="kt">Parser</span> <span class="kt">IPAddr</span>
 <span class="nv">ipParser</span> <span class="nf">=</span>
   <span class="nv">succeed</span> <span class="kt">IPAddr</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">symbol</span> <span class="s">&#34;</span><span class="s">.</span><span class="s">&#34;</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">symbol</span> <span class="s">&#34;</span><span class="s">.</span><span class="s">&#34;</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">symbol</span> <span class="s">&#34;</span><span class="s">.</span><span class="s">&#34;</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">int</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">end</span></code></pre></div>
+    <span class="nf">|=</span> <span class="nv">int</span>
+    <span class="nf">|.</span> <span class="nv">symbol</span> <span class="s">&#34;.&#34;</span>
+    <span class="nf">|=</span> <span class="nv">int</span>
+    <span class="nf">|.</span> <span class="nv">symbol</span> <span class="s">&#34;.&#34;</span>
+    <span class="nf">|=</span> <span class="nv">int</span>
+    <span class="nf">|.</span> <span class="nv">symbol</span> <span class="s">&#34;.&#34;</span>
+    <span class="nf">|=</span> <span class="nv">int</span>
+    <span class="nf">|.</span> <span class="nv">end</span></code></pre></div>
 <p>ところが、これはうまくいかない。</p>
 <pre class="cui">
 > fromString "192.168.1.1"
@@ -174,7 +174,7 @@ $ elm repl
 <p>結局、標準搭載の<code>int</code>は使わずに、数字を一文字ずつ読み取っていく戦略をとる。そのために、<a href="https://package.elm-lang.org/packages/elm/parser/latest/Parser#chompers">elm/parserのChompers</a>の関数群の力を借りる。</p>
 <h3 id="chompwhile">chompWhile</h3>
 <p>ある条件を満たしている間読み進めるだけのパーサを作成する。「数字が現れている間読み続ける」パーサは以下のように定義できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">digit</span> <span class="nf">:</span> <span class="kt">Parser</span> <span class="p">(</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">digit</span> <span class="nf">:</span> <span class="kt">Parser</span> <span class="p">()</span>
 <span class="nv">digit</span> <span class="nf">=</span>
   <span class="nv">chompWhile</span> <span class="kt">Char</span><span class="nf">.</span><span class="nv">isDigit</span></code></pre></div>
 <h3 id="getchompedstring">getChompedString</h3>
@@ -200,7 +200,7 @@ $ elm repl
         <span class="nv">succeed</span> <span class="nv">n</span>
 
       <span class="kt">Nothing</span> <span class="nf">-&gt;</span>
-        <span class="nv">problem</span> <span class="s">&#34;</span><span class="s">P</span><span class="s">a</span><span class="s">r</span><span class="s">s</span><span class="s">e</span><span class="s"> </span><span class="s">E</span><span class="s">r</span><span class="s">r</span><span class="s">o</span><span class="s">r</span><span class="s">&#34;</span>
+        <span class="nv">problem</span> <span class="s">&#34;Parse Error&#34;</span>
 
 
 <span class="nv">checkByte</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Int</span>
@@ -225,14 +225,14 @@ $ elm repl
 <span class="nv">ipParser</span> <span class="nf">:</span> <span class="kt">Parser</span> <span class="kt">IPAddr</span>
 <span class="nv">ipParser</span> <span class="nf">=</span>
   <span class="nv">succeed</span> <span class="kt">IPAddr</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">byte</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">symbol</span> <span class="s">&#34;</span><span class="s">.</span><span class="s">&#34;</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">byte</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">symbol</span> <span class="s">&#34;</span><span class="s">.</span><span class="s">&#34;</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">byte</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">symbol</span> <span class="s">&#34;</span><span class="s">.</span><span class="s">&#34;</span>
-    <span class="nf">|</span><span class="nf">=</span> <span class="nv">byte</span>
-    <span class="nf">|</span><span class="nf">.</span> <span class="nv">end</span></code></pre></div>
+    <span class="nf">|=</span> <span class="nv">byte</span>
+    <span class="nf">|.</span> <span class="nv">symbol</span> <span class="s">&#34;.&#34;</span>
+    <span class="nf">|=</span> <span class="nv">byte</span>
+    <span class="nf">|.</span> <span class="nv">symbol</span> <span class="s">&#34;.&#34;</span>
+    <span class="nf">|=</span> <span class="nv">byte</span>
+    <span class="nf">|.</span> <span class="nv">symbol</span> <span class="s">&#34;.&#34;</span>
+    <span class="nf">|=</span> <span class="nv">byte</span>
+    <span class="nf">|.</span> <span class="nv">end</span></code></pre></div>
 <p>出力結果は前回の記事と同じなので省略。</p>
 
 </article>

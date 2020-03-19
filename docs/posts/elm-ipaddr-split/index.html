@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ - 文字列をIPアドレスに変換(1) splitを用いる方法 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -93,8 +93,8 @@ $ elm repl
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
 <span class="nv">traverse</span> <span class="nv">f</span> <span class="nv">list</span> <span class="nf">=</span>
   <span class="kr">case</span> <span class="nv">list</span> <span class="kr">of</span>
-    <span class="p">[</span><span class="p">]</span> <span class="nf">-&gt;</span>
-      <span class="kt">Just</span> <span class="p">[</span><span class="p">]</span>
+    <span class="p">[]</span> <span class="nf">-&gt;</span>
+      <span class="kt">Just</span> <span class="p">[]</span>
 
     <span class="nv">x</span><span class="nf">::</span><span class="nv">xs</span> <span class="nf">-&gt;</span>
       <span class="kr">case</span> <span class="nv">traverse</span> <span class="nv">f</span> <span class="nv">xs</span> <span class="kr">of</span>
@@ -127,8 +127,8 @@ $ elm repl
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
 <span class="nv">traverse</span> <span class="nv">f</span> <span class="nv">list</span> <span class="nf">=</span>
   <span class="kr">case</span> <span class="nv">list</span> <span class="kr">of</span>
-    <span class="p">[</span><span class="p">]</span> <span class="nf">-&gt;</span>
-      <span class="kt">Just</span> <span class="p">[</span><span class="p">]</span>
+    <span class="p">[]</span> <span class="nf">-&gt;</span>
+      <span class="kt">Just</span> <span class="p">[]</span>
 
     <span class="nv">x</span><span class="nf">::</span><span class="nv">xs</span> <span class="nf">-&gt;</span>
       <span class="kt">Maybe</span><span class="nf">.</span><span class="nv">map</span><span class="mi">2</span> <span class="nf">(::)</span> <span class="p">(</span><span class="nv">f</span> <span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nv">traverse</span> <span class="nv">f</span> <span class="nv">xs</span><span class="p">)</span></code></pre></div>
@@ -137,7 +137,7 @@ $ elm repl
 <p>上の定義を見ているとfoldrでもっと簡単に書けそうだと気づく。なので書く。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
 <span class="nv">traverse</span> <span class="nv">f</span> <span class="nv">list</span> <span class="nf">=</span>
-  <span class="kt">List</span><span class="nf">.</span><span class="nv">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="nv">x</span> <span class="nv">acc</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span><span class="nf">.</span><span class="nv">map</span><span class="mi">2</span> <span class="nf">(::)</span> <span class="p">(</span><span class="nv">f</span> <span class="nv">x</span><span class="p">)</span> <span class="nv">acc</span><span class="p">)</span> <span class="p">(</span><span class="kt">Just</span> <span class="p">[</span><span class="p">]</span><span class="p">)</span> <span class="nv">list</span></code></pre></div>
+  <span class="kt">List</span><span class="nf">.</span><span class="nv">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="nv">x</span> <span class="nv">acc</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span><span class="nf">.</span><span class="nv">map</span><span class="mi">2</span> <span class="nf">(::)</span> <span class="p">(</span><span class="nv">f</span> <span class="nv">x</span><span class="p">)</span> <span class="nv">acc</span><span class="p">)</span> <span class="p">(</span><span class="kt">Just</span> <span class="p">[])</span> <span class="nv">list</span></code></pre></div>
 <h3 id="補足">補足</h3>
 <p><strong>これは実は車輪の再発明</strong>で、同じ関数が<a href="https://package.elm-lang.org/packages/elm-community/maybe-extra/latest/Maybe-Extra">elm-community/Maybe.Extra</a>で定義されている。</p>
 <p>実はElmにもHoogleみたいに、型名から関数を検索するサービスがある。実際、「こんな型の関数ないかな」と思って<a href="https://klaftertief.github.io/elm-search/">Elm Search</a>で検索したら出てきた。</p>
@@ -159,7 +159,7 @@ $ elm repl
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">fromString</span> <span class="nf">:</span> <span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">IPAddr</span>
 <span class="nv">fromString</span> <span class="nv">string</span> <span class="nf">=</span>
   <span class="kr">let</span> <span class="nv">list</span> <span class="nf">=</span> <span class="nv">string</span>
-             <span class="nf">|&gt;</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">split</span> <span class="s">&#34;</span><span class="s">.</span><span class="s">&#34;</span>
+             <span class="nf">|&gt;</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">split</span> <span class="s">&#34;.&#34;</span>
              <span class="nf">|&gt;</span> <span class="nv">traverse</span> <span class="nv">parseByte</span>
   <span class="kr">in</span>
     <span class="kr">case</span> <span class="nv">list</span> <span class="kr">of</span>

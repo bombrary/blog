@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ - ランダムな位置に円を描画する | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -111,13 +111,13 @@ $ elm install elm/random
     <span class="p">]</span>
     <span class="p">[</span> <span class="kt">Svg</span><span class="nf">.</span><span class="nv">circle</span>
         <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">r</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">r</span><span class="p">)</span>
-        <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">fill</span> <span class="s">&#34;</span><span class="s">w</span><span class="s">h</span><span class="s">i</span><span class="s">t</span><span class="s">e</span><span class="s">&#34;</span>
-        <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">stroke</span> <span class="s">&#34;</span><span class="s">b</span><span class="s">l</span><span class="s">a</span><span class="s">c</span><span class="s">k</span><span class="s">&#34;</span>
+        <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">fill</span> <span class="s">&#34;white&#34;</span>
+        <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">stroke</span> <span class="s">&#34;black&#34;</span>
         <span class="p">]</span>
-        <span class="p">[</span><span class="p">]</span>
+        <span class="p">[]</span>
     <span class="p">,</span> <span class="kt">Svg</span><span class="nf">.</span><span class="nv">text_</span>
-        <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">textAnchor</span> <span class="s">&#34;</span><span class="s">m</span><span class="s">i</span><span class="s">d</span><span class="s">d</span><span class="s">l</span><span class="s">e</span><span class="s">&#34;</span>
-        <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">dominantBaseline</span> <span class="s">&#34;</span><span class="s">c</span><span class="s">e</span><span class="s">n</span><span class="s">t</span><span class="s">r</span><span class="s">a</span><span class="s">l</span><span class="s">&#34;</span>
+        <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">textAnchor</span> <span class="s">&#34;middle&#34;</span>
+        <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">dominantBaseline</span> <span class="s">&#34;central&#34;</span>
         <span class="p">]</span>
         <span class="p">[</span> <span class="kt">Svg</span><span class="nf">.</span><span class="nv">text</span> <span class="nv">text</span>
         <span class="p">]</span>
@@ -125,11 +125,11 @@ $ elm install elm/random
 
 <span class="nv">translateAttr</span> <span class="nf">:</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
 <span class="nv">translateAttr</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nf">=</span>
-  <span class="s">&#34;</span><span class="s">t</span><span class="s">r</span><span class="s">a</span><span class="s">n</span><span class="s">s</span><span class="s">l</span><span class="s">a</span><span class="s">t</span><span class="s">e</span><span class="s">(</span><span class="s">&#34;</span>
+  <span class="s">&#34;translate(&#34;</span>
   <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">x</span>
-  <span class="nf">++</span> <span class="s">&#34;</span><span class="s">,</span><span class="s">&#34;</span>
+  <span class="nf">++</span> <span class="s">&#34;,&#34;</span>
   <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">y</span>
-  <span class="nf">++</span> <span class="s">&#34;</span><span class="s">)</span><span class="s">&#34;</span></code></pre></div>
+  <span class="nf">++</span> <span class="s">&#34;)&#34;</span></code></pre></div>
 <p>他は定型通りに書く。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">main </span><span class="nf">=</span> <span class="kt">Browser</span><span class="nf">.</span><span class="nv">element</span>
   <span class="p">{</span> <span class="nv">init</span> <span class="nf">=</span> <span class="nv">init</span>
@@ -144,15 +144,15 @@ $ elm install elm/random
   <span class="p">}</span>
 
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
-  <span class="p">(</span><span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span> 
-      <span class="p">[</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">10</span> <span class="mi">10</span> <span class="s">&#34;</span><span class="s">1</span><span class="s">&#34;</span>
-      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">20</span> <span class="mi">20</span> <span class="s">&#34;</span><span class="s">2</span><span class="s">&#34;</span>
-      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">30</span> <span class="mi">20</span> <span class="s">&#34;</span><span class="s">3</span><span class="s">&#34;</span>
-      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">40</span> <span class="mi">20</span> <span class="s">&#34;</span><span class="s">4</span><span class="s">&#34;</span>
-      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">20</span> <span class="mi">60</span> <span class="s">&#34;</span><span class="s">5</span><span class="s">&#34;</span>
-      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">90</span> <span class="mi">20</span> <span class="s">&#34;</span><span class="s">6</span><span class="s">&#34;</span>
+  <span class="p">({</span> <span class="nv">circles</span> <span class="nf">=</span> 
+      <span class="p">[</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">10</span> <span class="mi">10</span> <span class="s">&#34;1&#34;</span>
+      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">20</span> <span class="mi">20</span> <span class="s">&#34;2&#34;</span>
+      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">30</span> <span class="mi">20</span> <span class="s">&#34;3&#34;</span>
+      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">40</span> <span class="mi">20</span> <span class="s">&#34;4&#34;</span>
+      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">20</span> <span class="mi">60</span> <span class="s">&#34;5&#34;</span>
+      <span class="p">,</span> <span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">90</span> <span class="mi">20</span> <span class="s">&#34;6&#34;</span>
       <span class="p">]</span>
    <span class="p">}</span>
   <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
@@ -173,9 +173,9 @@ $ elm install elm/random
 <span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="p">{</span> <span class="nv">circles</span> <span class="p">}</span> <span class="nf">=</span>
   <span class="nv">svg</span>
-    <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">style</span> <span class="s">&#34;</span><span class="s">b</span><span class="s">o</span><span class="s">r</span><span class="s">d</span><span class="s">e</span><span class="s">r</span><span class="s">:</span><span class="s"> </span><span class="s">1</span><span class="s">p</span><span class="s">x</span><span class="s"> </span><span class="s">s</span><span class="s">o</span><span class="s">l</span><span class="s">i</span><span class="s">d</span><span class="s"> </span><span class="s">#</span><span class="s">0</span><span class="s">0</span><span class="s">0</span><span class="s">;</span><span class="s"> </span><span class="s">m</span><span class="s">a</span><span class="s">r</span><span class="s">g</span><span class="s">i</span><span class="s">n</span><span class="s">:</span><span class="s"> </span><span class="s">1</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">;</span><span class="s">&#34;</span>
-    <span class="p">,</span> <span class="nv">width</span> <span class="s">&#34;</span><span class="s">6</span><span class="s">0</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">&#34;</span>
-    <span class="p">,</span> <span class="nv">height</span> <span class="s">&#34;</span><span class="s">6</span><span class="s">0</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">&#34;</span>
+    <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">style</span> <span class="s">&#34;border: 1px solid #000; margin: 10px;&#34;</span>
+    <span class="p">,</span> <span class="nv">width</span> <span class="s">&#34;600px&#34;</span>
+    <span class="p">,</span> <span class="nv">height</span> <span class="s">&#34;600px&#34;</span>
     <span class="p">]</span>
     <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="nv">viewCircle</span> <span class="nv">circles</span><span class="p">)</span></code></pre></div>
 <figure>
@@ -187,16 +187,16 @@ $ elm install elm/random
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="p">{</span> <span class="nv">r</span> <span class="nf">=</span> <span class="mi">10</span>
 <span class="p">,</span> <span class="nv">x</span> <span class="nf">=</span> <span class="mi">100</span>
 <span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="mi">20</span>
-<span class="p">,</span> <span class="nv">text</span> <span class="nf">=</span> <span class="s">&#34;</span><span class="s">1</span><span class="s">&#34;</span>
+<span class="p">,</span> <span class="nv">text</span> <span class="nf">=</span> <span class="s">&#34;1&#34;</span>
 <span class="p">}</span></code></pre></div>
 <p>しかし型エイリアスとしてレコードが定義された場合、次のように<code>Circle</code>を定義することも可能。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">100</span> <span class="mi">20</span> <span class="s">&#34;</span><span class="s">1</span><span class="s">&#34;</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">100</span> <span class="mi">20</span> <span class="s">&#34;1&#34;</span></code></pre></div>
 <p>Haskellのフィールドラベルに近いものを感じる。</p>
 <h2 id="乱数を試す">乱数を試す</h2>
 <p>Elmでほとんど乱数を使ったことがないので、色々試す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
-  <span class="p">(</span><span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="p">[</span><span class="p">]</span>
+  <span class="p">({</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="p">[]</span>
    <span class="p">}</span>
   <span class="p">,</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">generate</span> <span class="kt">GetRandomNumber</span> <span class="p">(</span><span class="kt">Random</span><span class="nf">.</span><span class="nv">int</span> <span class="mi">1</span> <span class="mi">6</span><span class="p">)</span>
   <span class="p">)</span>
@@ -208,7 +208,7 @@ $ elm install elm/random
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span> 
   <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span> 
     <span class="kt">GetRandomNumber</span> <span class="nv">n</span> <span class="nf">-&gt;</span> 
-      <span class="kr">let</span> <span class="nv">_</span> <span class="nf">=</span> <span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;</span><span class="s">R</span><span class="s">a</span><span class="s">n</span><span class="s">d</span><span class="s">o</span><span class="s">m</span><span class="s">&#34;</span> <span class="nv">n</span>
+      <span class="kr">let</span> <span class="nv">_</span> <span class="nf">=</span> <span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;Random&#34;</span> <span class="nv">n</span>
       <span class="kr">in</span>
         <span class="p">(</span><span class="nv">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
 <p>ブラウザのデバッグコンソールを開くと、以下の文が出力される。</p>
@@ -219,14 +219,14 @@ $ elm install elm/random
 <h3 id="補足-debuglog">(補足) Debug.log</h3>
 <p>いわゆるprintデバッグをするために使われる関数。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="c1">-- JSにおけるconsole.log(`Label: ${value}`)と同義</span>
-<span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;</span><span class="s">L</span><span class="s">a</span><span class="s">b</span><span class="s">e</span><span class="s">l</span><span class="s">&#34;</span> <span class="nv">value</span></code></pre></div>
+<span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;Label&#34;</span> <span class="nv">value</span></code></pre></div>
 <p>Elmの仕様上、手続き的に書けないので、次のようにletをうまく利用して書く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="cm">{-</span><span class="cm"> </span><span class="cm">E</span><span class="cm">l</span><span class="cm">m</span><span class="cm">で</span><span class="cm">は</span><span class="cm">
-</span><span class="cm"></span><span class="cm"> </span><span class="cm"> </span><span class="cm"> </span><span class="cm">D</span><span class="cm">e</span><span class="cm">b</span><span class="cm">u</span><span class="cm">g</span><span class="cm">.</span><span class="cm">l</span><span class="cm">o</span><span class="cm">g</span><span class="cm"> </span><span class="cm">&#34;</span><span class="cm">R</span><span class="cm">a</span><span class="cm">n</span><span class="cm">d</span><span class="cm">o</span><span class="cm">m</span><span class="cm">&#34;</span><span class="cm"> </span><span class="cm">n</span><span class="cm">
-</span><span class="cm"></span><span class="cm"> </span><span class="cm"> </span><span class="cm"> </span><span class="cm">r</span><span class="cm">e</span><span class="cm">t</span><span class="cm">u</span><span class="cm">r</span><span class="cm">n</span><span class="cm"> </span><span class="cm">(</span><span class="cm">m</span><span class="cm">o</span><span class="cm">d</span><span class="cm">e</span><span class="cm">l</span><span class="cm">,</span><span class="cm"> </span><span class="cm">C</span><span class="cm">m</span><span class="cm">d</span><span class="cm">.</span><span class="cm">n</span><span class="cm">o</span><span class="cm">n</span><span class="cm">e</span><span class="cm">)</span><span class="cm">
-</span><span class="cm"></span><span class="cm"> </span><span class="cm"> </span><span class="cm"> </span><span class="cm">の</span><span class="cm">よ</span><span class="cm">う</span><span class="cm">に</span><span class="cm">書</span><span class="cm">け</span><span class="cm">な</span><span class="cm">い</span><span class="cm">。</span><span class="cm">
-</span><span class="cm"></span><span class="cm">-}</span>
-<span class="kr">let</span> <span class="nv">_</span> <span class="nf">=</span> <span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;</span><span class="s">R</span><span class="s">a</span><span class="s">n</span><span class="s">d</span><span class="s">o</span><span class="s">m</span><span class="s">&#34;</span> <span class="nv">n</span>
+<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="cm">{- Elmでは
+</span><span class="cm">   Debug.log &#34;Random&#34; n
+</span><span class="cm">   return (model, Cmd.none)
+</span><span class="cm">   のように書けない。
+</span><span class="cm">-}</span>
+<span class="kr">let</span> <span class="nv">_</span> <span class="nf">=</span> <span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;Random&#34;</span> <span class="nv">n</span>
 <span class="kr">in</span>
   <span class="p">(</span><span class="nv">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
 <h2 id="リストの乱数生成器">リストの乱数生成器</h2>
@@ -234,9 +234,9 @@ $ elm install elm/random
 <span class="nv">randomList</span> <span class="nv">n</span> <span class="nf">=</span>
   <span class="kt">Random</span><span class="nf">.</span><span class="nv">list</span> <span class="nv">n</span> <span class="nf">&lt;|</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">int</span> <span class="mi">1</span> <span class="mi">6</span>
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
-  <span class="p">(</span><span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="p">[</span><span class="p">]</span>
+  <span class="p">({</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="p">[]</span>
    <span class="p">}</span>
   <span class="p">,</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">generate</span> <span class="kt">GetRandomNumbers</span> <span class="p">(</span><span class="nv">randomList</span> <span class="mi">10</span><span class="p">)</span>
   <span class="p">)</span>
@@ -248,7 +248,7 @@ $ elm install elm/random
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span> 
   <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span> 
     <span class="kt">GetRandomNumbers</span> <span class="nv">list</span> <span class="nf">-&gt;</span> 
-      <span class="kr">let</span> <span class="nv">_</span> <span class="nf">=</span> <span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;</span><span class="s">R</span><span class="s">a</span><span class="s">n</span><span class="s">d</span><span class="s">o</span><span class="s">m</span><span class="s">&#34;</span> <span class="nv">list</span>
+      <span class="kr">let</span> <span class="nv">_</span> <span class="nf">=</span> <span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;Random&#34;</span> <span class="nv">list</span>
       <span class="kr">in</span>
         <span class="p">(</span><span class="nv">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
 <p>ブラウザのデバッグコンソールを開くと、以下の文が出力される。</p>
@@ -269,13 +269,13 @@ $ elm install elm/random
   <span class="kr">let</span> <span class="nv">randomCirclesGenerator</span> <span class="nf">=</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">list</span> <span class="nv">n</span> <span class="nf">&lt;|</span> <span class="nv">randomCircleLackedText</span>
   <span class="kr">in</span>
     <span class="kt">Random</span><span class="nf">.</span><span class="nv">map</span>
-      <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="nv">c</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">i</span><span class="p">)</span><span class="p">)</span><span class="p">)</span>
+      <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="nv">c</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">i</span><span class="p">)))</span>
       <span class="nv">randomCirclesGenerator</span>
 
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
-  <span class="p">(</span><span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="p">[</span><span class="p">]</span>
+  <span class="p">({</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="p">[]</span>
    <span class="p">}</span>
   <span class="p">,</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">generate</span> <span class="kt">GetRandomCircles</span> <span class="p">(</span><span class="nv">randomCircles</span> <span class="mi">10</span><span class="p">)</span>
   <span class="p">)</span>
@@ -287,7 +287,7 @@ $ elm install elm/random
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span> 
   <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span> 
     <span class="kt">GetRandomCircles</span> <span class="nv">circles</span> <span class="nf">-&gt;</span> 
-      <span class="p">(</span><span class="p">{</span> <span class="nv">model</span> <span class="nf">|</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="nv">circles</span> <span class="p">}</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
+      <span class="p">({</span> <span class="nv">model</span> <span class="nf">|</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="nv">circles</span> <span class="p">},</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
 <figure>
     <img src="./sc02.png" width="50%"/> 
 </figure>
@@ -309,7 +309,7 @@ $ elm install elm/random
   <span class="kr">let</span> <span class="nv">randomCirclesGenerator</span> <span class="nf">=</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">list</span> <span class="nv">n</span> <span class="nf">&lt;|</span> <span class="nv">randomCircleLackedText</span>
   <span class="kr">in</span>
     <span class="kt">Random</span><span class="nf">.</span><span class="nv">map</span>
-      <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="nv">c</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">i</span><span class="p">)</span><span class="p">)</span><span class="p">)</span>
+      <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="nv">c</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">i</span><span class="p">)))</span>
       <span class="nv">randomCirclesGenerator</span></code></pre></div>
 <p>少し話がそれるが、<code>map</code>系の関数は概ね次のように処理されると認識している。</p>
 <ol>

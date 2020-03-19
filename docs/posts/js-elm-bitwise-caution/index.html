@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>JavaScript/Elm ビット演算のときにはまったこと | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -159,7 +159,7 @@ $ elm repl
 <p>ここまではいいのだが、次のようにしてDDNに変換する関数を定義したところ、バグらせた。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">toDDNHelp</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span>
 <span class="nv">toDDNHelp</span> <span class="nv">n</span> <span class="nf">=</span>
-  <span class="p">(</span><span class="nv">modBy</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">)</span> <span class="nv">n</span><span class="p">,</span> <span class="nv">n</span> <span class="nf">//</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">)</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">modBy</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">)</span> <span class="nv">n</span><span class="p">,</span> <span class="nv">n</span> <span class="nf">//</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">))</span>
 
 <span class="nv">toDDN</span> <span class="nf">:</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">DotDecimalNotation</span>
 <span class="nv">toDDN</span> <span class="nv">addr</span> <span class="nf">=</span>

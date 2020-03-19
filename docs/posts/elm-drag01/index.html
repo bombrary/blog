@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ ドラッグ移動の実現(1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.64.1" />
+<meta name="generator" content="Hugo 0.67.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -81,16 +81,16 @@
 
 
 <span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
-    <span class="p">{</span><span class="p">}</span>
+    <span class="p">{}</span>
 
 
 <span class="kr">type</span> <span class="kt">Msg</span>
     <span class="nf">=</span> <span class="kt">Dummy</span>
 
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
-    <span class="p">(</span> <span class="p">{</span><span class="p">}</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span> <span class="p">)</span>
+    <span class="p">(</span> <span class="p">{},</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span> <span class="p">)</span>
 
 
 <span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
@@ -100,7 +100,7 @@
 
 <span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
-    <span class="nv">div</span> <span class="p">[</span><span class="p">]</span> <span class="p">[</span><span class="p">]</span>
+    <span class="nv">div</span> <span class="p">[]</span> <span class="p">[]</span>
 
 
 <span class="nv">subscriptions</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Sub</span> <span class="kt">Msg</span>
@@ -165,7 +165,7 @@
 <p><code>Circles</code>の内部表現を気にせずに扱えるように、いくつかのユーティリティ関数を定義しておく。<code>add</code>関数は円を追加したいときに呼び出す関数だが、今回は利用しない。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">empty</span> <span class="nf">:</span> <span class="kt">Circles</span>
 <span class="nv">empty</span> <span class="nf">=</span>
-    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="p">[</span><span class="p">]</span>
+    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="p">[]</span>
     <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">=</span> <span class="mi">0</span>
     <span class="p">}</span>
 
@@ -179,7 +179,7 @@
 
 <span class="nv">fromList</span> <span class="nf">:</span> <span class="kt">List</span> <span class="kt">CircleNoId</span> <span class="nf">-&gt;</span> <span class="kt">Circles</span>
 <span class="nv">fromList</span> <span class="nv">list</span> <span class="nf">=</span>
-    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="p">{</span> <span class="nv">id</span> <span class="nf">=</span> <span class="nv">i</span><span class="p">,</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span><span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span><span class="p">,</span> <span class="nv">r</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">r</span> <span class="p">}</span><span class="p">)</span> <span class="nv">list</span>
+    <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="kt">List</span><span class="nf">.</span><span class="nv">indexedMap</span> <span class="p">(</span><span class="nf">\</span><span class="nv">i</span> <span class="nv">c</span> <span class="nf">-&gt;</span> <span class="p">{</span> <span class="nv">id</span> <span class="nf">=</span> <span class="nv">i</span><span class="p">,</span> <span class="nv">x</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">x</span><span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">y</span><span class="p">,</span> <span class="nv">r</span> <span class="nf">=</span> <span class="nv">c</span><span class="nf">.</span><span class="nv">r</span> <span class="p">})</span> <span class="nv">list</span>
     <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">=</span> <span class="kt">List</span><span class="nf">.</span><span class="nv">length</span> <span class="nv">list</span>
     <span class="p">}</span>
 
@@ -215,7 +215,7 @@
                     <span class="kr">else</span>
                         <span class="nv">c</span> <span class="nf">::</span> <span class="nv">acc</span>
                 <span class="p">)</span>
-                <span class="p">[</span><span class="p">]</span>
+                <span class="p">[]</span>
                 <span class="nv">circles</span><span class="nf">.</span><span class="nv">all</span>
     <span class="kr">in</span>
     <span class="p">{</span> <span class="nv">circles</span> <span class="nf">|</span> <span class="nv">all</span> <span class="nf">=</span> <span class="nv">new</span> <span class="p">}</span></code></pre></div>
@@ -228,9 +228,9 @@
     <span class="p">{</span> <span class="nv">circles</span> <span class="nf">:</span> <span class="kt">Circles</span>
     <span class="p">}</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
     <span class="p">(</span> <span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span>
             <span class="kt">C</span><span class="nf">.</span><span class="nv">fromList</span>
@@ -245,7 +245,7 @@
 <p>SVG描画の処理は<code>viewSvg</code>に任せる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
-    <span class="nv">div</span> <span class="p">[</span><span class="p">]</span>
+    <span class="nv">div</span> <span class="p">[]</span>
         <span class="p">[</span> <span class="nv">viewSvg</span> <span class="nv">model</span>
         <span class="p">]</span>
 
@@ -253,17 +253,17 @@
 <span class="nv">viewSvg</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewSvg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kt">S</span><span class="nf">.</span><span class="nv">svg</span>
-        <span class="p">[</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">b</span><span class="s">o</span><span class="s">r</span><span class="s">d</span><span class="s">e</span><span class="s">r</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">1</span><span class="s">p</span><span class="s">x</span><span class="s"> </span><span class="s">s</span><span class="s">o</span><span class="s">l</span><span class="s">i</span><span class="s">d</span><span class="s"> </span><span class="s">#</span><span class="s">0</span><span class="s">0</span><span class="s">0</span><span class="s">&#34;</span>
-        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">w</span><span class="s">i</span><span class="s">d</span><span class="s">t</span><span class="s">h</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">5</span><span class="s">0</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">&#34;</span>
-        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;</span><span class="s">h</span><span class="s">e</span><span class="s">i</span><span class="s">g</span><span class="s">h</span><span class="s">t</span><span class="s">&#34;</span> <span class="s">&#34;</span><span class="s">5</span><span class="s">0</span><span class="s">0</span><span class="s">p</span><span class="s">x</span><span class="s">&#34;</span>
+        <span class="p">[</span> <span class="nv">style</span> <span class="s">&#34;border&#34;</span> <span class="s">&#34;1px solid #000&#34;</span>
+        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;width&#34;</span> <span class="s">&#34;500px&#34;</span>
+        <span class="p">,</span> <span class="nv">style</span> <span class="s">&#34;height&#34;</span> <span class="s">&#34;500px&#34;</span>
         <span class="p">]</span>
         <span class="p">[</span> <span class="nv">viewCircles</span> <span class="nv">model</span>
         <span class="p">]</span></code></pre></div>
 <p><code>Circle(s)</code>の描画を<code>viewCircle(s)</code>に任せる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewCircles</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewCircles</span> <span class="nv">model</span> <span class="nf">=</span>
-    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[</span><span class="p">]</span>
-        <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="p">(</span><span class="nv">viewCircle</span> <span class="nv">model</span><span class="p">)</span> <span class="p">(</span><span class="kt">C</span><span class="nf">.</span><span class="nv">toList</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span><span class="p">)</span><span class="p">)</span>
+    <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[]</span>
+        <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="p">(</span><span class="nv">viewCircle</span> <span class="nv">model</span><span class="p">)</span> <span class="p">(</span><span class="kt">C</span><span class="nf">.</span><span class="nv">toList</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span><span class="p">))</span>
 
 
 <span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
@@ -273,16 +273,16 @@
         <span class="p">]</span>
         <span class="p">[</span> <span class="kt">S</span><span class="nf">.</span><span class="nv">circle</span>
             <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">r</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">r</span><span class="p">)</span>
-            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">fill</span> <span class="s">&#34;</span><span class="s">#</span><span class="s">f</span><span class="s">f</span><span class="s">f</span><span class="s">&#34;</span>
-            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">stroke</span> <span class="s">&#34;</span><span class="s">#</span><span class="s">0</span><span class="s">0</span><span class="s">0</span><span class="s">&#34;</span>
+            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">fill</span> <span class="s">&#34;#fff&#34;</span>
+            <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">stroke</span> <span class="s">&#34;#000&#34;</span>
             <span class="p">]</span>
-            <span class="p">[</span><span class="p">]</span>
+            <span class="p">[]</span>
         <span class="p">]</span>
 
 
 <span class="nv">translate</span> <span class="nf">:</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
 <span class="nv">translate</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nf">=</span>
-    <span class="s">&#34;</span><span class="s">t</span><span class="s">r</span><span class="s">a</span><span class="s">n</span><span class="s">s</span><span class="s">l</span><span class="s">a</span><span class="s">t</span><span class="s">e</span><span class="s">(</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">x</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">,</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">y</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">)</span><span class="s">&#34;</span></code></pre></div>
+    <span class="s">&#34;translate(&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">x</span> <span class="nf">++</span> <span class="s">&#34;,&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">y</span> <span class="nf">++</span> <span class="s">&#34;)&#34;</span></code></pre></div>
 <p>ここで、<code>viewCircle</code>、<code>viewCircles</code>は<code>Model</code>を引数にとるようにした。一般に、<code>view</code>と同じく要素の描画を担う関数に関しては、<code>Model</code>を引数にとった方が、後々の修正や変更が楽になると思われる。なぜなら、<code>Model</code>こそが要素描画のための全ての情報を持っているからである。「今はCircleの情報をもとに描画してたけど、それだけじゃなくてXXの情報も必要になった」などの変更に、比較的簡単に対応できる。</p>
 <p><strong>追記(2020/03/04):</strong> ただし、<code>Model</code>を引数にとる、という情報だけでは「この関数の機能を実現するためにはどんな値が必要なのか」が分からないため、ソースコードから関数の機能を予想するのが難しくなるかもしれない。なので一概に良いとは言い切れない。</p>
 <p>ここまで実装すると、実行結果は以下のようになる。</p>
@@ -298,11 +298,11 @@
     <span class="p">,</span> <span class="nv">hold</span> <span class="nf">:</span> <span class="kt">Maybe</span> <span class="kt">Id</span>
     <span class="p">}</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
-    <span class="p">(</span> <span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="nf">..</span><span class="nf">.</span>
+    <span class="p">(</span> <span class="p">{</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="nf">...</span>
       <span class="p">,</span> <span class="nv">hold</span> <span class="nf">=</span> <span class="kt">Nothing</span>
       <span class="p">}</span>
     <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
@@ -312,7 +312,7 @@
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="nf">=</span> <span class="kt">CircleHeld</span> <span class="kt">Id</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
 <span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
@@ -322,32 +322,32 @@
             <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
             <span class="p">)</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
 <span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewCircle</span> <span class="nv">model</span> <span class="nv">circle</span> <span class="nf">=</span>
     <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span>
-        <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span>
+        <span class="p">[</span> <span class="nf">...</span>
         <span class="p">]</span>
         <span class="p">[</span> <span class="kt">S</span><span class="nf">.</span><span class="nv">circle</span>
-            <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span>
+            <span class="p">[</span> <span class="nf">...</span>
             <span class="p">,</span> <span class="kt">SE</span><span class="nf">.</span><span class="nv">onMouseDown</span> <span class="p">(</span><span class="kt">CircleHeld</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">id</span><span class="p">)</span>
             <span class="p">]</span>
-            <span class="p">[</span><span class="p">]</span>
+            <span class="p">[]</span>
         <span class="p">]</span></code></pre></div>
 <h3 id="ドラッグ中の色の変更">ドラッグ中の色の変更</h3>
 <p><code>fillCircle</code>関数が担う。これは、ドラッグ中の円のときだけ橙色のカラーコードを返す。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewCircle</span> <span class="nv">model</span> <span class="nv">circle</span> <span class="nf">=</span>
     <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span>
-        <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span>
+        <span class="p">[</span> <span class="nf">...</span>
         <span class="p">]</span>
         <span class="p">[</span> <span class="kt">S</span><span class="nf">.</span><span class="nv">circle</span>
-            <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span>
+            <span class="p">[</span> <span class="nf">...</span>
             <span class="p">,</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">fill</span> <span class="p">(</span><span class="nv">fillCircle</span> <span class="nv">model</span> <span class="nv">circle</span><span class="p">)</span>
-            <span class="nf">..</span><span class="nf">.</span>
+            <span class="nf">...</span>
             <span class="p">]</span>
-            <span class="p">[</span><span class="p">]</span>
+            <span class="p">[]</span>
         <span class="p">]</span>
 
 
@@ -355,34 +355,34 @@
 <span class="nv">fillCircle</span> <span class="nv">model</span> <span class="nv">circle</span> <span class="nf">=</span>
     <span class="kr">case</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">hold</span> <span class="kr">of</span>
         <span class="kt">Nothing</span> <span class="nf">-&gt;</span>
-            <span class="s">&#34;</span><span class="s">#</span><span class="s">f</span><span class="s">f</span><span class="s">f</span><span class="s">&#34;</span>
+            <span class="s">&#34;#fff&#34;</span>
 
         <span class="kt">Just</span> <span class="nv">id</span> <span class="nf">-&gt;</span>
             <span class="kr">if</span> <span class="nv">circle</span><span class="nf">.</span><span class="nv">id</span> <span class="nf">==</span> <span class="nv">id</span> <span class="kr">then</span>
-                <span class="s">&#34;</span><span class="s">#</span><span class="s">f</span><span class="s">8</span><span class="s">0</span><span class="s">&#34;</span>
+                <span class="s">&#34;#f80&#34;</span>
 
             <span class="kr">else</span>
-                <span class="s">&#34;</span><span class="s">#</span><span class="s">f</span><span class="s">f</span><span class="s">f</span><span class="s">&#34;</span></code></pre></div>
+                <span class="s">&#34;#fff&#34;</span></code></pre></div>
 <h3 id="ドラッグ終了イベントの定義">ドラッグ終了イベントの定義</h3>
 <p>マウスが離されたときに、<code>CircleReleased</code>というメッセージを送る。特定のDOM要素に依存しないイベントを監視する場合は、<code>subscription</code>を用いる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="nf">=</span> <span class="kt">CircleHeld</span> <span class="kt">Id</span>
     <span class="nf">|</span> <span class="kt">CircleReleased</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
 
 <span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
-        <span class="nf">..</span><span class="nf">.</span>
+        <span class="nf">...</span>
 
         <span class="kt">CircleReleased</span> <span class="nf">-&gt;</span>
             <span class="p">(</span> <span class="p">{</span> <span class="nv">model</span> <span class="nf">|</span> <span class="nv">hold</span> <span class="nf">=</span> <span class="kt">Nothing</span> <span class="p">}</span>
             <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
             <span class="p">)</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
 <span class="nv">subscriptions</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Sub</span> <span class="kt">Msg</span>
 <span class="nv">subscriptions</span> <span class="nv">model</span> <span class="nf">=</span>
@@ -422,11 +422,11 @@
     <span class="p">,</span> <span class="nv">dy</span> <span class="nf">:</span> <span class="kt">Float</span>
     <span class="p">}</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
-<span class="nv">init</span> <span class="nf">:</span> <span class="p">(</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
-    <span class="p">(</span> <span class="p">{</span> <span class="nf">..</span><span class="nf">.</span>
+    <span class="p">(</span> <span class="p">{</span> <span class="nf">...</span>
       <span class="p">,</span> <span class="nv">mouse</span> <span class="nf">=</span> <span class="kt">MousePosition</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span>
       <span class="p">}</span>
     <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
@@ -434,15 +434,15 @@
 <h3 id="マウス移動のイベント">マウス移動のイベント</h3>
 <p>SVG領域内の左上を原点として座標を取得したいので、SVGに対して<code>mousemove</code>イベントを登録したい。しかし<code>Svg.Event.onMouseMove</code>みたいな関数は用意されていないので、自作する。<code>Svg.Event.on</code>関数を使う。これも<code>Browser.Event.onMouseUp</code>のときと同様引数に<code>Json.Decode.Decoder msg</code>をとり、JSのEventをDecodeする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
-    <span class="nf">=</span> <span class="nf">..</span><span class="nf">.</span>
+    <span class="nf">=</span> <span class="nf">...</span>
     <span class="nf">|</span> <span class="kt">MouseMoved</span> <span class="kt">Float</span> <span class="kt">Float</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
 <span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
-        <span class="nf">..</span><span class="nf">.</span>
+        <span class="nf">...</span>
 
         <span class="kt">MouseMoved</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nf">-&gt;</span>
             <span class="kr">let</span>
@@ -459,52 +459,52 @@
             <span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span>
             <span class="p">)</span>
 
-<span class="nf">..</span><span class="nf">.</span>
+<span class="nf">...</span>
 
 <span class="nv">viewSvg</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewSvg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kt">S</span><span class="nf">.</span><span class="nv">svg</span>
-        <span class="p">[</span><span class="nf">..</span><span class="nf">.</span>
+        <span class="p">[</span><span class="nf">...</span>
         <span class="p">,</span> <span class="nv">onMouseMove</span> <span class="kt">MouseMoved</span>
         <span class="p">]</span>
-        <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span>
+        <span class="p">[</span> <span class="nf">...</span>
         <span class="p">]</span>
 
 
 <span class="nv">onMouseMove</span> <span class="nf">:</span> <span class="p">(</span><span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="kt">Float</span> <span class="nf">-&gt;</span> <span class="nv">msg</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">S</span><span class="nf">.</span><span class="kt">Attribute</span> <span class="nv">msg</span>
 <span class="nv">onMouseMove</span> <span class="nv">msg</span> <span class="nf">=</span>
-    <span class="kt">SE</span><span class="nf">.</span><span class="nv">on</span> <span class="s">&#34;</span><span class="s">m</span><span class="s">o</span><span class="s">u</span><span class="s">s</span><span class="s">e</span><span class="s">m</span><span class="s">o</span><span class="s">v</span><span class="s">e</span><span class="s">&#34;</span>
+    <span class="kt">SE</span><span class="nf">.</span><span class="nv">on</span> <span class="s">&#34;mousemove&#34;</span>
         <span class="p">(</span><span class="kt">JD</span><span class="nf">.</span><span class="nv">map</span><span class="mi">2</span> <span class="nv">msg</span>
-            <span class="p">(</span><span class="kt">JD</span><span class="nf">.</span><span class="nv">field</span> <span class="s">&#34;</span><span class="s">o</span><span class="s">f</span><span class="s">f</span><span class="s">s</span><span class="s">e</span><span class="s">t</span><span class="s">X</span><span class="s">&#34;</span> <span class="kt">JD</span><span class="nf">.</span><span class="nv">float</span><span class="p">)</span>
-            <span class="p">(</span><span class="kt">JD</span><span class="nf">.</span><span class="nv">field</span> <span class="s">&#34;</span><span class="s">o</span><span class="s">f</span><span class="s">f</span><span class="s">s</span><span class="s">e</span><span class="s">t</span><span class="s">Y</span><span class="s">&#34;</span> <span class="kt">JD</span><span class="nf">.</span><span class="nv">float</span><span class="p">)</span>
+            <span class="p">(</span><span class="kt">JD</span><span class="nf">.</span><span class="nv">field</span> <span class="s">&#34;offsetX&#34;</span> <span class="kt">JD</span><span class="nf">.</span><span class="nv">float</span><span class="p">)</span>
+            <span class="p">(</span><span class="kt">JD</span><span class="nf">.</span><span class="nv">field</span> <span class="s">&#34;offsetY&#34;</span> <span class="kt">JD</span><span class="nf">.</span><span class="nv">float</span><span class="p">)</span>
         <span class="p">)</span></code></pre></div>
 <p>試しにマウス座標を出力してみる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
-    <span class="nv">div</span> <span class="p">[</span><span class="p">]</span>
-        <span class="p">[</span> <span class="nf">..</span><span class="nf">.</span>
+    <span class="nv">div</span> <span class="p">[]</span>
+        <span class="p">[</span> <span class="nf">...</span>
         <span class="p">,</span> <span class="nv">viewMousePosition</span> <span class="nv">model</span>
         <span class="p">]</span>
 
 
 <span class="nv">viewMousePosition</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">viewMousePosition</span> <span class="nv">model</span> <span class="nf">=</span>
-    <span class="nv">div</span> <span class="p">[</span><span class="p">]</span>
-        <span class="p">[</span> <span class="nv">p</span> <span class="p">[</span><span class="p">]</span>
+    <span class="nv">div</span> <span class="p">[]</span>
+        <span class="p">[</span> <span class="nv">p</span> <span class="p">[]</span>
             <span class="p">[</span> <span class="nv">text</span> <span class="p">(</span><span class="nv">textMousePosition</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">mouse</span><span class="p">)</span> <span class="p">]</span>
-        <span class="p">,</span> <span class="nv">p</span> <span class="p">[</span><span class="p">]</span>
+        <span class="p">,</span> <span class="nv">p</span> <span class="p">[]</span>
             <span class="p">[</span> <span class="nv">text</span> <span class="p">(</span><span class="nv">textMouseMovement</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">mouse</span><span class="p">)</span> <span class="p">]</span>
         <span class="p">]</span>
 
 
 <span class="nv">textMousePosition</span> <span class="nf">:</span> <span class="kt">MousePosition</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
 <span class="nv">textMousePosition</span> <span class="nv">mouse</span> <span class="nf">=</span>
-    <span class="s">&#34;</span><span class="s">(</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">x</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">,</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">y</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">)</span><span class="s">&#34;</span>
+    <span class="s">&#34;(&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">x</span> <span class="nf">++</span> <span class="s">&#34;,&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">y</span> <span class="nf">++</span> <span class="s">&#34;)&#34;</span>
 
 
 <span class="nv">textMouseMovement</span> <span class="nf">:</span> <span class="kt">MousePosition</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
 <span class="nv">textMouseMovement</span> <span class="nv">mouse</span> <span class="nf">=</span>
-    <span class="s">&#34;</span><span class="s">(</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">dx</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">,</span><span class="s">&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">dy</span> <span class="nf">++</span> <span class="s">&#34;</span><span class="s">)</span><span class="s">&#34;</span></code></pre></div>
+    <span class="s">&#34;(&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">dx</span> <span class="nf">++</span> <span class="s">&#34;,&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">dy</span> <span class="nf">++</span> <span class="s">&#34;)&#34;</span></code></pre></div>
 <p>試しにマウスを動かしてみると、下にその座標と移動量が表示される。</p>
 <figure>
     <img src="./sc03.png" width="50%"/> 
@@ -515,10 +515,10 @@
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
-        <span class="nf">..</span><span class="nf">.</span>
+        <span class="nf">...</span>
         <span class="kt">MouseMoved</span> <span class="nv">x</span> <span class="nv">y</span> <span class="nf">-&gt;</span>
             <span class="kr">let</span>
-              <span class="nf">..</span><span class="nf">.</span>
+              <span class="nf">...</span>
             <span class="kr">in</span>
             <span class="p">(</span> <span class="p">{</span> <span class="nv">model</span>
                 <span class="nf">|</span> <span class="nv">mouse</span> <span class="nf">=</span> <span class="nv">newMouse</span>
