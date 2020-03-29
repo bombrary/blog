@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>HaskellでStateモナドを自作する | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.67.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/haskell-state-monad/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/haskell-state-monad/">HaskellでStateモナドを自作する</a></h1>
+    <p class="meta"><time datetime="2020-03-28T19:16:20&#43;09:00">March 28, 2020</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/monad/">Monad</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/state/">State</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/haskell/">Haskell</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  <p>Stateモナドがわからない状態から、ギリギリ分かる状態になった。</p>
+<h2 id="stateモナドを学習した流れ">Stateモナドを学習した流れ</h2>
+<p>結局、具体例を通して学習した。個人的には、いきなりモナドの定義から学習するよりも、たくさんの例を見たり、実際に例を作ってみたりした方が覚えられた。抽象的な概念を理解するためには具体的な概念に触れるべきだ、ということを改めて認識した。</p>
+<p>以下は、自分が行った学習の流れ。<a href="https://qiita.com/7shi/items/d3d3492ddd90d47160f2#bind">Haskell IOモナド 超入門</a>は学習のうえで参考になった。とくに、<code>&gt;&gt;=</code>を漏斗の形に見立てる比喩のおかげで、モナドと関数の組み合わせのイメージがクリアになった。</p>
+<ol>
+<li>Maybeモナド、Listモナドの使い方を理解する。</li>
+<li>IOモナドの使い方を理解する。</li>
+<li>いくつかのモナドについて、do構文を<code>&gt;&gt;=</code>に書き換えてみる。</li>
+<li>Stateモナドの使い方を理解する。</li>
+<li>Stateモナドを自作する。</li>
+</ol>
+<p>この記事ではStateモナドを自作することをテーマとしているため、ある程度Stateモナドに慣れた人でないとわかりづらいかもしれない。</p>
+<h2 id="stateの定義">Stateの定義</h2>
+<p>まずはStateを自作する。Stateは、<code>状態 -&gt; (計算結果,次の状態)</code>という関数を内部に持っている。この関数のことを、この記事では「内部関数」「状態付き計算」などと表現する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="kr">newtype</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">State</span> <span class="p">(</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+</code></pre></div><p><strong>これは本来のStateの定義とは異なることに注意</strong>。本来は、StateはStateTを使って実装されている。上のように定義してしまうと、モナド変換子としての機能が利用できない。ただ、そこまで考えると面倒なので、今回はStateを単なる関数のラッパーとして定義した。</p>
+<p>型引数の順番と内部関数が返すタプルの順番が逆なのが微妙に気持ち悪い。これはあくまで推測でしかないが、</p>
+<ul>
+<li>あくまで状態付きの計算なので、重要なのは計算の結果。なので返り値は<code>(a, s)</code>と計算結果を先に書いている。</li>
+<li>型引数の順番が<code>s a</code>なのは、<code>Monad</code>にするときに不都合を生じないため。</li>
+</ul>
+<p>なのだと思う。</p>
+<h3 id="余談">余談</h3>
+<p>Stateモナドがよくわかっていない時は、Stateのことを「状態を持つ型」と勘違いしていた。正しくは、「状態付き<strong>計算</strong>を持つ型」。Stateは状態を持っているわけでなく、あくまで、「状態を引数にとり、計算結果と次の状態を返す関数」を持っている。なので、初期状態は内部関数の引数として、自分で投入する。</p>
+<h3 id="runstateの定義">runStateの定義</h3>
+<p>レコード構文を使って、<code>runState</code>を定義する。<code>runState</code>は、Stateから中身の関数を取り出す関数。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="kr">newtype</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">State</span> <span class="p">{</span> <span class="n">runState</span> <span class="ow">::</span> <span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div><h3 id="試す">試す</h3>
+<p>上の定義を踏まえて、次のようにプログラムを書いてみる。以下は、状態を<code>[Int]</code>とする状態付き計算。</p>
+<p><code>addX</code> <code>doubleAll</code> <code>sumUp</code>はそれぞれ、単純な内部関数を持つStateである。一方で、<code>calc0</code>はこれらの関数を組み合わせた、新たなStateであることに注目。<strong>一連の状態付き計算を一つにまとめて、新たな状態付き計算を作っている</strong>。</p>
+<p><code>calc0</code>において、初期状態を<code>s</code>、次の状態を<code>s0</code>、その次の状態を<code>s1</code>、…と置いている。計算結果を返すのは<code>sumUp</code>だけで、他の関数は単に状態を変更するだけ。なので計算結果は<code>()</code>となっている。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="nf">addX</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="nb">()</span>
+<span class="nf">addX</span> <span class="n">x</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="nb">()</span><span class="p">,</span> <span class="n">x</span><span class="kt">:</span><span class="n">s</span><span class="p">)</span>
+
+<span class="nf">doubleAll</span> <span class="ow">::</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="nb">()</span>
+<span class="nf">doubleAll</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="nb">()</span><span class="p">,</span> <span class="n">map</span> <span class="p">(</span><span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="n">s</span><span class="p">)</span>
+
+<span class="nf">sumUp</span> <span class="ow">::</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="kt">Int</span>
+<span class="nf">sumUp</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">sum</span> <span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+<span class="nf">calc0</span> <span class="ow">::</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="kt">Int</span>
+<span class="nf">calc0</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span>
+  <span class="kr">let</span>
+    <span class="p">(</span><span class="kr">_</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="p">(</span><span class="n">addX</span> <span class="mi">1</span><span class="p">)</span> <span class="n">s</span>
+    <span class="p">(</span><span class="kr">_</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="p">(</span><span class="n">addX</span> <span class="mi">2</span><span class="p">)</span> <span class="n">s0</span>
+    <span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">sumUp</span> <span class="n">s1</span>
+    <span class="p">(</span><span class="kr">_</span><span class="p">,</span> <span class="n">s3</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="p">(</span><span class="n">addX</span> <span class="n">a2</span><span class="p">)</span> <span class="n">s2</span>
+    <span class="p">(</span><span class="kr">_</span><span class="p">,</span> <span class="n">s4</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">doubleAll</span> <span class="n">s3</span>
+  <span class="kr">in</span>
+    <span class="n">runState</span> <span class="n">sumUp</span> <span class="n">s4</span>
+
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">print</span> <span class="o">$</span> <span class="n">runState</span> <span class="n">calc0</span> <span class="kt">[]</span>
+</code></pre></div><p>実行結果は以下のようになる。</p>
+<pre class="cui">
+(12, [6,4,2])
+</pre>
+
+<h2 id="monadのメソッド">Monadのメソッド</h2>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Monad.html">Control.Monad</a>に定義が書いてある。</p>
+<p>型クラスが、<code>Functor =&gt; Applicative =&gt; Monad</code>の順に定義されている。なので、Stateを<code>Monad</code>にするためには、同時に<code>Applicative</code>と<code>Functor</code>にしておかなければいけない。</p>
+<p>以下は、最低限の定義だけ記している。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="kr">class</span> <span class="kt">Functor</span> <span class="n">f</span> <span class="kr">where</span>
+  <span class="n">fmap</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="kr">class</span> <span class="kt">Functor</span> <span class="n">f</span> <span class="ow">=&gt;</span> <span class="kt">Applicative</span> <span class="n">f</span> <span class="kr">where</span>
+  <span class="n">pure</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span>
+  <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="n">f</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="kr">class</span> <span class="kt">Applicative</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="kr">where</span>
+  <span class="p">(</span><span class="o">&gt;&gt;=</span><span class="p">)</span> <span class="ow">::</span> <span class="n">m</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">b</span>
+</code></pre></div><p><code>Functor</code>、<code>Applicative</code>、<code>Monad</code>のメソッドを見ると、<code>f a</code>や<code>m a</code>のように使われていることが分かる。つまり、これらは型引数を1つだけ取る型だと分かる。ところが、State型は型引数を2つ持つ。なので、<code>f</code>や<code>m</code>の部分には、2つある型引数を1つ埋めて、<code>State s</code>を入れる。具体的には、上のメソッドの型は次のように書ける。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">  <span class="n">fmap</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">b</span>
+
+  <span class="n">pure</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">a</span>
+  <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="kt">State</span> <span class="n">s</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">b</span>
+
+  <span class="p">(</span><span class="o">&gt;&gt;=</span><span class="p">)</span> <span class="ow">::</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">b</span>
+</code></pre></div><p>このように具体的に型を書いてみると、各関数でどんな処理を実装すれば良いのかがなんとなく分かるかも。また一応確認しておきたいのは、どれも「1つ以上のStateを引数にとって、新しいStateを返す」関数だということ。言い換えると、「1つ以上の状態付き計算を引数にとって、新しい状態付き計算を返す」関数。</p>
+<h2 id="functorのインスタンス化">Functorのインスタンス化</h2>
+<ul>
+<li><code>fmap</code>: Stateの中身の関数は<code>状態</code>を引数にとり<code>(値,次の状態)</code>を返すが、<code>値</code>に対してさらに関数を適用する。</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="kr">instance</span> <span class="kt">Functor</span> <span class="p">(</span><span class="kt">State</span> <span class="n">s</span><span class="p">)</span> <span class="kr">where</span>
+  <span class="n">fmap</span> <span class="n">f</span> <span class="n">state</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span>
+    <span class="kr">let</span>
+      <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">state</span> <span class="n">s</span>
+    <span class="kr">in</span>
+      <span class="p">(</span><span class="n">f</span> <span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><h2 id="applicativeのインスタンス化">Applicativeのインスタンス化</h2>
+<ul>
+<li><code>pure</code>: 引数をそのまま返す状態付き計算を返す。</li>
+<li><code>&lt;*&gt;</code>: <code>(関数f, 次の状態)</code>を返す関数と<code>(値a, 次の次の状態)</code>を返す関数を引数にとり、<code>(f a, 次の次の状態)</code>を返す関数を返す。</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="kr">instance</span> <span class="kt">Applicative</span> <span class="p">(</span><span class="kt">State</span> <span class="n">s</span><span class="p">)</span> <span class="kr">where</span>
+  <span class="n">pure</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+  <span class="n">state0</span> <span class="o">&lt;*&gt;</span> <span class="n">state1</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span>
+    <span class="kr">let</span>
+      <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">state0</span> <span class="n">s</span>
+      <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">state1</span> <span class="n">s0</span>
+    <span class="kr">in</span>
+      <span class="p">(</span><span class="n">f</span> <span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+</code></pre></div><h2 id="monadのインスタンス化">Monadのインスタンス化</h2>
+<p>分かりやすさのために、少し冗長に書いている。</p>
+<ul>
+<li><code>(&gt;&gt;=)</code>: bind演算子と呼ばれる。左辺で得られた計算結果を、右辺の状態付き計算に利用する。</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="kr">instance</span> <span class="kt">Monad</span> <span class="p">(</span><span class="kt">State</span> <span class="n">s</span><span class="p">)</span> <span class="kr">where</span>
+  <span class="n">state</span> <span class="o">&gt;&gt;=</span> <span class="n">f</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> 
+    <span class="kr">let</span>
+      <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">state</span> <span class="n">s</span>
+      <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="p">(</span><span class="n">f</span> <span class="n">a0</span><span class="p">)</span> <span class="n">s0</span>
+    <span class="kr">in</span>
+      <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+</code></pre></div><h3 id="calc0の書き直し">calc0の書き直し</h3>
+<p>bind演算子を利用すると、calc0は次のように書けるようになる。かなりすっきりした。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="nf">calc0</span> <span class="ow">::</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="kt">Int</span>
+<span class="nf">calc0</span> <span class="ow">=</span>
+  <span class="n">addX</span> <span class="mi">1</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="n">addX</span> <span class="mi">2</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="n">sumUp</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="n">a2</span> <span class="ow">-&gt;</span>
+  <span class="n">addX</span> <span class="n">a2</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="n">doubleAll</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="n">sumUp</span>
+</code></pre></div><p>do構文で書くと次のようになる。さらにすっきりした。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="nf">calc0</span> <span class="ow">::</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="kt">Int</span>
+<span class="nf">calc0</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">addX</span> <span class="mi">1</span>
+  <span class="n">addX</span> <span class="mi">2</span>
+  <span class="n">a2</span> <span class="ow">&lt;-</span> <span class="n">sumUp</span>
+  <span class="n">addX</span> <span class="n">a2</span>
+  <span class="n">doubleAll</span>
+  <span class="n">sumUp</span>
+</code></pre></div><h2 id="getとputの定義">getとputの定義</h2>
+<p>せっかくなので<code>get</code>と<code>put</code>を定義する。</p>
+<ul>
+<li><code>get</code>: 状態を取り出す。単に<code>状態 -&gt; (状態, 状態)</code>を内部関数にすればよい。</li>
+<li><code>put</code>: 状態を更新する。単に<code>状態 -&gt; ((), 新しい状態)</code>を内部関数にすればよい。</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="nf">get</span> <span class="ow">::</span> <span class="kt">State</span> <span class="n">s</span> <span class="n">s</span>
+<span class="nf">get</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+<span class="nf">put</span> <span class="ow">::</span> <span class="n">s</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="n">s</span> <span class="nb">()</span>
+<span class="nf">put</span> <span class="n">s</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="nb">()</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</code></pre></div><h3 id="addxdoubleallsumupの書き直し">addX,doubleAll,sumUpの書き直し</h3>
+<p><code>get</code>と<code>put</code>を使うと、少し見やすくなる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="nf">addX</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="nb">()</span>
+<span class="nf">addX</span> <span class="n">x</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">xs</span> <span class="ow">&lt;-</span> <span class="n">get</span>
+  <span class="n">put</span> <span class="o">$</span> <span class="n">x</span><span class="kt">:</span><span class="n">xs</span>
+
+<span class="nf">doubleAll</span> <span class="ow">::</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="nb">()</span>
+<span class="nf">doubleAll</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">xs</span> <span class="ow">&lt;-</span> <span class="n">get</span>
+  <span class="n">put</span> <span class="o">$</span> <span class="n">map</span> <span class="p">(</span><span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="n">xs</span>
+
+<span class="nf">sumUp</span> <span class="ow">::</span> <span class="kt">State</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="kt">Int</span>
+<span class="nf">sumUp</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">xs</span> <span class="ow">&lt;-</span> <span class="n">get</span>
+  <span class="n">return</span> <span class="o">$</span> <span class="n">sum</span> <span class="n">xs</span>
+</code></pre></div><h2 id="おまけ-functorapplicativemonad則の確認">(おまけ) Functor、Applicative、Monad則の確認</h2>
+<p>以下はひたすら各法則の証明をしている。非常に単調で長い。正直読んでわかるかどうか怪しいので、自分で頭を動かしながらやってみると良い。</p>
+<details>
+<summary>確認</summary>
+<h3 id="functor則を満たしていることの確認">Functor則を満たしていることの確認</h3>
+<p>Functor則とは次のような規則である。<a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Monad.html">Control.Monad</a>からの抜粋。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="mi">1</span><span class="o">.</span> <span class="n">fmap</span> <span class="n">id</span>  <span class="o">==</span>  <span class="n">id</span>
+<span class="mi">2</span><span class="o">.</span> <span class="n">fmap</span> <span class="p">(</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span>  <span class="o">==</span>  <span class="n">fmap</span> <span class="n">f</span> <span class="o">.</span> <span class="n">fmap</span> <span class="n">g</span>
+</code></pre></div><p><code>fmap</code>の定義がFunctor則に合っているか、一応証明しておく。上の<code>fmap</code>の定義に当てはめて証明する。</p>
+<p>以下、同値変形の記号を<code>&lt;=&gt;</code>で表す。</p>
+<p><code>fmap</code>は次のように定義したことを思い出す。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">  <span class="n">fmap</span> <span class="n">f</span> <span class="n">state</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span>
+    <span class="kr">let</span>
+      <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">state</span> <span class="n">s</span>
+    <span class="kr">in</span>
+      <span class="p">(</span><span class="n">f</span> <span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><h3 id="1の証明">1.の証明</h3>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">  <span class="n">state</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><p>とおけば、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">fmap</span> <span class="n">id</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">id</span> <span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="n">state</span>
+<span class="o">&lt;=&gt;</span> <span class="n">id</span>
+</code></pre></div><h3 id="2の証明">2.の証明</h3>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">  <span class="n">state</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><p>とおけば、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">fmap</span> <span class="n">g</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">g</span> <span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="n">state1</span> <span class="c1">-- 次で使うためstate1とおく</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">fmap</span> <span class="n">f</span> <span class="o">.</span> <span class="n">fmap</span> <span class="n">g</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">f</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">g</span> <span class="n">state</span><span class="p">))</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">f</span> <span class="n">state1</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="p">(</span><span class="n">g</span> <span class="n">a0</span><span class="p">),</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="nf">\</span><span class="n">state</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">((</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span> <span class="n">a0</span> <span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="n">fmap</span> <span class="p">(</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span>
+</code></pre></div><h3 id="applicative則を満たしていることの確認">Applicative則を満たしていることの確認</h3>
+<p><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html#t:Applicative">Control.Applicative</a>からの抜粋。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="c1">-- identity</span>
+<span class="mi">1</span><span class="o">.</span> <span class="n">pure</span> <span class="n">id</span> <span class="o">&lt;*&gt;</span> <span class="n">v</span> <span class="ow">=</span> <span class="n">v</span>
+<span class="c1">-- composition</span>
+<span class="mi">2</span><span class="o">.</span> <span class="n">pure</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">u</span> <span class="o">&lt;*&gt;</span> <span class="n">v</span> <span class="o">&lt;*&gt;</span> <span class="n">w</span> <span class="ow">=</span> <span class="n">u</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">v</span> <span class="o">&lt;*&gt;</span> <span class="n">w</span><span class="p">)</span>
+<span class="c1">-- homomorphism</span>
+<span class="mi">3</span><span class="o">.</span> <span class="n">pure</span> <span class="n">f</span> <span class="o">&lt;*&gt;</span> <span class="n">pure</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">)</span>
+<span class="c1">-- interchange</span>
+<span class="mi">4</span><span class="o">.</span> <span class="n">u</span> <span class="o">&lt;*&gt;</span> <span class="n">pure</span> <span class="n">y</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="o">$</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">u</span>
+</code></pre></div><p><code>pure</code>と<code>(&lt;*&gt;)</code>は次のように定義したことを思い出す。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">  <span class="n">pure</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+  <span class="n">state0</span> <span class="o">&lt;*&gt;</span> <span class="n">state1</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span>
+    <span class="kr">let</span>
+      <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">state0</span> <span class="n">s</span>
+      <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">state1</span> <span class="n">s0</span>
+    <span class="kr">in</span>
+      <span class="p">(</span><span class="n">f</span> <span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+</code></pre></div><h4 id="証明における補足">証明における補足</h4>
+<p><code>pure</code>の定義から、次のような性質があることを念頭に置く。状態を変えず、計算結果だけが<code>x</code>に変わる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">pure</span> <span class="n">x</span><span class="p">)</span> <span class="n">s</span> <span class="o">==</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</code></pre></div><h4 id="1-の証明">1. の証明</h4>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">pure</span> <span class="n">id</span><span class="p">)</span> <span class="n">s</span> <span class="o">==</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</code></pre></div><p>であることに注意する。また、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="n">v</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><p>とおくと、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">pure</span> <span class="n">id</span> <span class="o">&lt;*&gt;</span> <span class="n">v</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">id</span> <span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="n">v</span>
+</code></pre></div><h4 id="2-の証明">2. の証明</h4>
+<p>左辺について、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">pure</span> <span class="p">(</span><span class="o">.</span><span class="p">))</span> <span class="n">s</span> <span class="o">==</span> <span class="p">((</span><span class="o">.</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span>
+</code></pre></div><p>であることに注意する。また、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="n">u</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+ <span class="n">runState</span> <span class="n">v</span> <span class="n">s0</span> <span class="ow">=</span> <span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+ <span class="n">runState</span> <span class="n">w</span> <span class="n">s1</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</code></pre></div><p>とおくと、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">pure</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">u</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">((</span><span class="o">.</span><span class="p">)</span> <span class="n">f</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">pure</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">u</span> <span class="o">&lt;*&gt;</span> <span class="n">v</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">((</span><span class="o">.</span><span class="p">)</span> <span class="n">f</span> <span class="n">g</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">pure</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">u</span> <span class="o">&lt;*&gt;</span> <span class="n">v</span> <span class="o">&lt;*&gt;</span> <span class="n">w</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span> <span class="n">a</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</code></pre></div><p>右辺について、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">v</span> <span class="o">&lt;*&gt;</span> <span class="n">w</span><span class="p">)</span> <span class="n">s0</span> <span class="o">==</span> <span class="p">(</span><span class="n">g</span> <span class="n">a</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</code></pre></div><p>であることに注意すると、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">u</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">v</span> <span class="o">&lt;*&gt;</span> <span class="n">w</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="p">(</span><span class="n">g</span> <span class="n">a</span><span class="p">),</span> <span class="n">s2</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="p">((</span><span class="n">f</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span> <span class="n">a</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</code></pre></div><h4 id="3-の証明">3. の証明</h4>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">pure</span> <span class="n">f</span><span class="p">)</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+ <span class="n">runState</span> <span class="p">(</span><span class="n">pure</span> <span class="n">x</span><span class="p">)</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</code></pre></div><p>より、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">pure</span> <span class="n">f</span> <span class="o">&lt;*&gt;</span> <span class="n">pure</span> <span class="n">x</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span><span class="ow">-&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">)</span>
+</code></pre></div><h4 id="4-の証明">4. の証明</h4>
+<p>左辺について、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="n">u</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><p>とおく。また、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">pure</span> <span class="n">y</span><span class="p">)</span> <span class="n">s0</span> <span class="o">==</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><p>に注意して、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">u</span> <span class="o">&lt;*&gt;</span> <span class="n">pure</span> <span class="n">y</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="n">y</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><p>右辺について、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">pure</span> <span class="p">(</span><span class="o">$</span> <span class="n">y</span><span class="p">))</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="o">$</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</code></pre></div><p>に注意して、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">    <span class="n">pure</span> <span class="p">(</span><span class="o">$</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">u</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">((</span><span class="o">$</span> <span class="n">y</span><span class="p">)</span> <span class="n">f</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="n">y</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span> <span class="c1">-- ∵ ($ y) f &lt;=&gt; f $ y &lt;=&gt; f y</span>
+</code></pre></div><h3 id="monad則を満たしていることの確認">Monad則を満たしていることの確認</h3>
+<p>Monad則とは次のような規則である。<a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Monad.html">Control.Monad</a>からの抜粋。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="mi">1</span><span class="o">.</span> <span class="n">return</span> <span class="n">a</span> <span class="o">&gt;&gt;=</span> <span class="n">k</span>  <span class="ow">=</span>  <span class="n">k</span> <span class="n">a</span>
+<span class="mi">2</span><span class="o">.</span> <span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="n">return</span>  <span class="ow">=</span>  <span class="n">m</span>
+<span class="mi">3</span><span class="o">.</span> <span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">k</span> <span class="n">x</span> <span class="o">&gt;&gt;=</span> <span class="n">h</span><span class="p">)</span>  <span class="ow">=</span>  <span class="p">(</span><span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="n">k</span><span class="p">)</span> <span class="o">&gt;&gt;=</span> <span class="n">h</span>
+</code></pre></div><p><code>return = pure</code>として定義されているので、1. の確認は不要。</p>
+<p><code>(&gt;&gt;=)</code>は以下のように定義されていたことを思い出す。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs">  <span class="n">state</span> <span class="o">&gt;&gt;=</span> <span class="n">f</span> <span class="ow">=</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> 
+      <span class="kr">let</span>
+        <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="n">state</span> <span class="n">s</span>
+        <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runState</span> <span class="p">(</span><span class="n">f</span> <span class="n">a0</span><span class="p">)</span> <span class="n">s0</span>
+      <span class="kr">in</span>
+        <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+</code></pre></div><p>また、<code>return</code>は<code>pure</code>と同じなので、以下の性質が成り立っていることを念頭に置く。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">return</span> <span class="n">x</span><span class="p">)</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</code></pre></div><h4 id="2-の証明-1">2. の証明</h4>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="n">m</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><p>とおく。また、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="p">(</span><span class="n">return</span> <span class="n">a0</span><span class="p">)</span> <span class="n">s0</span> <span class="o">==</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</code></pre></div><p>に注意して、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="cm">{-
+</span><span class="cm">  (a0, s0) = runState m s
+</span><span class="cm">  (a0, s0) = runState (return a0) s0
+</span><span class="cm">-}</span>
+    <span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="n">return</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="n">state</span>
+</code></pre></div><h4 id="3-の証明-1">3. の証明</h4>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"> <span class="n">runState</span> <span class="n">m</span> <span class="n">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+ <span class="n">runState</span> <span class="p">(</span><span class="n">k</span> <span class="n">a0</span><span class="p">)</span> <span class="n">s0</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+ <span class="n">runState</span> <span class="p">(</span><span class="n">h</span> <span class="n">a1</span><span class="p">)</span> <span class="n">s1</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</code></pre></div><p>とおく。</p>
+<p>左辺について、</p>
+<p><code>(\x -&gt; k x &gt;&gt;= h)</code>に値<code>a0</code>を適用したケースを考える。</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="cm">{-
+</span><span class="cm">  (a1, s1) = runState (k a0) s0
+</span><span class="cm">  (a2, s2) = runState (h a1) s1
+</span><span class="cm">-}</span>
+    <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">k</span> <span class="n">x</span> <span class="o">&gt;&gt;=</span> <span class="n">h</span><span class="p">)</span> <span class="n">a0</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s0</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</code></pre></div><p>よって、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="cm">{-
+</span><span class="cm">  (a0, s0) = runState m s
+</span><span class="cm">  (a2, s2) = runState ((\x -&gt; k x &gt;&gt;= h) a0) s0
+</span><span class="cm">-}</span>
+    <span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">k</span> <span class="n">x</span> <span class="o">&gt;&gt;=</span> <span class="n">h</span><span class="p">)</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</code></pre></div><p>右辺について、</p>
+<div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="cm">{-
+</span><span class="cm">  (a0, s0) = runState m s
+</span><span class="cm">  (a1, s1) = runState (k a0) s0
+</span><span class="cm">-}</span>
+    <span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="n">k</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-hs" data-lang="hs"><span class="cm">{-
+</span><span class="cm">  (a1, s1) = runState (m &gt;&gt;= k) s
+</span><span class="cm">  (a2, s2) = runState (h a1) s1
+</span><span class="cm">-}</span>
+    <span class="p">(</span><span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="n">k</span><span class="p">)</span> <span class="o">&gt;&gt;=</span> <span class="n">h</span>
+<span class="o">&lt;=&gt;</span> <span class="kt">State</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</code></pre></div></details>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://qiita.com/7shi/items/2e9bff5d88302de1a9e9">状態系モナド超入門</a>: 具体例が豊富</li>
+<li><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Monad.html">Control.Monad</a></li>
+<li><a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html">Control.Applicative</a></li>
+</ul>
+
+</article>
+
+
+
+</html>
