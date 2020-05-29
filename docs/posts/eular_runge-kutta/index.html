@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>Eular法とRunge-Kutta法をPythonで実装する | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.67.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/eular_runge-kutta/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/math.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+                                                                                                                                                                                  onload="renderMathInElement(document.body);"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}]
+    });
+  });
+</script>
+
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/eular_runge-kutta/">Eular法とRunge-Kutta法をPythonで実装する</a></h1>
+    <p class="meta"><time datetime="2020-05-28T10:50:13&#43;09:00">May 28, 2020</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e6%95%b0%e5%80%a4%e8%a7%a3%e6%9e%90/">数値解析</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e5%be%ae%e5%88%86%e6%96%b9%e7%a8%8b%e5%bc%8f/">微分方程式</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/%e6%95%b0%e5%ad%a6/">数学</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/python/">Python</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#eular法">Eular法</a>
+      <ul>
+        <li><a href="#導出1階">導出(1階)</a></li>
+        <li><a href="#コード">コード</a></li>
+        <li><a href="#導出2階">導出(2階)</a></li>
+        <li><a href="#コード-1">コード</a></li>
+        <li><a href="#注意">注意</a></li>
+        <li><a href="#誤差">誤差</a></li>
+      </ul>
+    </li>
+    <li><a href="#eular法より少し良い方法">Eular法より少し良い方法</a>
+      <ul>
+        <li><a href="#1階の場合">1階の場合</a></li>
+        <li><a href="#2階の場合">2階の場合</a></li>
+        <li><a href="#コード-2">コード</a></li>
+      </ul>
+    </li>
+    <li><a href="#runge-kutta法">Runge-Kutta法</a>
+      <ul>
+        <li><a href="#コード-3">コード</a></li>
+      </ul>
+    </li>
+    <li><a href="#ライブラリを使うscipy">ライブラリを使う(SciPy)</a>
+      <ul>
+        <li><a href="#コード-4">コード</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    </aside>
+    
+  <p>備忘のために。数値解析関連の話はほとんど学んだことがないため、何か間違いがあるかも。</p>
+<h2 id="eular法">Eular法</h2>
+<p>以下、例に出そうとしている微分方程式が運動方程式なので、文字の使い方を力学っぽくしている(位置、速度、時間を $x, v, t$ みたいな気持ちで書いている)。</p>
+<h3 id="導出1階">導出(1階)</h3>
+<p>まず次の常微分方程式がある。</p>
+<p>\[
+\frac{dx}{dt} = f(t, x)
+\]</p>
+<p>上の式を以下のように近似する。$h$を十分小さくすれば、微分の定義より上の式に近づく。</p>
+<p>\[
+\begin{aligned}
+\frac{x(t + h) - x(t)}{h} \simeq f(t, x) \\
+\Rightarrow x(t + h) \simeq x(t) + f(t, x)h
+\end{aligned}
+\]</p>
+<p>これが、$x(t)$の更新式となっている。つまり、ある時刻$t_0$における値$x_0 = x(t_0)$を決めておけば、</p>
+<p>\[
+\begin{aligned}
+&amp; t_k := t_{k-1} + h\\
+\end{aligned}
+\]</p>
+<p>とおいて、</p>
+<p>\[
+\begin{aligned}
+&amp; x(t_1) := x(t_0) + f(t_0, x_0)h \\
+&amp; x(t_2) := x(t_1) + f(t_1, x_1)h \\
+&amp; x(t_3) := x(t_2) + f(t_2, x_2)h \\
+&amp; &hellip;
+\end{aligned}
+\]</p>
+<p>これは無限に続けられるので、プログラムではどこかのタイミングで停止させる。</p>
+<p>ということで、Eular法で必要な要素は以下の5つ。</p>
+<ul>
+<li>解くべき微分方程式</li>
+<li>初期時刻 $t_0$ と初期値 $x(t_0)$</li>
+<li>終了時刻 $t_e$</li>
+<li>刻み幅 $h$</li>
+</ul>
+<h3 id="コード">コード</h3>
+<p>手でも解ける次の微分方程式を、あえてEular法で解く。</p>
+<p>\[
+\frac{dx}{dt} = -x,\ x(0) = 1;
+\]</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">def</span> <span class="nf">eular</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">);</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
+        <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">h</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div><p>グラフは以下のようになる。</p>
+<figure>
+    <img src="./eular0.png" width="70%"/> 
+</figure>
+
+<h3 id="導出2階">導出(2階)</h3>
+<p>まず次の常微分方程式がある。</p>
+<p>\[
+\begin{aligned}
+&amp;\frac{dx}{dt} = v \\
+&amp;\frac{d^2x}{dt^2} = f(t, v, x)
+\end{aligned}
+\]</p>
+<p>これは次のように書き換えられる。つまり、$v$と$x$の連立方程式と捉えられる。</p>
+<p>\[
+\begin{aligned}
+&amp;\frac{dx}{dt} = v \\
+&amp;\frac{dv}{dt} = f(t, v, x)
+\end{aligned}
+\]</p>
+<p>前と同じ議論によって、以下の形にできる。</p>
+<p>\[
+\begin{aligned}
+&amp;x(t + h) \simeq x(t) + vh \\
+&amp;v(t + h) \simeq v(t) + f(t, v, x)h
+\end{aligned}
+\]</p>
+<p>これが更新式。</p>
+<p>2階の常微分方程式は、初期条件が2つ必要なことに注意。以下では、$t_0$における位置、速度をそれぞれ $x_0, v_0$ とおいている。</p>
+<h3 id="コード-1">コード</h3>
+<p>減衰振動の方程式を解いてみる。</p>
+<p>\[
+\begin{aligned}
+&amp;\frac{dx}{dt} = v \\
+&amp;\frac{dv}{dt} = -\omega^2x - kv\\
+&amp;v(0) = 0\\
+&amp;x(0) = 10
+\end{aligned}
+\]</p>
+<p>今回は、適当に $\omega^2 = 1, k = 0.2$ とする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">def</span> <span class="nf">eular</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">);</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">vs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">v0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
+        <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">vs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">*</span><span class="n">h</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">v</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div><p>グラフは以下のようになる。</p>
+<figure>
+    <img src="./eular1.png" width="70%"/> 
+</figure>
+
+<h3 id="注意">注意</h3>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">*</span><span class="n">h</span><span class="p">]</span>
+</code></pre></div><p>と</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">h</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">*</span><span class="n">h</span>
+</code></pre></div><p>は意味が違うことに注意。</p>
+<p>前者は</p>
+<p>\[
+\begin{aligned}
+&amp;v_k := v_{k-1} + f(t_{k-1}, v_{k-1}, x_{k-1})h\\
+&amp;x_k := x_{k-1} + v_{k-1}h
+\end{aligned}
+\]</p>
+<p>という意味だが、後者は、</p>
+<p>\[
+\begin{aligned}
+&amp;v_k := v_{k-1} + f(t_{k-1}, v_{k-1}, x_{k-1})h\\
+&amp;x_k := x_{k-1} + v_{k}h
+\end{aligned}
+\]</p>
+<p>という意味になってしまう。つまり、$x_k$を計算するときに$v_k$を使ってしまうことになる。</p>
+<p>このような違いが出てしまうのは、コードの実行には順序があることと、変数の再代入ができることが原因。</p>
+<h3 id="誤差">誤差</h3>
+<p>Eular法はあまり精度が良くない。例えば、単振動の運動方程式を解くと、誤差が目立つ。</p>
+<p>\[
+\begin{aligned}
+&amp;\frac{dx}{dt} = v \\
+&amp;\frac{dv}{dt} = -\omega^2x\\
+&amp;v(0) = 0\\
+&amp;x(0) = 10
+\end{aligned}
+\]</p>
+<p>$\omega^2 = 1$ とする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="c1"># eular法のコードは略</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div><p>単振動なのに、振幅がどんどん大きくなっている。</p>
+<figure>
+    <img src="./eular2.png" width="70%"/> 
+</figure>
+
+<p>理由は、以下の式</p>
+<p>\[
+\begin{aligned}
+x(t + h) &amp;\simeq x(t) + f(t, v, x)h\\
+&amp;= x(t) + \dot{x}(t)h
+\end{aligned}
+\]</p>
+<p>が、$x(t+h)$ の $h$ まわりのTaylor展開において、2次以上の項を切り落とした式になっているからである。その切り落としの部分が誤差になっている。更新の度に誤差が積もっていくことが、グラフからもよくわかる。</p>
+<h2 id="eular法より少し良い方法">Eular法より少し良い方法</h2>
+<h3 id="1階の場合">1階の場合</h3>
+<p>\[
+\frac{dx}{dt} = f(t, x)
+\]</p>
+<p>Eular法ではいわゆる「一次近似」を利用していた。それなら二次の項まで使えば、精度が上がりそうである。</p>
+<p>\[
+x(t+h) \simeq x(t) + \dot{x}(t)h + \frac{1}{2}\ddot{x}(t)h^2
+\]</p>
+<p>$\dot{x}(t) = f(t, x)$ だが、 $\ddot{x}(t)$ の値が分からない。何かの値で代用する必要がある。</p>
+<p>そこで(若干飛躍があるかもしれないが)、以下の式が上の等式と一致するように係数$a, b$を決める。</p>
+<p>\[
+x(t+h) \simeq x(t) + (a\dot{x}(t) + b\dot{x}(t + h))h
+\]</p>
+<p>これは、一次近似により、</p>
+<p>\[
+\dot{x}(t + h) \simeq \dot{x}(t) + \ddot{x}(t)h
+\]</p>
+<p>だから、</p>
+<p>\[
+x(t+h) \simeq x(t) + (a + b) \dot{x}(t) + b\dot{x}(t + h)h^2
+\]</p>
+<p>係数比較により、$a = b = \frac{1}{2}$ とわかる。</p>
+<p>これより、</p>
+<p>\[
+x(t+h) \simeq x(t) + \frac{\dot{x}(t) + \dot{x}(t + h)}{2}h
+\]</p>
+<p>を元にして更新を行えば、より良い精度が得られそうである。ところが、$\dot{x}(t+h)$ の値もそのままでは計算できない。なぜなら、$\dot{x}(t) = f(t, x)$ は実際には $\dot{x}(t) = f(t, x(t))$ と書くべきで、これを考慮すると$\dot{x}(t+h)$は</p>
+<p>\[
+\dot{x}(t + h) = f(t + h, x(t + h))
+\]</p>
+<p>と表せて、結局 $x(t + h)$の値が分からないからである。ここはもう仕方ないので、一次近似により、</p>
+<p>\[
+\begin{aligned}
+\dot{x}(t + h) &amp;\simeq f(t + h, x(t) + \dot{x}(t)h)\\
+&amp;= f(t + h, x(t) + f(t, x)h)
+\end{aligned}
+\]</p>
+<p>とする。</p>
+<p>以上により、次の手順で$x(t)$から$x(t + h)$を算出すればよい。</p>
+<p>\[
+\begin{aligned}
+&amp;k_1 := f(t, x(t))\\
+&amp;k_2 := f(t + h, x(t) + k_1h)\\
+&amp;x(t + h) := x(t) + \frac{k_1 + k_2}{2}h
+\end{aligned}
+\]</p>
+<h3 id="2階の場合">2階の場合</h3>
+<p>\[
+\begin{aligned}
+&amp;\frac{dx}{dt} = v(t)\\
+&amp;\frac{dv}{dt} = f(t, v(t), x(t))
+\end{aligned}
+\]</p>
+<p>上と同じ議論を行うと、次の式が得られる。</p>
+<p>\[
+\begin{aligned}
+&amp;v(t + h) \simeq v(t) + \frac{\dot{v}(t) + \dot{v}(t + h)}{2}h\\
+&amp;x(t + h) \simeq x(t) + \frac{\dot{x}(t) + \dot{x}(t + h)}{2}h
+\end{aligned}
+\]</p>
+<p>$v(t + h)$と$x(t + h)$はそのままでは計算できないので、次のように近似する。</p>
+<p>\[
+\begin{aligned}
+\dot{v}(t + h) &amp;= f(t + h, v(t + h), x(t + h))\\
+&amp;\simeq f(t + h, v(t) + f(t,v,x)h, x(t) + v(t)h)\\
+\dot{x}(t + h) &amp;= v(t + h)\\
+&amp;\simeq v(t) + f(t,v,x)h
+\end{aligned}
+\]</p>
+<p>これにより、次の手順が得られる。</p>
+<p>\[
+\begin{aligned}
+k_1 &amp;:= f(t, v(t), x(t))\\
+l_1 &amp;:= v(t)\\
+k_2 &amp;:= f(t + h, v(t) + k_1h, x(t) + l_1h)\\
+l_2 &amp;:= v(t) + k_1h\\
+v(t + h) &amp;:= v(t) + \frac{k_1 + k_2}{2}h\\
+x(t + h) &amp;:= x(t) + \frac{l_1 + l_2}{2}h
+\end{aligned}
+\]</p>
+<h3 id="コード-2">コード</h3>
+<p>さて、この手順を導出するために、何回か近似を行っている。本当にEular法よりも精度が良くなっているのだろうか。試しにコードを組んでみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="c1"># eular法のコードは略</span>
+
+<span class="k">def</span> <span class="nf">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">);</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">vs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">v0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
+        <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">vs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="n">k1</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">l1</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">k2</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="n">k1</span><span class="o">*</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">l1</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">l2</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">k1</span><span class="o">*</span><span class="n">h</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="n">k2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">l1</span> <span class="o">+</span> <span class="n">l2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div><p>次のようなグラフが得られる(青:Eular法、橙:今回の方法)。Eular法に比べて、かなり精度が良くなっている。</p>
+<figure>
+    <img src="./eular_improved0.png" width="70%"/> 
+</figure>
+
+<p>これくらい時間を増やすと、誤差が目に見えてくる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+</code></pre></div><figure>
+    <img src="./eular_improved1.png" width="70%"/> 
+</figure>
+
+<h2 id="runge-kutta法">Runge-Kutta法</h2>
+<p>もっと良い精度で微分方程式を解くのが、Runge-Kutta法である。</p>
+<p>1階の場合。</p>
+<p>\[
+\frac{dx}{dt} = f(t, x)
+\]</p>
+<p>Runge-Kutta法では、以下のような更新式に従う。導出については詳しく追えていないので、結果だけ示す。恐らく前節と同じような議論を行えば良いのだと思う。Runge-Kutta法にはいくつかの種類がある、以下の形は古典的Runge-Kutta法と呼ばれるもの。</p>
+<p>\[
+\begin{aligned}
+x(t + h) &amp;:= x(t) + \frac{k_1 + 2k_2 + 2k_3 + k_4}{6}h\\
+k_1 &amp;:= f(t, x(t))\\
+k_2 &amp;:= f\left(t + \frac{h}{2}, x(t) + \frac{h}{2}k_1\right)\\
+k_3 &amp;:= f\left(t + \frac{h}{2}, x(t) + \frac{h}{2}k_2\right)\\
+k_4 &amp;:= f\left(t + h          , x(t) + \frac{h}{2}k_3\right)
+\end{aligned}
+\]</p>
+<p>2階の場合。</p>
+<p>\[
+\begin{aligned}
+&amp;\frac{dx}{dt} = v(t)\\
+&amp;\frac{dv}{dt} = f(t, v(t), x(t))
+\end{aligned}
+\]</p>
+<p>Runge-Kutta法による更新式は以下のようになる。こちらは前節の類推で作っただけなので、合ってるか少し不安。</p>
+<p>\[
+\begin{aligned}
+v(t + h) &amp;:= v(t) + \frac{k_1 + 2k_2 + 2k_3 + k_4}{6}h\\
+k_1 &amp;:= f(t, v(t), x(t))\\
+k_2 &amp;:= f\left(t + \frac{h}{2}, v(t) + \frac{h}{2}k_1, x(t) + \frac{h}{2}l_1\right)\\
+k_3 &amp;:= f\left(t + \frac{h}{2}, v(t) + \frac{h}{2}k_2, x(t) + \frac{h}{2}l_2\right)\\
+k_4 &amp;:= f\left(t + h          , v(t) + hk_3          , x(t) + hl_3\right)\\ \\
+x(t + h) &amp;:= x(t) + \frac{l_1 + 2l_2 + 2k_3 + l_4}{6}h\\
+l_1 &amp;:= v(t)\\
+l_2 &amp;:= v(t) + \frac{h}{2}k_1\\
+l_3 &amp;:= v(t) + \frac{h}{2}k_2\\
+l_4 &amp;:= v(t) + hk_3
+\end{aligned}
+\]</p>
+<p>$k_1$と$l_1$を計算すれば、$k_2$と$l_2$が計算できる。それが計算できれば、$k_3$と$l_3$が計算できる。同様に、$k_4$と$l_4$が計算できる。プログラムでは、この順で計算すれば良い。</p>
+<h3 id="コード-3">コード</h3>
+<p>単振動の方程式を解いてみる。</p>
+<p>\[
+\begin{aligned}
+&amp;\frac{dx}{dt} = v \\
+&amp;\frac{dv}{dt} = -x^2\\
+&amp;v(0) = 0\\
+&amp;x(0) = 10
+\end{aligned}
+\]</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="k">def</span> <span class="nf">runge_kutta</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">);</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">vs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">v0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
+        <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">vs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">k1</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+        <span class="n">l1</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="n">k2</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">k1</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">l1</span><span class="p">)</span>
+        <span class="n">l2</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">k1</span>
+
+        <span class="n">k3</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">k2</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">l2</span><span class="p">)</span>
+        <span class="n">l3</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">k2</span>
+
+        <span class="n">k4</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="n">h</span><span class="o">*</span><span class="n">k3</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h</span><span class="o">*</span><span class="n">l3</span><span class="p">)</span>
+        <span class="n">l4</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">h</span><span class="o">*</span><span class="n">k3</span>
+        
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">k2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">k3</span> <span class="o">+</span> <span class="n">k4</span><span class="p">)</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">h</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">l1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">l2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">l3</span> <span class="o">+</span> <span class="n">l4</span><span class="p">)</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">h</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">runge_kutta</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div><p>ちゃんと正弦波を描いている。</p>
+<figure>
+    <img src="./runge_kutta0.png" width="70%"/> 
+</figure>
+
+<p>前節の方法と比較してみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">runge_kutta</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+</code></pre></div><p>グラフは次のようになる(青:前節の方法、橙: Runge-Kutta法)。Runge-Kutta法の方が精度が良いことが分かる。</p>
+<figure>
+    <img src="./runge_kutta1.png" width="70%"/> 
+</figure>
+
+<h2 id="ライブラリを使うscipy">ライブラリを使う(SciPy)</h2>
+<p>以上、頑張って色々書いたが、自分でコードを一から書くとバグを含む可能性があるので、ライブラリを素直に使った方がよい。幸運にも、SciPyに常微分方程式の関数がある。</p>
+<p><code>scipy.integrate.solve_ivp</code>を使う。</p>
+<p>以下、<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html#scipy.integrate.solve_ivp">リファレンス</a>から抜粋。デフォルトだとRunge-Kutta法になるみたい。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">solve_ivp</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">t_span</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span>
+</code></pre></div><p>これは、次の微分方程式の解を計算してくれる。<code>t_span</code>は<code>t</code>の範囲のことで、タプル<code>(t0, t_end)</code>のように指定する。刻み幅は適当に決めてくれる。<code>y0</code>は<code>t = t0</code>のときの初期値。</p>
+<p>\[
+\frac{d\boldsymbol{v}}{dt} = f(t, \boldsymbol{v})
+\]</p>
+<h3 id="コード-4">コード</h3>
+<p>減衰振動の微分方程式をベクトルで表記する。</p>
+<p>\[
+\begin{aligned}
+\frac{d}{dt}
+\left(
+\begin{matrix}
+x \\ v
+\end{matrix}
+\right) &amp;=
+\left(
+\begin{matrix}
+v \\ -\omega^2x -kv
+\end{matrix}
+\right)\\
+\left(\begin{matrix}
+x(0) \\ v(0)
+\end{matrix}\right) &amp;=
+\left(\begin{matrix}
+10 \\ 0
+\end{matrix}\right)
+\end{aligned}
+\]</p>
+<p>ここでは、$\omega^2 = 1$、$k=0.2$とする。</p>
+<p>$x$を<code>v[0]</code>、$v$を<code>v[1]</code>の気持ちで、次のように書く。<code>solver.t</code>で時刻の列、<code>solver.y</code>でそれに対する値の列を取得できる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="k">import</span> <span class="n">solve_ivp</span>  
+
+<span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span><span class="n">v</span><span class="p">:</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">t_end</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_end</span><span class="p">),</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">t</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">y</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div><p>ただ、このコードだと、グラフがギザギザになっている。</p>
+<figure>
+    <img src="./scipy0.png" width="70%"/> 
+</figure>
+
+<p>もっと滑らかなものが欲しい場合、次のようにする。<code>solve_ivp</code>の引数に<code>dense_output=True</code>を追加し、<code>solver.sol</code>で時刻ごとの値を計算する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="k">import</span> <span class="n">solve_ivp</span>  
+
+<span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span><span class="n">v</span><span class="p">:</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">t_end</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_end</span><span class="p">),</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dense_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">sol</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div><figure>
+    <img src="./scipy1.png" width="70%"/> 
+</figure>
+
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html#r179348322575-1">scipy.integrate.solve_ivp</a></li>
+<li><a href="https://ja.wikipedia.org/wiki/%E3%83%AB%E3%83%B3%E3%82%B2%EF%BC%9D%E3%82%AF%E3%83%83%E3%82%BF%E6%B3%95">ルンゲ=クッタ法 - Wikipedia</a></li>
+</ul>
+
+</article>
+
+
+
+</html>
