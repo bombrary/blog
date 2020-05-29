@@ -128,3 +128,16 @@ body > header, article {
     padding: 1.5em calc(34% - 12rem);
   }
 }
+
+#TableOfContents {
+  margin: 0 1em;
+  padding: 0;
+}
+
+#TableOfContents ul {
+  padding-left: 1.6em;
+}
+#TableOfContents a {
+  margin: 0;
+  padding: 0;
+}

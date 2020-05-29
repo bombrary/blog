@@ -24,6 +24,12 @@
       </div>
     </div>
   </header>
+  {{ if eq .Params.toc true }}
+    <aside>
+      <h2>目次</h2>
+      {{ .TableOfContents }}
+    </aside>
+    {{ end }}
   {{ .Content }}
 </article>
 

@@ -55,6 +55,7 @@
       </div>
     </div>
   </header>
+  
   <h2 id="pythonでのsocket通信">PythonでのSocket通信</h2>
 <p>やってることはCでやったときと同じである。サーバーとクライアントの通信手順は同じだし、関数名も同じである。しかしCで書いた場合に比べてシンプルに書ける。エラーは例外として投げられるため、自分で書く必要がない。また<code>sockaddr_in</code>などの構造体が登場することはなく、Pythonでの<code>bind</code>関数と<code>connect</code>関数の引数に直接アドレス・ポートを指定する。</p>
 <h3 id="serverpy">server.py</h3>
