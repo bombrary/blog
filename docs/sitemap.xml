@@ -4,12 +4,52 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/</loc>
-    <lastmod>2020-05-28T10:50:13+09:00</lastmod>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2020-05-28T10:50:13+09:00</lastmod>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/latex/</loc>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/latexmk/</loc>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/vim/</loc>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/vimtex/</loc>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/vim-latex-setup/</loc>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%89/</loc>
+    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
   </url>
   
   <url>
@@ -18,17 +58,7 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2020-05-28T10:50:13+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/categories/python/</loc>
-    <lastmod>2020-05-28T10:50:13+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/tags/</loc>
     <lastmod>2020-05-28T10:50:13+09:00</lastmod>
   </url>
   

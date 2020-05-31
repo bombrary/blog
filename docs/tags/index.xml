@@ -6,10 +6,28 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 28 May 2020 10:50:13 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 31 May 2020 19:03:00 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>latexmk</title>
+      <link>https://bombrary.github.io/blog/tags/latexmk/</link>
+      <pubDate>Sun, 31 May 2020 19:03:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/latexmk/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vimtex</title>
+      <link>https://bombrary.github.io/blog/tags/vimtex/</link>
+      <pubDate>Sun, 31 May 2020 19:03:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/vimtex/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>微分方程式</title>

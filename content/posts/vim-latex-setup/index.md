@@ -1,7 +1,6 @@
 ---
 title: "VimでLaTeXを使うための環境構築(Mac)"
 date: 2020-05-31T19:03:00+09:00
-draft: true
 toc: true
 tags: ["latexmk", "vimtex"]
 categories: ["環境構築", "Vim", "LaTeX"]
