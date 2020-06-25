@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>PureScriptでじゃんけんゲーム(CUI)を作る | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.67.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-janken/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/purescript-janken/">PureScriptでじゃんけんゲーム(CUI)を作る</a></h1>
+    <p class="meta"><time datetime="2020-06-25T09:05:09&#43;09:00">June 25, 2020</time></p>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e3%81%98%e3%82%83%e3%82%93%e3%81%91%e3%82%93/">じゃんけん</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/node.js/">Node.js</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/cui/">CUI</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/purescript/">PureScript</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#方針">方針</a></li>
+    <li><a href="#準備">準備</a></li>
+    <li><a href="#jankenモジュールの定義">Jankenモジュールの定義</a>
+      <ul>
+        <li><a href="#handの定義">Handの定義</a></li>
+        <li><a href="#judgementの定義">Judgementの定義</a></li>
+        <li><a href="#replで遊ぶ">REPLで遊ぶ</a></li>
+        <li><a href="#ランダムに出す手の定義">ランダムに出す手の定義</a></li>
+      </ul>
+    </li>
+    <li><a href="#文字列-rarr-手に変換する関数の定義">文字列 → 手に変換する関数の定義</a></li>
+    <li><a href="#入出力インターフェースの作成">入出力インターフェースの作成</a>
+      <ul>
+        <li><a href="#import文の追加">import文の追加</a></li>
+        <li><a href="#インターフェースの作成">インターフェースの作成</a></li>
+        <li><a href="#入力処理の作成">入力処理の作成</a></li>
+        <li><a href="#完成">完成</a></li>
+      </ul>
+    </li>
+    <li><a href="#感想">感想</a></li>
+  </ul>
+</nav>
+    </aside>
+    
+  <p>プログラミングの初歩で作りそうなじゃんけんゲームを作る。ただし、PureScriptで作る。</p>
+<h2 id="方針">方針</h2>
+<ul>
+<li><code>Janken</code>というモジュールを作る
+<ul>
+<li>グー・チョキ・パーを<code>Hand</code>として定義する</li>
+<li>じゃんけんの勝負の結果を<code>Judgement</code>として定義する</li>
+<li>コンピュータが出す手はランダムに出したいので、ランダムな手を出す関数<code>random</code>を作っておく</li>
+<li>入力は文字列にしたいので、文字列から手に変換する関数<code>fromString</code>を作っておく</li>
+</ul>
+</li>
+<li>入出力は<code>Main</code>に書く。<code>Node.ReadLine</code>モジュールの力で入力を受け付ける。</li>
+</ul>
+<h2 id="準備">準備</h2>
+<p>適当なプロジェクトディレクトリを作っておいて、</p>
+<pre class="cui">
+$ spago init
+</pre>
+
+<p><code>/src/Main.purs</code>と<code>/src/Janken.purs</code>を作っておく。</p>
+<p><code>/src/Main.purs</code>はとりあえず以下のようにしておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Console</span> <span class="p">(</span><span class="nf">log</span><span class="p">)</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">log</span> <span class="s">&#34;Hello&#34;</span>
+</code></pre></div><p>次のコマンドで<code>Hello</code>が出力されることを確認する。</p>
+<pre class="cui">
+$ spago run
+</pre>
+
+<h2 id="jankenモジュールの定義">Jankenモジュールの定義</h2>
+<p>この節では<code>/src/Janken.purs</code>を編集していく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Janken</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+</code></pre></div><h3 id="handの定義">Handの定義</h3>
+<p>じゃんけんの手を表す型<code>Hand</code>を定義する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Hand</span> <span class="ow">=</span> <span class="kt">Rock</span> <span class="o">|</span> <span class="kt">Scissors</span> <span class="o">|</span> <span class="kt">Paper</span>
+</code></pre></div><p>余談。これは公式では<a href="https://github.com/purescript/documentation/blob/master/language/Types.md#tagged-unions">タグ付き共用体</a>と呼ばれているもの。Haskellでは代数的データ型と呼ばれているが、正直名前はどうでもいい。データをこのように表現すれば、「データはこの値しかとりえない」という制限が得られる。制限があれば、プログラムのバグも減らせる。たとえば、「グーを0、チョキを1、パーを2」として表現すると、万が一それ以外の値が来た場合に困る。上のような<code>Hand</code>の定義では、「それ以外の値」が入る余地すら与えない。…この話は、<a href="https://guide.elm-lang.jp/appendix/types_as_sets.html">Elm Guide</a>の受け売り。</p>
+<h3 id="judgementの定義">Judgementの定義</h3>
+<p>同じようにして、じゃんけんの勝敗を表す型<code>Judgement</code>を定義する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kt">Judgement</span> <span class="ow">=</span> <span class="kt">WinLeft</span> <span class="o">|</span> <span class="kt">WinRight</span> <span class="o">|</span> <span class="kt">Draw</span>
+</code></pre></div><p>なぜ<code>Win</code>とか<code>Lose</code>ではないのかというと、これは<code>judge</code>関数の都合である。<code>Judge</code>は、2つの手を引数にとり、その勝負結果を返す。<code>Win</code>や<code>Lose</code>だと、どっちが勝ちでどっちが負けか分からない。なので、「<code>judge</code>の左側の引数が勝ったら<code>WinLeft</code>、右側が勝ったら<code>WinRight</code>、引き分けなら<code>Draw</code>」と定義している。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">judge</span> <span class="ow">::</span> <span class="kt">Hand</span> <span class="ow">-&gt;</span> <span class="kt">Hand</span> <span class="ow">-&gt;</span> <span class="kt">Judgement</span>
+<span class="nf">judge</span> <span class="kt">Rock</span> <span class="kt">Rock</span> <span class="ow">=</span> <span class="kt">Draw</span>
+<span class="nf">judge</span> <span class="kt">Scissors</span> <span class="kt">Scissors</span> <span class="ow">=</span> <span class="kt">Draw</span>
+<span class="nf">judge</span> <span class="kt">Papser</span> <span class="kt">Paper</span> <span class="ow">=</span> <span class="kt">Draw</span>
+<span class="nf">judge</span> <span class="kt">Rock</span> <span class="kt">Scissors</span> <span class="ow">=</span> <span class="kt">WinLeft</span>
+<span class="nf">judge</span> <span class="kt">Scissors</span> <span class="kt">Paper</span> <span class="ow">=</span> <span class="kt">WinLeft</span>
+<span class="nf">judge</span> <span class="kt">Paper</span> <span class="kt">Rock</span> <span class="ow">=</span> <span class="kt">WinLeft</span>
+<span class="nf">judge</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">=</span> <span class="kt">WinRight</span>
+</code></pre></div><h3 id="replで遊ぶ">REPLで遊ぶ</h3>
+<p>REPLでテストしてみたい。<code>Show</code>クラスのインスタンスにすることで、REPLで値が出力できるようになる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Hand</span> <span class="ow">=</span> <span class="kt">Rock</span> <span class="o">|</span> <span class="kt">Scissors</span> <span class="o">|</span> <span class="kt">Paper</span>
+
+<span class="c1">-- 追加</span>
+<span class="kr">instance</span> <span class="n">showHand</span> <span class="ow">::</span> <span class="kt">Show</span> <span class="kt">Hand</span> <span class="kr">where</span>
+  <span class="n">show</span> <span class="kt">Rock</span> <span class="ow">=</span> <span class="s">&#34;Rock&#34;</span>
+  <span class="n">show</span> <span class="kt">Scissors</span> <span class="ow">=</span> <span class="s">&#34;Scissors&#34;</span>
+  <span class="n">show</span> <span class="kt">Paper</span> <span class="ow">=</span> <span class="s">&#34;Paper&#34;</span>
+
+<span class="kr">data</span> <span class="kt">Judgement</span> <span class="ow">=</span> <span class="kt">WinLeft</span> <span class="o">|</span> <span class="kt">WinRight</span> <span class="o">|</span> <span class="kt">Draw</span>
+
+<span class="c1">-- 追加</span>
+<span class="kr">instance</span> <span class="n">showJudgement</span> <span class="ow">::</span> <span class="kt">Show</span> <span class="kt">Judgement</span> <span class="kr">where</span>
+  <span class="n">show</span> <span class="kt">WinLeft</span> <span class="ow">=</span> <span class="s">&#34;WinLeft&#34;</span>
+  <span class="n">show</span> <span class="kt">WinRight</span> <span class="ow">=</span> <span class="s">&#34;WinRight&#34;</span>
+  <span class="n">show</span> <span class="kt">Draw</span> <span class="ow">=</span> <span class="s">&#34;Draw&#34;</span>
+</code></pre></div><pre class="cui">
+$ spago repl
+> import Janken
+> judge Rock Rock
+Draw
+
+> judge Rock Paper
+WinRight
+
+> judge Rock Scissors
+WinLeft
+</pre>
+
+<h3 id="ランダムに出す手の定義">ランダムに出す手の定義</h3>
+<p>まずは乱数を扱えるパッケージを導入する。</p>
+<pre class="cui">
+$ spago install random
+</pre>
+
+<p>モジュールを読み込み、<code>random</code>を定義する。</p>
+<p>乱数は副作用付きなので、<code>Effect Hand</code>型を返す。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Random</span> <span class="p">(</span><span class="nf">randomInt</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Random</span>
+
+<span class="o">...</span>
+
+<span class="nf">random</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Hand</span>
+<span class="nf">random</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">n</span> <span class="ow">&lt;-</span> <span class="kt">Random</span><span class="o">.</span><span class="n">randomInt</span> <span class="mi">0</span> <span class="mi">2</span>
+  <span class="kr">case</span> <span class="n">n</span> <span class="kr">of</span>
+       <span class="mi">0</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="kt">Rock</span>
+       <span class="mi">1</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="kt">Scissors</span>
+       <span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="kt">Paper</span>
+</code></pre></div><h2 id="文字列-rarr-手に変換する関数の定義">文字列 → 手に変換する関数の定義</h2>
+<p>Rock、Scissors、Paper以外の値が入力されたら変換に失敗するため、関数の型は<code>Maybe Hand</code>である。なので、<code>Maybe</code>が入ったパッケージを導入する。</p>
+<pre class="cui">
+$ spago install maybe
+</pre>
+
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="kt">Just</span><span class="p">,</span> <span class="kt">Nothing</span><span class="p">))</span>
+
+<span class="o">...</span>
+
+<span class="nf">fromString</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Hand</span>
+<span class="nf">fromString</span> <span class="s">&#34;Rock&#34;</span> <span class="ow">=</span> <span class="kt">Just</span> <span class="kt">Rock</span>
+<span class="nf">fromString</span> <span class="s">&#34;Scissors&#34;</span> <span class="ow">=</span> <span class="kt">Just</span> <span class="kt">Scissors</span>
+<span class="nf">fromString</span> <span class="s">&#34;Paper&#34;</span> <span class="ow">=</span> <span class="kt">Just</span> <span class="kt">Paper</span>
+<span class="nf">fromString</span> <span class="kr">_</span> <span class="ow">=</span> <span class="kt">Nothing</span>
+</code></pre></div><p>REPLで遊んでみる。</p>
+<pre class="cui">
+> import Prelude
+> import Janken
+> judge Rock <$> fromInt "Rock"
+(Just Draw)
+
+> judge Rock <$> fromInt "Scissors"
+(Just WinLeft)
+
+> judge Rock <$> fromInt "Paper"
+(Just WinRight)
+
+> judge Rock <$> fromInt "aaa"
+Nothing
+
+> judge Rock <$> fromInt "hoge"
+Nothing
+</pre>
+
+<h2 id="入出力インターフェースの作成">入出力インターフェースの作成</h2>
+<p>この節では、<code>/src/Main.purs</code>を編集していく。</p>
+<p>まず<code>readline</code>が使えるパッケージを導入する。</p>
+<pre class="cui">
+$ spago install node-readline
+</pre>
+
+<p>このパッケージには<code>Node.js</code>の<code>readline</code>をPureScript用にラッピングしただけので、使い勝手はそれと似ている。</p>
+<p>使う流れとしては、</p>
+<ol>
+<li><code>createConsoleInterface</code>でCUIの入力を受け付けるインターフェースを作る</li>
+<li><code>setLineHandler</code>で、入力が確定されたときのコールバック関数を指定する。</li>
+</ol>
+<p>だけ。だけなのだが、入力が不正だった場合は再度入力を促すようにするので、少しコードが複雑になる。</p>
+<h3 id="import文の追加">import文の追加</h3>
+<p>とりあえずこれだけ書いておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Janken</span> <span class="k">as</span> <span class="n">Janken</span> 
+<span class="kr">import</span> <span class="nn">Janken</span> <span class="p">(</span><span class="kt">Judgement</span><span class="p">(</span><span class="kt">WinLeft</span><span class="p">,</span> <span class="kt">WinRight</span><span class="p">,</span> <span class="kt">Draw</span><span class="p">),</span> <span class="kt">Hand</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="kt">Just</span><span class="p">,</span> <span class="kt">Nothing</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Node.ReadLine</span> <span class="k">as</span> <span class="n">NR</span>
+</code></pre></div><h3 id="インターフェースの作成">インターフェースの作成</h3>
+<p><code>createConsoleInterface</code>で、コンソール用のインターフェースを作成する。引数には入力補完のための設定を入れるのだが、詳細は<a href="https://pursuit.purescript.org/packages/purescript-node-readline/4.0.1/docs/Node.ReadLine">Node.ReadLineのドキュメント</a>や<a href="https://nodejs.org/api/readline.html#readline_use_of_the_completer_function">readlineのドキュメント</a>を参照。今回は補完は必要ないので、<code>noCompletion</code>を指定している。</p>
+<p><code>runGame</code>は次で作る。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">interface</span> <span class="ow">&lt;-</span> <span class="kt">NR</span><span class="o">.</span><span class="n">createConsoleInterface</span> <span class="kt">NR</span><span class="o">.</span><span class="n">noCompletion</span>
+  <span class="n">runGame</span> <span class="n">interface</span>
+</code></pre></div><h3 id="入力処理の作成">入力処理の作成</h3>
+<p><code>runGeme</code>では、入力を促し、それに応じて処理する機構を書く。</p>
+<p><code>setLineHandler</code>で、指定されたインターフェースに入力を促す。入力した文字列は<code>handler</code>に回され、処理される。<code>prompt</code>でプロンプトを出力する。プロンプトの内容は<code>setPrompt</code>で設定できる。</p>
+<p><code>handler</code>では、まず入力文字列が正しいものかを判定する。正しかったら、相手の手をランダムに作って、判定を行う。<code>close</code>でインターフェースを閉じる。もし入力が正しくなかったら、<code>setLineHandler</code>を再び呼んで再度入力を促す。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">runGame</span> <span class="ow">::</span> <span class="kt">NR</span><span class="o">.</span><span class="kt">Interface</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">runGame</span> <span class="n">interface</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="kr">let</span> <span class="n">handler</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+      <span class="n">handler</span> <span class="n">input</span> <span class="ow">=</span> 
+        <span class="kr">case</span> <span class="kt">Janken</span><span class="o">.</span><span class="n">fromString</span> <span class="n">input</span> <span class="kr">of</span>
+          <span class="kt">Just</span> <span class="n">yourHand</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+            <span class="n">computerHand</span> <span class="ow">&lt;-</span> <span class="kt">Janken</span><span class="o">.</span><span class="n">random</span>
+            <span class="n">printJudgement</span> <span class="n">yourHand</span> <span class="n">computerHand</span>
+            <span class="kt">NR</span><span class="o">.</span><span class="n">close</span> <span class="n">interface</span>
+          <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+            <span class="n">log</span> <span class="s">&#34;Type Rock, Scissors, or Paper.&#34;</span>
+            <span class="kt">NR</span><span class="o">.</span><span class="n">setLineHandler</span> <span class="n">interface</span> <span class="n">handler</span>
+            <span class="kt">NR</span><span class="o">.</span><span class="n">prompt</span> <span class="n">interface</span>
+  <span class="kt">NR</span><span class="o">.</span><span class="n">setPrompt</span> <span class="s">&#34;&gt; &#34;</span> <span class="mi">2</span> <span class="n">interface</span>
+  <span class="kt">NR</span><span class="o">.</span><span class="n">prompt</span> <span class="n">interface</span>
+  <span class="kt">NR</span><span class="o">.</span><span class="n">setLineHandler</span> <span class="n">interface</span> <span class="n">handler</span>
+</code></pre></div><p><code>printJudgement</code>では、じゃんけんの勝敗を出力する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">printJudgement</span> <span class="ow">::</span> <span class="kt">Hand</span> <span class="ow">-&gt;</span> <span class="kt">Hand</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">printJudgement</span> <span class="n">yourHand</span> <span class="n">computerHand</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">log</span> <span class="o">$</span> <span class="s">&#34;You: &#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">yourHand</span>
+  <span class="n">log</span> <span class="o">$</span> <span class="s">&#34;Computer: &#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">computerHand</span>
+  <span class="kr">case</span> <span class="kt">Janken</span><span class="o">.</span><span class="n">judge</span> <span class="n">yourHand</span> <span class="n">computerHand</span> <span class="kr">of</span>
+      <span class="kt">WinLeft</span> <span class="ow">-&gt;</span> <span class="n">log</span> <span class="s">&#34;You win!&#34;</span>
+      <span class="kt">WinRight</span> <span class="ow">-&gt;</span> <span class="n">log</span> <span class="s">&#34;You lose.&#34;</span>
+      <span class="kt">Draw</span> <span class="ow">-&gt;</span> <span class="n">log</span> <span class="s">&#34;Draw.&#34;</span>
+</code></pre></div><h3 id="完成">完成</h3>
+<pre class="cui">
+$ spago run
+> hoge
+Type Rock, Scissors, or Paper.
+> Rock
+You: Rock
+Computer: Scissors
+You win!
+</pre>
+
+<h2 id="感想">感想</h2>
+<p>PureScriptを書く良い練習になった。</p>
+<p><code>Janken</code>ではなく<code>Janken.Hand</code>と<code>Janken.Judgement</code>というモジュールに分割すべきか、と悩んだ。そうすれば、<code>Janken.fromString</code>ではなくて<code>Janken.Hand.fromString</code>と書けて、より意味が明らかになる。ただ、そこまで大きなコードではないのでまとめてしまった。</p>
+<p>今回<code>Node.ReadLine</code>モジュールを使ったが、そもそもNode.jsの<code>readline</code>を使ったことがなかった。調べてなんとかなった。</p>
+
+</article>
+
+
+
+</html>

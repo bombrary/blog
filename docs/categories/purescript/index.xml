@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Node.js on Chanomic Blog</title>
-    <link>https://bombrary.github.io/blog/tags/node.js/</link>
-    <description>Recent content in Node.js on Chanomic Blog</description>
+    <title>PureScript on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/categories/purescript/</link>
+    <description>Recent content in PureScript on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Thu, 25 Jun 2020 09:05:09 +0900</lastBuildDate>
     
-	<atom:link href="https://bombrary.github.io/blog/tags/node.js/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://bombrary.github.io/blog/categories/purescript/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -27,17 +27,6 @@ module Janken where import Prelude Handの定義 じゃんけんの手を表す�
 data Hand = Rock | Scissors | Paper 余談。これは公式ではタグ付き共用体と呼ばれているもの。Haskellでは代数的データ型と呼ばれているが、正直名前はどうでもいい。データをこのように表現すれば、「データはこの値しかとりえない」という制限が得られる。制限があれば、プログラムのバグも減らせる。たとえば、「グーを0、チョキを1、パーを2」として表現すると、万が一それ以外の値が来た場合に困る。上のようなHandの定義では、「それ以外の値」が入る余地すら与えない。…この話は、Elm Guideの受け売り。
 Judgementの定義 同じようにして、じゃんけんの勝敗を表す型Judgementを定義する。
 Judgement = WinLeft | WinRight | Draw なぜWinとかLoseではないのかというと、これはjudge関数の都合である。Judgeは、2つの手を引数にとり、その勝負結果を返す。WinやLoseだと、どっちが勝ちでどっちが負けか分からない。なので、「judgeの左側の引数が勝ったらWinLeft、右側が勝ったらWinRight、引き分けならDraw」と定義している。</description>
-    </item>
-    
-    <item>
-      <title>Elm/JavaScript ローカルサーバーで通信する際にハマったこと</title>
-      <link>https://bombrary.github.io/blog/posts/elm-with-localserver/</link>
-      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/posts/elm-with-localserver/</guid>
-      <description>今回たまたまクライアント側でElmを使ったけど、これはElmに限ったことではない。
-結論 Client側での留意点  urlはlocalhost:[port]ではなくhttp://localhost:[port]と指定しなければならない。つまり、URLにはちゃんとスキーム名を指定する。  Server側での留意点  Access-Control-Allow-Originに関連するヘッダーをちゃんと設定する。  成功コード プログラムの内容 サーバーは{ &amp;quot;msg&amp;quot; : &amp;quot;Hello, World!&amp;quot; }という内容のJSONを送ってくるので、クライアントはその値を受け取って&amp;quot;Success: Hello, World!&amp;ldquo;を出力する。それだけ。
-Client: Elm module Main exposing (..) import Browser exposing (..) import Json.Decode exposing (..) import Http exposing (..) import Html exposing (..) import Html.Attributes exposing (..) main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type Model = Loading | Failed | Success String init : () -&amp;gt; (Model, Cmd Msg) init _ = ( Loading, getServer ) type Msg = GotData (Result Http.</description>
     </item>
     
   </channel>

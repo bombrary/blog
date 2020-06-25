@@ -4,12 +4,52 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/</loc>
-    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/c/</loc>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/cui/</loc>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/node.js/</loc>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/categories/purescript/</loc>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/posts/purescript-janken/</loc>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bombrary.github.io/blog/tags/%E3%81%98%E3%82%83%E3%82%93%E3%81%91%E3%82%93/</loc>
+    <lastmod>2020-06-25T09:05:09+09:00</lastmod>
   </url>
   
   <url>
@@ -19,16 +59,6 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/tags/latexmk/</loc>
-    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2020-05-31T19:03:00+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/tags/</loc>
     <lastmod>2020-05-31T19:03:00+09:00</lastmod>
   </url>
   
@@ -233,11 +263,6 @@
   </url>
   
   <url>
-    <loc>https://bombrary.github.io/blog/tags/c/</loc>
-    <lastmod>2020-01-13T11:00:50+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://bombrary.github.io/blog/tags/css/</loc>
     <lastmod>2020-01-13T11:00:50+09:00</lastmod>
   </url>
@@ -424,11 +449,6 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/network/</loc>
-    <lastmod>2019-12-19T09:50:00+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/tags/node.js/</loc>
     <lastmod>2019-12-19T09:50:00+09:00</lastmod>
   </url>
   

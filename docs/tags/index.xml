@@ -6,10 +6,46 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 31 May 2020 19:03:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jun 2020 09:05:09 +0900</lastBuildDate>
     
 	<atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>C</title>
+      <link>https://bombrary.github.io/blog/tags/c/</link>
+      <pubDate>Thu, 25 Jun 2020 09:05:09 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/c/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CUI</title>
+      <link>https://bombrary.github.io/blog/tags/cui/</link>
+      <pubDate>Thu, 25 Jun 2020 09:05:09 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/cui/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Node.js</title>
+      <link>https://bombrary.github.io/blog/tags/node.js/</link>
+      <pubDate>Thu, 25 Jun 2020 09:05:09 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/node.js/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>じゃんけん</title>
+      <link>https://bombrary.github.io/blog/tags/%E3%81%98%E3%82%83%E3%82%93%E3%81%91%E3%82%93/</link>
+      <pubDate>Thu, 25 Jun 2020 09:05:09 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E3%81%98%E3%82%83%E3%82%93%E3%81%91%E3%82%93/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>latexmk</title>
@@ -143,15 +179,6 @@
       <pubDate>Tue, 11 Feb 2020 21:57:47 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/tex/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>C</title>
-      <link>https://bombrary.github.io/blog/tags/c/</link>
-      <pubDate>Mon, 13 Jan 2020 11:00:50 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/c/</guid>
       <description></description>
     </item>
     
@@ -341,15 +368,6 @@
       <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/network/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Node.js</title>
-      <link>https://bombrary.github.io/blog/tags/node.js/</link>
-      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/node.js/</guid>
       <description></description>
     </item>
     
