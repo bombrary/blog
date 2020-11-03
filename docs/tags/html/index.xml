@@ -6,11 +6,7 @@
     <description>Recent content in html on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Mon, 13 Jan 2020 11:00:50 +0900</lastBuildDate>
-    
-	<atom:link href="https://bombrary.github.io/blog/tags/html/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 13 Jan 2020 11:00:50 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/html/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Elmメモ - 画像のプレビュー機能を作る</title>
       <link>https://bombrary.github.io/blog/posts/elm-image-preview/</link>

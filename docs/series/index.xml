@@ -5,10 +5,6 @@
     <link>https://bombrary.github.io/blog/series/</link>
     <description>Recent content in Series on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>ja-jp</language>
-    
-	<atom:link href="https://bombrary.github.io/blog/series/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/series/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

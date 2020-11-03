@@ -6,11 +6,7 @@
     <description>Recent content in JavaScript on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 16 Feb 2020 18:52:20 +0900</lastBuildDate>
-    
-	<atom:link href="https://bombrary.github.io/blog/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 16 Feb 2020 18:52:20 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Vue.js勉強メモ(1) - 簡易Todoリストの作成</title>
       <link>https://bombrary.github.io/blog/posts/viewjs01-todo/</link>

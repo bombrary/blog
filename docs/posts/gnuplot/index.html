@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>gnuplotの使い方メモ | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.67.1" />
+<meta name="generator" content="Hugo 0.75.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -70,7 +70,7 @@
 3 1 1</code></pre></div>
 <p>これを描画する。</p>
 <p><code>using X:Y</code>で、X番目の列を横軸、Y番目の列を縦軸にする。</p>
-<p><code>w lp</code>とは&quot;with linespoints&quot;の略。つまり線と点を描画する。<code>w l</code>だと&quot;with line&rdquo;、<code>w lp lt 3 lw 2</code>だと&quot;with linepoints linetype 3 linewidth 2&quot;という意味。いろいろある。</p>
+<p><code>w lp</code>とは&quot;with linespoints&quot;の略。つまり線と点を描画する。<code>w l</code>だと&quot;with line&quot;、<code>w lp lt 3 lw 2</code>だと&quot;with linepoints linetype 3 linewidth 2&quot;という意味。いろいろある。</p>
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ set xlabel &#34;X axis&#34;
 $ set ylabel &#34;Y axis&#34;
 $ plot &#34;data.txt&#34; using 1:2 w pl</code></pre></div>

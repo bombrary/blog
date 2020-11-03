@@ -6,11 +6,7 @@
     <description>Recent content in Graphviz on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 11 Feb 2020 21:57:47 +0900</lastBuildDate>
-    
-	<atom:link href="https://bombrary.github.io/blog/categories/graphviz/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 11 Feb 2020 21:57:47 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/graphviz/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GraphvizでTeXの数式を表示する(2) - PDFにしたい場合</title>
       <link>https://bombrary.github.io/blog/posts/graphviz-tex02/</link>

@@ -6,11 +6,7 @@
     <description>Recent content in vimtex on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 31 May 2020 19:03:00 +0900</lastBuildDate>
-    
-	<atom:link href="https://bombrary.github.io/blog/tags/vimtex/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 31 May 2020 19:03:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/vimtex/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>VimでLaTeXを使うための環境構築(Mac)</title>
       <link>https://bombrary.github.io/blog/posts/vim-latex-setup/</link>

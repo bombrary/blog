@@ -6,11 +6,7 @@
     <description>Recent content in Elm on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 27 Feb 2020 12:39:44 +0900</lastBuildDate>
-    
-	<atom:link href="https://bombrary.github.io/blog/tags/elm/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Thu, 27 Feb 2020 12:39:44 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/elm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Elmメモ ドラッグ移動の実現(2) - elm-draggableの利用</title>
       <link>https://bombrary.github.io/blog/posts/elm-drag02/</link>

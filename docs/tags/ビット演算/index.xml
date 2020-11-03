@@ -6,11 +6,7 @@
     <description>Recent content in ビット演算 on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 31 Dec 2019 09:34:25 +0900</lastBuildDate>
-    
-	<atom:link href="https://bombrary.github.io/blog/tags/%E3%83%93%E3%83%83%E3%83%88%E6%BC%94%E7%AE%97/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 31 Dec 2019 09:34:25 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/%E3%83%93%E3%83%83%E3%83%88%E6%BC%94%E7%AE%97/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>JavaScript/Elm ビット演算のときにはまったこと</title>
       <link>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</link>

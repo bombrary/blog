@@ -6,11 +6,7 @@
     <description>Recent content in TableLayout on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 28 Nov 2019 14:24:39 +0900</lastBuildDate>
-    
-	<atom:link href="https://bombrary.github.io/blog/tags/tablelayout/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Thu, 28 Nov 2019 14:24:39 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/tablelayout/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成</title>
       <link>https://bombrary.github.io/blog/posts/android04-calc/</link>

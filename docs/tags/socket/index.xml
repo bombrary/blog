@@ -6,11 +6,7 @@
     <description>Recent content in Socket on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 08 Dec 2019 11:09:35 +0900</lastBuildDate>
-    
-	<atom:link href="https://bombrary.github.io/blog/tags/socket/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 08 Dec 2019 11:09:35 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/socket/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Socket通信勉強(2) - Pythonでの書き方/HTTPサーバーもどき作成</title>
       <link>https://bombrary.github.io/blog/posts/socket02-python/</link>
