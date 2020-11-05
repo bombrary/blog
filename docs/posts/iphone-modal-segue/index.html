@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - セミモーダルビューからの遷移 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.75.0" />
+<meta name="generator" content="Hugo 0.77.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -167,23 +167,23 @@
 <h2 id="モーダルビューを閉じてから遷移する処理">モーダルビューを閉じてから遷移する処理</h2>
 <p>モーダルビュー上で直接Segueを作りたいところだが、そうするとモーダルビューの上にDestinationのViewが乗ってしまう。モーダルビューを閉じてから、Mainの方で遷移するように処理を書かなくてはいけない。</p>
 <p><code>MenuViewController.kt</code>にて、<code>Menu.storyboard</code>にあるボタン&quot;To Destination1&quot;と&quot;To Destination2&quot;のActionを設定する。それぞれの関数の実装を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="n">@IBAction</span> <span class="n">func</span> <span class="n">dstOneTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstOneTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
         <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s">&#34;Dest1&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
+            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest1&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
             <span class="n">guard</span> <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateInitialViewController</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="n">print</span><span class="p">(</span><span class="s">&#34;View Controller is not found.&#34;</span><span class="p">)</span>
+                <span class="n">print</span><span class="p">(</span><span class="s2">&#34;View Controller is not found.&#34;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="p">}</span>
             <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
-    <span class="n">@IBAction</span> <span class="n">func</span> <span class="n">dstTwoTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstTwoTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
         <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s">&#34;Dest2&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
+            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest2&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
             <span class="n">guard</span> <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateInitialViewController</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="n">print</span><span class="p">(</span><span class="s">&#34;View Controller is not found.&#34;</span><span class="p">)</span>
+                <span class="n">print</span><span class="p">(</span><span class="s2">&#34;View Controller is not found.&#34;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="p">}</span>
             <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
@@ -206,11 +206,11 @@
 
 <h3 id="menuviewcontrollerswiftの変更">MenuViewController.swiftの変更</h3>
 <p>メソッド<code>dstOneTapped</code>を以下のように変更する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="n">@IBAction</span> <span class="n">func</span> <span class="n">dstOneTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstOneTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
         <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s">&#34;Dest1&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
-            <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;dest1&#34;</span><span class="p">)</span> 
+            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest1&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
+            <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s2">&#34;dest1&#34;</span><span class="p">)</span> 
             <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span></code></pre></div>

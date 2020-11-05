@@ -6,7 +6,25 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 25 Jun 2020 09:05:09 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 03 Nov 2020 13:17:39 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Generics</title>
+      <link>https://bombrary.github.io/blog/tags/generics/</link>
+      <pubDate>Tue, 03 Nov 2020 13:17:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/generics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ジェネリックプログラミング</title>
+      <link>https://bombrary.github.io/blog/tags/%E3%82%B8%E3%82%A7%E3%83%8D%E3%83%AA%E3%83%83%E3%82%AF%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/</link>
+      <pubDate>Tue, 03 Nov 2020 13:17:39 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E3%82%B8%E3%82%A7%E3%83%8D%E3%83%AA%E3%83%83%E3%82%AF%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>CUI</title>
       <link>https://bombrary.github.io/blog/tags/cui/</link>

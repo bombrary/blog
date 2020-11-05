@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.75.0" />
+<meta name="generator" content="Hugo 0.77.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -386,8 +386,8 @@
     <span class="k">private</span> <span class="k">var</span> <span class="py">_text</span> <span class="p">=</span> <span class="n">MutableLiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;()</span>
     <span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
         <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span>
-    <span class="n">init</span> <span class="p">{</span>
-        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;0&#34;</span>
+    <span class="k">init</span> <span class="p">{</span>
+        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s2">&#34;0&#34;</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>以下の記述はある種のパターンとして覚えて良いかもしれない。1行目は「読み書き可能なLiveData」で、2行目は「読み取り専用のLiveData」である。<code>fragment_calc.xml</code>や<code>CalcFragment.kt</code>では<code>text</code>の方を用いることで、データが変更されることを防いでいる。<code>CalcFragment</code>では「データ<code>CalcViewModel</code>から読み取って描画する」、<code>CalcViewModel</code>では「データに関する整形や変更の処理をする」という分業になっていることに注目。</p>
@@ -396,7 +396,7 @@
 <span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
     <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span></code></pre></div>
 <p>LivaDataは次のように<code>value</code>メンバ変数でアクセスできる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;0&#34;</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s2">&#34;0&#34;</span></code></pre></div>
 <h3 id="fragment_calcxml">fragment_calc.xml</h3>
 <p>DataBindingを用いて、CalcViewModelのデータを利用できるようにする。</p>
 <p>ViewModel自体をFragmentに結びつけるのがポイント。データに対する諸々の情報は全て<code>ViewModel</code>がまとめてくれているから、<code>variable</code>をたくさん書く必要はない。</p>
@@ -439,7 +439,7 @@
 <span class="p">}</span></code></pre></div>
 <p><code>binding.lifecycleOwner = this</code>とすると、<code>CalcViewModel.text</code>の変化を感知して<code>TextView</code>の値が変更されるようになる。</p>
 <p>これを設定せずにやる方法として、次の<code>observe</code>メソッドがある。これは<code>viewModel.text</code>に<code>Observer</code>を設定する。<code>fragment_calc.xml</code>に変更を反映するという目的だけなら<code>binding.lifecycleOwner = this</code>だけで良いが、それ以外のことをやりたい場合はこのメソッドを使うことになりそう。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">viewModel</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="n">observe</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">Observer</span> <span class="p">{</span> <span class="n">newText</span><span class="p">:</span> <span class="n">String</span> <span class="p">-&gt;</span>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">viewModel</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="n">observe</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">Observer</span> <span class="p">{</span> <span class="n">newText</span><span class="p">:</span> <span class="n">String</span> <span class="o">-&gt;</span>
     <span class="n">binding</span><span class="p">.</span><span class="n">invalidateAll</span><span class="p">()</span>
 <span class="p">})</span></code></pre></div>
 <p>まだボタンを押した時の挙動を一切設定していないので、設定する。</p>
@@ -456,18 +456,18 @@
     <span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
         <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span>
 
-    <span class="n">init</span> <span class="p">{</span>
-        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+    <span class="k">init</span> <span class="p">{</span>
+        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span>
     <span class="p">}</span>
     <span class="k">fun</span> <span class="nf">onCharacterButtonClicked</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">when</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
-            <span class="s">&#34;lp&#34;</span> <span class="p">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">+=</span> <span class="s">&#34;(&#34;</span>
-            <span class="s">&#34;rp&#34;</span> <span class="p">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">+=</span> <span class="s">&#34;)&#34;</span>
-            <span class="k">else</span> <span class="p">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">+=</span> <span class="n">c</span>
+            <span class="s2">&#34;lp&#34;</span> <span class="o">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="o">+=</span> <span class="s2">&#34;(&#34;</span>
+            <span class="s2">&#34;rp&#34;</span> <span class="o">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="o">+=</span> <span class="s2">&#34;)&#34;</span>
+            <span class="k">else</span> <span class="o">-&gt;</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="o">+=</span> <span class="n">c</span>
         <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">fun</span> <span class="nf">onAllClearButtonClicked</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+        <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span>
     <span class="p">}</span>
     <span class="k">fun</span> <span class="nf">onEqualButtonClicked</span><span class="p">()</span> <span class="p">{</span>
         <span class="c1">// TODO
@@ -526,7 +526,7 @@
             <span class="p">}</span>
         <span class="p">}</span>
         <span class="k">fun</span> <span class="nf">next</span><span class="p">()</span> <span class="p">{</span>
-            <span class="n">i</span><span class="p">++</span>
+            <span class="n">i</span><span class="o">++</span>
         <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">private</span> <span class="k">var</span> <span class="py">s</span> <span class="p">=</span> <span class="n">State</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
@@ -535,19 +535,19 @@
         <span class="k">try</span> <span class="p">{</span>
             <span class="k">return</span> <span class="n">expr</span><span class="p">().</span><span class="n">toString</span><span class="p">()</span>
         <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Exception</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="n">e</span><span class="p">.</span><span class="n">message</span> <span class="o">?:</span> <span class="s">&#34;Error&#34;</span>
+            <span class="k">return</span> <span class="n">e</span><span class="p">.</span><span class="n">message</span> <span class="o">?:</span> <span class="s2">&#34;Error&#34;</span>
         <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">private</span> <span class="k">fun</span> <span class="nf">expr</span><span class="p">():</span> <span class="n">Double</span> <span class="p">{</span>
         <span class="k">var</span> <span class="py">ret</span> <span class="p">=</span> <span class="n">term</span><span class="p">()</span>
         <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">val</span> <span class="py">op</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">break</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="p">==</span> <span class="sc">&#39;+&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="o">==</span> <span class="sc">&#39;+&#39;</span><span class="p">)</span> <span class="p">{</span>
                 <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
-                <span class="n">ret</span> <span class="p">+=</span> <span class="n">fact</span><span class="p">()</span>
-            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="p">==</span> <span class="sc">&#39;-&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="n">fact</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span><span class="p">)</span> <span class="p">{</span>
                 <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
-                <span class="n">ret</span> <span class="p">-=</span> <span class="n">fact</span><span class="p">()</span>
+                <span class="n">ret</span> <span class="o">-=</span> <span class="n">fact</span><span class="p">()</span>
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
                 <span class="k">break</span>
             <span class="p">}</span>
@@ -558,12 +558,12 @@
         <span class="k">var</span> <span class="py">ret</span> <span class="p">=</span> <span class="n">fact</span><span class="p">()</span>
         <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">val</span> <span class="py">op</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">break</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="p">==</span> <span class="sc">&#39;*&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="o">==</span> <span class="sc">&#39;*&#39;</span><span class="p">)</span> <span class="p">{</span>
                 <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
-                <span class="n">ret</span> <span class="p">*=</span> <span class="n">fact</span><span class="p">()</span>
-            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="p">==</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">ret</span> <span class="o">*=</span> <span class="n">fact</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">op</span> <span class="o">==</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="p">{</span>
                 <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
-                <span class="n">ret</span> <span class="p">/=</span> <span class="n">fact</span><span class="p">()</span>
+                <span class="n">ret</span> <span class="o">/=</span> <span class="n">fact</span><span class="p">()</span>
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
                 <span class="k">break</span>
             <span class="p">}</span>
@@ -571,8 +571,8 @@
         <span class="k">return</span> <span class="n">ret</span>
     <span class="p">}</span>
     <span class="k">private</span> <span class="k">fun</span> <span class="nf">fact</span><span class="p">():</span> <span class="n">Double</span> <span class="p">{</span>
-        <span class="k">val</span> <span class="py">c</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">throw</span> <span class="n">Exception</span><span class="p">(</span><span class="s">&#34;Something wrong on fact&#34;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="p">==</span> <span class="sc">&#39;(&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">val</span> <span class="py">c</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">throw</span> <span class="n">Exception</span><span class="p">(</span><span class="s2">&#34;Something wrong on fact&#34;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;(&#39;</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
             <span class="k">val</span> <span class="py">ret</span> <span class="p">=</span> <span class="n">expr</span><span class="p">()</span>
             <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
@@ -582,23 +582,23 @@
         <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">private</span> <span class="k">fun</span> <span class="nf">number</span><span class="p">():</span> <span class="n">Double</span> <span class="p">{</span>
-        <span class="k">var</span> <span class="py">numStr</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+        <span class="k">var</span> <span class="py">numStr</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span>
         <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">val</span> <span class="py">c</span> <span class="p">=</span> <span class="n">s</span><span class="p">.</span><span class="n">peek</span><span class="p">()</span> <span class="o">?:</span> <span class="k">break</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">isDigit</span><span class="p">()</span> <span class="p">||</span> <span class="n">c</span> <span class="p">==</span> <span class="sc">&#39;.&#39;</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">numStr</span> <span class="p">+=</span> <span class="n">c</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">isDigit</span><span class="p">()</span> <span class="o">||</span> <span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">numStr</span> <span class="o">+=</span> <span class="n">c</span>
                 <span class="n">s</span><span class="p">.</span><span class="n">next</span><span class="p">()</span>
             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
                 <span class="k">break</span>
             <span class="p">}</span>
         <span class="p">}</span>
-        <span class="k">return</span> <span class="n">numStr</span><span class="p">.</span><span class="n">toDoubleOrNull</span><span class="p">()</span> <span class="o">?:</span> <span class="k">throw</span> <span class="n">Exception</span><span class="p">(</span><span class="s">&#34;Failed on number&#34;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numStr</span><span class="p">.</span><span class="n">toDoubleOrNull</span><span class="p">()</span> <span class="o">?:</span> <span class="k">throw</span> <span class="n">Exception</span><span class="p">(</span><span class="s2">&#34;Failed on number&#34;</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>最後に、<code>CalcViewModel.kt</code>の<code>onEqualButtonClicked</code>を編集すれば完成。</p>
 <div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="k">fun</span> <span class="nf">onEqualButtonClicked</span><span class="p">()</span> <span class="p">{</span>
       <span class="k">val</span> <span class="py">str</span> <span class="p">=</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">str</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">str</span> <span class="o">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
           <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="n">CalcParser</span><span class="p">(</span><span class="n">str</span><span class="p">).</span><span class="n">parse</span><span class="p">()</span>
       <span class="p">}</span>
   <span class="p">}</span></code></pre></div>

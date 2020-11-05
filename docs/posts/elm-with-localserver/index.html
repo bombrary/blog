@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elm/JavaScript ローカルサーバーで通信する際にハマったこと | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.75.0" />
+<meta name="generator" content="Hugo 0.77.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -233,10 +233,10 @@ Failed to load resource: Origin http://localhost:8000 is not allowed by Access-C
   <span class="p">})</span>
 
 <span class="c1">// ちなみにasync/awaitで書くとこうなる
-</span><span class="c1"></span><span class="p">(</span><span class="nx">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="nx">res</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000&#39;</span><span class="p">);</span>
-  <span class="nx">data</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">await</span> <span class="nx">data</span><span class="p">.</span><span class="nx">msg</span><span class="p">)</span>
+</span><span class="c1"></span><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000&#39;</span><span class="p">);</span>
+  <span class="nx">data</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kr">await</span> <span class="nx">data</span><span class="p">.</span><span class="nx">msg</span><span class="p">)</span>
 <span class="p">})()</span>
 </code></pre></div>
 <h2 id="結果の考察">結果の考察</h2>
