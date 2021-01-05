@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fisher-Yates Shuffle on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/fisher-yates-shuffle/</link>
+    <description>Recent content in Fisher-Yates Shuffle on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Mon, 04 Jan 2021 13:29:19 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/fisher-yates-shuffle/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Purescriptメモ - 配列のシャッフルを様々な方法で実装する</title>
+      <link>https://bombrary.github.io/blog/posts/purescript-shuffle/</link>
+      <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/purescript-shuffle/</guid>
+      <description>PureScriptで配列のシャッフルをしたい。型はこんな感じ。乱数は副作用を伴うため、返り値の型はEffectで包まれる。
+shuffle :: forall a. Array a -&amp;gt; Effect (Array a) アルゴリズムはFisher-Yates ShuffleのModern Algorithmの項の2つ目を利用する。これをさまざまな方法で作成したところ、Functor, Applicative, Monadなどに関連する事項だったり、STモナドの使い方、FFIの使い方だったりが学べたので、備忘のために書く。
+準備 適当なディレクトリでプロジェクトを作成する。今回使うパッケージをインストールする。
+$ spago init $ spago install arrays $ spago install random $ spago install foldable-traversable  方法1: 素直(?)な書き方 ここでは、src/Shuffle.pursに記述する。
+天下り的ではあるが、これから使う関数、型をimportしておく。
+module Shuffle where import Prelude import Effect (Effect) import Data.Array (range, (!!), updateAt, length) import Data.Traversable (for) import Effect.Random (randomInt) import Data.Maybe (maybe) import Data.Foldable (foldr) まずは、「どの添字ととの添字の値を交換するか」という情報をもったデータExchangeIndexと、それを作成する関数exchangeIndiciesを作成する。
+type ExchangeIndex = { i :: Int , j :: Int } exchangeIndicies :: Int -&amp;gt; Effect (Array ExchangeIndex) exchangeIndicies n = for (range 0 (n - 2)) \i -&amp;gt; do j &amp;lt;- randomInt i (n - 1) pure { i, j } 次に、ExchangeIndexの情報を元に配列を交換する関数exchangeを作成。配列の添字が不正だった場合(配列外参照を起こしそうなとき)は!</description>
+    </item>
+    
+  </channel>
+</rss>

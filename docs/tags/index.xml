@@ -6,7 +6,43 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 03 Nov 2020 13:17:39 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Jan 2021 13:29:19 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>FFI</title>
+      <link>https://bombrary.github.io/blog/tags/ffi/</link>
+      <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/ffi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fisher-Yates Shuffle</title>
+      <link>https://bombrary.github.io/blog/tags/fisher-yates-shuffle/</link>
+      <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/fisher-yates-shuffle/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Monad</title>
+      <link>https://bombrary.github.io/blog/tags/monad/</link>
+      <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/monad/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ST</title>
+      <link>https://bombrary.github.io/blog/tags/st/</link>
+      <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/st/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Generics</title>
       <link>https://bombrary.github.io/blog/tags/generics/</link>
@@ -85,15 +121,6 @@
       <pubDate>Thu, 28 May 2020 10:50:13 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%80%A4%E8%A7%A3%E6%9E%90/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Monad</title>
-      <link>https://bombrary.github.io/blog/tags/monad/</link>
-      <pubDate>Sat, 28 Mar 2020 19:16:20 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/monad/</guid>
       <description></description>
     </item>
     
