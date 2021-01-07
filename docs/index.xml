@@ -6,7 +6,22 @@
     <description>Recent content on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Mon, 04 Jan 2021 13:29:19 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 07 Jan 2021 11:50:37 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PythonでPDFの順序並び替えと空白ページ挿入(2種類の方法)</title>
+      <link>https://bombrary.github.io/blog/posts/python-pdf-rearrange/</link>
+      <pubDate>Thu, 07 Jan 2021 11:50:37 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/python-pdf-rearrange/</guid>
+      <description>平綴じ印刷ができるように、PDFの順序を入れ替えたり、空白ページを挿入するプログラムを書いた。 方法1はPython + いろんなコマンドで、方法2はPythonのPDFライブラリであるPyPDF4を利用した方法。 実装してみた結果、後者が圧倒的に簡単だった。
+動機 平綴じがしたい場面が出てきたが、印刷機に専用の設定が見つからなかった。 なので平綴じになるようにPDFのページ順を1,2,3,4,5,6,7,8,&amp;hellip;から4,1,2,3,8,5,6,7,..に変え、それをプリンタで両面刷り(短辺綴じ)・2ページ割付で印刷することを考えた。
+平綴じの場合、紙に両面4ページずつ印刷されることになる。するとPDFのページ数は4の倍数でなくてはならない。よって、4の倍数でなかった場合はその分を空白ページで埋めなければならない。
+PDFファイルの準備 テスト用にPDFファイルを作っておく。ここはなんでも良いのだが、とりあえず以下のLaTeXのコードから10ページのPDFファイルを作る。名前はinput.pdfとしておく。
+\documentclass{jsarticle} \begin{document} \centering \Huge 1 Page \newpage 2 Page \newpage 3 Page \newpage 4 Page \newpage 5 Page \newpage 6 Page \newpage 7 Page \newpage 8 Page \newpage 9 Page \newpage 10 Page \end{document} 方法1：Python + 諸々のコマンドの利用 方針 PDFのページ順を変えるためには、pdftkコマンドを利用すれば良い。pdftkは、Homebrewならbrew install pdftk-javaで使えるようになる)。例えば8ページのPDFファイルinput.pdfを並び替えるなら次のコマンドで可能。
+$ pdftk A=input.pdf cat A4 A1 A2 A3 A8 A5 A6 A7 output output.pdf  例えば空白ページを1ページ持つファイルをblank.pdfとすると、6ページのPDFファイルを並び替え、7、8ページを空白ページとするコマンドは次のように書ける。A7とA8がB1に置き換わっていることに注目。
+$ pdftk A=input.</description>
+    </item>
+    
     <item>
       <title>Purescriptメモ - 配列のシャッフルを様々な方法で実装する</title>
       <link>https://bombrary.github.io/blog/posts/purescript-shuffle/</link>
