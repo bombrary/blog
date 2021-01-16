@@ -173,6 +173,11 @@
   </url>
   
   <url>
+    <loc>https://bombrary.github.io/blog/posts/webpack-intro-p5_old/</loc>
+    <lastmod>2020-03-19T09:44:48+09:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://bombrary.github.io/blog/categories/javascript/</loc>
     <lastmod>2020-03-19T09:44:48+09:00</lastmod>
   </url>
@@ -184,11 +189,6 @@
   
   <url>
     <loc>https://bombrary.github.io/blog/categories/webpack/</loc>
-    <lastmod>2020-03-19T09:44:48+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bombrary.github.io/blog/posts/webpack-intro-p5/</loc>
     <lastmod>2020-03-19T09:44:48+09:00</lastmod>
   </url>
   
