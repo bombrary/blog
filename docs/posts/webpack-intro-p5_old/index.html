@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja-jp">
-<title>[古い内容注意]webpackに入門する - p5.jsの開発環境作り | Chanomic Blog</title>
+<title>webpackに入門する - p5.jsの開発環境作り | Chanomic Blog</title>
 <meta charset="utf-8">
 <meta name="generator" content="Hugo 0.80.0" />
 
@@ -34,7 +34,7 @@
 
 <article>
   <header>
-    <h1><a href="https://bombrary.github.io/blog/posts/webpack-intro-p5_old/">[古い内容注意]webpackに入門する - p5.jsの開発環境作り</a></h1>
+    <h1><a href="https://bombrary.github.io/blog/posts/webpack-intro-p5_old/">webpackに入門する - p5.jsの開発環境作り</a></h1>
     <div class="meta">
       
       <div class="pub-date">
@@ -63,15 +63,12 @@
   </header>
   
   <p>webpackを利用してp5.jsの開発環境を作り、ボールが弾むプログラムを作成する。</p>
-<h2 id="2021116追記">2021/1/16追記</h2>
-<p><strong>この記事はもう古い。</strong> 久々にこの記事通りにプログラムを作ろうとしたら、いくつかのコマンドが機能しなくなっていた。確認した限りだと、webpack-cliとwebpack-dev-serverのバージョンアップの影響のようだ。気が向けば新しいバージョンの記事を書く。
-参考までに、記事を書いていた時のツールのバージョンを書いておく。</p>
-<ul>
-<li><code>webpack@4.42.0</code></li>
-<li><code>webpack-cli@3.2.2</code></li>
-<li><code>webpack-dev-server@3.10.3</code></li>
-</ul>
-<h2 id="動機">動機</h2>
+<h2 id="使用するパッケージのバージョン">使用するパッケージのバージョン</h2>
+<pre><code>webpack@5.15.0
+webpack-cli@4.3.1
+webpack-dev-server@3.11.2
+p5@1.2.0
+</code></pre><h2 id="動機">動機</h2>
 <p>ふとしたきっかけで久々に<a href="https://p5js.org">p5.js</a>を触りたくなった。</p>
 <p>昔使っていたときは、p5.jsのファイルをダウンロードしてscriptタグに直接指定することで書いていた。しかし最近、Vue.jsのガイドを読んでいてwebpackの存在を知った。名前は知っていたのだが、具体的に何をするためのものなのかはよく分かっていなかったので調べた。</p>
 <h3 id="webpackとは">webpackとは</h3>
@@ -140,9 +137,9 @@ $ mkdir -p public/js
 </li>
 </ul>
 <h3 id="bundleする">bundleする</h3>
-<p>次のコマンドを実行すると、<code>webpack.config.js</code>の設定をもとに、<code>/public/js/bundle.js</code>が作成される。<code>-p</code>オプションを指定すると、改行やスペースを取り払って出力ファイルのサイズを小さくしてくれる。</p>
+<p>次のコマンドを実行すると、<code>webpack.config.js</code>の設定をもとに、<code>/public/js/bundle.js</code>が作成される。</p>
 <pre class="cui">
-$ npx webpack -p
+$ npx webpack
 </pre>
 
 <p>nodeで実行できることが確認できる。</p>
@@ -172,10 +169,22 @@ $ npm install webpack-dev-server --save-dev
 <li><a href="https://webpack.js.org/configuration/dev-server/#devservercontentbase">contentBase</a>: サーバのルートを決める。ドキュメントによると絶対パスが推奨されているみたいなので、<code>path.resolve</code>を使って書く。</li>
 <li><a href="https://webpack.js.org/configuration/dev-server/#devserverpublicpath-">publicPath</a>: bundleされたJSファイルがどこに置かれるのかを、dev-serverに教える。<code>contentBase</code>が<code>/public</code>、<code>publicPath</code>が<code>/js/</code>なので、<code>/public/js/</code>にbundleされたファイルが置かれる。</li>
 </ul>
-<h3 id="起動">起動</h3>
-<p>次のコマンドで実行できる。デフォルトは<code>http://localhost:8080</code>のようだ。</p>
+<h3 id="indexhtmlの作成">index.htmlの作成</h3>
+<p><code>/public/index.html</code>を作成し、内容を以下のようにする．</p>
+<div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;js/bundle.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div><h3 id="起動">起動</h3>
+<p>次のコマンドで実行できる(<a href="https://github.com/webpack/webpack-dev-server#usage">Usage参照</a>)。デフォルトは<code>http://localhost:8080</code>のようだ。
+ブラウザ上で<code>http://localhost:8080</code>にアクセスすると，<code>/public/index.html</code>の内容が確認できる．</p>
 <pre class="cui">
-$ npx webpack-dev-server
+$ npx webpack serve
 (i) ｢wds｣: Project is running at http://localhost:8080/
 (i) ｢wds｣: webpack output is served from /js/
 ...
@@ -188,17 +197,17 @@ $ npx webpack-dev-server
 <span class="p">...</span>
   <span class="s2">&#34;scripts&#34;</span><span class="o">:</span> <span class="p">{</span>
     <span class="s2">&#34;test&#34;</span><span class="o">:</span> <span class="s2">&#34;echo \&#34;Error: no test specified\&#34; &amp;&amp; exit 1&#34;</span><span class="p">,</span>
-    <span class="s2">&#34;build&#34;</span><span class="o">:</span> <span class="s2">&#34;webpack -p&#34;</span><span class="p">,</span>
-    <span class="s2">&#34;start&#34;</span><span class="o">:</span> <span class="s2">&#34;webpack-dev-server&#34;</span>
+    <span class="s2">&#34;build&#34;</span><span class="o">:</span> <span class="s2">&#34;webpack&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;start&#34;</span><span class="o">:</span> <span class="s2">&#34;webpack serve&#34;</span>
   <span class="p">},</span>
 <span class="p">...</span>
 <span class="p">}</span>
-</code></pre></div><p>このようにすると、以下のコマンドで<code>webpack -p</code>が実行される。</p>
+</code></pre></div><p>このようにすると、以下のコマンドで<code>webpack</code>が実行される。</p>
 <pre class="cui">
 $ npm run build
 </pre>
 
-<p>以下のコマンドで<code>webpack-dev-server</code>が実行される。</p>
+<p>以下のコマンドで<code>webpack serve</code>が実行される。</p>
 <pre class="cui">
 $ npm start
 </pre>

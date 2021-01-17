@@ -1,5 +1,5 @@
 ---
-title: "[古い内容注意]webpackに入門する - p5.jsの開発環境作り"
+title: "webpackに入門する - p5.jsの開発環境作り"
 date: 2020-03-19T09:44:48+09:00
 tags: []
 categories: ["JavaScript", "webpack", "p5.js"]
@@ -7,15 +7,14 @@ categories: ["JavaScript", "webpack", "p5.js"]
 
 webpackを利用してp5.jsの開発環境を作り、ボールが弾むプログラムを作成する。
 
-## 2021/1/16追記
+## 使用するパッケージのバージョン
 
-**この記事はもう古い。** 久々にこの記事通りにプログラムを作ろうとしたら、いくつかのコマンドが機能しなくなっていた。確認した限りだと、webpack-cliとwebpack-dev-serverのバージョンアップの影響のようだ。気が向けば新しいバージョンの記事を書く。
-参考までに、記事を書いていた時のツールのバージョンを書いておく。
-
-- `webpack@4.42.0`
-- `webpack-cli@3.2.2`
-- `webpack-dev-server@3.10.3`
-
+```
+webpack@5.15.0
+webpack-cli@4.3.1
+webpack-dev-server@3.11.2
+p5@1.2.0
+```
 
 ## 動機
 
@@ -110,10 +109,10 @@ module.exports = {
 
 ### bundleする
 
-次のコマンドを実行すると、`webpack.config.js`の設定をもとに、`/public/js/bundle.js`が作成される。`-p`オプションを指定すると、改行やスペースを取り払って出力ファイルのサイズを小さくしてくれる。
+次のコマンドを実行すると、`webpack.config.js`の設定をもとに、`/public/js/bundle.js`が作成される。
 
 {{< cui >}}
-$ npx webpack -p
+$ npx webpack
 {{< /cui >}}
 
 nodeで実行できることが確認できる。
@@ -152,12 +151,29 @@ module.exports = {
 - [contentBase](https://webpack.js.org/configuration/dev-server/#devservercontentbase): サーバのルートを決める。ドキュメントによると絶対パスが推奨されているみたいなので、`path.resolve`を使って書く。
 - [publicPath](https://webpack.js.org/configuration/dev-server/#devserverpublicpath-): bundleされたJSファイルがどこに置かれるのかを、dev-serverに教える。`contentBase`が`/public`、`publicPath`が`/js/`なので、`/public/js/`にbundleされたファイルが置かれる。
 
+### index.htmlの作成
+
+`/public/index.html`を作成し、内容を以下のようにする．
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <script src="js/bundle.js"></script>
+  </body>
+</html>
+```
+
 ### 起動
 
-次のコマンドで実行できる。デフォルトは`http://localhost:8080`のようだ。
+次のコマンドで実行できる([Usage参照](https://github.com/webpack/webpack-dev-server#usage))。デフォルトは`http://localhost:8080`のようだ。
+ブラウザ上で`http://localhost:8080`にアクセスすると，`/public/index.html`の内容が確認できる．
 
 {{< cui >}}
-$ npx webpack-dev-server
+$ npx webpack serve
 (i) ｢wds｣: Project is running at http://localhost:8080/
 (i) ｢wds｣: webpack output is served from /js/
 ...
@@ -174,20 +190,20 @@ webpack-dev-serverにはlive reloading機能が付いている。なので`index
 ...
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p",
-    "start": "webpack-dev-server"
+    "build": "webpack",
+    "start": "webpack serve"
   },
 ...
 }
 ```
 
-このようにすると、以下のコマンドで`webpack -p`が実行される。
+このようにすると、以下のコマンドで`webpack`が実行される。
 
 {{< cui >}}
 $ npm run build
 {{< /cui >}}
 
-以下のコマンドで`webpack-dev-server`が実行される。
+以下のコマンドで`webpack serve`が実行される。
 
 {{< cui >}}
 $ npm start

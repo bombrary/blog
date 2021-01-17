@@ -8,14 +8,13 @@
     <language>ja-jp</language>
     <lastBuildDate>Thu, 19 Mar 2020 09:44:48 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/p5.js/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>[古い内容注意]webpackに入門する - p5.jsの開発環境作り</title>
+      <title>webpackに入門する - p5.jsの開発環境作り</title>
       <link>https://bombrary.github.io/blog/posts/webpack-intro-p5_old/</link>
       <pubDate>Thu, 19 Mar 2020 09:44:48 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/posts/webpack-intro-p5_old/</guid>
       <description>webpackを利用してp5.jsの開発環境を作り、ボールが弾むプログラムを作成する。
-2021/1/16追記 この記事はもう古い。 久々にこの記事通りにプログラムを作ろうとしたら、いくつかのコマンドが機能しなくなっていた。確認した限りだと、webpack-cliとwebpack-dev-serverのバージョンアップの影響のようだ。気が向けば新しいバージョンの記事を書く。 参考までに、記事を書いていた時のツールのバージョンを書いておく。
- webpack@4.42.0 webpack-cli@3.2.2 webpack-dev-server@3.10.3  動機 ふとしたきっかけで久々にp5.jsを触りたくなった。
+使用するパッケージのバージョン webpack@5.15.0 webpack-cli@4.3.1 webpack-dev-server@3.11.2 p5@1.2.0 動機 ふとしたきっかけで久々にp5.jsを触りたくなった。
 昔使っていたときは、p5.jsのファイルをダウンロードしてscriptタグに直接指定することで書いていた。しかし最近、Vue.jsのガイドを読んでいてwebpackの存在を知った。名前は知っていたのだが、具体的に何をするためのものなのかはよく分かっていなかったので調べた。
 webpackとは 以下、個人的に調べた限りの理解を書く。
 Conceptによれば、webpackとは&amp;quot;module bundler&amp;quot;の一種。bundleという意味から、「複数のモジュールを一つに束ねるツール」だと予想できる。JSのプログラムを、モジュールとして複数の単位に分割して開発する。それを一つのファイルにまとめ上げてくれるのがwebpack。
@@ -30,7 +29,7 @@ $ npm install webpack webpack-cli --save-dev  ディレクトリの作成 今回
  ソースコードは/src/index.jsに書く。 bundle後のファイルは/public/js/bundle.jsとして出力されるようにする。  あらかじめディレクトリを作成しておく。
 $ mkdir src $ mkdir -p public/js  index.jsの作成 /src/index.jsを作成。動作確認のため適当に書く。
 console.log(&amp;#34;Hello, World&amp;#34;); webpackの設定 /webpack.config.jsを作成する。
-const path = require(&amp;#39;path&amp;#39;); module.</description>
+const path = require(&amp;#39;path&amp;#39;); module.exports = { mode: &amp;#39;development&amp;#39;, entry: &amp;#39;.</description>
     </item>
     
   </channel>
