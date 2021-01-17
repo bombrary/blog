@@ -10,6 +10,7 @@ theme = "ch-modified"
 publishDir="docs"
 pygmentsUseClasses = true
 googleAnalytics="UA-152083322-1"
+enableGitInfo = true
  
 [markup.goldmark.renderer]
 unsafe = true
