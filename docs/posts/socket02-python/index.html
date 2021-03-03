@@ -255,6 +255,9 @@ Accept: */*</code></pre></div>
 <p>今度はブラウザを利用して、<code>server.py</code>と通信してみる。</p>
 <p><code>server.py</code>を起動した後、ブラウザから<code>localhost:8000</code>にアクセスする。</p>
 <p>以下はSafariでアクセスした場合の結果。ブラウザはヘッダから<code>Content-Type: text/html</code>を見つけると、ボディ部に書かれたHTML文書を元に描画してくれる。</p>
+<p><strong>(2021/3/3追記)</strong> Chromeでは動作するが、現バージョンのSafari(14.0.2)では動かない。しばらく読み込んだあと、接続が切断された旨のメッセージが表示されてしまう。
+色々実験してみたところ、<code>localhost:8000</code>に1回アクセスするのにSafariが複数回の通信を行なっているのが原因のようだ。
+なので、次節のコードであればSafariでも動作する。</p>
 <figure>
     <img src="./browser.png"/> 
 </figure>

@@ -9,10 +9,10 @@
     <lastBuildDate>Thu, 19 Mar 2020 09:44:48 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/p5.js/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>webpackに入門する - p5.jsの開発環境作り</title>
-      <link>https://bombrary.github.io/blog/posts/webpack-intro-p5_old/</link>
+      <link>https://bombrary.github.io/blog/posts/webpack-intro-p5/</link>
       <pubDate>Thu, 19 Mar 2020 09:44:48 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/webpack-intro-p5_old/</guid>
+      <guid>https://bombrary.github.io/blog/posts/webpack-intro-p5/</guid>
       <description>webpackを利用してp5.jsの開発環境を作り、ボールが弾むプログラムを作成する。
 使用するパッケージのバージョン webpack@5.15.0 webpack-cli@4.3.1 webpack-dev-server@3.11.2 p5@1.2.0 動機 ふとしたきっかけで久々にp5.jsを触りたくなった。
 昔使っていたときは、p5.jsのファイルをダウンロードしてscriptタグに直接指定することで書いていた。しかし最近、Vue.jsのガイドを読んでいてwebpackの存在を知った。名前は知っていたのだが、具体的に何をするためのものなのかはよく分かっていなかったので調べた。
