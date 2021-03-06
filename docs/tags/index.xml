@@ -6,7 +6,25 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 07 Jan 2021 11:50:37 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 Mar 2021 22:00:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HTTP</title>
+      <link>https://bombrary.github.io/blog/tags/http/</link>
+      <pubDate>Sat, 06 Mar 2021 22:00:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/http/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Socket</title>
+      <link>https://bombrary.github.io/blog/tags/socket/</link>
+      <pubDate>Sat, 06 Mar 2021 22:00:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/socket/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>PDF</title>
       <link>https://bombrary.github.io/blog/tags/pdf/</link>
@@ -404,15 +422,6 @@
     </item>
     
     <item>
-      <title>HTTP</title>
-      <link>https://bombrary.github.io/blog/tags/http/</link>
-      <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/http/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Network</title>
       <link>https://bombrary.github.io/blog/tags/network/</link>
       <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
@@ -490,15 +499,6 @@
       <pubDate>Sun, 08 Dec 2019 11:09:35 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/python/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Socket</title>
-      <link>https://bombrary.github.io/blog/tags/socket/</link>
-      <pubDate>Sun, 08 Dec 2019 11:09:35 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/socket/</guid>
       <description></description>
     </item>
     

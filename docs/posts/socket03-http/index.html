@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>Socket通信勉強(3) - 簡易HTTPサーバー作成 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/socket03-http/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/socket03-http/">Socket通信勉強(3) - 簡易HTTPサーバー作成</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2021-03-06T22:00:00&#43;09:00">March 06, 2021</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2021-03-06T22:00:00&#43;09:00">March 06, 2021</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/socket/">Socket</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/http/">HTTP</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/python/">Python</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/network/">Network</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#動機">動機</a></li>
+    <li><a href="#作るもの">作るもの</a></li>
+    <li><a href="#listen用のソケットの作成">listen用のソケットの作成</a>
+      <ul>
+        <li><a href="#動作確認">動作確認</a></li>
+      </ul>
+    </li>
+    <li><a href="#ハンドラの作成とマルチスレッド化">ハンドラの作成とマルチスレッド化</a></li>
+    <li><a href="#リクエストラインリクエストヘッダの受信とパース">リクエストライン、リクエストヘッダの受信とパース</a>
+      <ul>
+        <li><a href="#リクエストラインの取得とパース">リクエストラインの取得とパース</a></li>
+        <li><a href="#リクエストヘッダの取得とパース">リクエストヘッダの取得とパース</a></li>
+        <li><a href="#動作確認-1">動作確認</a></li>
+      </ul>
+    </li>
+    <li><a href="#おまけhttpクライアントもどきの作成">(おまけ)HTTPクライアントもどきの作成</a></li>
+    <li><a href="#サーバーのエラー処理">サーバーのエラー処理</a>
+      <ul>
+        <li><a href="#httpリクエストの書式に従っていないメッセージ">HTTPリクエストの書式に従っていないメッセージ</a></li>
+        <li><a href="#何のリクエストも送らない">何のリクエストも送らない</a></li>
+        <li><a href="#エラー処理">エラー処理</a></li>
+      </ul>
+    </li>
+    <li><a href="#おまけ簡易的なルーティング">(おまけ)簡易的なルーティング</a></li>
+    <li><a href="#最終的なコード">最終的なコード</a></li>
+    <li><a href="#補足-wsgiサーバー">補足: WSGIサーバー</a></li>
+  </ul>
+</nav>
+    </aside>
+    
+  <p><a href="https://bombrary.github.io/blog/posts/socket02-python/">1年以上前に書いた記事</a>
+で、HTTPサーバーもどき(リクエストを読まず、ただ一方的にレスポンスを返すだけのサーバ)を書いた。
+今回はもう少しだけこれを進化させる。</p>
+<h2 id="動機">動機</h2>
+<p>非常にどうでもいいのだが動機を記しておく。</p>
+<p><a href="https://www.oreilly.co.jp/books/9784873115870/">Land of Lisp</a>の13章でソケット通信が出てきた。
+Land of Lispで扱っているCommon Lispの処理系がCLISPなのに対し、今自分が利用しているのはSBCLなので、
+本文中のコードが動かない。そこで色々調べて、<a href="https://github.com/usocket/usocket">usocket</a>を利用しようと思いつく。
+その後なんとか書き上げる。ところがChromeや<code>curl</code>では動くのに、Safari(現バージョンは14.0.2)では動かない。ページを読み込んだ後、タイムアウトしたかのような挙動を起こす。</p>
+<p>その理由を明らかにしたくて「そもそもLisp以外では動くのか。例えばPythonのソケット通信では動くのか」「PythonのWebアプリ、例えばFlaskの開発用サーバーで動くのはなぜか」
+など色々調べた。cpythonのsocketserverやhttp.serverなどのソースコードも読んだ。</p>
+<p>調べた結果、どうやらSafariがたまに「何も送らない通信(?)」を行うことが原因だった。
+何も送ってくれないと、リクエストを<code>recv</code>で受け取るときに、ブロッキングが働いてサーバー側が固まってしまう。
+ただし普通のリクエストも送ってくるので、マルチスレッドなどの多重化を行なっておけば
+問題なくSafariでもページが読み込まれる。なのでFlaskの開発用サーバーでは大した問題にならなかった。
+Safariがなぜこんな通信をするのかはよく分からない。HTTPの仕様をちゃんと読んでいないので、何か見落としがあるのだろうか。もしくはバグか何かなのか。</p>
+<p>何はともあれ、色々ソースコードを読んでいくうちに、リクエストヘッダの取得のやり方など参考になった。
+せっかくなのて得た知見を元に再びHTTPサーバを作ってみようと思い立った。</p>
+<h2 id="作るもの">作るもの</h2>
+<p>以下の条件を満たすHTTPサーバのようなものを作る(そもそも、どこまで実装できたらHTTPサーバと呼べるのだろうか)。</p>
+<ul>
+<li>マルチスレッドにする。</li>
+<li>HTTPリクエストのリクエストライン、ヘッダ情報をパースする。</li>
+<li>リクエストボディは今回は考慮しない。</li>
+</ul>
+<p>前回に比べてPythonについての知見が広がったため、
+コードにおいてf-stringsやtype-annotation、dataclassなどの機能を使ってみている。
+また処理を細かく関数に分ける。</p>
+<h2 id="listen用のソケットの作成">listen用のソケットの作成</h2>
+<p>待ち受け用のソケットを作成し、それを返す関数を作成する。
+<code>bind</code>や<code>listen</code>は前回説明した通り。
+動作確認を何度も行う都合上、<code>TIME_WAIT</code>状態のポートを待つのは面倒なので、<code>setsockopt(...)</code>の記述でそれを解決している。
+(この辺りの詳細は&quot;TIME_WAIT&quot;とか&quot;REUSEADDR&quot;あたりのキーワードで検索すれば出てくる)</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">socket</span>
+
+
+<span class="k">def</span> <span class="nf">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">soc</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">soc</span>
+</code></pre></div><h3 id="動作確認">動作確認</h3>
+<p>以下のように<code>run_server</code>を作る。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="k">as</span> <span class="n">soc</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">soc</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Connected: {addr}&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">run_server</span><span class="p">(</span><span class="mi">8080</span><span class="p">)</span>
+</code></pre></div><p>作ったサーバーを実行し、別の端末で<code>curl localhost:8080</code>とすると、サーバー側で以下のようなメッセージが出力される。
+60724の部分は実行の度に異なる。</p>
+<pre class="cui">
+Connected: ('127.0.0.1', 60724)
+</pre>
+
+<h2 id="ハンドラの作成とマルチスレッド化">ハンドラの作成とマルチスレッド化</h2>
+<p>リクエストハンドラを作成する。これは、クライアントから送られてきたリクエストの情報を元にしてレスポンスを返す関数。
+リクエストを受信したりレスポンスを送信したりする必要があるため、引数にソケットをとっている。第2引数はログ用。</p>
+<p>以下では、テストのため適当なレスポンスを返している
+(前回は改行文字を特に考えず送信してうまくいっていたが、HTTPの仕様では改行文字はCRLFのようだ)。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+
+
+<span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;HTTP/1.1 200 OK</span><span class="se">\r\n</span><span class="s1">Content-Type: text/plain</span><span class="se">\r\n\r\n</span><span class="s1">Hello, World&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+</code></pre></div><p>続いて、<code>run_server</code>を修正する。<code>threading.Thread</code>で、<code>handle_request</code>を別スレッドで実行することができる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">threading</span>
+
+
+<span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="k">as</span> <span class="n">soc</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">soc</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Connected: {addr}&#39;</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">handle_request</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">])</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div><p>作ったサーバーを実行し、別の端末で<code>curl localhost:8080</code>とすると、<code>curl</code>側で以下のようなメッセージが出力される。
+<pre class="cui">
+Hello, World
+</pre>
+</p>
+<p>サーバー側では以下のようなメッセージが出力される。
+<pre class="cui">
+Connected: ('127.0.0.1', 63066)
+('127.0.0.1', 63066) 200 OK
+</pre>
+</p>
+<h2 id="リクエストラインリクエストヘッダの受信とパース">リクエストライン、リクエストヘッダの受信とパース</h2>
+<p><code>handle_request</code>を修正する。
+<code>makefile</code>を使うと、ソケットをファイルのように扱えるようになる。
+こうしておくと、例えば<code>readline</code>メソッドで1行毎にデータを取得することができるようになるので、<code>recv</code>メソッドよりも使い勝手が良い。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">conn</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">rfile</span><span class="p">:</span>
+            <span class="n">request_line</span> <span class="o">=</span> <span class="n">get_request_line</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span> <span class="c1">#これから書く</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span> <span class="c1">#これから書く</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;HTTP/1.1 200 OK</span><span class="se">\r\n</span><span class="s1">Content-Type: text/plain</span><span class="se">\r\n\r\n</span><span class="s1">Hello, World&#39;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+</code></pre></div><h3 id="リクエストラインの取得とパース">リクエストラインの取得とパース</h3>
+<p><a href="https://tools.ietf.org/html/rfc2616#section-5.1">HTTPの仕様</a>より、リクエストラインは
+メソッド、URI、HTTPのバージョンが空白区切りで並んでいることがわかる。
+なので、<code>split</code>を使って3つを切り出せば良い。
+丁寧に<code>RequestLine</code>という<code>dataclass</code>を作ってそれを返すようにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">BinaryIO</span> 
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RequestLine</span><span class="p">:</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">http_version</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">def</span> <span class="nf">get_request_line</span><span class="p">(</span><span class="n">rfile</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RequestLine</span><span class="p">:</span>
+    <span class="p">[</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">http_version</span><span class="p">]</span> <span class="o">=</span> <span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">RequestLine</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">http_version</span><span class="p">)</span>
+</code></pre></div><h3 id="リクエストヘッダの取得とパース">リクエストヘッダの取得とパース</h3>
+<p>1行ずつデータを取得して、<code>:</code>で<code>key</code>と<code>value</code>に分ける。
+<code>\r\n</code>のみの行が現れれば、それがリクエストヘッダの終わりだと分かる。</p>
+<p><code>split</code>メソッドで<code>maxsplit=1</code>としているのは、余計に<code>:</code>が分割されるのを防ぐため。例えば、<code>host: localhost:8080</code>が<code>['host', 'localhost', '8080']</code>となるのを防ぐ。</p>
+<p><code>lower</code>メソッドで<code>key</code>を小文字にしているのは、<a href="https://tools.ietf.org/html/rfc2616#section-4.2">HTTPの仕様</a>上ヘッダ名がcase-insensitiveであるため。
+例えば、<code>Content-Type</code>と<code>content-type</code>が区別されるのを防ぐ。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="k">def</span> <span class="nf">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">headers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">return</span> <span class="n">headers</span>
+</code></pre></div><h3 id="動作確認-1">動作確認</h3>
+<p>作ったサーバーを起動し、別の端末で<code>curl localhost:8080</code>を実行。サーバー側で以下のメッセージが出力される。</p>
+<pre class="cui">
+Connected: ('127.0.0.1', 50076)
+('127.0.0.1', 50076) RequestLine(method='GET', uri='/', http_version='HTTP/1.1')
+('127.0.0.1', 50076) {'host': 'localhost:8080', 'user-agent': 'curl/7.64.1', 'accept': '*/*'}
+('127.0.0.1', 50076) 200 OK
+</pre>
+
+<h2 id="おまけhttpクライアントもどきの作成">(おまけ)HTTPクライアントもどきの作成</h2>
+<p>サーバーに適当なリクエストをして、レスポンスをヘッダごと出力するだけのプログラムを書いてみる。</p>
+<p><code>recv_all</code>はサーバーからのレスポンスを全て読み取る関数。
+<code>recv</code>は<strong>相手のソケットが閉じられた場合に</strong>0バイトのデータを受信する。よって、それを読み込み終わりの条件としている。
+クライアントではこのような条件が書けるが、サーバでは書けないことに注意。
+クライアントに送信するまでソケットを閉じることができないから、ブロッキングが働いてサーバーは固まってしまう。
+ちなみに同様の理由で、リクエストヘッダに<code>Content-Length</code>が無ければリクエストボディを読み取れない。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">socket</span>
+
+
+<span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">soc</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">soc</span>
+
+
+<span class="k">def</span> <span class="nf">recv_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">chunk</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">send_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">):</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;GET / HTTP/1.1</span><span class="se">\r\n\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">send_request</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">recv_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span>
+</code></pre></div><p>サーバーを起動後、このクライアントを実行すると、クライアント側で以下のメッセージが出力される。</p>
+<pre class="cui">
+HTTP/1.1 200 OK
+Content-Type: text/plain
+
+Hello, World
+</pre>
+
+<h2 id="サーバーのエラー処理">サーバーのエラー処理</h2>
+<p>上のようなクライアントもどきを作っておくことで、以下、サーバー側で問題が発生するメッセージが送れる。</p>
+<h3 id="httpリクエストの書式に従っていないメッセージ">HTTPリクエストの書式に従っていないメッセージ</h3>
+<p><code>send_request</code>を以下のようにすると、サーバーはエラーを吐く。
+第1行目はリクエストラインが期待されるが、まったく異なる文字列を送っている。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">send_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">):</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;this is not a http request.</span><span class="se">\r\n</span><span class="s1">this is not a header&#39;</span><span class="p">)</span>
+</code></pre></div><p>クライアントを実行すると、サーバー側で以下の例外が発生している。</p>
+<pre class="cui">
+Connected: ('127.0.0.1', 58254)
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  ...
+  File "server.py", line 23, in get_request_line
+    [method, uri, http_version] = rfile.readline(65535).decode('ascii').strip().split()
+ValueError: too many values to unpack (expected 3)
+</pre>
+
+<h3 id="何のリクエストも送らない">何のリクエストも送らない</h3>
+<p><code>send_request</code>を以下のようにすると、サーバ側で固まったスレッドが発生してしまう。またクライアントも固まる。
+どちらかがCtrl+Cで強制終了しない限り、お互い身動きができない。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">send_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre></div><h3 id="エラー処理">エラー処理</h3>
+<p>上2つのエラーを処理するのは単純で、以下のように<code>try</code>文を用いれば良い。</p>
+<p>timeoutの時間を決めるために、<code>conn.settimeout(30)</code>を呼び出す。これにより、30秒ブロッキングが行われていた場合は
+<code>socket.timeout</code>例外が送出される。</p>
+<p>また不正な書式が送信されてきた場合は<code>ValueError</code>例外が送出されるため、その時は<code>404 BadRequest</code>を送るようにする。</p>
+<p>しかしそれだけだと、例えば相手がソケットを最初に閉じてしまった場合などに対応できないため、そのための例外を<code>OSError</code>で捕捉する。</p>
+<p>エラー処理を入れるとコードが結構複雑になることが分かる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">conn</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">rfile</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">request_line</span> <span class="o">=</span> <span class="n">get_request_line</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span>
+                    <span class="n">headers</span> <span class="o">=</span> <span class="n">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">)</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;HTTP/1.1 200 OK</span><span class="se">\r\n</span><span class="s1">Content-Type: text/plain</span><span class="se">\r\n\r\n</span><span class="s1">Hello, World&#39;</span><span class="p">)</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;HTTP/1.1 400 BadRequest</span><span class="se">\r\n</span><span class="s1">Content-Type: text/plain</span><span class="se">\r\n\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">f</span><span class="s2">&#34;OSError: {e}&#34;</span><span class="p">)</span>
+</code></pre></div><h2 id="おまけ簡易的なルーティング">(おまけ)簡易的なルーティング</h2>
+<p>試しにルーティングをやってみる。次のような処理を行う。</p>
+<ul>
+<li>&lsquo;/&lsquo;にアクセスされたら&quot;Hello, World&quot;を表示</li>
+<li>&lsquo;/greeting/&lt;name&gt;&lsquo;にアクセスされたら&quot;Hello, &lt;name&gt;&ldquo;を表示</li>
+<li>いずれでもなければNotFoundを表示</li>
+</ul>
+<p>レスポンスを返すために<code>conn.send(...)</code>というを何度も書いているとコードが読みづらくなるため、
+<code>send_response</code>という関数を定義する。ステータスコードやヘッダ、ボディを実際に組み合わせる処理は<code>make_response</code>に任せる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="k">def</span> <span class="nf">make_response</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">headers_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;{h[0]}: {h[1]}&#39;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;HTTP/1.1 {status}&#39;</span><span class="p">,</span> <span class="n">headers_string</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">body</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">make_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+</code></pre></div><p>これを元に<code>handle_request</code>を修正する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">conn</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">rfile</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">request_line</span> <span class="o">=</span> <span class="n">get_request_line</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span>
+                    <span class="n">headers</span> <span class="o">=</span> <span class="n">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span>
+                    <span class="n">route</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;400 BadRequest&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;BadRequest&#39;</span><span class="p">)</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">f</span><span class="s2">&#34;OSError: {e}&#34;</span><span class="p">)</span>
+</code></pre></div><p>URIに応じて適切なレスポンスを送る関数<code>route</code>を作成する。<code>/greeting/&lt;name&gt;</code>の<code>name</code>の部分を取り出すために、ここでは正規表現を使っている。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">re</span>
+
+
+<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">request_line</span><span class="p">:</span> <span class="n">RequestLine</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/greeting/(\w+)&#39;</span><span class="p">,</span> <span class="n">request_line</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request_line</span><span class="o">.</span><span class="n">uri</span> <span class="o">==</span> <span class="s2">&#34;/&#34;</span><span class="p">:</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;Hello, World&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="n">f</span><span class="s1">&#39;Hello, {name}!&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;404 NotFound&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;404 NotFound&#39;</span><span class="p">)</span>
+</code></pre></div><p>作ったサーバーを起動し、別の端末で<code>curl localhost:8080</code>を実行すると、<code>curl</code>側で以下のメッセージが出力される。</p>
+<pre class="cui">
+Hello, World
+</pre>
+
+<p><code>curl localhost:8080/greeting/Taro</code>を実行すると、<code>curl</code>側で以下のメッセージが出力される。</p>
+<pre class="cui">
+Hello, Taro!
+</pre>
+
+<p><code>curl localhost:8080/foo</code>を実行すると、<code>curl</code>側で以下のメッセージが出力される。</p>
+<pre class="cui">
+404 NotFound
+</pre>
+
+<p>ちなみに日本語には対応していない。<code>localhost:8080/greeting/太郎</code>としても、URIのエンコード処理を<code>encode('ascii')</code>で行なっているため失敗する。
+そもそもURIの仕様上、日本語を直接埋め込むことはできない。日本語を間接的に埋め込む方法としてパーセントエンコーディングというものがあり、これは<code>urllib.parse.urlencode</code>でできそうだが、
+詳しくは未調査。</p>
+<h2 id="最終的なコード">最終的なコード</h2>
+<p>100行に満たないコードで、HTTPサーバーっぽいものが実現できることが分かる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+
+<span class="k">def</span> <span class="nf">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">soc</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">soc</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RequestLine</span><span class="p">:</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">http_version</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">def</span> <span class="nf">get_request_line</span><span class="p">(</span><span class="n">rfile</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RequestLine</span><span class="p">:</span>
+    <span class="p">[</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">http_version</span><span class="p">]</span> <span class="o">=</span> <span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">RequestLine</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">http_version</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">headers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">return</span> <span class="n">headers</span>
+
+
+<span class="k">def</span> <span class="nf">make_response</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">headers_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;{h[0]}: {h[1]}&#39;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;HTTP/1.1 {status}&#39;</span><span class="p">,</span> <span class="n">headers_string</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">body</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">make_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">request_line</span><span class="p">:</span> <span class="n">RequestLine</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/greeting/(\w+)&#39;</span><span class="p">,</span> <span class="n">request_line</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request_line</span><span class="o">.</span><span class="n">uri</span> <span class="o">==</span> <span class="s2">&#34;/&#34;</span><span class="p">:</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;Hello, World&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="n">f</span><span class="s1">&#39;Hello, {name}!&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;404 NotFound&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;404 NotFound&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">conn</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">rfile</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">request_line</span> <span class="o">=</span> <span class="n">get_request_line</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span>
+                    <span class="n">headers</span> <span class="o">=</span> <span class="n">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span>
+                    <span class="n">route</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;400 BadRequest&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;BadRequest&#39;</span><span class="p">)</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">f</span><span class="s2">&#34;OSError: {e}&#34;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="k">as</span> <span class="n">soc</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">soc</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Connected: {addr}&#39;</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">handle_request</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">])</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">run_server</span><span class="p">(</span><span class="mi">8080</span><span class="p">)</span>
+</code></pre></div><h2 id="補足-wsgiサーバー">補足: WSGIサーバー</h2>
+<p>もちろん今まで作ってきたHTTPサーバーは車輪の再発明である。HTTPサーバーはPythonのモジュール<a href="https://docs.python.org/ja/3/library/http.server.html">http.server</a>として用意されている。
+さらに一歩進んで、WebアプリとHTTPサーバをつなぐ仕様にWSGIというものがある。WSGIの仕様に則ったWebアプリを書けば、WSGIの仕様に則ったどんなサーバでもそれを動かすことができる。
+WSGIサーバーの実装は<a href="https://docs.python.org/ja/3/library/wsgiref.html">wsgiref</a>で用意されているので、試しに使ってみる。</p>
+<p>以下は、前節でのルーティングをWSGIの仕様に則って書いたもの。</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+
+
+<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;PATH_INFO&#39;</span><span class="p">]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/greeting/(\w+)&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">uri</span> <span class="o">==</span> <span class="s2">&#34;/&#34;</span><span class="p">:</span>
+        <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;Hello, World&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">f</span><span class="s1">&#39;Hello, {name}!&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;404 NotFound&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;404 NotFound&#39;</span><span class="p">]</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">httpd</span><span class="p">:</span>
+        <span class="n">httpd</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</code></pre></div><p>WSGIの仕様により、Webアプリを表す関数(上のコードでは<code>app</code>、もしクラスなら<code>__call__</code>メソッド)の引数は2つと定められている。そして、第1引数<code>env</code>はリクエストに関するあらゆる情報を持っており、
+第2引数<code>start_response</code>はステータスコードとレスポンスヘッダを引数にとる関数である。
+関数<code>app</code>の返り値はレスポンスボディである。このようなルールに従って関数<code>app</code>を定義したことにより、<code>make_server</code>関数でサーバーを動かすことができる。
+WSGIはWebアプリとWebサーバー間の仕様であるため当前と言えば当前なのだが、ソケット通信のことは一切考えることなくWebアプリを書けるようになる。</p>
+<p>とはいえ<code>app</code>を直接書くと、
+「ルーティングを正規表現で行なったが、正規表現より読みやすい方法が欲しい」
+「URIが増えるとその度に<code>if</code>文が増えるため、コードが読みづらくなる」
+「ステータスコードやヘッダをいちいち指定しなければいけないのが面倒」
+など色々不満が出てくる。ライブラリやフレームワークは、それらの不満を解決するだけでなく、便利な機能(フレームワークによるが、例えばCookieの取得、データベース連携、アカウント認証など)を簡単に利用できる。
+WSGI対応のWebアプリを作るためのライブラリとして<a href="https://werkzeug.palletsprojects.com/en/1.0.x/">werkzeug</a>がある。
+Webアプリのフレームワークとして<a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a>や<a href="https://www.djangoproject.com">Django</a>がある。</p>
+<p>wsgirefはリファレンス実装のため、おそらく機能が簡素であったり、性能面に問題がある(詳しくは調べていないので確かなことは言えないが)。
+なのでWebアプリを実際にデプロイしようとなったときは、wsgirefではなく外部のWSGI対応サーバを利用することになる。
+WSGI対応のサーバーとしては、<a href="https://uwsgi-docs.readthedocs.io/en/latest/">uWSGI</a>や<a href="https://gunicorn.org">Gunicorn</a>がある。</p>
+
+</article>
+
+
+
+</html>

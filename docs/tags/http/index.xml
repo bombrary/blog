@@ -6,7 +6,26 @@
     <description>Recent content in HTTP on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 19 Dec 2019 09:50:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/http/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 Mar 2021 22:00:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/http/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Socket通信勉強(3) - 簡易HTTPサーバー作成</title>
+      <link>https://bombrary.github.io/blog/posts/socket03-http/</link>
+      <pubDate>Sat, 06 Mar 2021 22:00:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/socket03-http/</guid>
+      <description>1年以上前に書いた記事 で、HTTPサーバーもどき(リクエストを読まず、ただ一方的にレスポンスを返すだけのサーバ)を書いた。 今回はもう少しだけこれを進化させる。
+動機 非常にどうでもいいのだが動機を記しておく。
+Land of Lispの13章でソケット通信が出てきた。 Land of Lispで扱っているCommon Lispの処理系がCLISPなのに対し、今自分が利用しているのはSBCLなので、 本文中のコードが動かない。そこで色々調べて、usocketを利用しようと思いつく。 その後なんとか書き上げる。ところがChromeやcurlでは動くのに、Safari(現バージョンは14.0.2)では動かない。ページを読み込んだ後、タイムアウトしたかのような挙動を起こす。
+その理由を明らかにしたくて「そもそもLisp以外では動くのか。例えばPythonのソケット通信では動くのか」「PythonのWebアプリ、例えばFlaskの開発用サーバーで動くのはなぜか」 など色々調べた。cpythonのsocketserverやhttp.serverなどのソースコードも読んだ。
+調べた結果、どうやらSafariがたまに「何も送らない通信(?)」を行うことが原因だった。 何も送ってくれないと、リクエストをrecvで受け取るときに、ブロッキングが働いてサーバー側が固まってしまう。 ただし普通のリクエストも送ってくるので、マルチスレッドなどの多重化を行なっておけば 問題なくSafariでもページが読み込まれる。なのでFlaskの開発用サーバーでは大した問題にならなかった。 Safariがなぜこんな通信をするのかはよく分からない。HTTPの仕様をちゃんと読んでいないので、何か見落としがあるのだろうか。もしくはバグか何かなのか。
+何はともあれ、色々ソースコードを読んでいくうちに、リクエストヘッダの取得のやり方など参考になった。 せっかくなのて得た知見を元に再びHTTPサーバを作ってみようと思い立った。
+作るもの 以下の条件を満たすHTTPサーバのようなものを作る(そもそも、どこまで実装できたらHTTPサーバと呼べるのだろうか)。
+ マルチスレッドにする。 HTTPリクエストのリクエストライン、ヘッダ情報をパースする。 リクエストボディは今回は考慮しない。  前回に比べてPythonについての知見が広がったため、 コードにおいてf-stringsやtype-annotation、dataclassなどの機能を使ってみている。 また処理を細かく関数に分ける。
+listen用のソケットの作成 待ち受け用のソケットを作成し、それを返す関数を作成する。 bindやlistenは前回説明した通り。 動作確認を何度も行う都合上、TIME_WAIT状態のポートを待つのは面倒なので、setsockopt(...)の記述でそれを解決している。 (この辺りの詳細は&amp;quot;TIME_WAIT&amp;quot;とか&amp;quot;REUSEADDR&amp;quot;あたりのキーワードで検索すれば出てくる)
+import socket def server_socket(port: int): soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM) soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True) soc.bind((&amp;#39;&amp;#39;, port)) soc.listen(5) return soc 動作確認 以下のようにrun_serverを作る。
+def run_server(port: int): with server_socket(port) as soc: while True: conn, addr = soc.accept() print(f&amp;#39;Connected: {addr}&amp;#39;) with conn: conn.</description>
+    </item>
+    
     <item>
       <title>Elm/JavaScript ローカルサーバーで通信する際にハマったこと</title>
       <link>https://bombrary.github.io/blog/posts/elm-with-localserver/</link>
