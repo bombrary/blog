@@ -473,7 +473,7 @@ $k_1$と$l_1$を計算すれば、$k_2$と$l_2$が計算できる。それが計
 \\[
   \begin{aligned}
   &\frac{dx}{dt} = v \\\\ 
-  &\frac{dv}{dt} = -x^2\\\\ 
+  &\frac{dv}{dt} = -x\\\\ 
   &v(0) = 0\\\\ 
   &x(0) = 10
   \end{aligned}
