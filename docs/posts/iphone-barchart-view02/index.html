@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (2) アニメーションとタップ処理 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -127,8 +127,7 @@
       
   <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./mov01.gif" width="30%"/> 
+<figure><img src="./mov01.gif" width="30%"/>
 </figure>
 
 <h3 id="stackviewのアニメーション">StackViewのアニメーション</h3>
@@ -174,8 +173,7 @@
         <span class="n">constraints</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./mov02.gif" width="30%"/> 
+<figure><img src="./mov02.gif" width="30%"/>
 </figure>
 
 <p>設計を見直しつつ、前回の機能を持つアプリにアニメーションを付加する。</p>
@@ -183,8 +181,7 @@
 <p>前回のままだとアニメーションの機能追加がしづらいので、少しリファクタリングする</p>
 <h3 id="mainstoryboard">Main.storyboard</h3>
 <p>前回と同じ。</p>
-<figure>
-    <img src="./storyboard_main01.png" width="70%"/> 
+<figure><img src="./storyboard_main01.png" width="70%"/>
 </figure>
 
 <h3 id="viewcontrollerswift">ViewController.swift</h3>
@@ -404,8 +401,7 @@
         <span class="n">contentsView</span><span class="p">.</span><span class="n">layoutIfNeeded</span><span class="p">()</span>
     <span class="p">})</span>
 <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./mov03.gif" width="30%"/> 
+<figure><img src="./mov03.gif" width="30%"/>
 </figure>
 
 <h2 id="補足-viewdidappearでないタイミングでのアニメーションの実行">補足: viewDidAppearでないタイミングでのアニメーションの実行</h2>
@@ -441,8 +437,7 @@
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p><code>Main.storyboard</code>は以下のようにする。新しく追加したViewControllerのクラスは<code>DetailViewController</code>とし、identifierを<code>detail</code>に設定する。</p>
-<figure>
-    <img src="./storyboard_main02.png"/> 
+<figure><img src="./storyboard_main02.png"/>
 </figure>
 
 <h3 id="諸々の追加">諸々の追加</h3>
@@ -469,8 +464,7 @@
     <span class="n">navigationController</span><span class="p">?.</span><span class="n">showDetailViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">sender</span><span class="p">:</span> <span class="kc">self</span><span class="p">)</span>
 <span class="p">}</span></code></pre></div>
 <p>良い感じ。</p>
-<figure>
-    <img src="./mov04.gif" width="30%"/> 
+<figure><img src="./mov04.gif" width="30%"/>
 </figure>
 
 <p>今回は棒だけでなく、ラベルや数字がタップされても詳細画面に飛ぶように書いた。もし棒だけタップしたら遷移するようにしたいなら、GestureRecognizerを<code>barView</code>に設定すれば良い。</p>

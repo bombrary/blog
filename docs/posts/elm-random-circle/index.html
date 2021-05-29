@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ - ランダムな位置に円を描画する | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -192,8 +192,7 @@ $ elm install elm/random
     <span class="p">,</span> <span class="nv">height</span> <span class="s">&#34;600px&#34;</span>
     <span class="p">]</span>
     <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="nv">viewCircle</span> <span class="nv">circles</span><span class="p">)</span></code></pre></div>
-<figure>
-    <img src="./sc01.png" width="30%"/> 
+<figure><img src="./sc01.png" width="30%"/>
 </figure>
 
 <h3 id="補足-レコード">(補足) レコード</h3>
@@ -302,8 +301,7 @@ $ elm install elm/random
   <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span> 
     <span class="kt">GetRandomCircles</span> <span class="nv">circles</span> <span class="nf">-&gt;</span> 
       <span class="p">({</span> <span class="nv">model</span> <span class="nf">|</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="nv">circles</span> <span class="p">},</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
-<figure>
-    <img src="./sc02.png" width="50%"/> 
+<figure><img src="./sc02.png" width="50%"/>
 </figure>
 
 <h3 id="randommap2">Random.map2</h3>

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (2) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -89,8 +89,7 @@
 <p>このデータは、後で整形してグラフ描画用のデータに変換する。</p>
 <h2 id="uscrollviewの配置">UScrollViewの配置</h2>
 <p><code>Main.storyboard</code>にUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。</p>
-<figure>
-    <img src="./storyboard_main01.png" width="50%"/> 
+<figure><img src="./storyboard_main01.png" width="50%"/>
 </figure>
 
 <p>その後、UIScrollViewのOutlet接続を<code>ViewController.swift</code>に対して行う。</p>
@@ -99,8 +98,7 @@
 <p>複数ページを持つコンテンツを作りたいので、コンテンツ用Viewの中にページ用のViewが複数存在する状態になる。なのでページの位置やサイズもちゃんと設定する。</p>
 <h3 id="scrollviewのレイアウト">ScrollViewのレイアウト</h3>
 <p>こんな感じにする。</p>
-<figure>
-    <img src="./layout_scrollView01.svg" width="50%"/> 
+<figure><img src="./layout_scrollView01.svg" width="50%"/>
 </figure>
 
 <p>なのでコードはこんな感じにする。</p>
@@ -121,8 +119,7 @@
 <span class="p">}</span></code></pre></div>
 <h3 id="contentsviewのレイアウト">contentsViewのレイアウト</h3>
 <p>例えばページが5枚だとすると、ページ5枚で1つのcontentsViewを作る。それを念頭においてレイアウトを組む必要がある。</p>
-<figure>
-    <img src="./layout_scrollView02.svg" width="70%"/> 
+<figure><img src="./layout_scrollView02.svg" width="70%"/>
 </figure>
 
 <h3 id="ダミー用graphview作成">ダミー用GraphView作成</h3>
@@ -172,8 +169,7 @@
     <span class="k">return</span> <span class="n">contentsView</span>
 <span class="p">}</span></code></pre></div>
 <p>この時点でアプリを起動してみると、次のようになる。よく見ると下にスクロールバーが付いている。</p>
-<figure>
-    <img src="./mov01.gif" width="30%"/> 
+<figure><img src="./mov01.gif" width="30%"/>
 </figure>
 
 <h2 id="ユーティリティ関数メソッドの定義">ユーティリティ関数/メソッドの定義</h2>
@@ -199,8 +195,7 @@
 <span class="p">}</span></code></pre></div>
 <h2 id="棒グラフのレイアウト">棒グラフのレイアウト</h2>
 <p>前回と少し変えて次のようにする。</p>
-<figure>
-    <img src="./layout_graphview01.svg" width="70%"/> 
+<figure><img src="./layout_graphview01.svg" width="70%"/>
 </figure>
 
 <p>Barの番号は0から数えるものとする。なのでx座標用のscaleLinearを定義するときにdomainを<code>(0, numOfBars-1)</code>にする。前回はこの辺りの記述をあまり考えずやっていたので、x座標が若干ずれていたかもしれない。</p>
@@ -391,8 +386,7 @@
         <span class="n">path</span><span class="p">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">to</span><span class="p">:</span> <span class="n">CGPoint</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">scale</span><span class="p">.</span><span class="n">y</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
         <span class="n">path</span><span class="p">.</span><span class="n">stroke</span><span class="p">()</span>
     <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./mov02.gif" width="30%"/> 
+<figure><img src="./mov02.gif" width="30%"/>
 </figure>
 
 <p>大変だったがなんとか完成。</p>
@@ -400,8 +394,7 @@
 <p>実はいまのままだと、例えばtoolbarが出たときにレイアウトが崩れる。これを解決するために、ScrollViewを別のViewで包み、それにConstraintを設定する。</p>
 <h3 id="mainstoryboard">Main.storyboard</h3>
 <p>次のようにする。Viewを新しく作り、その中にScrollViewを配置する。</p>
-<figure>
-    <img src="./storyboard_main02.png" width="30%"/> 
+<figure><img src="./storyboard_main02.png" width="30%"/>
 </figure>
 
 <h3 id="margin変数の削除">margin変数の削除</h3>

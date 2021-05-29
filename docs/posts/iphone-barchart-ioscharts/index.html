@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(Chartsの利用) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -142,8 +142,7 @@
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>これだけの記述で以下の棒グラフが描ける。</p>
-<figure>
-    <img src="./iphone01.png" width="30%"/> 
+<figure><img src="./iphone01.png" width="30%"/>
 </figure>
 
 <h3 id="説明">説明</h3>
@@ -159,15 +158,13 @@
 <div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">maxVal</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="n">barItems</span><span class="p">.</span><span class="bp">map</span><span class="p">({</span> <span class="nv">$0</span><span class="p">.</span><span class="mi">0</span> <span class="p">}).</span><span class="bp">max</span><span class="p">()</span><span class="o">!</span></code></pre></div>
 <p><code>barChartDataSet</code>に色の配列をセットする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartDataSet</span><span class="p">.</span><span class="n">colors</span> <span class="p">=</span> <span class="n">items</span><span class="p">.</span><span class="bp">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="n">value</span> <span class="p">==</span> <span class="n">maxVal</span> <span class="p">?</span> <span class="p">.</span><span class="n">systemOrange</span> <span class="p">:</span> <span class="p">.</span><span class="n">systemBlue</span> <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./iphone02.png" width="30%"/> 
+<figure><img src="./iphone02.png" width="30%"/>
 </figure>
 
 <h2 id="アニメーション">アニメーション</h2>
 <p><code>createBarChartView</code>関数に以下の記述を追加。</p>
 <div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="n">yAxisDuration</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span></code></pre></div>
-<figure>
-    <img src="./mov01.gif" width="30%"/> 
+<figure><img src="./mov01.gif" width="30%"/>
 </figure>
 
 <h2 id="棒グラフの下に名前を表示する">棒グラフの下に名前を表示する</h2>
@@ -193,8 +190,7 @@
         <span class="k">return</span> <span class="kc">self</span><span class="p">.</span><span class="n">items</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">name</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./iphone03.png" width="60%"/> 
+<figure><img src="./iphone03.png" width="60%"/>
 </figure>
 
 <h2 id="棒グラフの上にある数字の書式設定">棒グラフの上にある数字の書式設定</h2>
@@ -211,8 +207,7 @@
         <span class="k">return</span> <span class="s">&#34;</span><span class="si">\(</span><span class="nb">Int</span><span class="si">(</span><span class="n">value</span><span class="si">))</span><span class="s">&#34;</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./iphone04.png" width="35%"/> 
+<figure><img src="./iphone04.png" width="35%"/>
 </figure>
 
 <h2 id="細かい設定">細かい設定</h2>
@@ -229,16 +224,14 @@
 <span class="c1">// ズームできないようにする</span>
 <span class="n">barChartView</span><span class="p">.</span><span class="n">pinchZoomEnabled</span> <span class="p">=</span> <span class="kc">false</span>
 <span class="n">barChartView</span><span class="p">.</span><span class="n">doubleTapToZoomEnabled</span> <span class="p">=</span> <span class="kc">false</span></code></pre></div>
-<figure>
-    <img src="./iphone05.png" width="30%"/> 
+<figure><img src="./iphone05.png" width="30%"/>
 </figure>
 
 <h2 id="ページ分け">ページ分け</h2>
 <p>1ページ内に13本のグラフが並んでいるのは見づらい。なのでScrollViewを使ってページ分けする。</p>
 <h3 id="mainstoryboard">Main.storyboard</h3>
 <p>前回通りにやる。</p>
-<figure>
-    <img src="./main_storyboard.png" width="50%"/> 
+<figure><img src="./main_storyboard.png" width="50%"/>
 </figure>
 
 <h3 id="viewcontrollerswift">ViewController.swift</h3>
@@ -286,8 +279,7 @@
 <span class="p">}</span></code></pre></div>
 <p><code>createBarChartView</code>に以下の記述を追加。これで全ページで同じ縮尺になる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">leftAxis</span><span class="p">.</span><span class="n">axisMaximum</span> <span class="p">=</span> <span class="nb">Double</span><span class="p">(</span><span class="n">maxVal</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span></code></pre></div>
-<figure>
-    <img src="./mov02.gif" width="30%"/> 
+<figure><img src="./mov02.gif" width="30%"/>
 </figure>
 
 <h2 id="タップイベント">タップイベント</h2>

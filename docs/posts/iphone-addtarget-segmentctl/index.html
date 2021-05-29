@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - addTarget/SegmentedControl | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -76,13 +76,11 @@
 <h2 id="準備">準備</h2>
 <h3 id="mainstoryborad">Main.storyborad</h3>
 <p>部品を以下のように配置する。</p>
-<figure>
-    <img src="./storyboard_main.png" width="60%"/> 
+<figure><img src="./storyboard_main.png" width="60%"/>
 </figure>
 
 <p>Segmented Controlのラベルの設定は以下で行える。</p>
-<figure>
-    <img src="./segmentedctl_prop.png" width="50%"/> 
+<figure><img src="./segmentedctl_prop.png" width="50%"/>
 </figure>
 
 <p>TableViewCellのindentifierは<code>testCell</code>とする。</p>
@@ -131,8 +129,7 @@
         <span class="p">}</span>
         <span class="n">tableView</span><span class="p">.</span><span class="n">reloadData</span><span class="p">()</span>
     <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./mov01.gif" width="50%"/> 
+<figure><img src="./mov01.gif" width="50%"/>
 </figure>
 
 <h3 id="addtarget">addTarget</h3>
@@ -160,8 +157,7 @@
 <span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">doSomething</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">UIButton</span><span class="p">,</span> <span class="k">for</span> <span class="n">event</span><span class="p">:</span> <span class="n">UIEvent</span><span class="p">)</span></code></pre></div>
 <h2 id="追記-addtargetを使わない方法">追記: addTargetを使わない方法</h2>
 <p>Storyboardからコードへ普通にAction接続したらできることが判明した。Actionの種類を&quot;Value Changed&quot;にして接続すれば、上の<code>addTarget</code>と全く同じ処理が書ける。どんな種類のActionが指定できるのかは接続時のプルダウンから見られるし、また以下のように右サイドバーから見ることも可能。</p>
-<figure>
-    <img src="./actions.png" width="30%"/> 
+<figure><img src="./actions.png" width="30%"/>
 </figure>
 
 <p><code>addTarget</code>はAction接続のコード版という立ち位置で、同じ機能が実現できるのかも。</p>

@@ -14,8 +14,8 @@
       
       <guid>https://bombrary.github.io/blog/posts/iphone-addtarget-segmentctl/</guid>
       <description>目標  降順、昇順の切り替えができるTableViewを作成する。  準備 Main.storyborad 部品を以下のように配置する。
-  Segmented Controlのラベルの設定は以下で行える。
-  TableViewCellのindentifierはtestCellとする。
+ Segmented Controlのラベルの設定は以下で行える。
+ TableViewCellのindentifierはtestCellとする。
 ViewController.swift 後々の処理のため、TableViewに表示するデータをitems、その元データをitemsSourceと分けることにする。
 class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;#34;, &amp;#34;items2&amp;#34;, &amp;#34;items3&amp;#34;, &amp;#34;items4&amp;#34;, &amp;#34;items5&amp;#34;, &amp;#34;items6&amp;#34;, &amp;#34;items7&amp;#34;, &amp;#34;items8&amp;#34;] var items: [String] = [] @IBOutlet weak var segmentedControl: UISegmentedControl! @IBOutlet weak var tableView: UITableView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self items = itemsSource } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { return items.</description>
     </item>

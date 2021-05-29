@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Eular法とRunge-Kutta法をPythonで実装する | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -63,7 +63,7 @@
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2020-05-28T10:50:13&#43;09:00">May 29, 2020</time>
+        <time datetime="2020-05-28T10:50:13&#43;09:00">March 31, 2021</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -188,8 +188,7 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div><p>グラフは以下のようになる。</p>
-<figure>
-    <img src="./eular0.png" width="70%"/> 
+<figure><img src="./eular0.png" width="70%"/>
 </figure>
 
 <h3 id="導出2階">導出(2階)</h3>
@@ -251,8 +250,7 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div><p>グラフは以下のようになる。</p>
-<figure>
-    <img src="./eular1.png" width="70%"/> 
+<figure><img src="./eular1.png" width="70%"/>
 </figure>
 
 <h3 id="注意">注意</h3>
@@ -297,8 +295,7 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div><p>単振動なのに、振幅がどんどん大きくなっている。</p>
-<figure>
-    <img src="./eular2.png" width="70%"/> 
+<figure><img src="./eular2.png" width="70%"/>
 </figure>
 
 <p>理由は、以下の式</p>
@@ -426,14 +423,12 @@ x(t + h) &amp;:= x(t) + \frac{l_1 + l_2}{2}h
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div><p>次のようなグラフが得られる(青:Eular法、橙:今回の方法)。Eular法に比べて、かなり精度が良くなっている。</p>
-<figure>
-    <img src="./eular_improved0.png" width="70%"/> 
+<figure><img src="./eular_improved0.png" width="70%"/>
 </figure>
 
 <p>これくらい時間を増やすと、誤差が目に見えてくる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-</code></pre></div><figure>
-    <img src="./eular_improved1.png" width="70%"/> 
+</code></pre></div><figure><img src="./eular_improved1.png" width="70%"/>
 </figure>
 
 <h2 id="runge-kutta法">Runge-Kutta法</h2>
@@ -519,8 +514,7 @@ l_4 &amp;:= v(t) + hk_3
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div><p>ちゃんと正弦波を描いている。</p>
-<figure>
-    <img src="./runge_kutta0.png" width="70%"/> 
+<figure><img src="./runge_kutta0.png" width="70%"/>
 </figure>
 
 <p>前節の方法と比較してみる。</p>
@@ -530,8 +524,7 @@ l_4 &amp;:= v(t) + hk_3
 <span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">runge_kutta</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
 </code></pre></div><p>グラフは次のようになる(青:前節の方法、橙: Runge-Kutta法)。Runge-Kutta法の方が精度が良いことが分かる。</p>
-<figure>
-    <img src="./runge_kutta1.png" width="70%"/> 
+<figure><img src="./runge_kutta1.png" width="70%"/>
 </figure>
 
 <h2 id="ライブラリを使うscipy">ライブラリを使う(SciPy)</h2>
@@ -583,8 +576,7 @@ x(0) \\ v(0)
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div><p>ただ、このコードだと、グラフがギザギザになっている。</p>
-<figure>
-    <img src="./scipy0.png" width="70%"/> 
+<figure><img src="./scipy0.png" width="70%"/>
 </figure>
 
 <p>もっと滑らかなものが欲しい場合、次のようにする。<code>solve_ivp</code>の引数に<code>dense_output=True</code>を追加し、<code>solver.sol</code>で時刻ごとの値を計算する。</p>
@@ -602,8 +594,7 @@ x(0) \\ v(0)
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div><figure>
-    <img src="./scipy1.png" width="70%"/> 
+</code></pre></div><figure><img src="./scipy1.png" width="70%"/>
 </figure>
 
 <h2 id="参考">参考</h2>

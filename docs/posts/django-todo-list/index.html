@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Djangoの勉強でTodoリストを作る | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -246,8 +246,7 @@ $ python3 manage.py migrate
     <span class="n">todo</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;todo_list:index&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()))</span></code></pre></div>
 <p>これでまともなTodoリストができた。
-<figure>
-    <img src="./01.png" width="50%"/> 
+<figure><img src="./01.png" width="50%"/>
 </figure>
 </p>
 <h2 id="スタイルの変更">スタイルの変更</h2>
@@ -339,8 +338,7 @@ $ python3 manage.py migrate
   <span class="k">color</span><span class="p">:</span> <span class="mh">#555</span><span class="p">;</span>
 <span class="p">}</span></code></pre></div>
 <p><code>$ python3 manage.py runserver</code>でサーバーを再起動した方が良いかもしれない。そうするとCSSが反映されている。ここでは<code>style.css</code>の完成形を一気に見せてしまったが、実際には、Webページ上での表示を確認しながらCSSを作っていくことになるだろう。</p>
-<figure>
-    <img src="./02.png"/> 
+<figure><img src="./02.png"/>
 </figure>
 
 <h2 id="参考">参考</h2>

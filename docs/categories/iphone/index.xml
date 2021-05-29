@@ -55,7 +55,7 @@ class ViewController: UIViewController { var constraint: NSLayoutConstraint! ove
 基本的にはこちらを参考にしながら進めていく。
 UIStackViewをコード上で使う基本 とりあえず使い方を確認する。
 Main.storyboard こんな感じにする。
-  ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.</description>
+ ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.</description>
     </item>
     
     <item>
@@ -68,11 +68,11 @@ Main.storyboard こんな感じにする。
 用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。
 var dataSource = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。
 UScrollViewの配置 Main.storyboardにUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。
-  その後、UIScrollViewのOutlet接続をViewController.swiftに対して行う。
+ その後、UIScrollViewのOutlet接続をViewController.swiftに対して行う。
 UIScrollVieの設定 「スクロールの対象となるコンテンツを中に入れる」だけで、スクロール可能なViewが作れる。ただし、思い通りの表示にするためには、UIScrollViewやコンテンツのサイズを設定しておく必要がある。
 複数ページを持つコンテンツを作りたいので、コンテンツ用Viewの中にページ用のViewが複数存在する状態になる。なのでページの位置やサイズもちゃんと設定する。
 ScrollViewのレイアウト こんな感じにする。
-  なのでコードはこんな感じにする。
+ なのでコードはこんな感じにする。
 class ViewController: UIViewController { @IBOutlet weak var scrollView: UIScrollView! let marginX: CGFloat = 80 let marginY: CGFloat = 40 override func viewDidLoad() { super.</description>
     </item>
     
@@ -85,13 +85,13 @@ class ViewController: UIViewController { @IBOutlet weak var scrollView: UIScroll
       <description>iPhoneアプリで棒グラフを描く方法として考えられるのは次の3通り。
  ライブラリを使う - Chartsというライブラリがある。おそらくこれが一般的な選択肢。 Viewを棒グラフに見立てる - UIStackViewをうまく使った例にこんなのがある。 CoreGraphicsを使って手で描画する - 厳密にはUIKit側でこれを扱いやすくしたものがあるみたいで、Drawingとしてまとめられている。  ここではCoreGraphicsの練習を兼ねて、3つ目の方法で棒グラフを書いてみる。
 目標  棒グラフを表示する 棒グラフの先端に値を表示する 今回用いるデータは(ラベル, 整数値)とする 整数値を棒グラフの高さとし、棒グラフの頂点にその数字を描く ラベルは棒グラフの下に描く 整数値が最も大きなものの色をオレンジ色にする 画面の大きさに関わらない図を作る  要するに以下のようなものを作る。
-  細かいレイアウト 画面の大きさに応じて棒グラフのサイズを変更する必要があるため、レイアウトについてそれなりに決めておく。テキストについては適当なサイズに設定する。
-  ビューの幅を$W$、barWidthを$w$、データの個数を$n$とする。するとpadXの個数は$n+1$である。このとから、$w$は次のように計算できる。
+ 細かいレイアウト 画面の大きさに応じて棒グラフのサイズを変更する必要があるため、レイアウトについてそれなりに決めておく。テキストについては適当なサイズに設定する。
+ ビューの幅を$W$、barWidthを$w$、データの個数を$n$とする。するとpadXの個数は$n+1$である。このとから、$w$は次のように計算できる。
 $$ \begin{aligned} &amp;amp; wn + \frac{w}{2}(n+1) = W \\ \Leftrightarrow&amp;amp;\ w = \frac{2W}{3n + 1} \end{aligned} $$
 この計算結果をbarWidthとして利用する。
 準備 Main.storyboardを次のようにしておく。
 GraphViewのClassをGraphViewにする。新たにGraphView.swiftを作っておく。
-  GraphView.swiftを作る 以下が雛形。
+ GraphView.swiftを作る 以下が雛形。
 class GraphView: UIView { override func awakeFromNib() { } let data: [(String, CGFloat)] = [(7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;)] override func draw(_ rect: CGRect) { } } Viewの枠線 layer.</description>
     </item>
     
@@ -106,10 +106,10 @@ class GraphView: UIView { override func awakeFromNib() { } let data: [(String, C
 AppleのHuman Interface GuidelineにModalityの意味が書いてあって、これを引用すると、
  Modality is a design technique that presents content in a temporary mode that’s separate from the user&#39;s previous current context and requires an explicit action to exit. [意訳] Modalityとは、ユーザの以前の文脈から離れた一時的なモードでコンテンツを表示するデザインの手法。そのモードを終了するためには何か明示的なアクションを必要とする。  ほとんど同じ意味っぽい。
 例えば次のようなモーダル表示(Page Sheet)の場合，呼び出し元が下にあってその上に青いビューが載っている。ここでは、「上から下に引っ張る」というアクションを起こすことで、このビューを閉じることができる。
-  用意するもの  表示元のViewController 表示先のViewController UIPresentationControllerのサブクラス - これが表示先のViewControllerの表示方法を規定する。  ここでは、表示先のViewControllerのStoryboard IDをdestとする．
+ 用意するもの  表示元のViewController 表示先のViewController UIPresentationControllerのサブクラス - これが表示先のViewControllerの表示方法を規定する。  ここでは、表示先のViewControllerのStoryboard IDをdestとする．
 準備 まずはボタンをクリックすると表示されるものだけ作る。
 Main.storyboard 表示元にはボタンを配置する。表示先はラベルを配置し、適切なConstraintを設定しておく。
-  ViewController.swift ボタンのAction接続を作る。ボタンがタップされたら遷移するようにする。
+ ViewController.swift ボタンのAction接続を作る。ボタンがタップされたら遷移するようにする。
 class ViewController: UIViewController { override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view.</description>
     </item>
     
@@ -122,7 +122,7 @@ class ViewController: UIViewController { override func viewDidLoad() { super.vie
       <description>目標 スワイプしたら削除されるテーブルを作る。
 準備 TableViewに最低限の設定をしておく。
 Main.storyboardを次のようにする。
-  ViewController.swiftの内容を以下のようにする。
+ ViewController.swiftの内容を以下のようにする。
 class ViewController: UIViewController { @IBOutlet weak var tableView: UITableView! var items = [&amp;#34;Item1&amp;#34;, &amp;#34;Item2&amp;#34;, &amp;#34;Item3&amp;#34;, &amp;#34;Item4&amp;#34;, &amp;#34;Item5&amp;#34;] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self tableView.delegate = self } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { items.count } func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&amp;gt; UITableViewCell { let cell = tableView.</description>
     </item>
     
@@ -136,9 +136,9 @@ class ViewController: UIViewController { @IBOutlet weak var tableView: UITableVi
  メイン画面でボタンを押すとウォークスルー画面に飛ぶ。 ウォークスルー画面では、左右にスワイプすると画面が移動する。 画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。  登場物  Main.storyboardとViewController.swift Walkthrough.storyboardとPageViewController.swift  準備 上に書いたものをとりあえず全て作る。ただし、PageViewControllerのサブクラスはUIPageViewControllerであることに注意。
 Main.storyboard ボタンを一つ作っておく。
 Walkthrough.storyboard 配置を次のようにする
-   Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;quot;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;quot;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;quot;と書かれたViewControllerのidentifierはpage3とする。  以下で、Transition Styleを&amp;quot;Scroll&amp;quot;とする。もし&amp;quot;Page Curl&amp;quot;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
-  PageViewController.swift 次のように書く。
-class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.</description>
+  Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;quot;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;quot;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;quot;と書かれたViewControllerのidentifierはpage3とする。  以下で、Transition Styleを&amp;quot;Scroll&amp;quot;とする。もし&amp;quot;Page Curl&amp;quot;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
+ PageViewController.swift 次のように書く。
+class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.instantiateViewController(withIdentifier: &amp;#34;page1&amp;#34;) let page2 = stb.</description>
     </item>
     
     <item>
@@ -148,8 +148,8 @@ class PageViewController: UIPageViewController { var controllers: [UIViewControl
       
       <guid>https://bombrary.github.io/blog/posts/iphone-addtarget-segmentctl/</guid>
       <description>目標  降順、昇順の切り替えができるTableViewを作成する。  準備 Main.storyborad 部品を以下のように配置する。
-  Segmented Controlのラベルの設定は以下で行える。
-  TableViewCellのindentifierはtestCellとする。
+ Segmented Controlのラベルの設定は以下で行える。
+ TableViewCellのindentifierはtestCellとする。
 ViewController.swift 後々の処理のため、TableViewに表示するデータをitems、その元データをitemsSourceと分けることにする。
 class ViewController: UIViewController { let itemsSource = [&amp;#34;items1&amp;#34;, &amp;#34;items2&amp;#34;, &amp;#34;items3&amp;#34;, &amp;#34;items4&amp;#34;, &amp;#34;items5&amp;#34;, &amp;#34;items6&amp;#34;, &amp;#34;items7&amp;#34;, &amp;#34;items8&amp;#34;] var items: [String] = [] @IBOutlet weak var segmentedControl: UISegmentedControl! @IBOutlet weak var tableView: UITableView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. tableView.dataSource = self items = itemsSource } } extension ViewController: UITableViewDataSource { func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&amp;gt; Int { return items.</description>
     </item>
@@ -168,12 +168,13 @@ Menu.storyboard classにはMenuViewControllerを指定する。部品配置は�
 全体を包むViewを親View、その中に作ったViewを子Viewと呼ぶことにすると、
  Constraintは適当に設定する。子Viewが画面下に配置されるようにする。 StackViewにはFill Equallyの設定を行っておく。 親Viewの背景色を、黒の半透明に設定する。設定手順は以下の通り。  BackgroundをBlackに設定 BackgroundをCustomに設定し直すと、カラーピッカーが現れる。そこで透明度を50%に設定する。    また、&amp;ldquo;Initial View Controller&amp;quot;にチェックをつける。
 親Viewのtagを1に設定しておく。これはタッチイベントを捕捉する際に必要になる。
-  Dest1.storyboard、Dest2.storyboard Dest1.storyboardの部品配置は以下のようにする。
+ Dest1.storyboard、Dest2.storyboard Dest1.storyboardの部品配置は以下のようにする。
 &amp;ldquo;Is initial View Controller&amp;quot;にチェックをつける。
-  Dest2.storyboardの部品配置は以下のようにする。
+ Dest2.storyboardの部品配置は以下のようにする。
 &amp;ldquo;Is initial View Controller&amp;quot;にチェックをつける。
-  Main.storyboard 部品配置は以下のようにする。
-  OpenButtonからStoryboard ReferenceへのSegueのActionは&amp;quot;Present Modally&amp;quot;を選択。Segueの設定は以下のようにする。</description>
+ Main.storyboard 部品配置は以下のようにする。
+ OpenButtonからStoryboard ReferenceへのSegueのActionは&amp;quot;Present Modally&amp;quot;を選択。Segueの設定は以下のようにする。
+ Storyboard Referenceにて、&amp;ldquo;Storyboard&amp;quot;をMenuに、&amp;ldquo;Referenced ID&amp;quot;を未記入にする。</description>
     </item>
     
   </channel>

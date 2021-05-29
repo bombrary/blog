@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Vue.js勉強メモ(1) - 簡易Todoリストの作成 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -117,14 +117,12 @@
 </code></pre></div><p><code>el</code>プロパティに、データと結びつく要素を指定する。これはセレクタの書式。<code>el</code>とは恐らく<code>element</code>の略。<code>data</code>プロパティに、結びつけるデータを指定する。<code>v-for</code>で利用するために、<code>todos</code>プロパティは配列にする。</p>
 <p>こんな感じで、Vue.jsでは「データとDOMを結びつける」みたいなコーディングを行っていくみたい。この部分に関してはD3.jsと通ずるものがある。</p>
 <p><code>index.html</code>を開くとこんな感じになる。<code>todos</code>の各要素が<code>li</code>要素の内部に埋め込まれていることが分かる。</p>
-<figure>
-    <img src="./sc01.png" width="50%"/> 
+<figure><img src="./sc01.png" width="50%"/>
 </figure>
 
 <p>面白いことに、<code>todos</code>の変更がリアルタイムで反映される。このことをガイドでは「リアクティブ」と表現している。データとDOMを結び付けておけば、データの変化が起こったとしてもプログラマが再描画を指示する必要がない。</p>
 <p>ちなみに、結びついたデータは<code>app</code>のプロパティからアクセスできる。</p>
-<figure>
-    <img src="./sc02.png" width="50%"/> 
+<figure><img src="./sc02.png" width="50%"/>
 </figure>
 
 <h2 id="入力エリアの追加">入力エリアの追加</h2>
@@ -145,13 +143,11 @@
   <span class="p">}</span>
 <span class="p">})</span>
 </code></pre></div><p>双方向バインディングを実感するためには、次のようにする。<code>app.todoInput</code>の値を変更すると、<code>input</code>の値が変わる。</p>
-<figure>
-    <img src="./sc03.png" width="50%"/> 
+<figure><img src="./sc03.png" width="50%"/>
 </figure>
 
 <p><code>input</code>を変更すると、<code>app.todoInput</code>の値が変更される。</p>
-<figure>
-    <img src="./sc04.png" width="50%"/> 
+<figure><img src="./sc04.png" width="50%"/>
 </figure>
 
 <p><code>input</code>は<code>type</code>属性で、チェックボックスやラジオボタンなど、様々なフォーム要素に変更できる。それに応じて<code>v-model</code>に結びつく要素の型が変化する。詳しくは<a href="https://jp.vuejs.org/v2/guide/forms.html">ガイドのフォーム入力バインディングの項</a>にて。</p>
@@ -211,8 +207,7 @@
   <span class="p">}</span>
 <span class="p">})</span>
 </code></pre></div><p>最終的には次のようになる。</p>
-<figure>
-    <img src="./sc05.png" width="40%"/> 
+<figure><img src="./sc05.png" width="40%"/>
 </figure>
 
 <p>形にはなった。今回はここまで。</p>

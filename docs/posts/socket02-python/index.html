@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Socket通信勉強(2) - Pythonでの書き方/HTTPサーバーもどき作成 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -150,8 +150,7 @@
 <h2 id="http通信の基礎知識">HTTP通信の基礎知識</h2>
 <p>PythonにはHTTP通信用のモジュールがあるのでそれを使うべきなのだが、勉強としてSocket通信でHTTP通信っぽいことをしてみる。</p>
 <p>HTTP通信の基本は「リクエスト」と「レスポンス」である。クライアントからサーバーに「何かデータをください」などと要求するメッセージを送る。サーバーはそれを受け取って、適切なメッセージを返す。ブラウザ上でページが表示されるのも同じ仕組みで、ここでは「このページのHTMLファイルが欲しい」とブラウザが要求し、サーバーはそれに応じてHTMLファイルを返す。</p>
-<figure>
-    <img src="./http-model.svg"/> 
+<figure><img src="./http-model.svg"/>
 </figure>
 
 <p>HTTPプロトコルとは、「サーバーはリクエストを受け取って、レスポンスを返す」「クライアントはリクエストを受け取って、レスポンスを受け取る」「リクエストはこんな書式で、レスポンスはこんな書式にしてね」などの取り決めに過ぎない。具体的な通信方法については下位のプロトコルが決めることであって、TCPやUDPでなくても構わない(もちろん、他に通信方法があればの話だが)。</p>
@@ -258,8 +257,7 @@ Accept: */*</code></pre></div>
 <p><strong>(2021/3/3追記)</strong> Chromeでは動作するが、現バージョンのSafari(14.0.2)では動かない。しばらく読み込んだあと、接続が切断された旨のメッセージが表示されてしまう。
 色々実験してみたところ、<code>localhost:8000</code>に1回アクセスするのにSafariが複数回の通信を行なっているのが原因のようだ。
 なので、次節のコードであればSafariでも動作する。</p>
-<figure>
-    <img src="./browser.png"/> 
+<figure><img src="./browser.png"/>
 </figure>
 
 <p><code>server.py</code>の出力は以下のようになる。curlコマンドに比べ、いろいろなものをヘッダに乗せてリクエストを送っていることが分かる。</p>

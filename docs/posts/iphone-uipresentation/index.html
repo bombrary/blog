@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - UIPresentationControllerの利用 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -80,8 +80,7 @@ Modality is a design technique that presents content in a temporary mode that’
 </blockquote>
 <p>ほとんど同じ意味っぽい。</p>
 <p>例えば次のようなモーダル表示(Page Sheet)の場合，呼び出し元が下にあってその上に青いビューが載っている。ここでは、「上から下に引っ張る」というアクションを起こすことで、このビューを閉じることができる。</p>
-<figure>
-    <img src="./iphone-pagesheet.png" width="30%"/> 
+<figure><img src="./iphone-pagesheet.png" width="30%"/>
 </figure>
 
 <h2 id="用意するもの">用意するもの</h2>
@@ -95,8 +94,7 @@ Modality is a design technique that presents content in a temporary mode that’
 <p>まずはボタンをクリックすると表示されるものだけ作る。</p>
 <h3 id="mainstoryboard">Main.storyboard</h3>
 <p>表示元にはボタンを配置する。表示先はラベルを配置し、適切なConstraintを設定しておく。</p>
-<figure>
-    <img src="./storyboard_main01.png" width="75%"/> 
+<figure><img src="./storyboard_main01.png" width="75%"/>
 </figure>
 
 <h3 id="viewcontrollerswift">ViewController.swift</h3>
@@ -153,8 +151,7 @@ Modality is a design technique that presents content in a temporary mode that’
 </ul>
 <h2 id="ビューのサイズと位置の変更">ビューのサイズと位置の変更</h2>
 <p>以下のような配置のウインドウを作ることを考える。</p>
-<figure>
-    <img src="./layout01.svg"/> 
+<figure><img src="./layout01.svg"/>
 </figure>
 
 <p>設定方法は<a href="https://qiita.com/wai21/items/9b40192eb3ee07375016">こちら</a>を参考にした。変数名のいくつかはここと同じになっている。</p>
@@ -182,8 +179,7 @@ Modality is a design technique that presents content in a temporary mode that’
     <span class="n">presentedView</span><span class="p">?.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">frameOfPresentedViewInContainerView</span>
 <span class="p">}</span></code></pre></div>
 <p>ラベルが青Viewの中央に並んでいる。このことから、<code>size</code>や<code>frameOfPresentedViewInContainerView</code>で定義されたサイズは、単にトリミングしているわけでなく、Constraintを保ったままViewそのものを縮小したサイズだと分かる。</p>
-<figure>
-    <img src="./iphone02.png" width="30%"/> 
+<figure><img src="./iphone02.png" width="30%"/>
 </figure>
 
 <h3 id="捕捉">捕捉</h3>
@@ -207,8 +203,7 @@ presentedView?.frame:Optional((0.0, 0.0, 414.0, 896.0))
 
     <span class="k">return</span> <span class="n">presentedViewFrame</span>
 <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./iphone03.png" width="30%"/> 
+<figure><img src="./iphone03.png" width="30%"/>
 </figure>
 
 <h2 id="背景を暗くするアニメーション">背景を暗くするアニメーション</h2>
@@ -263,8 +258,7 @@ presentedView?.frame:Optional((0.0, 0.0, 414.0, 896.0))
         <span class="kc">self</span><span class="p">.</span><span class="n">overlay</span><span class="p">.</span><span class="n">alpha</span> <span class="p">=</span> <span class="mf">0.0</span>
     <span class="p">})</span>
 <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./mov.gif" width="30%"/> 
+<figure><img src="./mov.gif" width="30%"/>
 </figure>
 
 <h2 id="捕捉-遷移のアニメーションの向きを制御したいとき">捕捉: 遷移のアニメーションの向きを制御したいとき</h2>

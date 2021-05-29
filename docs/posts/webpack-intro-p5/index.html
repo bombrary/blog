@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>webpackに入門する - p5.jsの開発環境作り | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -121,7 +121,7 @@ $ mkdir -p public/js
   <span class="nx">entry</span><span class="o">:</span> <span class="s1">&#39;./src/index.js&#39;</span><span class="p">,</span>
   <span class="nx">output</span><span class="o">:</span> <span class="p">{</span>
     <span class="nx">filename</span><span class="o">:</span> <span class="s1">&#39;bundle.js&#39;</span><span class="p">,</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public/js&#39;</span><span class="p">)</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">__</span><span class="nx">dirname</span><span class="p">,</span> <span class="s1">&#39;public/js&#39;</span><span class="p">)</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div><h4 id="説明">説明</h4>
@@ -159,7 +159,7 @@ $ npm install webpack-dev-server --save-dev
 <div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
   <span class="p">...</span>
   <span class="nx">devServer</span><span class="o">:</span> <span class="p">{</span>
-    <span class="nx">contentBase</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">),</span>
+    <span class="nx">contentBase</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">__</span><span class="nx">dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">),</span>
     <span class="nx">publicPath</span><span class="o">:</span> <span class="s2">&#34;/js/&#34;</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -241,8 +241,7 @@ $ npm install p5
 <span class="p">};</span>
 </code></pre></div><p><code>index.js</code>では<code>sketch.js</code>の<code>sketch</code>をimportしていることに注目。また、<code>sketch.js</code>では<code>sketch</code>という変数をexportしていることに注目。webpackではこの情報をもとに、2つのファイルをまとめて<code>bundle.js</code>に変換する。また<code>p5</code>は<code>./</code>という相対パス表現を用いずにimportしている。このように書くと、<code>/node_modules/</code>にあるパッケージを参照する(これは<a href="https://webpack.js.org/configuration/resolve/#resolvemodules">resolve.module</a>のデフォルト値として設定されている)。</p>
 <p>ブラウザ上では以下のように表示される。</p>
-<figure>
-    <img src="sc01.png" width="50%"/> 
+<figure><img src="sc01.png" width="50%"/>
 </figure>
 
 <h2 id="弾むボールの作成">弾むボールの作成</h2>
@@ -335,8 +334,7 @@ $ npm install p5
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div><p>こんな感じになる。</p>
-<figure>
-    <img src="sc02.gif" width="50%"/> 
+<figure><img src="sc02.gif" width="50%"/>
 </figure>
 
 <p>ちなみにこの状態で<code>npm run build</code>を行うと、ファイルサイズが大きすぎる旨の警告が出る。警告をを消すにはファイル分割などの設定をする必要があるが、これについてはまたいつか調べる。今回はここまで。</p>

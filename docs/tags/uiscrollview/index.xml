@@ -17,11 +17,11 @@
 用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。
 var dataSource = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。
 UScrollViewの配置 Main.storyboardにUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。
-  その後、UIScrollViewのOutlet接続をViewController.swiftに対して行う。
+ その後、UIScrollViewのOutlet接続をViewController.swiftに対して行う。
 UIScrollVieの設定 「スクロールの対象となるコンテンツを中に入れる」だけで、スクロール可能なViewが作れる。ただし、思い通りの表示にするためには、UIScrollViewやコンテンツのサイズを設定しておく必要がある。
 複数ページを持つコンテンツを作りたいので、コンテンツ用Viewの中にページ用のViewが複数存在する状態になる。なのでページの位置やサイズもちゃんと設定する。
 ScrollViewのレイアウト こんな感じにする。
-  なのでコードはこんな感じにする。
+ なのでコードはこんな感じにする。
 class ViewController: UIViewController { @IBOutlet weak var scrollView: UIScrollView! let marginX: CGFloat = 80 let marginY: CGFloat = 40 override func viewDidLoad() { super.</description>
     </item>
     

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - セミモーダルビューからの遷移 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -106,32 +106,27 @@
 </ul>
 <p>また、&ldquo;Initial View Controller&quot;にチェックをつける。</p>
 <p>親Viewのtagを1に設定しておく。これはタッチイベントを捕捉する際に必要になる。</p>
-<figure>
-    <img src="./storyboard_menu.png" width="50%"/> 
+<figure><img src="./storyboard_menu.png" width="50%"/>
 </figure>
 
 <h3 id="dest1storyboarddest2storyboard">Dest1.storyboard、Dest2.storyboard</h3>
 <p><code>Dest1.storyboard</code>の部品配置は以下のようにする。</p>
 <p>&ldquo;Is initial View Controller&quot;にチェックをつける。</p>
-<figure>
-    <img src="./storyboard_dest1.png" width="50%"/> 
+<figure><img src="./storyboard_dest1.png" width="50%"/>
 </figure>
 
 <p><code>Dest2.storyboard</code>の部品配置は以下のようにする。</p>
 <p>&ldquo;Is initial View Controller&quot;にチェックをつける。</p>
-<figure>
-    <img src="./storyboard_dest2.png" width="50%"/> 
+<figure><img src="./storyboard_dest2.png" width="50%"/>
 </figure>
 
 <h3 id="mainstoryboard">Main.storyboard</h3>
 <p>部品配置は以下のようにする。</p>
-<figure>
-    <img src="./storyboard_main.png"/> 
+<figure><img src="./storyboard_main.png"/>
 </figure>
 
 <p>OpenButtonからStoryboard ReferenceへのSegueのActionは&quot;Present Modally&quot;を選択。Segueの設定は以下のようにする。</p>
-<figure>
-    <img src="./segue01.png" width="50%"/> 
+<figure><img src="./segue01.png" width="50%"/>
 </figure>
 
 <p>Storyboard Referenceにて、&ldquo;Storyboard&quot;をMenuに、&ldquo;Referenced ID&quot;を未記入にする。</p>
@@ -173,8 +168,7 @@
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p><code>dismiss</code>メソッドを使うと自身のビューを閉じることができる。</p>
-<figure>
-    <img src="./mov01.gif" width="25%"/> 
+<figure><img src="./mov01.gif" width="25%"/>
 </figure>
 
 <h2 id="モーダルビューを閉じてから遷移する処理">モーダルビューを閉じてから遷移する処理</h2>
@@ -213,8 +207,7 @@
 <li>NavigationItemのtitleをHelloに変更すると、上部にHelloが表示されるようになる。</li>
 </ul>
 <p>ルートのView Controller(ラベル<code>Distination1</code>が書かれているもの)のidentifierを<code>dest1</code>に設定する。</p>
-<figure>
-    <img src="./storyboard_dest1_2.png"/> 
+<figure><img src="./storyboard_dest1_2.png"/>
 </figure>
 
 <h3 id="menuviewcontrollerswiftの変更">MenuViewController.swiftの変更</h3>
@@ -228,8 +221,7 @@
         <span class="p">}</span>
     <span class="p">}</span></code></pre></div>
 <p>ここで、<code>let vc = sb.instantiateViewController(withIdentifier: &quot;navigation controllerのID&quot;)</code>と書いてはいけない。Navigation Controllerの中にNavigation Contollerをpushすることはできないため、<code>pushViewController</code>の呼び出し時にエラーになる。</p>
-<figure>
-    <img src="./mov02.gif" width="25%"/> 
+<figure><img src="./mov02.gif" width="25%"/>
 </figure>
 
 <h2 id="その他の知見">その他の知見</h2>

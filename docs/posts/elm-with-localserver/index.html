@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elm/JavaScript ローカルサーバーで通信する際にハマったこと | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -163,8 +163,7 @@
   <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
 <span class="p">});</span>
 
-<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
-</code></pre></div>
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span></code></pre></div>
 <h2 id="失敗と解決までの流れ">失敗と解決までの流れ</h2>
 <h3 id="httpgetの引数">Http.getの引数</h3>
 <p>初めはサーバー側で次のようにしていた。</p>
@@ -175,8 +174,7 @@
   <span class="p">};</span>
   <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">body</span><span class="p">))</span>
   <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
-<span class="p">});</span>
-</code></pre></div>
+<span class="p">});</span></code></pre></div>
 <p>Elm側でのGetメソッドは次のように呼び出していた。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">getServer</span> <span class="nf">:</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
 <span class="nv">getServer</span> <span class="nf">=</span>
@@ -211,8 +209,7 @@ Failed to load resource: Origin http://localhost:8000 is not allowed by Access-C
 <div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span>
   <span class="s1">&#39;Access-Control-Allow-Origin&#39;</span><span class="o">:</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
   <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span>
-<span class="p">});</span>
-</code></pre></div>
+<span class="p">});</span></code></pre></div>
 <p>これでうまく動くようになった。ここで、「実はクライアント側の問題は<code>http://</code>を付けていなかったことだけが原因？」と思い、次のように書き換えた。</p>
 <div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm">  <span class="kt">Http</span><span class="nf">.</span><span class="nv">get</span>
     <span class="p">{</span> <span class="nv">url</span> <span class="nf">=</span> <span class="s">&#34;http://localhost:3000&#34;</span>
@@ -231,8 +228,7 @@ Failed to load resource: Origin http://localhost:8000 is not allowed by Access-C
   <span class="p">})</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">msg</span> <span class="p">=&gt;</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
-  <span class="p">})</span>
-</code></pre></div>
+  <span class="p">})</span></code></pre></div>
 <p>これなら問題ない。</p>
 <div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000&#39;</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="p">=&gt;</span> <span class="p">{</span>
@@ -250,8 +246,7 @@ Failed to load resource: Origin http://localhost:8000 is not allowed by Access-C
   <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:3000&#39;</span><span class="p">);</span>
   <span class="nx">data</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kr">await</span> <span class="nx">data</span><span class="p">.</span><span class="nx">msg</span><span class="p">)</span>
-<span class="p">})()</span>
-</code></pre></div>
+<span class="p">})()</span></code></pre></div>
 <h2 id="結果の考察">結果の考察</h2>
 <p><code>localhost</code>だと<code>ftp://localhost</code>とも<code>http://localhost</code>とも取れてしまうから、確かに必要だ、と後で思った。</p>
 <p>いつもブラウザのURL欄に<code>localhost</code>と入力してアクセスできていたため、同じように<code>http://</code>を省いて通信できるものだと無意識に思っていた。しかしこれが通用するのはブラウザだけで、恐らく「スキーマが指定されていなかったら<code>http://</code>をつけたものとみなす」という仕様なのだろう。</p>

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ ドラッグ移動の実現(1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -300,8 +300,7 @@
 <p>ここで、<code>viewCircle</code>、<code>viewCircles</code>は<code>Model</code>を引数にとるようにした。一般に、<code>view</code>と同じく要素の描画を担う関数に関しては、<code>Model</code>を引数にとった方が、後々の修正や変更が楽になると思われる。なぜなら、<code>Model</code>こそが要素描画のための全ての情報を持っているからである。「今はCircleの情報をもとに描画してたけど、それだけじゃなくてXXの情報も必要になった」などの変更に、比較的簡単に対応できる。</p>
 <p><strong>追記(2020/03/04):</strong> ただし、<code>Model</code>を引数にとる、という情報だけでは「この関数の機能を実現するためにはどんな値が必要なのか」が分からないため、ソースコードから関数の機能を予想するのが難しくなるかもしれない。なので一概に良いとは言い切れない。</p>
 <p>ここまで実装すると、実行結果は以下のようになる。</p>
-<figure>
-    <img src="./sc01.png" width="50%"/> 
+<figure><img src="./sc01.png" width="50%"/>
 </figure>
 
 <h2 id="円をクリック中の色変化">円をクリック中の色変化</h2>
@@ -413,8 +412,7 @@
             <span class="kt">BE</span><span class="nf">.</span><span class="nv">onMouseUp</span> <span class="p">(</span><span class="kt">JD</span><span class="nf">.</span><span class="nv">succeed</span> <span class="kt">CircleReleased</span><span class="p">)</span></code></pre></div>
 <p><code>Browser.Event.onMouseUp</code>を用いた。<code>Browser.Event</code>で提供される関数の多くは、引数に<code>Json.Decode.Decoder msg</code>をとる。これは何をDecodeするのかというと、JSのEventオブジェクトをDecodeする。今回はEventから何も取得する必要はないので、<code>Json.Decode.succeed</code>を用いる。</p>
 <p>実行結果は以下のようになる。</p>
-<figure>
-    <img src="./sc02.gif"/> 
+<figure><img src="./sc02.gif"/>
 </figure>
 
 <h2 id="マウス位置の取得">マウス位置の取得</h2>
@@ -520,8 +518,7 @@
 <span class="nv">textMouseMovement</span> <span class="nv">mouse</span> <span class="nf">=</span>
     <span class="s">&#34;(&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">dx</span> <span class="nf">++</span> <span class="s">&#34;,&#34;</span> <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">mouse</span><span class="nf">.</span><span class="nv">dy</span> <span class="nf">++</span> <span class="s">&#34;)&#34;</span></code></pre></div>
 <p>試しにマウスを動かしてみると、下にその座標と移動量が表示される。</p>
-<figure>
-    <img src="./sc03.png" width="50%"/> 
+<figure><img src="./sc03.png" width="50%"/>
 </figure>
 
 <h2 id="円を動かす">円を動かす</h2>
@@ -558,8 +555,7 @@
                 <span class="p">)</span>
                 <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span></code></pre></div>
 <p>良い感じで動いている。</p>
-<figure>
-    <img src="./sc04.gif" width="40%"/> 
+<figure><img src="./sc04.gif" width="40%"/>
 </figure>
 
 

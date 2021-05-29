@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -81,8 +81,7 @@
 <p>とりあえず使い方を確認する。</p>
 <h3 id="mainstoryboard">Main.storyboard</h3>
 <p>こんな感じにする。</p>
-<figure>
-    <img src="./storyboard_main01.png" width="50%"/> 
+<figure><img src="./storyboard_main01.png" width="50%"/>
 </figure>
 
 <h3 id="viewcontrollerswift">ViewController.swift</h3>
@@ -113,8 +112,7 @@
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>こんなに短いコードで次のような棒グラフが表現できる。</p>
-<figure>
-    <img src="./iphone01.png" width="30%"/> 
+<figure><img src="./iphone01.png" width="30%"/>
 </figure>
 
 <h3 id="説明">説明</h3>
@@ -138,8 +136,7 @@
 </ul>
 <h2 id="scrollviewの準備">ScrollViewの準備</h2>
 <h3 id="mainstoryboard-1">Main.storyboard</h3>
-<figure>
-    <img src="./storyboard_main02.png" width="50%"/> 
+<figure><img src="./storyboard_main02.png" width="50%"/>
 </figure>
 
 <h3 id="viewcontrollerswift-1">ViewController.swift</h3>
@@ -265,19 +262,16 @@
     <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
 <span class="p">)</span></code></pre></div>
 <p>この時点でアプリを起動すると、次のようになる。</p>
-<figure>
-    <img src="./mov01.gif" width="30%"/> 
+<figure><img src="./mov01.gif" width="30%"/>
 </figure>
 
 <h2 id="ラベル追加">ラベル追加</h2>
 <p><code>horizontal</code>の中に<code>vertical</code>を入れ子にすることで実現できる。</p>
-<figure>
-    <img src="./horizontal_vertical.svg" width="50%"/> 
+<figure><img src="./horizontal_vertical.svg" width="50%"/>
 </figure>
 
 <p>次のような配分にする。要素が同じ高さでない場合、<code>distribution</code>は<code>fill</code>にする。</p>
-<figure>
-    <img src="./barContainer.svg" width="50%"/> 
+<figure><img src="./barContainer.svg" width="50%"/>
 </figure>
 
 <p><code>varLabelHeight</code>と<code>nameLabelHeight</code>は固定である。これと親ビューの高さから、<code>barHeight</code>が計算できる。これを念頭に置きながら<code>Constraint</code>を設定していく。</p>
@@ -315,8 +309,7 @@
     <span class="n">addBarContainer</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">item</span><span class="p">)</span>
 <span class="p">}</span></code></pre></div>
 <p>こんな感じになる。</p>
-<figure>
-    <img src="./iphone02.png" width="30%"/> 
+<figure><img src="./iphone02.png" width="30%"/>
 </figure>
 
 <h2 id="軸水平線の描画">軸(水平線)の描画</h2>
@@ -333,8 +326,7 @@
     <span class="n">height</span><span class="p">:</span> <span class="n">borderWidth</span>
 <span class="p">)</span>
 <span class="n">layer</span><span class="p">.</span><span class="n">addSublayer</span><span class="p">(</span><span class="n">border</span><span class="p">)</span></code></pre></div>
-<figure>
-    <img src="./iphone03.png" width="50%"/> 
+<figure><img src="./iphone03.png" width="50%"/>
 </figure>
 
 <h2 id="次回予告">次回予告</h2>

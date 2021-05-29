@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - TableViewCellのスワイプ処理 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -74,8 +74,7 @@
 <h2 id="準備">準備</h2>
 <p>TableViewに最低限の設定をしておく。</p>
 <p><code>Main.storyboard</code>を次のようにする。</p>
-<figure>
-    <img src="./storyboard_main01.png" width="60%"/> 
+<figure><img src="./storyboard_main01.png" width="60%"/>
 </figure>
 
 <p><code>ViewController.swift</code>の内容を以下のようにする。</p>
@@ -118,8 +117,7 @@
         <span class="kd">let</span> <span class="nv">configuration</span> <span class="p">=</span> <span class="n">UISwipeActionsConfiguration</span><span class="p">(</span><span class="n">actions</span><span class="p">:</span> <span class="p">[</span><span class="n">destructiveAction</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">configuration</span>
     <span class="p">}</span></code></pre></div>
-<figure>
-    <img src="./mov01.gif" width="50%"/> 
+<figure><img src="./mov01.gif" width="50%"/>
 </figure>
 
 <h3 id="説明">説明</h3>
@@ -146,8 +144,7 @@
 <div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">configuration</span> <span class="p">=</span> <span class="n">UISwipeActionsConfiguration</span><span class="p">(</span><span class="n">actions</span><span class="p">:</span> <span class="p">[</span><span class="n">destructiveAction</span><span class="p">,</span> <span class="n">normalAction01</span><span class="p">,</span> <span class="n">normalAction02</span><span class="p">])</span></code></pre></div>
 <h2 id="フルスワイプしたら処理">フルスワイプしたら処理</h2>
 <p>実はもう実装は終わっている。もともと、フルスワイプによってActionが実行されるように作られている。<code>UISwipeActionsConfiguration</code>のコンストラクタで設定したactionsのうち、先頭のものが実行される仕様になっている。</p>
-<figure>
-    <img src="./mov02.gif" width="50%"/> 
+<figure><img src="./mov02.gif" width="50%"/>
 </figure>
 
 <p>もしフルスワイプをオフにしたいなら、configurationを次のようにいじる。</p>
@@ -169,8 +166,7 @@
 <p>今までやってきた方法と全く異なるため、別プロジェクトで作業する。</p>
 <h3 id="mainstoryboard">Main.storyboard</h3>
 <p>TableViewだけ配置する。TableViewCellはコードで作るため、ここでは配置しない(部品の配置やサイズの設定が難しかったため)。</p>
-<figure>
-    <img src="./storyboard_main02.png" width="60%"/> 
+<figure><img src="./storyboard_main02.png" width="60%"/>
 </figure>
 
 <h3 id="taskcellswift">TaskCell.swift</h3>
@@ -326,8 +322,7 @@
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>動きがいまいち自然でないが、一応それっぽいものはできた。</p>
-<figure>
-    <img src="./mov03.gif" width="50%"/> 
+<figure><img src="./mov03.gif" width="50%"/>
 </figure>
 
 <h2 id="参考文献">参考文献</h2>

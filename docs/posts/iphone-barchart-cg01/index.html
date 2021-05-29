@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.80.0" />
+<meta name="generator" content="Hugo 0.83.1" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -106,14 +106,12 @@
 <li>画面の大きさに関わらない図を作る</li>
 </ul>
 <p>要するに以下のようなものを作る。</p>
-<figure>
-    <img src="./iphone-completed.png" width="30%"/> 
+<figure><img src="./iphone-completed.png" width="30%"/>
 </figure>
 
 <h2 id="細かいレイアウト">細かいレイアウト</h2>
 <p>画面の大きさに応じて棒グラフのサイズを変更する必要があるため、レイアウトについてそれなりに決めておく。テキストについては適当なサイズに設定する。</p>
-<figure>
-    <img src="./layout01.svg" width="70%"/> 
+<figure><img src="./layout01.svg" width="70%"/>
 </figure>
 
 <p>ビューの幅を$W$、barWidthを$w$、データの個数を$n$とする。するとpadXの個数は$n+1$である。このとから、$w$は次のように計算できる。</p>
@@ -127,8 +125,7 @@ $$</p>
 <h2 id="準備">準備</h2>
 <p><code>Main.storyboard</code>を次のようにしておく。</p>
 <p>GraphViewのClassを<code>GraphView</code>にする。新たに<code>GraphView.swift</code>を作っておく。</p>
-<figure>
-    <img src="./storyboard_main01.png" width="70%"/> 
+<figure><img src="./storyboard_main01.png" width="70%"/>
 </figure>
 
 <h2 id="graphviewswiftを作る">GraphView.swiftを作る</h2>
@@ -238,8 +235,7 @@ $$</p>
   <span class="n">drawAxisBottom</span><span class="p">.</span><span class="n">stroke</span><span class="p">()</span>
 <span class="p">}</span></code></pre></div>
 <p>この時点で、次のように描画される。</p>
-<figure>
-    <img src="./iphone-progress01.png" width="30%"/> 
+<figure><img src="./iphone-progress01.png" width="30%"/>
 </figure>
 
 <h2 id="テキスト">テキスト</h2>
