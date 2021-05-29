@@ -640,3 +640,8 @@ if __name__ == '__main__':
 {{< /cui >}}
 
 基本動作は前節と同様になる。ただし、sqliteのautoincrementの都合上、idが1から始まる。
+
+
+## ソースコード
+
+SQLiteによる実装は[GitHubのRepository](https://github.com/bombrary/todo-api-wsgi)にあげた。

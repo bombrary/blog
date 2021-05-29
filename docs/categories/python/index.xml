@@ -6,7 +6,23 @@
     <description>Recent content in Python on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 06 Mar 2021 22:00:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 29 May 2021 13:00:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PythonとWSGIで作るTodoリストAPI</title>
+      <link>https://bombrary.github.io/blog/posts/todo-list-wsgi/</link>
+      <pubDate>Sat, 29 May 2021 13:00:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/todo-list-wsgi/</guid>
+      <description>シンプルなTodoリストを作る。 今回は勉強のため、Webアプリケーションフレームワークは使わずに、 敢えてWSGIの仕様のみ参考にして書く．
+WSGIとは WSGIとは、WebサーバーとWebアプリとの間の標準的なインターフェース。 WSGIの仕様に沿ってWebアプリを作れば、 WSGI対応のどんなWebサーバーとも連携することができる。
+WSGIの仕様はPEP3333に書かれている．
+TodoリストAPIの仕様 簡単のため、今回Todoのデータはidと内容のみ持つデータとし、{ id: 0, &amp;quot;content&amp;quot;: &amp;quot;やること&amp;quot; }というJSON形式とする。
+APIの仕様は以下の通り。
+   URI Method 説明     /todo/ GET 全てのTodoを取得。   /todo/ POST Todoを作成。   /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つTodoを取得。   /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つTodoを変更。   /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つTodoを削除    データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
+雛形 まずはサーバーを作る。この時点ではルーティング処理を書いていない。 どのようなリクエストをしてもHello, Worldをレスポンスとして返す。
+from wsgiref.simple_server import make_server def app(env, start_response): start_response(&amp;#39;200 OK&amp;#39;, [(&amp;#39;Content-type&amp;#39;, &amp;#39;text/plain; charset=utf-8&amp;#39;)]) return [b&amp;#39;Hello, World.</description>
+    </item>
+    
     <item>
       <title>Socket通信勉強(3) - 簡易HTTPサーバー作成</title>
       <link>https://bombrary.github.io/blog/posts/socket03-http/</link>
