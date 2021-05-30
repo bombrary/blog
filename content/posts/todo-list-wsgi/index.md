@@ -1,12 +1,12 @@
 ---
-title: "PythonとWSGIで作るTodoリストAPI"
+title: "PythonとWSGIで作るToDoリストAPI"
 date: 2021-05-29T13:00:00+09:00
-tags: ["Web API", "Todoリスト", "WSGI"]
+tags: ["Web API", "ToDoリスト", "WSGI"]
 categories: ["Python", "Network"]
 toc: true
 ---
 
-シンプルなTodoリストを作る。
+シンプルなToDoリストを作る。
 今回は勉強のため、Webアプリケーションフレームワークは使わずに、
 敢えてWSGIの仕様のみ参考にして書く．
 
@@ -20,19 +20,19 @@ WSGI対応のどんなWebサーバーとも連携することができる。
 WSGIの仕様は[PEP3333](https://www.python.org/dev/peps/pep-3333/)に書かれている．
 
 
-## TodoリストAPIの仕様
+## ToDoリストAPIの仕様
 
-簡単のため、今回Todoのデータはidと内容のみ持つデータとし、`{ id: 0, "content": "やること" }`というJSON形式とする。
+簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、`{ id: 0, "content": "やること" }`というJSON形式とする。
 
 APIの仕様は以下の通り。
 
 | URI | Method | 説明 | 返却値 |
 | ---- | ---- | ---- | ---- |
-| `/todo/` | GET | 全てのTodoを取得。 | ToDoのデータのリスト |
-| `/todo/` | POST | Todoを作成。 | 作成したToDoのid
-| `/todo/<todo_id>` | GET | `todo_id`のidを持つTodoを取得。 | ToDoのデータ |
-| `/todo/<todo_id>` | PUT | `todo_id`のidを持つTodoを変更。 | 空のオブジェクト |
-| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つTodoを削除 | 空のオブジェクト |
+| `/todo/` | GET | 全てのToDoを取得。 | ToDoのデータのリスト |
+| `/todo/` | POST | ToDoを作成。 | 作成したToDoのid
+| `/todo/<todo_id>` | GET | `todo_id`のidを持つToDoを取得。 | ToDoのデータ |
+| `/todo/<todo_id>` | PUT | `todo_id`のidを持つToDoを変更。 | 空のオブジェクト |
+| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つToDoを削除 | 空のオブジェクト |
 
 データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
 
@@ -109,7 +109,7 @@ if __name__ == '__main__':
 iterableであればなんでも良いので、上のコードではlistでbyteを包んで返している。
 
 今回WSGIで知っておくべきことは実はこれしかない。
-あとはURIやメソッドの情報を使ってどうルーティングするか、Todoリストのデータをどう処理するかなどの話に移っていく。
+あとはURIやメソッドの情報を使ってどうルーティングするか、ToDoリストのデータをどう処理するかなどの話に移っていく。
 
 `wsgiref.simple_server`モジュールを使うと，WSGIサーバーが利用できる。`make_server`の引数にホスト、ポート、Webアプリを指定する。
 `server_forever`でサーバーを動かす。
@@ -138,7 +138,7 @@ def app(env, start_response):
   path = env['PATH_INFO'] or '/'
   method = env['REQUEST_METHOD']
   if path == '/todo/' and method == 'GET':
-    # 全てのTodoを取得する処理
+    # 全てのToDoを取得する処理
   elif path == ...
     ...
   elif path == ...
@@ -297,22 +297,22 @@ def get_todo(todo_id):
 後の処理をコールバック関数に回す処理を書いているだけとなっている。
 
 
-## Todoリストのインターフェース作成
+## ToDoリストのインターフェース作成
 
 以下の`Todo`クラスを作る。
 
 |メソッド(引数) | 説明 |
 | ---- | ---- |
-| `__init__(self, content)` | `content`を内容とするTodoを作成。|
-| `insert(self)` | `todo`をTodoリストに追加。|
+| `__init__(self, content)` | `content`を内容とするToDoを作成。|
+| `insert(self)` | `todo`をToDoリストに追加。|
 | `update(self)` | `todo`の変更を反映させる。|
-| `delete(self)` | idが`todo_id`であるTodoを削除 |
+| `delete(self)` | idが`todo_id`であるToDoを削除 |
 
 
 |クラスメソッド(引数) | 説明 | 例外 |
 | ---- | ---- | ---- |
-| `get_all(cls)` | 全てのTodoを取得。 | |
-| `get(cls, todo_id)` | idが`todo_id`であるTodoを取得。 | `todo_id`が存在しなかった場合に`TodoNotFound`例外を投げる。 |
+| `get_all(cls)` | 全てのToDoを取得。 | |
+| `get(cls, todo_id)` | idが`todo_id`であるToDoを取得。 | `todo_id`が存在しなかった場合に`TodoNotFound`例外を投げる。 |
 
 
 上の定義で、実際に`views/todo.py`で使ってみると以下の通りになる。
@@ -464,9 +464,9 @@ class Todo:
 存在しない`todo_id`にアクセスされた場合は、`NotFound`例外を投げる。2つとも`HTTPException`を継承しているので、`app.py`の`app`関数で捕捉され、それぞれ400 BadRequest、404 NotFoundのレスポンスを返す。
 
 
-## Todoリスト - listによる実装
+## ToDoリスト - listによる実装
 
-データが永続ではないが、一応listでTodoリストを実装してみる。`models/todo.py`を次のようにする。
+データが永続ではないが、一応listでToDoリストを実装してみる。`models/todo.py`を次のようにする。
 
 ```python
 from copy import copy
@@ -549,9 +549,9 @@ class Todo:
 [{"id": 0, "content": "部屋の掃除"}, {"id": 2, "content": "風呂を洗う"}]
 {{< /cui >}}
 
-## Todoリスト - sqliteによる実装
+## ToDoリスト - sqliteによる実装
 
-RDBMSでTodoリストを管理するようにしてみる。使うRDBMSはここではSQLiteとする。
+RDBMSでToDoリストを管理するようにしてみる。使うRDBMSはここではSQLiteとする。
 `models/todo.py`を次のようにする．
 
 ```python

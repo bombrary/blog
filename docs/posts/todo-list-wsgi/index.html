@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja-jp">
-<title>PythonとWSGIで作るTodoリストAPI | Chanomic Blog</title>
+<title>PythonとWSGIで作るToDoリストAPI | Chanomic Blog</title>
 <meta charset="utf-8">
 <meta name="generator" content="Hugo 0.83.1" />
 
@@ -34,7 +34,7 @@
 
 <article>
   <header>
-    <h1><a href="https://bombrary.github.io/blog/posts/todo-list-wsgi/">PythonとWSGIで作るTodoリストAPI</a></h1>
+    <h1><a href="https://bombrary.github.io/blog/posts/todo-list-wsgi/">PythonとWSGIで作るToDoリストAPI</a></h1>
     <div class="meta">
       
       <div class="pub-date">
@@ -44,7 +44,7 @@
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2021-05-29T13:00:00&#43;09:00">May 29, 2021</time>
+        <time datetime="2021-05-29T13:00:00&#43;09:00">May 30, 2021</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -54,7 +54,7 @@
       <div class="tags">
         <p>tags: </p>
         <ul class="tags_list">
-          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/web%20api/">Web API</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/todo%e3%83%aa%e3%82%b9%e3%83%88/">Todoリスト</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/wsgi/">WSGI</a></li>
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/web%20api/">Web API</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/todo%e3%83%aa%e3%82%b9%e3%83%88/">ToDoリスト</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/wsgi/">WSGI</a></li>
         </ul>
         
       </div>
@@ -74,7 +74,7 @@
       <nav id="TableOfContents">
   <ul>
     <li><a href="#wsgiとは">WSGIとは</a></li>
-    <li><a href="#todoリストapiの仕様">TodoリストAPIの仕様</a></li>
+    <li><a href="#todoリストapiの仕様">ToDoリストAPIの仕様</a></li>
     <li><a href="#雛形">雛形</a>
       <ul>
         <li><a href="#解説">解説</a></li>
@@ -86,19 +86,19 @@
         <li><a href="#解説-1">解説</a></li>
       </ul>
     </li>
-    <li><a href="#todoリストのインターフェース作成">Todoリストのインターフェース作成</a>
+    <li><a href="#todoリストのインターフェース作成">ToDoリストのインターフェース作成</a>
       <ul>
         <li><a href="#解説-2">解説</a></li>
       </ul>
     </li>
-    <li><a href="#todoリスト---listによる実装">Todoリスト - listによる実装</a></li>
-    <li><a href="#todoリスト---sqliteによる実装">Todoリスト - sqliteによる実装</a></li>
+    <li><a href="#todoリスト---listによる実装">ToDoリスト - listによる実装</a></li>
+    <li><a href="#todoリスト---sqliteによる実装">ToDoリスト - sqliteによる実装</a></li>
     <li><a href="#ソースコード">ソースコード</a></li>
   </ul>
 </nav>
     </aside>
     
-  <p>シンプルなTodoリストを作る。
+  <p>シンプルなToDoリストを作る。
 今回は勉強のため、Webアプリケーションフレームワークは使わずに、
 敢えてWSGIの仕様のみ参考にして書く．</p>
 <h2 id="wsgiとは">WSGIとは</h2>
@@ -106,8 +106,8 @@
 WSGIの仕様に沿ってWebアプリを作れば、
 WSGI対応のどんなWebサーバーとも連携することができる。</p>
 <p>WSGIの仕様は<a href="https://www.python.org/dev/peps/pep-3333/">PEP3333</a>に書かれている．</p>
-<h2 id="todoリストapiの仕様">TodoリストAPIの仕様</h2>
-<p>簡単のため、今回Todoのデータはidと内容のみ持つデータとし、<code>{ id: 0, &quot;content&quot;: &quot;やること&quot; }</code>というJSON形式とする。</p>
+<h2 id="todoリストapiの仕様">ToDoリストAPIの仕様</h2>
+<p>簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、<code>{ id: 0, &quot;content&quot;: &quot;やること&quot; }</code>というJSON形式とする。</p>
 <p>APIの仕様は以下の通り。</p>
 <table>
 <thead>
@@ -122,31 +122,31 @@ WSGI対応のどんなWebサーバーとも連携することができる。</p>
 <tr>
 <td><code>/todo/</code></td>
 <td>GET</td>
-<td>全てのTodoを取得。</td>
+<td>全てのToDoを取得。</td>
 <td>ToDoのデータのリスト</td>
 </tr>
 <tr>
 <td><code>/todo/</code></td>
 <td>POST</td>
-<td>Todoを作成。</td>
+<td>ToDoを作成。</td>
 <td>作成したToDoのid</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>GET</td>
-<td><code>todo_id</code>のidを持つTodoを取得。</td>
+<td><code>todo_id</code>のidを持つToDoを取得。</td>
 <td>ToDoのデータ</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>PUT</td>
-<td><code>todo_id</code>のidを持つTodoを変更。</td>
+<td><code>todo_id</code>のidを持つToDoを変更。</td>
 <td>空のオブジェクト</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>DELETE</td>
-<td><code>todo_id</code>のidを持つTodoを削除</td>
+<td><code>todo_id</code>のidを持つToDoを削除</td>
 <td>空のオブジェクト</td>
 </tr>
 </tbody>
@@ -205,7 +205,7 @@ callableであれば良いので、例えば以下のように<code>__call__</co
 <p>返り値はbyte型のiterableオブジェクトを返す仕様となっている。
 iterableであればなんでも良いので、上のコードではlistでbyteを包んで返している。</p>
 <p>今回WSGIで知っておくべきことは実はこれしかない。
-あとはURIやメソッドの情報を使ってどうルーティングするか、Todoリストのデータをどう処理するかなどの話に移っていく。</p>
+あとはURIやメソッドの情報を使ってどうルーティングするか、ToDoリストのデータをどう処理するかなどの話に移っていく。</p>
 <p><code>wsgiref.simple_server</code>モジュールを使うと，WSGIサーバーが利用できる。<code>make_server</code>の引数にホスト、ポート、Webアプリを指定する。
 <code>server_forever</code>でサーバーを動かす。</p>
 <h3 id="補足-wsgiサーバーを別のものにする">(補足) WSGIサーバーを別のものにする</h3>
@@ -225,7 +225,7 @@ iterableであればなんでも良いので、上のコードではlistでbyte�
   <span class="n">path</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;PATH_INFO&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;/&#39;</span>
   <span class="n">method</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;REQUEST_METHOD&#39;</span><span class="p">]</span>
   <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/todo/&#39;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
-    <span class="c1"># 全てのTodoを取得する処理</span>
+    <span class="c1"># 全てのToDoを取得する処理</span>
   <span class="k">elif</span> <span class="n">path</span> <span class="o">==</span> <span class="o">...</span>
     <span class="o">...</span>
   <span class="k">elif</span> <span class="n">path</span> <span class="o">==</span> <span class="o">...</span>
@@ -357,7 +357,7 @@ todo.delete: 1
 このクラスは<code>__call__</code>を定義しているため、<code>ROUTE</code>で指定したコールバック関数たちと同じ振る舞いをする。</p>
 <p><code>app</code>関数では、<code>env['REQUEST_METHOD']</code>でメソッドを、<code>env['PATH_INFO']</code>でURIを取得し、routeでコールバック関数を取得し、
 後の処理をコールバック関数に回す処理を書いているだけとなっている。</p>
-<h2 id="todoリストのインターフェース作成">Todoリストのインターフェース作成</h2>
+<h2 id="todoリストのインターフェース作成">ToDoリストのインターフェース作成</h2>
 <p>以下の<code>Todo</code>クラスを作る。</p>
 <table>
 <thead>
@@ -369,11 +369,11 @@ todo.delete: 1
 <tbody>
 <tr>
 <td><code>__init__(self, content)</code></td>
-<td><code>content</code>を内容とするTodoを作成。</td>
+<td><code>content</code>を内容とするToDoを作成。</td>
 </tr>
 <tr>
 <td><code>insert(self)</code></td>
-<td><code>todo</code>をTodoリストに追加。</td>
+<td><code>todo</code>をToDoリストに追加。</td>
 </tr>
 <tr>
 <td><code>update(self)</code></td>
@@ -381,7 +381,7 @@ todo.delete: 1
 </tr>
 <tr>
 <td><code>delete(self)</code></td>
-<td>idが<code>todo_id</code>であるTodoを削除</td>
+<td>idが<code>todo_id</code>であるToDoを削除</td>
 </tr>
 </tbody>
 </table>
@@ -396,12 +396,12 @@ todo.delete: 1
 <tbody>
 <tr>
 <td><code>get_all(cls)</code></td>
-<td>全てのTodoを取得。</td>
+<td>全てのToDoを取得。</td>
 <td></td>
 </tr>
 <tr>
 <td><code>get(cls, todo_id)</code></td>
-<td>idが<code>todo_id</code>であるTodoを取得。</td>
+<td>idが<code>todo_id</code>であるToDoを取得。</td>
 <td><code>todo_id</code>が存在しなかった場合に<code>TodoNotFound</code>例外を投げる。</td>
 </tr>
 </tbody>
@@ -540,8 +540,8 @@ todo.delete: 1
 余談だが、validationを行うライブラリに<a href="https://marshmallow.readthedocs.io/en/stable/">marshmallow</a>がある。扱うモデルが複雑になった場合に使うと良いだろう。</p>
 <p>リクエストボディがJSON形式でなかったり、validationに失敗した場合は、最終的に<code>BadRequest</code>例外を投げる。
 存在しない<code>todo_id</code>にアクセスされた場合は、<code>NotFound</code>例外を投げる。2つとも<code>HTTPException</code>を継承しているので、<code>app.py</code>の<code>app</code>関数で捕捉され、それぞれ400 BadRequest、404 NotFoundのレスポンスを返す。</p>
-<h2 id="todoリスト---listによる実装">Todoリスト - listによる実装</h2>
-<p>データが永続ではないが、一応listでTodoリストを実装してみる。<code>models/todo.py</code>を次のようにする。</p>
+<h2 id="todoリスト---listによる実装">ToDoリスト - listによる実装</h2>
+<p>データが永続ではないが、一応listでToDoリストを実装してみる。<code>models/todo.py</code>を次のようにする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 
 
@@ -619,8 +619,8 @@ todo.delete: 1
 [{"id": 0, "content": "部屋の掃除"}, {"id": 2, "content": "風呂を洗う"}]
 </pre>
 
-<h2 id="todoリスト---sqliteによる実装">Todoリスト - sqliteによる実装</h2>
-<p>RDBMSでTodoリストを管理するようにしてみる。使うRDBMSはここではSQLiteとする。
+<h2 id="todoリスト---sqliteによる実装">ToDoリスト - sqliteによる実装</h2>
+<p>RDBMSでToDoリストを管理するようにしてみる。使うRDBMSはここではSQLiteとする。
 <code>models/todo.py</code>を次のようにする．</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sqlite3</span>
 
