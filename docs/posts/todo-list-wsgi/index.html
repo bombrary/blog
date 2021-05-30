@@ -115,6 +115,7 @@ WSGI対応のどんなWebサーバーとも連携することができる。</p>
 <th>URI</th>
 <th>Method</th>
 <th>説明</th>
+<th>返却値</th>
 </tr>
 </thead>
 <tbody>
@@ -122,26 +123,31 @@ WSGI対応のどんなWebサーバーとも連携することができる。</p>
 <td><code>/todo/</code></td>
 <td>GET</td>
 <td>全てのTodoを取得。</td>
+<td>ToDoのデータのリスト</td>
 </tr>
 <tr>
 <td><code>/todo/</code></td>
 <td>POST</td>
 <td>Todoを作成。</td>
+<td>作成したToDoのid</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>GET</td>
 <td><code>todo_id</code>のidを持つTodoを取得。</td>
+<td>ToDoのデータ</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>PUT</td>
 <td><code>todo_id</code>のidを持つTodoを変更。</td>
+<td>空のオブジェクト</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>DELETE</td>
 <td><code>todo_id</code>のidを持つTodoを削除</td>
+<td>空のオブジェクト</td>
 </tr>
 </tbody>
 </table>
@@ -467,7 +473,7 @@ todo.delete: 1
         <span class="n">todo</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
         <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;application/json; charset=utf-8&#39;</span><span class="p">)])</span>
-        <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;{}&#39;</span><span class="p">]</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">,</span> <span class="n">ValidationError</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">BadRequest</span>
     <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
@@ -479,7 +485,7 @@ todo.delete: 1
         <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
         <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;application/json; charset=utf-8&#39;</span><span class="p">)])</span>
-        <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;{}&#39;</span><span class="p">]</span>
     <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotFound</span>
 </code></pre></div><p>ひとまずダミーを実装する。<code>models/__init__.py</code>と<code>models/todo.py</code>を作成し、前者は空のままで、後者は以下の通りにする。</p>

@@ -26,13 +26,13 @@ WSGIの仕様は[PEP3333](https://www.python.org/dev/peps/pep-3333/)に書かれ
 
 APIの仕様は以下の通り。
 
-| URI | Method | 説明 |
-| ---- | ---- | ---- |
-| `/todo/` | GET | 全てのTodoを取得。 |
-| `/todo/` | POST | Todoを作成。 |
-| `/todo/<todo_id>` | GET | `todo_id`のidを持つTodoを取得。 |
-| `/todo/<todo_id>` | PUT | `todo_id`のidを持つTodoを変更。 |
-| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つTodoを削除 |
+| URI | Method | 説明 | 返却値 |
+| ---- | ---- | ---- | ---- |
+| `/todo/` | GET | 全てのTodoを取得。 | ToDoのデータのリスト |
+| `/todo/` | POST | Todoを作成。 | 作成したToDoのid
+| `/todo/<todo_id>` | GET | `todo_id`のidを持つTodoを取得。 | ToDoのデータ |
+| `/todo/<todo_id>` | PUT | `todo_id`のidを持つTodoを変更。 | 空のオブジェクト |
+| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つTodoを削除 | 空のオブジェクト |
 
 データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
 
@@ -384,7 +384,7 @@ def put(env, start_response, todo_id):
         todo.update()
 
         start_response('200 OK', [('Content-type', 'application/json; charset=utf-8')])
-        return []
+        return [b'{}']
     except (json.JSONDecodeError, ValidationError):
         raise BadRequest
     except TodoNotFound:
@@ -396,7 +396,7 @@ def delete(env, start_response, todo_id):
         Todo.get(todo_id).delete()
 
         start_response('200 OK', [('Content-type', 'application/json; charset=utf-8')])
-        return []
+        return [b'{}']
     except TodoNotFound:
         raise NotFound
 ```
