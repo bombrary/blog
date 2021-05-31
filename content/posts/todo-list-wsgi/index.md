@@ -2,7 +2,7 @@
 title: "PythonとWSGIで作るToDoリストAPI"
 date: 2021-05-29T13:00:00+09:00
 tags: ["Web API", "ToDoリスト", "WSGI"]
-categories: ["Python", "Network"]
+categories: ["Python", "Web"]
 toc: true
 ---
 
