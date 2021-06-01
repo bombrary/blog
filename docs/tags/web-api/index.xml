@@ -9,10 +9,10 @@
     <lastBuildDate>Sun, 30 May 2021 11:49:40 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/web-api/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>PythonとWerkzeugで作るToDoリストAPI</title>
-      <link>https://bombrary.github.io/blog/posts/todo-list-werkzeug/</link>
+      <link>https://bombrary.github.io/blog/posts/todo-api-werkzeug/</link>
       <pubDate>Sun, 30 May 2021 11:49:40 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/todo-list-werkzeug/</guid>
+      <guid>https://bombrary.github.io/blog/posts/todo-api-werkzeug/</guid>
       <description>シンプルなToDoリストのWeb APIを作る。 前回はWSGIの仕様のみを参考にして作ったが、 今回はWerkzeugというライブラリを利用する。
 Werkzeugとは Werkzeugのドキュメントの &amp;ldquo;Werkzeug is a comprehensive WSGI web application library.&amp;ldquo;という文面にもある通り、 これはWSGIのWebアプリを作るためのライブラリである。 あくまでフレームワークではなく、ライブラリであることに注意する。 Webアプリを作るうえで、便利なクラスや関数が用意された「道具箱」のようなイメージを持つとよいかもしれない (そもそも&amp;quot;werkzeug&amp;quot;という単語はドイツ語で「道具」という意味)。 あくまで道具があるだけなので、どういう設計を行うかなどを考える余地がある。
 ToDoリストAPIの仕様 前回と同じだが、再掲する。
@@ -23,10 +23,10 @@ APIの仕様は以下の通り。
     
     <item>
       <title>PythonとWSGIで作るToDoリストAPI</title>
-      <link>https://bombrary.github.io/blog/posts/todo-list-wsgi/</link>
+      <link>https://bombrary.github.io/blog/posts/todo-api-wsgi/</link>
       <pubDate>Sat, 29 May 2021 13:00:00 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/todo-list-wsgi/</guid>
+      <guid>https://bombrary.github.io/blog/posts/todo-api-wsgi/</guid>
       <description>シンプルなToDoリストを作る。 今回は勉強のため、Webアプリケーションフレームワークは使わずに、 敢えてWSGIの仕様のみ参考にして書く．
 WSGIとは WSGIとは、WebサーバーとWebアプリとの間の標準的なインターフェース。 WSGIの仕様に沿ってWebアプリを作れば、 WSGI対応のどんなWebサーバーとも連携することができる。
 WSGIの仕様はPEP3333に書かれている．

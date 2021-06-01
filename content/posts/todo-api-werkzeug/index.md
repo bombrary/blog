@@ -8,7 +8,7 @@ toc: true
 
 
 シンプルなToDoリストのWeb APIを作る。
-[前回]({{< ref "/posts/todo-list-wsgi" >}})はWSGIの仕様のみを参考にして作ったが、
+[前回]({{< ref "/posts/todo-api-wsgi" >}})はWSGIの仕様のみを参考にして作ったが、
 今回は[Werkzeug](https://werkzeug.palletsprojects.com/en/2.0.x/)というライブラリを利用する。
 
 ## Werkzeugとは
@@ -24,7 +24,7 @@ Webアプリを作るうえで、便利なクラスや関数が用意された�
 
 ## ToDoリストAPIの仕様
 
-[前回]({{< ref "/posts/todo-list-wsgi" >}})と同じだが、再掲する。
+[前回]({{< ref "/posts/todo-api-wsgi" >}})と同じだが、再掲する。
 
 簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、`{ id: 0, "content": "やること" }`というJSON形式とする。
 
@@ -226,7 +226,7 @@ body_json = response.get_json()
 ## ToDoリストのインターフェース作成
 
 
-[前回]({{< ref "posts/todo-list-wsgi" >}})同様、以下の`Todo`クラスを作る。
+[前回]({{< ref "posts/todo-api-wsgi" >}})同様、以下の`Todo`クラスを作る。
 
 |メソッド(引数) | 説明 |
 | ---- | ---- |
@@ -380,7 +380,7 @@ class Todo:
 
 ## ToDoリストの実装
 
-ここでは、SQLiteでデータを管理する。内容は[前回]({{<ref "posts/todo-list-wsgi">}})と全く同じ。
+ここでは、SQLiteでデータを管理する。内容は[前回]({{<ref "posts/todo-api-wsgi">}})と全く同じ。
 `models/todo.py`を次のようにする．
 
 ```python

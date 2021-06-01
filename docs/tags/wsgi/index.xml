@@ -9,10 +9,10 @@
     <lastBuildDate>Sat, 29 May 2021 13:00:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/wsgi/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>PythonとWSGIで作るToDoリストAPI</title>
-      <link>https://bombrary.github.io/blog/posts/todo-list-wsgi/</link>
+      <link>https://bombrary.github.io/blog/posts/todo-api-wsgi/</link>
       <pubDate>Sat, 29 May 2021 13:00:00 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/todo-list-wsgi/</guid>
+      <guid>https://bombrary.github.io/blog/posts/todo-api-wsgi/</guid>
       <description>シンプルなToDoリストを作る。 今回は勉強のため、Webアプリケーションフレームワークは使わずに、 敢えてWSGIの仕様のみ参考にして書く．
 WSGIとは WSGIとは、WebサーバーとWebアプリとの間の標準的なインターフェース。 WSGIの仕様に沿ってWebアプリを作れば、 WSGI対応のどんなWebサーバーとも連携することができる。
 WSGIの仕様はPEP3333に書かれている．
