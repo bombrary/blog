@@ -527,8 +527,10 @@ from app import app
 def client():
     db_fd, Todo.DB_PATH = tempfile.mkstemp()
     Todo.init_table()
+    yield Client(app)
+
     os.close(db_fd)
-    return Client(app)
+    os.unlink(Todo.DB_PATH)
 
 
 def test_hello(client):
@@ -564,8 +566,9 @@ pytestにおいて、結果の正しさを確認するためには、シンプ�
 上の例では、レスポンスで得られたデータ`res.get_data()`が`'Hello, World'`であるかどうかを判定している。
 
 `client`関数では、`Client`クラスのインスタンスを作るだけでなく、データベースの初期化を行っている。
-また、そのテスト限りのデータベースを作成するために、そのファイルを`tempfile.mkstemp()`関数で作成している。
+また、そのテスト限りのデータベースを作成するために、その一時ファイルを`tempfile.mkstemp()`関数で作成している。
 これはファイルのディスクリプタとファイルのパスをタプルで返すため、後者を`Todo`のデータベースのパスに設定している。
+`os.close`と`os.unlink`を使って、テストが終わった後に一時ファイルを削除している。
 
 ### Todoのテスト
 
@@ -586,8 +589,10 @@ import json
 def client():
     db_fd, Todo.DB_PATH = tempfile.mkstemp()
     Todo.init_table()
+    yield Client(app)
+
     os.close(db_fd)
-    return Client(app)
+    os.unlink(Todo.DB_PATH)
 
 
 @pytest.fixture

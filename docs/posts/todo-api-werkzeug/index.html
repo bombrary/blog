@@ -595,8 +595,10 @@ todo.delete: 1
 <span class="k">def</span> <span class="nf">client</span><span class="p">():</span>
     <span class="n">db_fd</span><span class="p">,</span> <span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
     <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
+    <span class="k">yield</span> <span class="n">Client</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
     <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">test_hello</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
@@ -622,8 +624,9 @@ todo.delete: 1
 <p>pytestにおいて、結果の正しさを確認するためには、シンプルに<code>assert</code>文を使う。
 上の例では、レスポンスで得られたデータ<code>res.get_data()</code>が<code>'Hello, World'</code>であるかどうかを判定している。</p>
 <p><code>client</code>関数では、<code>Client</code>クラスのインスタンスを作るだけでなく、データベースの初期化を行っている。
-また、そのテスト限りのデータベースを作成するために、そのファイルを<code>tempfile.mkstemp()</code>関数で作成している。
-これはファイルのディスクリプタとファイルのパスをタプルで返すため、後者を<code>Todo</code>のデータベースのパスに設定している。</p>
+また、そのテスト限りのデータベースを作成するために、その一時ファイルを<code>tempfile.mkstemp()</code>関数で作成している。
+これはファイルのディスクリプタとファイルのパスをタプルで返すため、後者を<code>Todo</code>のデータベースのパスに設定している。
+<code>os.close</code>と<code>os.unlink</code>を使って、テストが終わった後に一時ファイルを削除している。</p>
 <h3 id="todoのテスト">Todoのテスト</h3>
 <p>大体のことは上で説明したので、後はテストを書くだけ。
 <code>tests/test_todo.py</code>の内容を以下のようにする。</p>
@@ -640,8 +643,10 @@ todo.delete: 1
 <span class="k">def</span> <span class="nf">client</span><span class="p">():</span>
     <span class="n">db_fd</span><span class="p">,</span> <span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
     <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
+    <span class="k">yield</span> <span class="n">Client</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
     <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
 
 
 <span class="nd">@pytest.fixture</span>
