@@ -26,13 +26,13 @@ WSGIの仕様は[PEP3333](https://www.python.org/dev/peps/pep-3333/)に書かれ
 
 APIの仕様は以下の通り。
 
-| URI | Method | 説明 | 返却値 |
+| URL | Method | 説明 | 返却値 |
 | ---- | ---- | ---- | ---- |
 | `/todo/` | GET | 全てのToDoを取得。 | ToDoのデータのリスト |
-| `/todo/` | POST | ToDoを作成。 | 作成したToDoのid
+| `/todo/` | POST | ToDoを作成。 | なし (LocationヘッダにそのToDoへのURLを乗せる) |
 | `/todo/<todo_id>` | GET | `todo_id`のidを持つToDoを取得。 | ToDoのデータ |
-| `/todo/<todo_id>` | PUT | `todo_id`のidを持つToDoを変更。 | 空のオブジェクト |
-| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つToDoを削除 | 空のオブジェクト |
+| `/todo/<todo_id>` | PUT | `todo_id`のidを持つToDoを変更。 | なし |
+| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つToDoを削除 | なし |
 
 データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
 
@@ -97,7 +97,7 @@ if __name__ == '__main__':
 何が入っているかは[PEP3333のenviron variables](https://www.python.org/dev/peps/pep-3333/#environ-variables)で分かる。
 この記事でお世話になる`env`のキーは以下の4つ。
 
-- `PATH_INFO`: URI。
+- `PATH_INFO`: URL。
 - `REQUEST_METHOD`: リクエストメソッド。
 - `CONTENT_LENGTH`: リクエストボディの長さ。
 - `wsgi.input`: リクエストボディを読み取るために使う。ファイルオブジェクトとして扱う。
@@ -109,7 +109,7 @@ if __name__ == '__main__':
 iterableであればなんでも良いので、上のコードではlistでbyteを包んで返している。
 
 今回WSGIで知っておくべきことは実はこれしかない。
-あとはURIやメソッドの情報を使ってどうルーティングするか、ToDoリストのデータをどう処理するかなどの話に移っていく。
+あとはURLやメソッドの情報を使ってどうルーティングするか、ToDoリストのデータをどう処理するかなどの話に移っていく。
 
 `wsgiref.simple_server`モジュールを使うと，WSGIサーバーが利用できる。`make_server`の引数にホスト、ポート、Webアプリを指定する。
 `server_forever`でサーバーを動かす。
@@ -131,7 +131,7 @@ iterableであればなんでも良いので、上のコードではlistでbyte�
 
 ## ルーティング
 
-URIとリクエストメソッドは`env`から取得できるので、`if`文を使って以下のように書くことも、一応はできる。
+URLとリクエストメソッドは`env`から取得できるので、`if`文を使って以下のように書くことも、一応はできる。
 
 ```python
 def app(env, start_response):
@@ -147,7 +147,7 @@ def app(env, start_response):
     ...
 ```
 
-しかしこれだと、if文が何個も連なって読みづらい。しかも`/todo/<todo_id>`のようなURIの場合は、URIから`todo_id`という整数値を取り出す必要があり、
+しかしこれだと、if文が何個も連なって読みづらい。しかも`/todo/<todo_id>`のようなURLの場合は、URLから`todo_id`という整数値を取り出す必要があり、
 さらに処理は複雑になる。そこで、以下のような方針でルーティング処理をapp関数から切り分けることにする。
 
 コードについては[ルーティング - Webアプリケーションフレームワークの作り方 in Python](https://c-bata.link/webframework-in-python/routing.html)
@@ -254,12 +254,12 @@ todo.delete: 1
 
 ### 解説
 
-`ROUTE`というグローバル変数は、`(URI, メソッド, 対応するコールバック関数)`という形のリスト。
-`route`関数でURIとメソッドを照合し、対応するコールバック関数を返す。
+`ROUTE`というグローバル変数は、`(URL, メソッド, 対応するコールバック関数)`という形のリスト。
+`route`関数でURLとメソッドを照合し、対応するコールバック関数を返す。
 
 このように`ROUTE`をまとめて書いておくと、
 [API仕様](#todoリストapiの仕様)との対応が分かりやすい。Djangoでのコーディングはこれと似ていて、`urls.py`においてURLと対応するviewをリストでまとめておくようなフレームワークになっている。
-一方で、対応するコールバック関数が離れたところで定義されているため、URI、メソッドに対してどんな処理が行われるのかが
+一方で、対応するコールバック関数が離れたところで定義されているため、URL、メソッドに対してどんな処理が行われるのかが
 一目で分かりづらい、というデメリットもある。FlaskやBottleなどのフレームワークでは、`ROUTES`にまとめる代わりに、デコレータを使って以下のように書けるように設計されている(以下はFlaskの例)。
 どちらの設計にも良し悪しがあるので、どちらを選ぶかは好みだと思う。
 
@@ -275,7 +275,7 @@ def get_todo(todo_id):
 ...
 ```
 
-`/todo/<todo_id>`のようなURIから`todo_id`を読み取りたいので、それを実現するために正規表現を用いている。
+`/todo/<todo_id>`のようなURLから`todo_id`を読み取りたいので、それを実現するために正規表現を用いている。
 以下は、REPLでの正規表現の例。`(?P<name>...)`という記法については[正規表現 HOWTOのグルーピングの項](https://docs.python.org/ja/3/howto/regex.html#non-capturing-and-named-groups)
 が分かりやすい。
 {{< cui >}}
@@ -288,12 +288,12 @@ def get_todo(todo_id):
 {{< /cui >}}
 
 `route`関数では、正規表現で抜き出した部分を`url_vars`とし、コールバック関数と共に返している。
-対応するURI、メソッドが存在しなかった場合は、`NotFound`例外を送出する。その例外クラスは`util.py`で定義している。
+対応するURL、メソッドが存在しなかった場合は、`NotFound`例外を送出する。その例外クラスは`util.py`で定義している。
 `NotFound`例外は`HTTPException`例外を継承しており、これは`app`関数で受け取る。
 このクラスは`__call__`を定義しているため、`ROUTE`で指定したコールバック関数たちと同じ振る舞いをする。
 
 
-`app`関数では、`env['REQUEST_METHOD']`でメソッドを、`env['PATH_INFO']`でURIを取得し、routeでコールバック関数を取得し、
+`app`関数では、`env['REQUEST_METHOD']`でメソッドを、`env['PATH_INFO']`でURLを取得し、routeでコールバック関数を取得し、
 後の処理をコールバック関数に回す処理を書いているだけとなっている。
 
 
@@ -356,8 +356,8 @@ def post(env, start_response):
 
         todo_id = Todo(todo_dict['content']).insert()
 
-        start_response('200 OK', [('Content-type', 'application/json; charset=utf-8')])
-        return [str(todo_id).encode('utf-8')]
+        start_response('201 Created', [('Location', f'/todo/{todo_id}/')])
+        return []
     except (json.JSONDecodeError, ValidationError):
         raise BadRequest
 
@@ -383,8 +383,8 @@ def put(env, start_response, todo_id):
         todo.content = todo_dict['content']
         todo.update()
 
-        start_response('200 OK', [('Content-type', 'application/json; charset=utf-8')])
-        return [b'{}']
+        start_response('204 No Content', [])
+        return []
     except (json.JSONDecodeError, ValidationError):
         raise BadRequest
     except TodoNotFound:
@@ -395,8 +395,8 @@ def delete(env, start_response, todo_id):
     try:
         Todo.get(todo_id).delete()
 
-        start_response('200 OK', [('Content-type', 'application/json; charset=utf-8')])
-        return [b'{}']
+        start_response('204 No Content', [])
+        return []
     except TodoNotFound:
         raise NotFound
 ```
