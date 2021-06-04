@@ -30,13 +30,13 @@ Webアプリを作るうえで、便利なクラスや関数が用意された�
 
 APIの仕様は以下の通り。
 
-| URI | Method | 説明 | 返却値 |
+| URL | Method | 説明 | 返却値 |
 | ---- | ---- | ---- | ---- |
 | `/todo/` | GET | 全てのToDoを取得。 | ToDoのデータのリスト |
-| `/todo/` | POST | ToDoを作成。 | 作成したToDoのid
+| `/todo/` | POST | ToDoを作成。 | なし (LocationヘッダにそのToDoへのURLを乗せる) |
 | `/todo/<todo_id>` | GET | `todo_id`のidを持つToDoを取得。 | ToDoのデータ |
-| `/todo/<todo_id>` | PUT | `todo_id`のidを持つToDoを変更。 | 空のオブジェクト |
-| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つToDoを削除 | 空のオブジェクト |
+| `/todo/<todo_id>` | PUT | `todo_id`のidを持つToDoを変更。 | なし |
+| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つToDoを削除 | なし |
 
 データは最終的にはSQLiteで管理する。
 
@@ -209,17 +209,17 @@ body_json = response.get_json()
 
 `app`関数では、`env`を`Request`で包んだ後、ルーティングの処理を`route`関数に任せている。
 
-前回は、「どのURIに対してどの関数が呼ばれるか」という対応関係を、listとtupleのみで表現していた。
-`werkzeug.routing`では、これを`Map`と`Rule`で管理する。`Submount`を使うと、`/todo`をprefixに持つURIをまとめることができる。
+前回は、「どのURLに対してどの関数が呼ばれるか」という対応関係を、listとtupleのみで表現していた。
+`werkzeug.routing`では、これを`Map`と`Rule`で管理する。`Submount`を使うと、`/todo`をprefixに持つURLをまとめることができる。
 
 上の例のように、`/<int:todo_id>/`とすると、URLに含まれる整数値を`todo_id`として取得することができる。`int`の部分はconverterと呼ばれ、
 標準で使えるconverterは[ドキュメント](https://werkzeug.palletsprojects.com/en/2.0.x/routing/#built-in-converters)で確認できる。
 前回の正規表現を使った取り出し方よりも見やすくなっている。
 
 `Map`の使い方は`route`関数を見るとわかる。`URL_MAP.bind_to_environ`メソッドで`environ`と`URL_MAP`を結びつけ、
-`adapter.match`メソッドで実際に`URI`、メソッドの照合を行う。返却値は対応する`endpoint`と、URLに含まれる変数である。
+`adapter.match`メソッドで実際に`URL`、メソッドの照合を行う。返却値は対応する`endpoint`と、URLに含まれる変数である。
 
-`URL_MAP`の中に対応する`URI`、メソッドが存在しなかった場合は、`NotFound`例外を投げる。
+`URL_MAP`の中に対応する`URL`、メソッドが存在しなかった場合は、`NotFound`例外を投げる。
 これは`HTTPException`を継承したクラスである。前回はこれらを自前で実装したが、werkzeugでは`werkzeug.exceptions`で実装されている。
 
 
@@ -283,7 +283,7 @@ def post(request: Request):
         raise BadRequest('Todo ValidationError')
 
     todo_id = Todo(todo_dict['content']).insert()
-    return Response(str(todo_id), mimetype='application/json')
+    return Response('', status=201, headers=[('Location', f'/todo/{todo_id}/')])
 
 
 def get(request: Request, todo_id: int):
@@ -309,7 +309,7 @@ def put(request: Request, todo_id: int):
 
     todo.content = todo_dict['content']
     todo.update()
-    return Response('{}', mimetype='application/json')
+    return Response('', status=204)
 
 
 def delete(request: Request, todo_id: int):
@@ -318,7 +318,7 @@ def delete(request: Request, todo_id: int):
     except TodoNotFound:
         raise NotFound('Todo NotFound')
     todo.delete()
-    return Response('{}', mimetype='application/json')
+    return Response('', status=204)
 ```
 
 
@@ -558,7 +558,7 @@ pytestコマンドを実行すると、`tests`ディレクトリの`test_*.py`�
 **補足**: ここでは行っていないが、`conftest.py`にfixtureを書いて、他のテストファイルから呼び出すことができる。
 
 `Client`は`werkzeug.test`で定義されているクラス。引数にWSGIアプリを与えてインスタンス化することで、クライアントを作成することができる。
-このインスタンスを使えば、GETやPOSTなどのリクエストを`get`や`post`メソッドで行える。実際、`test_hello`では`client.get('/')`でURI `'/'`にGETリクエストを送っている。
+このインスタンスを使えば、GETやPOSTなどのリクエストを`get`や`post`メソッドで行える。実際、`test_hello`では`client.get('/')`でURL `'/'`にGETリクエストを送っている。
 `Client`の詳細は[ドキュメント](https://werkzeug.palletsprojects.com/en/2.0.x/test/#werkzeug.test.Client)を参照。
 
 `Client`オブジェクトの`get`や`post`メソッドの返却値は`TestResponse`クラスのインスタンスで、`get_data`や`get_json`などのメソッドでデータを取得できる。
@@ -585,6 +585,7 @@ import os
 from werkzeug.test import Client
 from app import app
 import json
+from urllib.parse import urlparse
 
 
 @pytest.fixture
@@ -601,7 +602,7 @@ def client():
 def todos_req():
     todo1 = {'id': 1, 'content': '部屋の掃除'}
     todo2 = {'id': 2, 'content': '犬の散歩'}
-    todo3 = {'id': 3, 'content': '風呂を洗う'}
+    todo3 = {'id': 3, 'content': 'ご飯の準備'}
     return [todo1, todo2, todo3]
 
 
@@ -613,7 +614,11 @@ def test_empty_db(client):
 def test_add_todos(client, todos_req):
     for todo_req in todos_req:
         res = client.post('/todo/', data=json.dumps({"content": todo_req['content']}))
-        assert res.get_json() == todo_req['id']
+        assert res.status_code == 201
+
+        todo_id = todo_req['id']
+        loc_path = urlparse(res.headers.get('Location')).path
+        assert loc_path == f'/todo/{todo_id}/'
 
     todos_res = client.get('/todo/').get_json()
     assert todos_req == todos_res
@@ -628,6 +633,8 @@ def test_put_todo(client, todos_req):
 
     todo_new = {'id': 2, 'content': 'aaa'}
     res = client.put('/todo/2/', data=json.dumps({"content": todo_new['content']}))
+    assert res.status_code == 204
+
     res = client.get('/todo/')
     assert res.get_json() == [todos_req[0], todo_new, todos_req[2]]
 
@@ -637,7 +644,7 @@ def test_delete_todo(client, todos_req):
         res = client.post('/todo/', data=json.dumps({"content": todo_req['content']}))
 
     res = client.delete('/todo/2/')
-    assert res.get_json() == dict()
+    assert res.status_code == 204
 
     res = client.get('/todo/')
     assert res.get_json() == [todos_req[0], todos_req[2]]

@@ -121,7 +121,7 @@ Webアプリを作るうえで、便利なクラスや関数が用意された�
 <table>
 <thead>
 <tr>
-<th>URI</th>
+<th>URL</th>
 <th>Method</th>
 <th>説明</th>
 <th>返却値</th>
@@ -138,7 +138,7 @@ Webアプリを作るうえで、便利なクラスや関数が用意された�
 <td><code>/todo/</code></td>
 <td>POST</td>
 <td>ToDoを作成。</td>
-<td>作成したToDoのid</td>
+<td>なし (LocationヘッダにそのToDoへのURLを乗せる)</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
@@ -150,13 +150,13 @@ Webアプリを作るうえで、便利なクラスや関数が用意された�
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>PUT</td>
 <td><code>todo_id</code>のidを持つToDoを変更。</td>
-<td>空のオブジェクト</td>
+<td>なし</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>DELETE</td>
 <td><code>todo_id</code>のidを持つToDoを削除</td>
-<td>空のオブジェクト</td>
+<td>なし</td>
 </tr>
 </tbody>
 </table>
@@ -286,14 +286,14 @@ todo.delete: 1
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="c1"># response = Response(env)とした</span>
 <span class="n">body_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
 </code></pre></div><p><code>app</code>関数では、<code>env</code>を<code>Request</code>で包んだ後、ルーティングの処理を<code>route</code>関数に任せている。</p>
-<p>前回は、「どのURIに対してどの関数が呼ばれるか」という対応関係を、listとtupleのみで表現していた。
-<code>werkzeug.routing</code>では、これを<code>Map</code>と<code>Rule</code>で管理する。<code>Submount</code>を使うと、<code>/todo</code>をprefixに持つURIをまとめることができる。</p>
+<p>前回は、「どのURLに対してどの関数が呼ばれるか」という対応関係を、listとtupleのみで表現していた。
+<code>werkzeug.routing</code>では、これを<code>Map</code>と<code>Rule</code>で管理する。<code>Submount</code>を使うと、<code>/todo</code>をprefixに持つURLをまとめることができる。</p>
 <p>上の例のように、<code>/&lt;int:todo_id&gt;/</code>とすると、URLに含まれる整数値を<code>todo_id</code>として取得することができる。<code>int</code>の部分はconverterと呼ばれ、
 標準で使えるconverterは<a href="https://werkzeug.palletsprojects.com/en/2.0.x/routing/#built-in-converters">ドキュメント</a>で確認できる。
 前回の正規表現を使った取り出し方よりも見やすくなっている。</p>
 <p><code>Map</code>の使い方は<code>route</code>関数を見るとわかる。<code>URL_MAP.bind_to_environ</code>メソッドで<code>environ</code>と<code>URL_MAP</code>を結びつけ、
-<code>adapter.match</code>メソッドで実際に<code>URI</code>、メソッドの照合を行う。返却値は対応する<code>endpoint</code>と、URLに含まれる変数である。</p>
-<p><code>URL_MAP</code>の中に対応する<code>URI</code>、メソッドが存在しなかった場合は、<code>NotFound</code>例外を投げる。
+<code>adapter.match</code>メソッドで実際に<code>URL</code>、メソッドの照合を行う。返却値は対応する<code>endpoint</code>と、URLに含まれる変数である。</p>
+<p><code>URL_MAP</code>の中に対応する<code>URL</code>、メソッドが存在しなかった場合は、<code>NotFound</code>例外を投げる。
 これは<code>HTTPException</code>を継承したクラスである。前回はこれらを自前で実装したが、werkzeugでは<code>werkzeug.exceptions</code>で実装されている。</p>
 <h2 id="todoリストのインターフェース作成">ToDoリストのインターフェース作成</h2>
 <p><a href="https://bombrary.github.io/blog/posts/todo-api-wsgi/">前回</a>同様、以下の<code>Todo</code>クラスを作る。</p>
@@ -383,7 +383,7 @@ todo.delete: 1
         <span class="k">raise</span> <span class="n">BadRequest</span><span class="p">(</span><span class="s1">&#39;Todo ValidationError&#39;</span><span class="p">)</span>
 
     <span class="n">todo_id</span> <span class="o">=</span> <span class="n">Todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">todo_id</span><span class="p">),</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="n">f</span><span class="s1">&#39;/todo/{todo_id}/&#39;</span><span class="p">)])</span>
 
 
 <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
@@ -409,7 +409,7 @@ todo.delete: 1
 
     <span class="n">todo</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
     <span class="n">todo</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;{}&#39;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
@@ -418,7 +418,7 @@ todo.delete: 1
     <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="s1">&#39;Todo NotFound&#39;</span><span class="p">)</span>
     <span class="n">todo</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;{}&#39;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
 </code></pre></div><p>ひとまずダミーを実装する。<code>models/__init__.py</code>と<code>models/todo.py</code>を作成し、前者は空のままで、後者は以下の通りにする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
@@ -618,7 +618,7 @@ todo.delete: 1
 上の例では、<code>client</code>関数を<code>pytest.fixture</code>で修飾しているから、<code>test_hello</code>関数では<code>client</code>関数の返却値を引数<code>client</code>として使えるようになる。</p>
 <p><strong>補足</strong>: ここでは行っていないが、<code>conftest.py</code>にfixtureを書いて、他のテストファイルから呼び出すことができる。</p>
 <p><code>Client</code>は<code>werkzeug.test</code>で定義されているクラス。引数にWSGIアプリを与えてインスタンス化することで、クライアントを作成することができる。
-このインスタンスを使えば、GETやPOSTなどのリクエストを<code>get</code>や<code>post</code>メソッドで行える。実際、<code>test_hello</code>では<code>client.get('/')</code>でURI <code>'/'</code>にGETリクエストを送っている。
+このインスタンスを使えば、GETやPOSTなどのリクエストを<code>get</code>や<code>post</code>メソッドで行える。実際、<code>test_hello</code>では<code>client.get('/')</code>でURL <code>'/'</code>にGETリクエストを送っている。
 <code>Client</code>の詳細は<a href="https://werkzeug.palletsprojects.com/en/2.0.x/test/#werkzeug.test.Client">ドキュメント</a>を参照。</p>
 <p><code>Client</code>オブジェクトの<code>get</code>や<code>post</code>メソッドの返却値は<code>TestResponse</code>クラスのインスタンスで、<code>get_data</code>や<code>get_json</code>などのメソッドでデータを取得できる。
 詳細は<a href="https://werkzeug.palletsprojects.com/en/2.0.x/test/#werkzeug.test.TestResponse">ドキュメント</a>を参照。</p>
@@ -638,6 +638,7 @@ todo.delete: 1
 <span class="kn">from</span> <span class="nn">werkzeug.test</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
 
 
 <span class="nd">@pytest.fixture</span>
@@ -654,7 +655,7 @@ todo.delete: 1
 <span class="k">def</span> <span class="nf">todos_req</span><span class="p">():</span>
     <span class="n">todo1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;部屋の掃除&#39;</span><span class="p">}</span>
     <span class="n">todo2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;犬の散歩&#39;</span><span class="p">}</span>
-    <span class="n">todo3</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;風呂を洗う&#39;</span><span class="p">}</span>
+    <span class="n">todo3</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;ご飯の準備&#39;</span><span class="p">}</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">todo1</span><span class="p">,</span> <span class="n">todo2</span><span class="p">,</span> <span class="n">todo3</span><span class="p">]</span>
 
 
@@ -666,7 +667,11 @@ todo.delete: 1
 <span class="k">def</span> <span class="nf">test_add_todos</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">todo_req</span> <span class="ow">in</span> <span class="n">todos_req</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
-        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+
+        <span class="n">todo_id</span> <span class="o">=</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">loc_path</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">assert</span> <span class="n">loc_path</span> <span class="o">==</span> <span class="n">f</span><span class="s1">&#39;/todo/{todo_id}/&#39;</span>
 
     <span class="n">todos_res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">todos_req</span> <span class="o">==</span> <span class="n">todos_res</span>
@@ -681,6 +686,8 @@ todo.delete: 1
 
     <span class="n">todo_new</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;aaa&#39;</span><span class="p">}</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/todo/2/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_new</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
+    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span>
+
     <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">todos_req</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">todo_new</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
 
@@ -690,7 +697,7 @@ todo.delete: 1
         <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;/todo/2/&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span>
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">todos_req</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">todos_req</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
