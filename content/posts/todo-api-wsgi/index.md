@@ -441,7 +441,7 @@ class Todo:
 % curl localhost:5000/todo/1/
 {"id": null, "content": "dummy"}
 % curl -X POST localhost:5000/todo/ -d '{"content": "aaa"}'
-0
+
 % curl -X PUT localhost:5000/todo/1/ -d '{"content": "aaa"}'
 
 % curl -X DELETE localhost:5000/todo/1/
@@ -518,13 +518,10 @@ class Todo:
 
 {{< cui >}}
 % curl -X POST localhost:5000/todo/ -d '{"content": "部屋の掃除"}'
-0
 
 % curl -X POST localhost:5000/todo/ -d '{"content": "犬の散歩"}'
-1
 
 % curl -X POST localhost:5000/todo/ -d '{"content": "風呂を洗う"}'
-2
 
 % curl localhost:5000/todo/
 [{"id": 0, "content": "部屋の掃除"}, {"id": 1, "content": "犬の散歩"}, {"id": 2, "content": "風呂を洗う"}]%

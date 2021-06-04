@@ -472,13 +472,10 @@ if __name__ == '__main__':
 
 {{< cui >}}
 % curl -X POST localhost:5000/todo/ -d '{"content": "部屋の掃除"}'
-1
 
 % curl -X POST localhost:5000/todo/ -d '{"content": "犬の散歩"}'
-2
 
 % curl -X POST localhost:5000/todo/ -d '{"content": "風呂を洗う"}'
-3
 
 % curl localhost:5000/todo/
 [{"id": 1, "content": "部屋の掃除"}, {"id": 2, "content": "犬の散歩"}, {"id": 3, "content": "風呂を洗う"}]%
@@ -487,13 +484,11 @@ if __name__ == '__main__':
 {"id": 2, "content": "犬の散歩"}
 
 % curl -X PUT localhost:5000/todo/1/ -d '{"content": "aaa"}'
-{}
 
 % curl localhost:5000/todo/
 [{"id": 1, "content": "部屋の掃除"}, {"id": 2, "content": "aaa"}, {"id": 3, "content": "風呂を洗う"}]%
 
 % curl -X DELETE localhost:5000/todo/2/
-{}
 
 % curl localhost:5000/todo/
 [{"id": 1, "content": "部屋の掃除"}, {"id": 3, "content": "風呂を洗う"}]
