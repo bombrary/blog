@@ -38,13 +38,13 @@ Djangoのようなフレームワークとは違って、持っている機能�
 
 APIの仕様は以下の通り。
 
-| URI | Method | 説明 | 返却値 |
+| URL | Method | 説明 | 返却値 |
 | ---- | ---- | ---- | ---- |
 | `/todo/` | GET | 全てのToDoを取得。 | ToDoのデータのリスト |
-| `/todo/` | POST | ToDoを作成。 | 作成したToDoのid
+| `/todo/` | POST | ToDoを作成。 | なし (LocationヘッダにそのToDoへのURLを乗せる) |
 | `/todo/<todo_id>` | GET | `todo_id`のidを持つToDoを取得。 | ToDoのデータ |
-| `/todo/<todo_id>` | PUT | `todo_id`のidを持つToDoを変更。 | 空のオブジェクト |
-| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つToDoを削除 | 空のオブジェクト |
+| `/todo/<todo_id>` | PUT | `todo_id`のidを持つToDoを変更。 | なし |
+| `/todo/<todo_id>` | DELETE | `todo_id`のidを持つToDoを削除 | なし |
 
 データはSQLiteで管理する。
 
@@ -89,8 +89,8 @@ Hello, World
 
 ### 雛形 - 解説
 
-まず、`Flask(__name__)`でWSGIアプリを作ることができる。アプリを`app`としたとき、`@app.route`デコレータでURIに対応する関数を登録することができる。
-以下は、URI `/`に対して関数`hello`を登録している。よって、URI `/`にアクセスされたときに、`Hello, World`というレスポンスが返ってくるようになる。
+まず、`Flask(__name__)`でWSGIアプリを作ることができる。アプリを`app`としたとき、`@app.route`デコレータでURLに対応する関数を登録することができる。
+以下は、URL `/`に対して関数`hello`を登録している。よって、URL `/`にアクセスされたときに、`Hello, World`というレスポンスが返ってくるようになる。
 
 ```python
     @app.route('/')
@@ -188,13 +188,13 @@ delete: 1
 ### Blueprint - 解説
 
 Blueprintとは、viewをグループ化する仕組みである。
-これによって、viewの使い回しができたり、同じprefixのURIでまとめたりできるようになる
+これによって、viewの使い回しができたり、同じprefixのURLでまとめたりできるようになる
 ([参考](https://flask.palletsprojects.com/en/2.0.x/blueprints/#why-blueprints))。
 
 上のコードでは、`todo`というBlueprintを作り、それを`bp`とした。
 使い方は`@app.route`と同じく、`@bp.route`のように用いる。
 WSGIアプリにBlueprintを登録するには、`register_blueprint`メソッドを使う。
-`url_prefix`引数を`/todo`とすることで、対応するBlueprintのURIのprefixを`/todo`に統一する。
+`url_prefix`引数を`/todo`とすることで、対応するBlueprintのURLのprefixを`/todo`に統一する。
 
 
 ## peeweeを使ったToDoモデルの作成
@@ -452,7 +452,7 @@ instance folderは自動で作られることはないため、その作成を`m
 `app.teardown_appcontext`では、リクエストが送られてきて、それに対して何かしらの処理が終わった後に呼び出される関数を登録する。
 ここでは、データベースがもし接続されていたら閉じる処理を行う。
 
-`/todo/...`のURIにアクセスされた時は必ずにデータベースに接続するので、その接続処理を`connect_db`で行う。`@bp.before_request`デコレータを使うと、
+`/todo/...`のURLにアクセスされた時は必ずにデータベースに接続するので、その接続処理を`connect_db`で行う。`@bp.before_request`デコレータを使うと、
 リクエストの前に行われる処理を設定することができる。
 
 `teardown_appcontext`や`before_request`で、リクエスト処理の前後に新たな処理を付け足せることが見て取れるだろう。
@@ -543,7 +543,7 @@ def get_all():
 def post():
     todo_dict = load_todo_or_400(request.get_json())
     todo = Todo.create(content=todo_dict['content'])
-    return jsonify(todo.id)
+    return '', 201, [('Location', f'/todo/{todo.id}/')]
 
 
 @bp.route('/<int:todo_id>/', methods=["GET"])
@@ -554,18 +554,18 @@ def get(todo_id: int):
 
 @bp.route('/<int:todo_id>/', methods=["PUT"])
 def put(todo_id: int):
-    todo_dict = load_todo_or_400(request.get_json())
     todo = Todo.get_or_404(todo_id)
+    todo_dict = load_todo_or_400(request.get_json())
     todo.content = todo_dict['content']
     todo.save()
-    return jsonify(dict())
+    return '', 204
 
 
 @bp.route('/<int:todo_id>/', methods=["DELETE"])
 def delete(todo_id: int):
     todo = Todo.get_or_404(todo_id)
     todo.delete_instance()
-    return jsonify(dict())
+    return '', 204
 ```
 
 `todo_list/models/todo.py`を以下のようにする。

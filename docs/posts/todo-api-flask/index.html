@@ -171,7 +171,7 @@
 <table>
 <thead>
 <tr>
-<th>URI</th>
+<th>URL</th>
 <th>Method</th>
 <th>説明</th>
 <th>返却値</th>
@@ -188,7 +188,7 @@
 <td><code>/todo/</code></td>
 <td>POST</td>
 <td>ToDoを作成。</td>
-<td>作成したToDoのid</td>
+<td>なし (LocationヘッダにそのToDoへのURLを乗せる)</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
@@ -200,13 +200,13 @@
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>PUT</td>
 <td><code>todo_id</code>のidを持つToDoを変更。</td>
-<td>空のオブジェクト</td>
+<td>なし</td>
 </tr>
 <tr>
 <td><code>/todo/&lt;todo_id&gt;</code></td>
 <td>DELETE</td>
 <td><code>todo_id</code>のidを持つToDoを削除</td>
-<td>空のオブジェクト</td>
+<td>なし</td>
 </tr>
 </tbody>
 </table>
@@ -242,8 +242,8 @@ Hello, World
 </pre>
 
 <h3 id="雛形---解説">雛形 - 解説</h3>
-<p>まず、<code>Flask(__name__)</code>でWSGIアプリを作ることができる。アプリを<code>app</code>としたとき、<code>@app.route</code>デコレータでURIに対応する関数を登録することができる。
-以下は、URI <code>/</code>に対して関数<code>hello</code>を登録している。よって、URI <code>/</code>にアクセスされたときに、<code>Hello, World</code>というレスポンスが返ってくるようになる。</p>
+<p>まず、<code>Flask(__name__)</code>でWSGIアプリを作ることができる。アプリを<code>app</code>としたとき、<code>@app.route</code>デコレータでURLに対応する関数を登録することができる。
+以下は、URL <code>/</code>に対して関数<code>hello</code>を登録している。よって、URL <code>/</code>にアクセスされたときに、<code>Hello, World</code>というレスポンスが返ってくるようになる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python">    <span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
         <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
@@ -322,12 +322,12 @@ delete: 1
 
 <h3 id="blueprint---解説">Blueprint - 解説</h3>
 <p>Blueprintとは、viewをグループ化する仕組みである。
-これによって、viewの使い回しができたり、同じprefixのURIでまとめたりできるようになる
+これによって、viewの使い回しができたり、同じprefixのURLでまとめたりできるようになる
 (<a href="https://flask.palletsprojects.com/en/2.0.x/blueprints/#why-blueprints">参考</a>)。</p>
 <p>上のコードでは、<code>todo</code>というBlueprintを作り、それを<code>bp</code>とした。
 使い方は<code>@app.route</code>と同じく、<code>@bp.route</code>のように用いる。
 WSGIアプリにBlueprintを登録するには、<code>register_blueprint</code>メソッドを使う。
-<code>url_prefix</code>引数を<code>/todo</code>とすることで、対応するBlueprintのURIのprefixを<code>/todo</code>に統一する。</p>
+<code>url_prefix</code>引数を<code>/todo</code>とすることで、対応するBlueprintのURLのprefixを<code>/todo</code>に統一する。</p>
 <h2 id="peeweeを使ったtodoモデルの作成">peeweeを使ったToDoモデルの作成</h2>
 <p><code>todo_list/models/__init__.py</code>と<code>todo_list/models/todo.py</code>を作成。前者は空のままにし、後者は内容を以下のようにする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
@@ -533,7 +533,7 @@ instance folderは自動で作られることはないため、その作成を<c
 その理由はこのようにデータベースのパスを<code>app.config</code>で設定したかったからだ。</p>
 <p><code>app.teardown_appcontext</code>では、リクエストが送られてきて、それに対して何かしらの処理が終わった後に呼び出される関数を登録する。
 ここでは、データベースがもし接続されていたら閉じる処理を行う。</p>
-<p><code>/todo/...</code>のURIにアクセスされた時は必ずにデータベースに接続するので、その接続処理を<code>connect_db</code>で行う。<code>@bp.before_request</code>デコレータを使うと、
+<p><code>/todo/...</code>のURLにアクセスされた時は必ずにデータベースに接続するので、その接続処理を<code>connect_db</code>で行う。<code>@bp.before_request</code>デコレータを使うと、
 リクエストの前に行われる処理を設定することができる。</p>
 <p><code>teardown_appcontext</code>や<code>before_request</code>で、リクエスト処理の前後に新たな処理を付け足せることが見て取れるだろう。
 こういう機能が提供されていることはありがたい。</p>
@@ -610,7 +610,7 @@ Initizlized the database.
 <span class="k">def</span> <span class="nf">post</span><span class="p">():</span>
     <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">load_todo_or_400</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">())</span>
     <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">todo</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="n">f</span><span class="s1">&#39;/todo/{todo.id}/&#39;</span><span class="p">)]</span>
 
 
 <span class="nd">@bp.route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
@@ -621,18 +621,18 @@ Initizlized the database.
 
 <span class="nd">@bp.route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;PUT&#34;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">load_todo_or_400</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">())</span>
     <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
+    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">load_todo_or_400</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">())</span>
     <span class="n">todo</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
     <span class="n">todo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="nb">dict</span><span class="p">())</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">204</span>
 
 
 <span class="nd">@bp.route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;DELETE&#34;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
     <span class="n">todo</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="nb">dict</span><span class="p">())</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">204</span>
 </code></pre></div><p><code>todo_list/models/todo.py</code>を以下のようにする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span><span class="p">,</span> <span class="n">DoesNotExist</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
