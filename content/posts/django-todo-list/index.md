@@ -5,6 +5,8 @@ tags: ["Django", "Python", "Programming", "Todoリスト"]
 categories: ["Python", "Programming"]
 ---
 
+**更新(2021/06/13)**: いくつか間違っていたところがあったので修正。
+
 ## どんなTodoリストを作るか
 
 - Todoの登録
@@ -14,21 +16,24 @@ categories: ["Python", "Programming"]
 
 ## サイトの作成
 
-適当なディレクトリで次のコマンドを実行すると、`mysite`というディレクトリが作られる。以降は`mysite`ディレクトリで作業する。
+適当なディレクトリで次のコマンドを実行すると、`mysite`というディレクトリが作られる。
 
 ```txt
 $ django-admin startproject mysite
 ```
 
+以降は`mysite`ディレクトリで作業する。
+
+
 ## アプリの作成
 
-`mysite`ディレクトリにて以下のコマンドを実行すると、`todo_list`というディレクトリが作られる。ここに実際のアプリの処理を記述していく。:w
+`mysite`ディレクトリにて以下のコマンドを実行すると、`todo_list`というディレクトリが作られる。ここに実際のアプリの処理を記述していく。
 
 ```txt
 $ python3 manage.py startapp todo_list
 ```
 
-続いて`mysite/settings.py`を開いて、`INSTALL_APPS`を以下の記述にする。`'todo_list.apps.TodoListConfig'`を追加しただけ。これはデータベース作成やテンプレート作成のために、djangoがtodo_listのディレクトリを教えているっぽい。`Todo_listConfig`かと思ったが違うらしい(エラーで「TodoListConfigだよ」と教えてくれた。優しい)。
+続いて`mysite/mysite/settings.py`を開いて、`INSTALL_APPS`を以下の記述にする。`'todo_list.apps.TodoListConfig'`を追加しただけ。これはデータベース作成やテンプレート作成のために、djangoがtodo_listのディレクトリを教えているっぽい。`Todo_listConfig`かと思ったが違うらしい(エラーで「TodoListConfigだよ」と教えてくれた。優しい)。
 
 {{< highlight  python3 >}}
 INSTALLED_APPS = [
@@ -48,7 +53,7 @@ INSTALLED_APPS = [
 
 
 {{< highlight python3 >}}
-from django.shortcuts import render
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -95,7 +100,7 @@ $ python3 manage.py runserver
 
 `Todo`の内容を保存しておくためのデータベースが必要である。Djangoでは、データベースのテーブル要素をModelとして定義する。
 
-`mysite/todo_list/model.py`の内容を以下のように編集する。今回扱うのはただのテキストだけなので、`models.CharField`しか用意しない。ただし、内部的には`text`だけでなく`id`変数も追加される。これはテーブルの要素を識別するためのもので、後で削除機能を実装する時に利用する。
+`mysite/todo_list/models.py`の内容を以下のように編集する。今回扱うのはただのテキストだけなので、`models.CharField`しか用意しない。ただし、内部的には`text`だけでなく`id`変数も追加される。これはテーブルの要素を識別するためのもので、後で削除機能を実装する時に利用する。
 
 {{< highlight python3 >}}
 from django.db import models
@@ -134,7 +139,6 @@ $ python3 manage.py migrate
 
 {{< highlight python3 >}}
 from django.shortcuts import render
-from django.http import HttpResponse
 
 # Create your views here.
 
@@ -148,7 +152,6 @@ def index(request):
 
 {{< highlight python3 >}}
 from django.shortcuts import render
-from django.http import HttpResponse
 
 from .models import Todo
 
@@ -236,7 +239,7 @@ urlpatterns = [
 
 {{< highlight python3 >}}
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from .models import Todo

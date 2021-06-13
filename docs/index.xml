@@ -696,12 +696,14 @@ Designタブ GUIで画面の構造をいじるための画面。直感的に操�
       <pubDate>Fri, 15 Nov 2019 08:26:41 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/posts/django-todo-list/</guid>
-      <description>どんなTodoリストを作るか  Todoの登録  情報は短いテキストだけ   Todoをリスト表示 Todoをクリックすると削除  サイトの作成 適当なディレクトリで次のコマンドを実行すると、mysiteというディレクトリが作られる。以降はmysiteディレクトリで作業する。
-$ django-admin startproject mysite アプリの作成 mysiteディレクトリにて以下のコマンドを実行すると、todo_listというディレクトリが作られる。ここに実際のアプリの処理を記述していく。:w
-$ python3 manage.py startapp todo_list 続いてmysite/settings.pyを開いて、INSTALL_APPSを以下の記述にする。&#39;todo_list.apps.TodoListConfig&#39;を追加しただけ。これはデータベース作成やテンプレート作成のために、djangoがtodo_listのディレクトリを教えているっぽい。Todo_listConfigかと思ったが違うらしい(エラーで「TodoListConfigだよ」と教えてくれた。優しい)。
+      <description>更新(2021/06/13): いくつか間違っていたところがあったので修正。
+どんなTodoリストを作るか  Todoの登録  情報は短いテキストだけ   Todoをリスト表示 Todoをクリックすると削除  サイトの作成 適当なディレクトリで次のコマンドを実行すると、mysiteというディレクトリが作られる。
+$ django-admin startproject mysite 以降はmysiteディレクトリで作業する。
+アプリの作成 mysiteディレクトリにて以下のコマンドを実行すると、todo_listというディレクトリが作られる。ここに実際のアプリの処理を記述していく。
+$ python3 manage.py startapp todo_list 続いてmysite/mysite/settings.pyを開いて、INSTALL_APPSを以下の記述にする。&#39;todo_list.apps.TodoListConfig&#39;を追加しただけ。これはデータベース作成やテンプレート作成のために、djangoがtodo_listのディレクトリを教えているっぽい。Todo_listConfigかと思ったが違うらしい(エラーで「TodoListConfigだよ」と教えてくれた。優しい)。
 INSTALLED_APPS = [ &amp;#39;todo_list.apps.TodoListConfig&amp;#39;, &amp;#39;django.contrib.admin&amp;#39;, &amp;#39;django.contrib.auth&amp;#39;, &amp;#39;django.contrib.contenttypes&amp;#39;, &amp;#39;django.contrib.sessions&amp;#39;, &amp;#39;django.contrib.messages&amp;#39;, &amp;#39;django.contrib.staticfiles&amp;#39;, ] viewの作成 mysite/todo_list/views.pyを編集する。とりあえずviewが動くかどうかだけ確認したいので、レスポンスは適当な文字列にする。
-from django.shortcuts import render # Create your views here. def index(request): return HttpResponse(&amp;#39;Hello&amp;#39;) urlの設定 まずmysite/mysite/urls.pyの設定をする。urls.pyとは「どんなurlにアクセスされたらどんなviewに処理を任せるか」を記述したものっぽい。ここでは、todo_list/で始まるurlだったらtodo_list/urls.pyに処理を任せるように書いている。
-from django.contrib import admin from django.urls import include, path urlpatterns = [ path(&amp;#39;todo_list/&amp;#39;, include(&amp;#39;todo_list.urls&amp;#39;)), path(&amp;#39;admin/&amp;#39;, admin.site.urls), ] ということでmysite/todo_list/urls.pyの設定をする。恐らく存在しないので新しく作成する。todo_list/以降に何も指定されなかったら表示をviews.pyのindex関数に任せるように書いている。</description>
+from django.http import HttpResponse # Create your views here. def index(request): return HttpResponse(&amp;#39;Hello&amp;#39;) urlの設定 まずmysite/mysite/urls.pyの設定をする。urls.pyとは「どんなurlにアクセスされたらどんなviewに処理を任せるか」を記述したものっぽい。ここでは、todo_list/で始まるurlだったらtodo_list/urls.pyに処理を任せるように書いている。
+from django.contrib import admin from django.urls import include, path urlpatterns = [ path(&amp;#39;todo_list/&amp;#39;, include(&amp;#39;todo_list.urls&amp;#39;)), path(&amp;#39;admin/&amp;#39;, admin.</description>
     </item>
     
     <item>

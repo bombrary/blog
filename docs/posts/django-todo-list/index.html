@@ -69,7 +69,8 @@
     </div>
   </header>
   
-  <h2 id="どんなtodoリストを作るか">どんなTodoリストを作るか</h2>
+  <p><strong>更新(2021/06/13)</strong>: いくつか間違っていたところがあったので修正。</p>
+<h2 id="どんなtodoリストを作るか">どんなTodoリストを作るか</h2>
 <ul>
 <li>Todoの登録
 <ul>
@@ -80,12 +81,13 @@
 <li>Todoをクリックすると削除</li>
 </ul>
 <h2 id="サイトの作成">サイトの作成</h2>
-<p>適当なディレクトリで次のコマンドを実行すると、<code>mysite</code>というディレクトリが作られる。以降は<code>mysite</code>ディレクトリで作業する。</p>
+<p>適当なディレクトリで次のコマンドを実行すると、<code>mysite</code>というディレクトリが作られる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ django-admin startproject mysite
-</code></pre></div><h2 id="アプリの作成">アプリの作成</h2>
-<p><code>mysite</code>ディレクトリにて以下のコマンドを実行すると、<code>todo_list</code>というディレクトリが作られる。ここに実際のアプリの処理を記述していく。:w</p>
+</code></pre></div><p>以降は<code>mysite</code>ディレクトリで作業する。</p>
+<h2 id="アプリの作成">アプリの作成</h2>
+<p><code>mysite</code>ディレクトリにて以下のコマンドを実行すると、<code>todo_list</code>というディレクトリが作られる。ここに実際のアプリの処理を記述していく。</p>
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ python3 manage.py startapp todo_list
-</code></pre></div><p>続いて<code>mysite/settings.py</code>を開いて、<code>INSTALL_APPS</code>を以下の記述にする。<code>'todo_list.apps.TodoListConfig'</code>を追加しただけ。これはデータベース作成やテンプレート作成のために、djangoがtodo_listのディレクトリを教えているっぽい。<code>Todo_listConfig</code>かと思ったが違うらしい(エラーで「TodoListConfigだよ」と教えてくれた。優しい)。</p>
+</code></pre></div><p>続いて<code>mysite/mysite/settings.py</code>を開いて、<code>INSTALL_APPS</code>を以下の記述にする。<code>'todo_list.apps.TodoListConfig'</code>を追加しただけ。これはデータベース作成やテンプレート作成のために、djangoがtodo_listのディレクトリを教えているっぽい。<code>Todo_listConfig</code>かと思ったが違うらしい(エラーで「TodoListConfigだよ」と教えてくれた。優しい)。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;todo_list.apps.TodoListConfig&#39;</span><span class="p">,</span>
     <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
@@ -97,7 +99,7 @@
 <span class="p">]</span></code></pre></div>
 <h2 id="viewの作成">viewの作成</h2>
 <p><code>mysite/todo_list/views.py</code>を編集する。とりあえずviewが動くかどうかだけ確認したいので、レスポンスは適当な文字列にする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
 
 <span class="c1"># Create your views here.</span>
 
@@ -126,7 +128,7 @@
 </code></pre><p>ブラウザを起動して<code>localhost:8000/todo_list/</code>にアクセスすると<code>Hello</code>の文字列だけ表示されたページに飛ぶ。期待通りに動いている。</p>
 <h2 id="model作成">Model作成</h2>
 <p><code>Todo</code>の内容を保存しておくためのデータベースが必要である。Djangoでは、データベースのテーブル要素をModelとして定義する。</p>
-<p><code>mysite/todo_list/model.py</code>の内容を以下のように編集する。今回扱うのはただのテキストだけなので、<code>models.CharField</code>しか用意しない。ただし、内部的には<code>text</code>だけでなく<code>id</code>変数も追加される。これはテーブルの要素を識別するためのもので、後で削除機能を実装する時に利用する。</p>
+<p><code>mysite/todo_list/models.py</code>の内容を以下のように編集する。今回扱うのはただのテキストだけなので、<code>models.CharField</code>しか用意しない。ただし、内部的には<code>text</code>だけでなく<code>id</code>変数も追加される。これはテーブルの要素を識別するためのもので、後で削除機能を実装する時に利用する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
 
 <span class="c1"># Create your models here.</span>
@@ -151,7 +153,6 @@ $ python3 manage.py migrate
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p><code>mysite/todo_list/views.py</code>を編集する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
 
 <span class="c1"># Create your views here.</span>
 
@@ -160,7 +161,6 @@ $ python3 manage.py migrate
 <h2 id="モデルが表示できるようにする">モデルが表示できるようにする</h2>
 <p><code>mysite/todo_list/models.py</code>の<code>Todo</code>クラスをインポートして、<code>Todo.objects.all()</code>でTodoの全要素が取得できるらしい。この情報をrenderに渡すと、前項で作ったTemplateでそれが利用できるようになる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
 
 <span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">Todo</span>
 
@@ -225,7 +225,7 @@ $ python3 manage.py migrate
 <p><code>add</code>ビューではテーブルに要素を追加する。フォーム要素から<code>request.POST[name]</code>で、form部品の情報を取得できる。ここでのnameとは、form部品のname属性である。</p>
 <p><code>remove</code>ビューでは引数に<code>todo_id</code>を指定している。これは<code>urls.py</code>で指定していた<code>&lt;int:todo_id&gt;</code>と同じものである。<code>get_object_or_404</code>でTodoテーブルから<code>id==todo_id</code>となるものを探し出し、もし見つからなかったら<code>404</code>ページを表示する。<code>pk</code>というのはおそらく<code>primary key</code>の略で、デフォルトでは<code>id</code>が主キーになっているのだろう。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span><span class="p">,</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponseRedirect</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
 
 <span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">Todo</span>
