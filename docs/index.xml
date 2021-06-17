@@ -7,6 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>PureScriptとCanvasで作る『弾むボール』</title>
+      <link>https://bombrary.github.io/blog/posts/purescript-bouncing-ball/</link>
+      <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/purescript-bouncing-ball/</guid>
+      <description>英語だと &amp;ldquo;bouncing ball programming&amp;rdquo; とか検索すると出てくるやつ。 単にボールが弾むだけなのだが、思ったより勉強になったので書き残す。
+実際のプログラムの動作はGitHub Pagesを参照。
+プロジェクトの初期化 適当なディレクトリを作って、その中でプロジェクトを作成。
+% spago init % spago build  今回は、追加のパッケージは必要なときにspago installコマンドで入れることにする。
+Canvas入門 src/Main.pursを以下のようにする。
+module Main where import Prelude import Data.Maybe (Maybe(..)) import Effect (Effect) import Effect.Console (log) import Graphics.Canvas (CanvasElement, Dimensions) import Graphics.Canvas as Canvas import Math as Math canvasDimen :: Dimensions canvasDimen = { width: 600.0 , height: 600.0 } initCanvas :: CanvasElement -&amp;gt; Effect Unit initCanvas canvas = Canvas.setCanvasDimensions canvas canvasDimen main :: Effect Unit main = Canvas.</description>
+    </item>
+    
+    <item>
       <title>PythonとFlask(&#43;α)で作るToDoリストAPI</title>
       <link>https://bombrary.github.io/blog/posts/todo-api-flask/</link>
       <pubDate>Thu, 03 Jun 2021 23:29:00 +0900</pubDate>

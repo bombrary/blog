@@ -6,7 +6,43 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 03 Jun 2021 23:29:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 17 Jun 2021 16:50:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bouncing Ball</title>
+      <link>https://bombrary.github.io/blog/tags/bouncing-ball/</link>
+      <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/bouncing-ball/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Canvas API</title>
+      <link>https://bombrary.github.io/blog/tags/canvas-api/</link>
+      <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/canvas-api/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Monad</title>
+      <link>https://bombrary.github.io/blog/tags/monad/</link>
+      <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/monad/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>State</title>
+      <link>https://bombrary.github.io/blog/tags/state/</link>
+      <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/state/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Flask</title>
       <link>https://bombrary.github.io/blog/tags/flask/</link>
@@ -125,15 +161,6 @@
     </item>
     
     <item>
-      <title>Monad</title>
-      <link>https://bombrary.github.io/blog/tags/monad/</link>
-      <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/monad/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>ST</title>
       <link>https://bombrary.github.io/blog/tags/st/</link>
       <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
@@ -220,15 +247,6 @@
       <pubDate>Thu, 28 May 2020 10:50:13 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%80%A4%E8%A7%A3%E6%9E%90/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>State</title>
-      <link>https://bombrary.github.io/blog/tags/state/</link>
-      <pubDate>Sat, 28 Mar 2020 19:16:20 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/state/</guid>
       <description></description>
     </item>
     

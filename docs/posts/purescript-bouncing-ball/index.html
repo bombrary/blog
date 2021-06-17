@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>PureScriptとCanvasで作る『弾むボール』 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.83.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-bouncing-ball/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/purescript-bouncing-ball/">PureScriptとCanvasで作る『弾むボール』</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2021-06-17T16:50:00&#43;09:00">June 17, 2021</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2021-06-17T16:50:00&#43;09:00">June 17, 2021</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/canvas%20api/">Canvas API</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/monad/">Monad</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/state/">State</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/bouncing%20ball/">Bouncing Ball</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/purescript/">PureScript</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#プロジェクトの初期化">プロジェクトの初期化</a></li>
+    <li><a href="#canvas入門">Canvas入門</a>
+      <ul>
+        <li><a href="#ブラウザ上での確認">ブラウザ上での確認</a></li>
+      </ul>
+    </li>
+    <li><a href="#canvasのユーティリティの作成">Canvasのユーティリティの作成</a></li>
+    <li><a href="#メインループの実装">メインループの実装</a></li>
+    <li><a href="#ボールの作成">ボールの作成</a>
+      <ul>
+        <li><a href="#vecの実装">Vecの実装</a></li>
+        <li><a href="#ballの実装">Ballの実装</a></li>
+        <li><a href="#ballの作成更新描画">Ballの作成・更新・描画</a></li>
+      </ul>
+    </li>
+    <li><a href="#跳ね返りの実装">跳ね返りの実装</a>
+      <ul>
+        <li><a href="#実装例1-位置や速度をまとめて更新">実装例(1): 位置や速度をまとめて更新</a></li>
+        <li><a href="#実装例2-stateを使わない状態の変更">実装例(2) Stateを使わない状態の変更</a></li>
+        <li><a href="#実装例3-stateを使う状態の変更">実装例(3) Stateを使う状態の変更</a></li>
+      </ul>
+    </li>
+    <li><a href="#簡易的な物理演算">簡易的な物理演算</a>
+      <ul>
+        <li><a href="#力と質量の追加">力と質量の追加</a></li>
+        <li><a href="#重力の追加">重力の追加</a></li>
+        <li><a href="#おまけ-update関数をstateを使って書き直す">(おまけ) update関数をStateを使って書き直す</a></li>
+      </ul>
+    </li>
+    <li><a href="#考えたこと">考えたこと</a>
+      <ul>
+        <li><a href="#位置と速度の書き間違い">位置と速度の書き間違い</a></li>
+      </ul>
+    </li>
+    <li><a href="#ソースコードとデモ">ソースコードとデモ</a></li>
+  </ul>
+</nav>
+    </aside>
+    
+  <p>英語だと &ldquo;<a href="https://www.google.com/search?rls=en&amp;q=bouncing+ball+programming">bouncing ball programming</a>&rdquo; とか検索すると出てくるやつ。
+単にボールが弾むだけなのだが、思ったより勉強になったので書き残す。</p>
+<p>実際のプログラムの動作は<a href="https://bombrary.github.io/bouncing-ball-purescript/">GitHub Pages</a>を参照。</p>
+<h2 id="プロジェクトの初期化">プロジェクトの初期化</h2>
+<p>適当なディレクトリを作って、その中でプロジェクトを作成。</p>
+<pre class="cui">
+% spago init
+% spago build
+</pre>
+
+<p>今回は、追加のパッケージは必要なときに<code>spago install</code>コマンドで入れることにする。</p>
+<h2 id="canvas入門">Canvas入門</h2>
+<p><code>src/Main.purs</code>を以下のようにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Console</span> <span class="p">(</span><span class="nf">log</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Graphics.Canvas</span> <span class="p">(</span><span class="kt">CanvasElement</span><span class="p">,</span> <span class="kt">Dimensions</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Graphics.Canvas</span> <span class="k">as</span> <span class="n">Canvas</span>
+<span class="kr">import</span> <span class="nn">Math</span> <span class="k">as</span> <span class="n">Math</span>
+
+
+<span class="nf">canvasDimen</span> <span class="ow">::</span> <span class="kt">Dimensions</span>
+<span class="nf">canvasDimen</span> <span class="ow">=</span>
+  <span class="p">{</span> <span class="n">width</span><span class="kt">:</span> <span class="mf">600.0</span>
+  <span class="p">,</span> <span class="n">height</span><span class="kt">:</span> <span class="mf">600.0</span>
+  <span class="p">}</span>
+
+
+<span class="nf">initCanvas</span> <span class="ow">::</span> <span class="kt">CanvasElement</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">initCanvas</span> <span class="n">canvas</span> <span class="ow">=</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">setCanvasDimensions</span> <span class="n">canvas</span> <span class="n">canvasDimen</span>
+
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">main</span> <span class="ow">=</span> 
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">getCanvasElementById</span> <span class="s">&#34;canvas&#34;</span> <span class="o">&gt;&gt;=</span>
+    <span class="kr">case</span> <span class="kr">_</span> <span class="kr">of</span>
+      <span class="kt">Just</span> <span class="n">canvas</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+         <span class="n">initCanvas</span> <span class="n">canvas</span>
+         <span class="n">ctx</span> <span class="ow">&lt;-</span> <span class="kt">Canvas</span><span class="o">.</span><span class="n">getContext2D</span> <span class="n">canvas</span>
+         <span class="kt">Canvas</span><span class="o">.</span><span class="n">fillPath</span> <span class="n">ctx</span> <span class="o">$</span>
+           <span class="kt">Canvas</span><span class="o">.</span><span class="n">arc</span> <span class="n">ctx</span>
+             <span class="p">{</span> <span class="n">x</span><span class="kt">:</span> <span class="n">canvasDimen</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span>
+             <span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="n">canvasDimen</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span>
+             <span class="p">,</span> <span class="n">start</span><span class="kt">:</span> <span class="mf">0.0</span>
+             <span class="p">,</span> <span class="n">end</span><span class="kt">:</span> <span class="kt">Math</span><span class="o">.</span><span class="n">tau</span>
+             <span class="p">,</span> <span class="n">radius</span><span class="kt">:</span> <span class="mf">10.0</span>
+             <span class="p">}</span>
+
+      <span class="kt">Nothing</span> <span class="ow">-&gt;</span>
+        <span class="n">log</span> <span class="s">&#34;Error on getCanvasElementById.&#34;</span>
+</code></pre></div><p>ビルドに当たって，必要な以下の3つのパッケージをインストールする。</p>
+<pre class="cui">
+% spago install canvas math maybe
+</pre>
+
+<p>それぞれ以下の通り。</p>
+<ul>
+<li><a href="https://pursuit.purescript.org/packages/purescript-canvas">canvas</a>:
+JavaScriptの<a href="https://developer.mozilla.org/ja/docs/Web/API/Canvas_API">Canvas API</a>のバインディング。</li>
+<li><a href="https://pursuit.purescript.org/packages/purescript-math">math</a>:
+基本的にはJavaScriptの<a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math">Math</a>のバインディングになっているが、
+上のコードで使っている<code>Math.tau</code>に関しては<code>2*Math.pi</code>として定義されている。</li>
+<li><a href="https://pursuit.purescript.org/packages/purescript-maybe">maybe</a>:
+お馴染み。<code>Canvas.getCanvasElementById</code>関数が<code>Maybe</code>型を返すので必要。</li>
+</ul>
+<p>実は、Canvas APIを使うのが今回が初めてだった。PureScriptでもJSでも変わらず、次のような方法で書くようだ。</p>
+<ul>
+<li><code>canvas</code>要素を取得。PureScriptの場合は<code>getCanvasElementById</code>を利用。</li>
+<li><code>canvas</code>要素からコンテキストを取得。PureScriptの場合は<code>getContext2D</code>を利用。</li>
+<li>パスを作成するときは、<code>beginPath</code>でパスを開始し、<code>moveTo</code>、<code>lineTo</code>、<code>arc</code>などでパスを作っていって、
+最後に<code>stroke</code>で実際の描画を行う。<code>fill</code>にすると塗りつぶす。</li>
+<li>JSでは<code>fillStyle</code>プロパティを書き換えて、塗りつぶしの色を設定する。PureScriptでは<code>setFillStyle</code>関数を利用する。</li>
+</ul>
+<p>上のコードでの<code>fillPath</code>は、<code>beginPath</code>と<code>fill</code>を組み合わせて作られた関数であり、以下の2つのコードは同じ。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- 1つ目</span>
+ <span class="kt">Canvas</span><span class="o">.</span><span class="n">fillPath</span> <span class="n">ctx</span> <span class="o">$</span>
+   <span class="kt">Canvas</span><span class="o">.</span><span class="n">arc</span> <span class="n">ctx</span>
+     <span class="p">{</span> <span class="n">x</span><span class="kt">:</span> <span class="n">canvasDimen</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span>
+     <span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="n">canvasDimen</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span>
+     <span class="p">,</span> <span class="n">start</span><span class="kt">:</span> <span class="mf">0.0</span>
+     <span class="p">,</span> <span class="n">end</span><span class="kt">:</span> <span class="kt">Math</span><span class="o">.</span><span class="n">tau</span>
+     <span class="p">,</span> <span class="n">radius</span><span class="kt">:</span> <span class="mf">10.0</span>
+     <span class="p">}</span>
+
+<span class="c1">-- 2つ目</span>
+ <span class="kt">Canvas</span><span class="o">.</span><span class="n">beginPath</span> <span class="n">ctx</span>
+ <span class="kt">Canvas</span><span class="o">.</span><span class="n">arc</span> <span class="n">ctx</span>
+   <span class="p">{</span> <span class="n">x</span><span class="kt">:</span> <span class="n">canvasDimen</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span>
+   <span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="n">canvasDimen</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span>
+   <span class="p">,</span> <span class="n">start</span><span class="kt">:</span> <span class="mf">0.0</span>
+   <span class="p">,</span> <span class="n">end</span><span class="kt">:</span> <span class="kt">Math</span><span class="o">.</span><span class="n">tau</span>
+   <span class="p">,</span> <span class="n">radius</span><span class="kt">:</span> <span class="mf">10.0</span>
+   <span class="p">}</span>
+ <span class="kt">Canvas</span><span class="o">.</span><span class="n">fill</span> <span class="n">ctx</span>
+</code></pre></div><h3 id="ブラウザ上での確認">ブラウザ上での確認</h3>
+<p>JSのファイルに変換する。出力先ディレクトリは<code>public/</code>にする。</p>
+<pre class="cui">
+% spago bundle-app -t public/index.js
+</pre>
+
+<p><code>public/index.html</code>を作成し、内容を以下のようにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">canvas</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;canvas&#34;</span> <span class="na">style</span><span class="o">=</span><span class="s">&#34;border: 1px solid #000&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">canvas</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;index.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div><p><code>index.html</code>を開くと、黒い円が表示される。</p>
+<figure><img src="img00.png" width="70%"/>
+</figure>
+
+<h2 id="canvasのユーティリティの作成">Canvasのユーティリティの作成</h2>
+<p>後で利用するために、円を描画するための関数<code>circle</code>と，キャンバス全体をクリアするための関数<code>clearCanvas</code>を定義しておく。
+パッケージ名は<code>Graphics.Canvas.Extra</code>としたいので、<code>src/Graphics/Canvas/Extra.purs</code>を作成し、内容を以下のようにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Graphics.Canvas.Extra</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Graphics.Canvas</span> <span class="p">(</span><span class="kt">Context2D</span><span class="p">,</span> <span class="kt">Dimensions</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Graphics.Canvas</span> <span class="k">as</span> <span class="n">Canvas</span>
+<span class="kr">import</span> <span class="nn">Math</span> <span class="k">as</span> <span class="n">Math</span>
+
+
+<span class="nf">clearCanvas</span> <span class="ow">::</span> <span class="kt">Context2D</span> <span class="ow">-&gt;</span> <span class="kt">Dimensions</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">clearCanvas</span> <span class="n">ctx</span> <span class="n">dimen</span> <span class="ow">=</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">clearRect</span> <span class="n">ctx</span>
+    <span class="p">{</span> <span class="n">x</span><span class="kt">:</span> <span class="mf">0.0</span>
+    <span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="mf">0.0</span>
+    <span class="p">,</span> <span class="n">width</span><span class="kt">:</span> <span class="n">dimen</span><span class="o">.</span><span class="n">width</span>
+    <span class="p">,</span> <span class="n">height</span><span class="kt">:</span> <span class="n">dimen</span><span class="o">.</span><span class="n">height</span>
+    <span class="p">}</span>
+
+
+<span class="kr">type</span> <span class="kt">Circle</span> <span class="ow">=</span>
+  <span class="p">{</span> <span class="n">x</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">,</span> <span class="n">y</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">,</span> <span class="n">radius</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">}</span>
+
+
+<span class="nf">circle</span> <span class="ow">::</span> <span class="kt">Context2D</span> <span class="ow">-&gt;</span> <span class="kt">Circle</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">circle</span> <span class="n">ctx</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span><span class="p">}</span> <span class="ow">=</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">arc</span> <span class="n">ctx</span>
+    <span class="p">{</span> <span class="n">x</span>
+    <span class="p">,</span> <span class="n">y</span>
+    <span class="p">,</span> <span class="n">radius</span>
+    <span class="p">,</span> <span class="n">start</span><span class="kt">:</span> <span class="mf">0.0</span>
+    <span class="p">,</span> <span class="n">end</span><span class="kt">:</span> <span class="kt">Math</span><span class="o">.</span><span class="n">tau</span>
+    <span class="p">}</span>
+</code></pre></div><h2 id="メインループの実装">メインループの実装</h2>
+<p>試しに、ボールが左から右へ動くプログラムを作成してみる。
+<code>src/Main.purs</code>を以下のようにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Console</span> <span class="p">(</span><span class="nf">log</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Timer</span> <span class="k">as</span> <span class="n">Timer</span>
+<span class="kr">import</span> <span class="nn">Graphics.Canvas</span> <span class="p">(</span><span class="kt">CanvasElement</span><span class="p">,</span> <span class="kt">Context2D</span><span class="p">,</span> <span class="kt">Dimensions</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Graphics.Canvas</span> <span class="k">as</span> <span class="n">Canvas</span>
+<span class="kr">import</span> <span class="nn">Graphics.Canvas.Extra</span> <span class="k">as</span> <span class="n">Canvas</span>
+
+
+<span class="nf">canvasDimen</span> <span class="ow">::</span> <span class="kt">Dimensions</span>
+<span class="nf">canvasDimen</span> <span class="ow">=</span>
+  <span class="p">{</span> <span class="n">width</span><span class="kt">:</span> <span class="mf">600.0</span>
+  <span class="p">,</span> <span class="n">height</span><span class="kt">:</span> <span class="mf">600.0</span>
+  <span class="p">}</span>
+
+
+<span class="nf">initCanvas</span> <span class="ow">::</span> <span class="kt">CanvasElement</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">initCanvas</span> <span class="n">canvas</span> <span class="ow">=</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">setCanvasDimensions</span> <span class="n">canvas</span> <span class="n">canvasDimen</span>
+
+
+<span class="kr">type</span> <span class="kt">Model</span> <span class="ow">=</span>
+  <span class="p">{</span> <span class="n">x</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">,</span> <span class="n">y</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">}</span>
+
+
+<span class="nf">init</span> <span class="ow">::</span> <span class="kt">Model</span>
+<span class="nf">init</span> <span class="ow">=</span>
+  <span class="p">{</span> <span class="n">x</span><span class="kt">:</span> <span class="n">canvasDimen</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span>
+  <span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="n">canvasDimen</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span>
+  <span class="p">}</span>
+
+
+<span class="nf">update</span> <span class="ow">::</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Model</span>
+<span class="nf">update</span> <span class="n">model</span><span class="o">@</span><span class="p">{</span><span class="n">x</span><span class="p">}</span> <span class="ow">=</span>
+  <span class="n">model</span> <span class="p">{</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">1.0</span> <span class="p">}</span>
+
+
+<span class="nf">view</span> <span class="ow">::</span> <span class="kt">Context2D</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">view</span> <span class="n">ctx</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">}</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">setFillStyle</span> <span class="n">ctx</span> <span class="s">&#34;salmon&#34;</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">fillPath</span> <span class="n">ctx</span> <span class="o">$</span>
+    <span class="kt">Canvas</span><span class="o">.</span><span class="n">circle</span> <span class="n">ctx</span>
+      <span class="p">{</span> <span class="n">x</span>
+      <span class="p">,</span> <span class="n">y</span>
+      <span class="p">,</span> <span class="n">radius</span><span class="kt">:</span> <span class="mf">10.0</span>
+      <span class="p">}</span>
+
+
+<span class="nf">mainLoop</span> <span class="ow">::</span> <span class="kt">Context2D</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">mainLoop</span> <span class="n">ctx</span> <span class="n">model</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">clearCanvas</span> <span class="n">ctx</span> <span class="n">canvasDimen</span>
+  <span class="n">view</span> <span class="n">ctx</span> <span class="n">model</span>
+  <span class="n">void</span> <span class="o">$</span> <span class="kt">Timer</span><span class="o">.</span><span class="n">setTimeout</span> <span class="mi">10</span> <span class="o">$</span> <span class="n">mainLoop</span> <span class="n">ctx</span> <span class="p">(</span><span class="n">update</span> <span class="n">model</span><span class="p">)</span>
+
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">main</span> <span class="ow">=</span> 
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">getCanvasElementById</span> <span class="s">&#34;canvas&#34;</span> <span class="o">&gt;&gt;=</span>
+    <span class="kr">case</span> <span class="kr">_</span> <span class="kr">of</span>
+      <span class="kt">Just</span> <span class="n">canvas</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+         <span class="n">initCanvas</span> <span class="n">canvas</span>
+         <span class="n">ctx</span> <span class="ow">&lt;-</span> <span class="kt">Canvas</span><span class="o">.</span><span class="n">getContext2D</span> <span class="n">canvas</span>
+         <span class="n">mainLoop</span> <span class="n">ctx</span> <span class="n">init</span>
+
+      <span class="kt">Nothing</span> <span class="ow">-&gt;</span>
+        <span class="n">log</span> <span class="s">&#34;Error on getCanvasElementById.&#34;</span>
+</code></pre></div><p><code>setTimeout</code>を使いたいので、関連パッケージを入れておく。</p>
+<pre class="cui">
+% spago install js-timers
+</pre>
+
+<p><code>init</code>でモデル(ここではただのxy座標)を初期化し、<code>view</code>で描画処理を行い、<code>update</code>でモデルの更新をする。
+なんとなく<a href="https://guide.elm-lang.org/architecture/">TEA</a>っぽい設計をした。
+<code>setTimeout</code>で10msおきに同じ関数を呼び出すようにしており、これでメインループを実現している。</p>
+<p>前節同様、<code>spago bundle-app</code>を行って<code>index.html</code>を開くと、ボールが左から右へ動く様子が表示される(画像は略)。</p>
+<h2 id="ボールの作成">ボールの作成</h2>
+<p>次のような仕様にする。</p>
+<ul>
+<li>ボールは<code>Ball</code>という型で管理し、これは<code>Data.Ball</code>で宣言する。</li>
+<li>ボールは位置、速度の情報を含むが、これは2次元のベクトルの形で管理する。
+2次元ベクトルは<code>Vec</code>という型で管理し、これは<code>Data.Vec</code>で宣言する。</li>
+</ul>
+<h3 id="vecの実装">Vecの実装</h3>
+<p><code>src/Data/Vec.purs</code>を作成する。以下、このファイルに内容を追記していく。</p>
+<p>まず、<code>Vec</code>型を作成する。
+recordを直接使うか<code>newtype</code>で包むかで選択肢があるが、
+これは悩ましい問題(調べたら<a href="https://discourse.purescript.org/t/wrapping-records-with-newtype/1179">discourse</a>で同じ議論があった。)。
+ここではコンパイルエラーの見やすさの観点から<code>newtype</code>で包むことにした。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Data.Vec</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+
+<span class="kr">newtype</span> <span class="kt">Vec</span> <span class="ow">=</span> <span class="kt">Vec</span>
+  <span class="p">{</span> <span class="n">x</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">,</span> <span class="n">y</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">}</span>
+</code></pre></div><p><code>newtype</code>で包んだので、値の取り出し方を考える必要がある。
+<code>Newtype</code>クラスのインスタンスにして<code>unwrap/wrap</code>を直接使うという手段もあるが、
+それがコード中で多用されるとなんとなく見づらい気がしたので、ここではゲッターとセッターを定義することにした。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">getX</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Number</span>
+<span class="nf">getX</span> <span class="p">(</span><span class="kt">Vec</span> <span class="p">{</span><span class="n">x</span><span class="p">})</span> <span class="ow">=</span> <span class="n">x</span>
+
+
+<span class="nf">getY</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Number</span>
+<span class="nf">getY</span> <span class="p">(</span><span class="kt">Vec</span> <span class="p">{</span><span class="n">y</span><span class="p">})</span> <span class="ow">=</span> <span class="n">y</span>
+
+
+<span class="nf">setX</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">setX</span> <span class="n">xnew</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">v</span><span class="p">)</span> <span class="ow">=</span>
+  <span class="kt">Vec</span> <span class="n">v</span> <span class="p">{</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">xnew</span> <span class="p">}</span>
+
+
+<span class="nf">setY</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">setY</span> <span class="n">ynew</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">v</span><span class="p">)</span> <span class="ow">=</span>
+  <span class="kt">Vec</span> <span class="n">v</span> <span class="p">{</span> <span class="n">y</span> <span class="ow">=</span> <span class="n">ynew</span> <span class="p">}</span>
+</code></pre></div><p><code>Vec</code>のコンストラクタと、0ベクトルを作成する便利関数を作っておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">new</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">new</span> <span class="n">x</span> <span class="n">y</span> <span class="ow">=</span> <span class="kt">Vec</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span>
+
+
+<span class="nf">zero</span> <span class="ow">::</span> <span class="kt">Vec</span>
+<span class="nf">zero</span> <span class="ow">=</span> <span class="kt">Vec</span> <span class="p">{</span> <span class="n">x</span><span class="kt">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="mf">0.0</span> <span class="p">}</span>
+</code></pre></div><p>ベクトル同士の演算やスカラー倍、ノルムを定義しておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Math</span> <span class="k">as</span> <span class="n">Math</span> <span class="c1">-- コード上部に書いておく</span>
+
+
+<span class="nf">add</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">add</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">u</span><span class="p">)</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">v</span><span class="p">)</span> <span class="ow">=</span>
+  <span class="n">new</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+
+<span class="nf">sub</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">sub</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">u</span><span class="p">)</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">v</span><span class="p">)</span> <span class="ow">=</span>
+  <span class="n">new</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+
+<span class="nf">mult</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">mult</span> <span class="n">c</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">v</span><span class="p">)</span> <span class="ow">=</span>
+  <span class="n">new</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+
+<span class="nf">div</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">div</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">v</span><span class="p">)</span> <span class="n">c</span> <span class="ow">=</span>
+  <span class="n">new</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span>
+
+
+<span class="nf">magSq</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Number</span>
+<span class="nf">magSq</span> <span class="p">(</span><span class="kt">Vec</span> <span class="n">v</span><span class="p">)</span> <span class="ow">=</span>
+  <span class="n">v</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">v</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span>
+
+
+<span class="nf">mag</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Number</span>
+<span class="nf">mag</span> <span class="n">v</span> <span class="ow">=</span> <span class="kt">Math</span><span class="o">.</span><span class="n">sqrt</span> <span class="o">$</span> <span class="n">magSq</span> <span class="n">v</span>
+</code></pre></div><h3 id="ballの実装">Ballの実装</h3>
+<p><code>src/Data/Ball.purs</code>を作成する。以下、このファイルに内容を追記していく。</p>
+<p>とりあえず、<code>Ball</code>は位置ベクトル<code>r</code>と速度ベクトル<code>v</code>と半径<code>radius</code>を持っているとする。
+後でいくつかフィールドを足す。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Data.Ball</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+<span class="kr">import</span> <span class="nn">Data.Vec</span> <span class="p">(</span><span class="kt">Vec</span><span class="p">)</span>
+
+
+<span class="kr">newtype</span> <span class="kt">Ball</span> <span class="ow">=</span> <span class="kt">Ball</span>
+  <span class="p">{</span> <span class="n">r</span> <span class="ow">::</span> <span class="kt">Vec</span>
+  <span class="p">,</span> <span class="n">v</span> <span class="ow">::</span> <span class="kt">Vec</span>
+  <span class="p">,</span> <span class="n">radius</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">}</span>
+</code></pre></div><p>ゲッター、セッターを定義する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">getR</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">getR</span> <span class="p">(</span><span class="kt">Ball</span> <span class="p">{</span><span class="n">r</span><span class="p">})</span> <span class="ow">=</span> <span class="n">r</span>
+
+
+<span class="nf">getV</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">getV</span> <span class="p">(</span><span class="kt">Ball</span> <span class="p">{</span><span class="n">v</span><span class="p">})</span> <span class="ow">=</span> <span class="n">v</span>
+
+
+<span class="nf">setR</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">setR</span> <span class="n">r</span> <span class="p">(</span><span class="kt">Ball</span> <span class="n">b</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Ball</span> <span class="n">b</span> <span class="p">{</span> <span class="n">r</span> <span class="ow">=</span> <span class="n">r</span> <span class="p">}</span>
+
+
+<span class="nf">setV</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">setV</span> <span class="n">v</span> <span class="p">(</span><span class="kt">Ball</span> <span class="n">b</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Ball</span> <span class="n">b</span> <span class="p">{</span> <span class="n">v</span> <span class="ow">=</span> <span class="n">v</span> <span class="p">}</span>
+
+
+<span class="nf">getRadius</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Number</span>
+<span class="nf">getRadius</span> <span class="p">(</span><span class="kt">Ball</span> <span class="p">{</span><span class="n">radius</span><span class="p">})</span> <span class="ow">=</span> <span class="n">radius</span>
+</code></pre></div><p>コンストラクタを作成。
+Canvas用の描画形式に変換する関数も定義しておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- 以下の2行はファイル最初に追加</span>
+<span class="kr">import</span> <span class="nn">Data.Vec</span> <span class="k">as</span> <span class="n">Vec</span>
+<span class="kr">import</span> <span class="nn">Graphics.Canvas.Extra</span> <span class="p">(</span><span class="kt">Circle</span><span class="p">)</span>
+
+
+<span class="nf">new</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">new</span> <span class="n">r</span> <span class="n">v</span> <span class="n">radius</span> <span class="ow">=</span> <span class="kt">Ball</span> <span class="p">{</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">radius</span> <span class="p">}</span>
+
+
+<span class="nf">toCircle</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Circle</span>
+<span class="nf">toCircle</span> <span class="p">(</span><span class="kt">Ball</span> <span class="p">{</span><span class="n">r</span><span class="p">,</span> <span class="n">radius</span><span class="p">})</span> <span class="ow">=</span>
+  <span class="p">{</span> <span class="n">x</span><span class="kt">:</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getX</span> <span class="n">r</span>
+  <span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getY</span> <span class="n">r</span>
+  <span class="p">,</span> <span class="n">radius</span>
+  <span class="p">}</span>
+</code></pre></div><h3 id="ballの作成更新描画">Ballの作成・更新・描画</h3>
+<p><code>src/Main.purs</code>の<code>Model</code>、<code>init</code>、<code>update</code>、<code>view</code>を以下のようにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">--- 以下の3行はファイル最初に追加</span>
+<span class="kr">import</span> <span class="nn">Data.Ball</span> <span class="p">(</span><span class="kt">Ball</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Ball</span> <span class="k">as</span> <span class="n">Ball</span>
+<span class="kr">import</span> <span class="nn">Data.Vec</span> <span class="k">as</span> <span class="n">Vec</span>
+
+
+<span class="kr">type</span> <span class="kt">Model</span> <span class="ow">=</span> <span class="kt">Ball</span>
+  
+<span class="nf">init</span> <span class="ow">::</span> <span class="kt">Model</span>
+<span class="nf">init</span> <span class="ow">=</span>
+  <span class="kt">Ball</span><span class="o">.</span><span class="n">new</span>
+    <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">new</span>
+        <span class="p">(</span><span class="n">canvasDimen</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">canvasDimen</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+    <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">new</span> <span class="mf">1.0</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="mf">10.0</span>
+
+
+<span class="nf">update</span> <span class="ow">::</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Model</span>
+<span class="nf">update</span> <span class="n">ball</span> <span class="ow">=</span>
+  <span class="kt">Ball</span><span class="o">.</span><span class="n">update</span> <span class="n">ball</span>
+
+
+<span class="nf">view</span> <span class="ow">::</span> <span class="kt">Context2D</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">view</span> <span class="n">ctx</span> <span class="n">ball</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">setFillStyle</span> <span class="n">ctx</span> <span class="s">&#34;salmon&#34;</span>
+  <span class="kt">Canvas</span><span class="o">.</span><span class="n">fillPath</span> <span class="n">ctx</span> <span class="o">$</span>
+    <span class="kt">Canvas</span><span class="o">.</span><span class="n">circle</span> <span class="n">ctx</span> <span class="o">$</span> <span class="kt">Ball</span><span class="o">.</span><span class="n">toCircle</span> <span class="n">ball</span>
+</code></pre></div><p><code>init</code>でボールを作成。<code>update</code>でボールの状態(位置や速度)を更新。viewで<code>Ball</code>を円として描画している。
+<code>Ball.update</code>がまだ未実装なので、再び<code>src/Data/Ball.purs</code>に戻る。ひとまず以下の定義にする。
+単純に等速直線運動させる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">update</span> <span class="n">ball</span> <span class="ow">=</span>
+  <span class="n">setR</span>
+    <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">add</span>
+      <span class="p">(</span><span class="n">getR</span> <span class="n">ball</span><span class="p">)</span>
+      <span class="p">(</span><span class="n">getV</span> <span class="n">ball</span><span class="p">))</span>
+    <span class="n">ball</span>
+</code></pre></div><p><code>spago bundle-app</code>した結果は以下のようになる。</p>
+<figure><img src="mov00.gif" width="70%"/>
+</figure>
+
+<h2 id="跳ね返りの実装">跳ね返りの実装</h2>
+<p><code>src/Data/Ball.purs</code>を編集する。<code>Ball</code>を動かす処理を<code>move</code>に任せ、跳ね返りの処理を<code>collide</code>に任せる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">move</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">move</span> <span class="n">ball</span> <span class="ow">=</span>
+  <span class="n">setR</span>
+    <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">add</span> <span class="p">(</span><span class="n">getR</span> <span class="n">ball</span><span class="p">)</span> <span class="p">(</span><span class="n">getV</span> <span class="n">ball</span><span class="p">))</span>
+    <span class="n">ball</span>
+
+
+<span class="nf">update</span> <span class="ow">::</span> <span class="kt">Dimensions</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">update</span> <span class="n">dimen</span> <span class="n">ball</span> <span class="ow">=</span>
+  <span class="n">move</span> <span class="o">$</span> <span class="n">collide</span> <span class="mf">1.0</span> <span class="n">dimen</span> <span class="n">ball</span>
+</code></pre></div><p><code>move</code>は位置ベクトルに速度ベクトルを加算しているだけ。</p>
+<p><code>collide</code>は、キャンバスの四方にぶつかった際に、位置を補正して、速度を逆向きにする処理を行う。
+第1引数に反発係数をとる(上のコードでは<code>1.0</code>を設定している)。</p>
+<p>この処理は擬似コードで書くと、</p>
+<pre><code>if (ボールが左にはみ出た) {
+  速度のx座標の符号を反転;
+  ボールの座標を左端に補正;
+}
+if (ボールが右にはみ出た) {
+  速度のx座標の符号を反転;
+  ボールの座標を右端に補正;
+}
+if (ボールが上にはみ出た) {
+  速度のy座標の符号を反転;
+  ボールの座標を上端に補正;
+}
+if (ボールが下にはみ出た) {
+  速度のy座標の符号を反転;
+  ボールの座標を下端に補正;
+}
+</code></pre><p>みたいに書きたい。上のように、「ボールの状態の変更するという命令」
+を上から順に実行しているように書きたい場合は、<code>State</code>モナドが適していると思われる(恐らく)。
+ただし一応Stateモナドを使わないバージョンも考えみたので、いくつか実装例を示す。</p>
+<h3 id="実装例1-位置や速度をまとめて更新">実装例(1): 位置や速度をまとめて更新</h3>
+<p>新しい位置や速度を計算して、最後に一気に<code>ball</code>に反映させる戦略。</p>
+<p>ネストが深くなるのを防ぐために、あえて冗長な実装を考えてみた。
+まずxy軸それぞれについて、キャンバスの外にはみ出ているか否かを判定するために、
+<code>getIntervalPosition</code>関数を定義する。
+<code>getIntervalPosition a b x</code>は、<code>x</code>と閉区間<code>[a, b]</code>との位置関係を返す関数である。すなわち、</p>
+<ul>
+<li><code>x &lt; a</code>であるか(<code>Small</code>)</li>
+<li><code>a &lt;= x &lt;= b</code>であるか(<code>Within</code>)</li>
+<li><code>b &lt; x</code>であるか(<code>Large</code>)</li>
+</ul>
+<p>を返す関数である。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">IntervalPosition</span>
+  <span class="ow">=</span> <span class="kt">Small</span>
+  <span class="o">|</span> <span class="kt">Within</span>
+  <span class="o">|</span> <span class="kt">Large</span>
+
+
+<span class="nf">getIntervalPosition</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">IntervalPosition</span>
+<span class="nf">getIntervalPosition</span> <span class="n">a</span> <span class="n">b</span> <span class="n">x</span> <span class="ow">=</span>
+  <span class="kr">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">a</span>
+    <span class="kr">then</span>
+      <span class="kt">Small</span>
+    <span class="kr">else</span>
+      <span class="kr">if</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">b</span>
+        <span class="kr">then</span> <span class="kt">Within</span>
+        <span class="kr">else</span> <span class="kt">Large</span>
+</code></pre></div><p>これを使って<code>collide</code>関数を実装する。円の大きさを衝突の計算で考慮するために、
+変数<code>x0, x1, y0, y1</code>を導入している。そして、</p>
+<ul>
+<li>ボールのx座標が区間<code>[x0, x1]</code>に対しどのような位置にあるか</li>
+<li>ボールのy座標が区間<code>[y0, y1]</code>にに対しどのような位置にあるか</li>
+</ul>
+<p>を<code>getIntervalPosition</code>で計算している。その返却値によって新しい位置ベクトル、速度ベクトルのxy座標を決定する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Tuple</span> <span class="p">(</span><span class="kt">Tuple</span><span class="p">(</span><span class="o">..</span><span class="p">))</span> <span class="c1">-- ファイル最初に追記</span>
+
+
+<span class="nf">collide</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Dimensions</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">collide</span> <span class="n">e</span> <span class="n">dimen</span> <span class="n">ball</span> <span class="ow">=</span>
+    <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">new</span> <span class="n">newX</span> <span class="n">newY</span><span class="p">)</span> <span class="o">$</span>
+      <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">new</span> <span class="n">newVx</span> <span class="n">newVy</span><span class="p">)</span> <span class="n">ball</span>
+  <span class="kr">where</span>
+    <span class="n">r</span> <span class="ow">=</span> <span class="n">getR</span> <span class="n">ball</span>
+    <span class="n">v</span> <span class="ow">=</span> <span class="n">getV</span> <span class="n">ball</span>
+    <span class="n">x</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getX</span> <span class="n">r</span>
+    <span class="n">y</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getY</span> <span class="n">r</span>
+    <span class="n">vx</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getX</span> <span class="n">v</span>
+    <span class="n">vy</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getY</span> <span class="n">v</span>
+    <span class="n">radius</span> <span class="ow">=</span> <span class="n">getRadius</span> <span class="n">ball</span>
+    <span class="n">x0</span> <span class="ow">=</span> <span class="n">radius</span>
+    <span class="n">x1</span> <span class="ow">=</span> <span class="n">dimen</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">radius</span>
+    <span class="n">y0</span> <span class="ow">=</span> <span class="n">radius</span>
+    <span class="n">y1</span> <span class="ow">=</span> <span class="n">dimen</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">radius</span>
+
+    <span class="kt">Tuple</span> <span class="n">newX</span> <span class="n">newVx</span> <span class="ow">=</span>
+      <span class="kr">case</span> <span class="n">getIntervalPosition</span> <span class="n">x0</span> <span class="n">x1</span> <span class="n">x</span> <span class="kr">of</span>
+        <span class="kt">Small</span> <span class="ow">-&gt;</span>
+          <span class="kt">Tuple</span> <span class="n">x0</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vx</span><span class="p">)</span>
+
+        <span class="kt">Large</span> <span class="ow">-&gt;</span>
+          <span class="kt">Tuple</span> <span class="n">x1</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vx</span><span class="p">)</span>
+
+        <span class="kt">Within</span> <span class="ow">-&gt;</span>
+          <span class="kt">Tuple</span> <span class="n">x</span> <span class="n">vx</span>
+
+    <span class="kt">Tuple</span> <span class="n">newY</span> <span class="n">newVy</span> <span class="ow">=</span>
+      <span class="kr">case</span> <span class="n">getIntervalPosition</span> <span class="n">y0</span> <span class="n">y1</span> <span class="n">y</span> <span class="kr">of</span>
+        <span class="kt">Small</span> <span class="ow">-&gt;</span>
+          <span class="kt">Tuple</span> <span class="n">y0</span>  <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vy</span><span class="p">)</span>
+
+        <span class="kt">Large</span> <span class="ow">-&gt;</span>
+          <span class="kt">Tuple</span> <span class="n">y1</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vy</span><span class="p">)</span>
+
+        <span class="kt">Within</span> <span class="ow">-&gt;</span>
+          <span class="kt">Tuple</span> <span class="n">y</span> <span class="n">vy</span>
+</code></pre></div><p><code>Tuple</code>を使っているので、<a href="https://pursuit.purescript.org/packages/purescript-tuples/4.1.0">tuples</a>をインストールしておく。</p>
+<pre class="cui">
+% spago install tuples
+</pre>
+
+<p>個人的に見通しよく書けたと思うが、やっぱり難しく考えすぎかも…。</p>
+<h3 id="実装例2-stateを使わない状態の変更">実装例(2) Stateを使わない状態の変更</h3>
+<p>条件分岐の度に<code>ball</code>を更新する戦略。<code>State</code>を使わないバージョンだと、
+以下のように関数<code>fx0, fx1, fy0, fy1</code>の適用を連鎖させる感じになる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">collide</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Dimensions</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">collide</span> <span class="n">e</span> <span class="n">dimen</span> <span class="n">ball</span> <span class="ow">=</span> <span class="n">fy1</span> <span class="o">$</span> <span class="n">fy0</span> <span class="o">$</span> <span class="n">fx1</span> <span class="o">$</span> <span class="n">fx0</span> <span class="n">ball</span>
+  <span class="kr">where</span>
+    <span class="n">r</span> <span class="ow">=</span> <span class="n">getR</span> <span class="n">ball</span>
+    <span class="n">v</span> <span class="ow">=</span> <span class="n">getV</span> <span class="n">ball</span>
+    <span class="n">radius</span> <span class="ow">=</span> <span class="n">getRadius</span> <span class="n">ball</span>
+    <span class="n">x</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getX</span> <span class="n">r</span>
+    <span class="n">y</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getY</span> <span class="n">r</span>
+    <span class="n">vx</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getX</span> <span class="n">v</span>
+    <span class="n">vy</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getY</span> <span class="n">v</span>
+    <span class="n">x0</span> <span class="ow">=</span> <span class="n">radius</span>
+    <span class="n">x1</span> <span class="ow">=</span> <span class="n">dimen</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">radius</span>
+    <span class="n">y0</span> <span class="ow">=</span> <span class="n">radius</span>
+    <span class="n">y1</span> <span class="ow">=</span> <span class="n">dimen</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">radius</span>
+
+    <span class="n">fx0</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+    <span class="n">fx0</span> <span class="n">ball</span> <span class="ow">=</span>
+      <span class="kr">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">)</span>
+        <span class="kr">then</span> <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setX</span> <span class="n">x0</span> <span class="n">r</span><span class="p">)</span> <span class="o">$</span> <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setX</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vx</span><span class="p">)</span> <span class="n">v</span><span class="p">)</span> <span class="n">ball</span>
+        <span class="kr">else</span> <span class="n">ball</span>
+
+    <span class="n">fx1</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+    <span class="n">fx1</span> <span class="n">ball</span> <span class="ow">=</span>
+      <span class="kr">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">x1</span><span class="p">)</span>
+        <span class="kr">then</span> <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setX</span> <span class="n">x1</span> <span class="n">r</span><span class="p">)</span> <span class="o">$</span> <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setX</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vx</span><span class="p">)</span> <span class="n">v</span><span class="p">)</span> <span class="n">ball</span>
+        <span class="kr">else</span> <span class="n">ball</span>
+
+    <span class="n">fy0</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+    <span class="n">fy0</span> <span class="n">ball</span> <span class="ow">=</span>
+      <span class="kr">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">y0</span><span class="p">)</span>
+        <span class="kr">then</span> <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setY</span> <span class="n">y0</span> <span class="n">r</span><span class="p">)</span> <span class="o">$</span> <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setY</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vy</span><span class="p">)</span> <span class="n">v</span><span class="p">)</span> <span class="n">ball</span>
+        <span class="kr">else</span> <span class="n">ball</span>
+
+    <span class="n">fy1</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+    <span class="n">fy1</span> <span class="n">ball</span> <span class="ow">=</span>
+      <span class="kr">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">y1</span><span class="p">)</span>
+        <span class="kr">then</span> <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setY</span> <span class="n">y1</span> <span class="n">r</span><span class="p">)</span> <span class="o">$</span> <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setY</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vy</span><span class="p">)</span> <span class="n">v</span><span class="p">)</span> <span class="n">ball</span>
+        <span class="kr">else</span> <span class="n">ball</span>
+</code></pre></div><h3 id="実装例3-stateを使う状態の変更">実装例(3) Stateを使う状態の変更</h3>
+<p>上述した擬似コードと似た雰囲気で書ける。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Control.Monad.State</span> <span class="p">(</span><span class="kt">State</span><span class="p">,</span> <span class="nf">execState</span><span class="p">,</span> <span class="nf">modify_</span><span class="p">,</span> <span class="nf">gets</span><span class="p">)</span> <span class="c1">-- ファイル最初に追記</span>
+
+
+<span class="nf">collide</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Dimensions</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">collide</span> <span class="n">e</span> <span class="n">dimen</span> <span class="n">ball</span> <span class="ow">=</span> <span class="n">execState</span> <span class="n">state</span> <span class="n">ball</span>
+  <span class="kr">where</span>
+    <span class="n">state</span> <span class="ow">::</span> <span class="kt">State</span> <span class="kt">Ball</span> <span class="kt">Unit</span>
+    <span class="n">state</span> <span class="ow">=</span> <span class="kr">do</span>
+       <span class="n">r</span> <span class="ow">&lt;-</span> <span class="n">gets</span> <span class="n">getR</span>
+       <span class="n">v</span> <span class="ow">&lt;-</span> <span class="n">gets</span> <span class="n">getV</span>
+       <span class="n">radius</span> <span class="ow">&lt;-</span> <span class="n">gets</span> <span class="n">getRadius</span> 
+       <span class="kr">let</span> <span class="n">x</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getX</span> <span class="n">r</span>
+           <span class="n">y</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getY</span> <span class="n">r</span>
+           <span class="n">vx</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getX</span> <span class="n">v</span>
+           <span class="n">vy</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">getY</span> <span class="n">v</span>
+           <span class="n">x0</span> <span class="ow">=</span> <span class="n">radius</span>
+           <span class="n">x1</span> <span class="ow">=</span> <span class="n">dimen</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">radius</span>
+           <span class="n">y0</span> <span class="ow">=</span> <span class="n">radius</span>
+           <span class="n">y1</span> <span class="ow">=</span> <span class="n">dimen</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">radius</span>
+       <span class="n">when</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">)</span> <span class="kr">do</span>
+         <span class="n">modify_</span> <span class="o">$</span> <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setX</span> <span class="n">x0</span> <span class="n">r</span><span class="p">)</span>
+         <span class="n">modify_</span> <span class="o">$</span> <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setX</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vx</span><span class="p">)</span> <span class="n">v</span><span class="p">)</span>
+       <span class="n">when</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">x1</span><span class="p">)</span> <span class="kr">do</span>
+         <span class="n">modify_</span> <span class="o">$</span> <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setX</span> <span class="n">x1</span> <span class="n">r</span><span class="p">)</span>
+         <span class="n">modify_</span> <span class="o">$</span> <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setX</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vx</span><span class="p">)</span> <span class="n">v</span><span class="p">)</span>
+       <span class="n">when</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">y0</span><span class="p">)</span> <span class="kr">do</span>
+         <span class="n">modify_</span> <span class="o">$</span> <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setY</span> <span class="n">y0</span> <span class="n">r</span><span class="p">)</span>
+         <span class="n">modify_</span> <span class="o">$</span> <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setY</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vy</span><span class="p">)</span> <span class="n">v</span><span class="p">)</span>
+       <span class="n">when</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">y1</span><span class="p">)</span> <span class="kr">do</span>
+         <span class="n">modify_</span> <span class="o">$</span> <span class="n">setR</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setY</span> <span class="n">y1</span> <span class="n">r</span><span class="p">)</span>
+         <span class="n">modify_</span> <span class="o">$</span> <span class="n">setV</span> <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">setY</span> <span class="p">(</span><span class="o">-</span><span class="n">e</span> <span class="o">*</span> <span class="n">vy</span><span class="p">)</span> <span class="n">v</span><span class="p">)</span>
+</code></pre></div><p><code>State</code>を使っているので<a href="https://pursuit.purescript.org/packages/purescript-transformers/5.1.0">transformers</a>を入れる。</p>
+<pre class="cui">
+% spago install transformers
+</pre>
+
+<figure><img src="mov01.gif" width="70%"/>
+</figure>
+
+<h2 id="簡易的な物理演算">簡易的な物理演算</h2>
+<p>重力などの力を加えて加速度を生じさせたい。</p>
+<h3 id="力と質量の追加">力と質量の追加</h3>
+<p><code>Ball</code>に<code>force</code>フィールド、<code>mass</code>フィールドを追加する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">newtype</span> <span class="kt">Ball</span> <span class="ow">=</span> <span class="kt">Ball</span>
+  <span class="p">{</span> <span class="n">r</span> <span class="ow">::</span> <span class="kt">Vec</span>
+  <span class="p">,</span> <span class="n">v</span> <span class="ow">::</span> <span class="kt">Vec</span>
+  <span class="p">,</span> <span class="n">radius</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">,</span> <span class="n">force</span> <span class="ow">::</span> <span class="kt">Vec</span>
+  <span class="p">,</span> <span class="n">mass</span> <span class="ow">::</span> <span class="kt">Number</span>
+  <span class="p">}</span>
+</code></pre></div><p><code>force</code>、<code>mass</code>のゲッターを追加する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">getForce</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">getForce</span> <span class="p">(</span><span class="kt">Ball</span> <span class="p">{</span> <span class="n">force</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">force</span>
+
+
+<span class="nf">getMass</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Number</span>
+<span class="nf">getMass</span> <span class="p">(</span><span class="kt">Ball</span> <span class="p">{</span> <span class="n">mass</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">mass</span>
+</code></pre></div><p>力は<code>addForce</code>で追加することと、<code>initForce</code>で初期化することしかできないようにする。
+<code>applyForce</code>は、運動方程式<code>mass * a = force</code>から加速度<code>a = force / mass</code>を計算し、
+加速度を使って<code>v</code>を更新する関数。計算し終えたら力を初期化する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">addForce</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">addForce</span> <span class="n">newForce</span> <span class="p">(</span><span class="kt">Ball</span> <span class="n">b</span><span class="o">@</span><span class="p">{</span> <span class="n">force</span> <span class="p">})</span> <span class="ow">=</span>
+  <span class="kt">Ball</span> <span class="n">b</span> <span class="p">{</span> <span class="n">force</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">add</span> <span class="n">force</span> <span class="n">newForce</span> <span class="p">}</span>
+
+
+<span class="nf">initForce</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">initForce</span> <span class="p">(</span><span class="kt">Ball</span> <span class="n">b</span><span class="p">)</span> <span class="ow">=</span>
+  <span class="kt">Ball</span> <span class="n">b</span> <span class="p">{</span> <span class="n">force</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">zero</span> <span class="p">}</span>
+
+
+<span class="nf">applyForce</span> <span class="ow">::</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">applyForce</span> <span class="n">ball</span> <span class="ow">=</span>
+  <span class="kr">let</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">div</span> <span class="p">(</span><span class="n">getForce</span> <span class="n">ball</span><span class="p">)</span> <span class="p">(</span><span class="n">getMass</span> <span class="n">ball</span><span class="p">)</span>
+      <span class="n">newV</span> <span class="ow">=</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">add</span> <span class="p">(</span><span class="n">getV</span> <span class="n">ball</span><span class="p">)</span> <span class="n">a</span>
+  <span class="kr">in</span>
+    <span class="n">initForce</span> <span class="o">$</span> <span class="n">setV</span> <span class="n">newV</span> <span class="n">ball</span>
+</code></pre></div><p><code>Ball</code>のフィールドが増えたので、コンストラクタを修正する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">new</span> <span class="ow">::</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="ow">-&gt;</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">new</span> <span class="n">r</span> <span class="n">v</span> <span class="n">radius</span> <span class="n">mass</span> <span class="ow">=</span>
+  <span class="kt">Ball</span>
+    <span class="p">{</span> <span class="n">r</span>
+    <span class="p">,</span> <span class="n">v</span>
+    <span class="p">,</span> <span class="n">radius</span>
+    <span class="p">,</span> <span class="n">force</span><span class="kt">:</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">zero</span>
+    <span class="p">,</span> <span class="n">mass</span>
+    <span class="p">}</span>
+</code></pre></div><p>それに伴い<code>src/Main.purs</code>も修正する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">init</span> <span class="ow">::</span> <span class="kt">Model</span>
+<span class="nf">init</span> <span class="ow">=</span>
+  <span class="kt">Ball</span><span class="o">.</span><span class="n">new</span>
+    <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">new</span>
+        <span class="p">(</span><span class="n">canvasDimen</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">canvasDimen</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+    <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">new</span> <span class="mf">1.0</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="mf">10.0</span>
+    <span class="mf">10.0</span>
+</code></pre></div><h3 id="重力の追加">重力の追加</h3>
+<p><code>src/Data/Ball.purs</code>の<code>update</code>を以下のようにする。<code>mass * 定数</code>の力を返す関数<code>gravity</code>を新たに定義する。
+<code>update</code>関数は以下の手順を踏む。</p>
+<ul>
+<li>ボールに力を加えて、</li>
+<li>ボールの衝突判定をして(反発係数は0.9)、</li>
+<li>ボールの位置を動かして</li>
+<li>ボールが受けている力を元に速度を更新する。</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="ow">::</span> <span class="kt">Dimensions</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">update</span> <span class="n">dimen</span> <span class="n">ball</span> <span class="ow">=</span>
+  <span class="n">applyForce</span> <span class="o">$</span>
+    <span class="n">move</span> <span class="o">$</span>
+      <span class="n">collide</span> <span class="mf">0.9</span> <span class="n">dimen</span> <span class="o">$</span>
+        <span class="n">addForce</span> <span class="p">(</span><span class="n">gravity</span> <span class="p">(</span><span class="n">getMass</span> <span class="n">ball</span><span class="p">))</span> <span class="n">ball</span>
+
+
+<span class="nf">gravity</span> <span class="ow">::</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span>
+<span class="nf">gravity</span> <span class="n">mass</span> <span class="ow">=</span>
+  <span class="kt">Vec</span><span class="o">.</span><span class="n">mult</span> <span class="n">mass</span> <span class="o">$</span> <span class="kt">Vec</span><span class="o">.</span><span class="n">new</span> <span class="mf">0.0</span> <span class="mf">0.25</span>
+</code></pre></div><p>初期速度がこのままだと動きがあまりなく面白くないので、初期速度を変更する。
+<code>src/Main.purs</code>の<code>init</code>関数にて、速度のx座標を大きくする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">init</span> <span class="ow">::</span> <span class="kt">Model</span>
+<span class="nf">init</span> <span class="ow">=</span>
+  <span class="kt">Ball</span><span class="o">.</span><span class="n">new</span>
+    <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">new</span>
+        <span class="p">(</span><span class="n">canvasDimen</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">canvasDimen</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+    <span class="p">(</span><span class="kt">Vec</span><span class="o">.</span><span class="n">new</span> <span class="mf">10.0</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="mf">10.0</span>
+    <span class="mf">10.0</span>
+</code></pre></div><p><code>spago bundle-app</code>して確認してみると以下のようになる(gif画像なのでカクついているが、実際はもっと滑らかに動く)。</p>
+<figure><img src="mov02.gif" width="70%"/>
+</figure>
+
+<h3 id="おまけ-update関数をstateを使って書き直す">(おまけ) update関数をStateを使って書き直す</h3>
+<p><code>State</code>を使うと以下のように書ける。
+ボールの状態の変更を行う関数が上から下へと並んでいて、まるで命令型言語で書いてあるような雰囲気が出る。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="ow">::</span> <span class="kt">Dimensions</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span> <span class="ow">-&gt;</span> <span class="kt">Ball</span>
+<span class="nf">update</span> <span class="n">dimen</span> <span class="n">ball</span> <span class="ow">=</span> <span class="n">execState</span> <span class="n">state</span> <span class="n">ball</span>
+  <span class="kr">where</span>
+    <span class="n">state</span> <span class="ow">::</span> <span class="kt">State</span> <span class="kt">Ball</span> <span class="kt">Unit</span>
+    <span class="n">state</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="n">modify_</span> <span class="o">$</span> <span class="n">addForce</span> <span class="p">(</span><span class="n">gravity</span> <span class="p">(</span><span class="n">getMass</span> <span class="n">ball</span><span class="p">))</span>
+      <span class="n">modify_</span> <span class="o">$</span> <span class="n">collide</span> <span class="mf">0.9</span> <span class="n">dimen</span>
+      <span class="n">modify_</span> <span class="o">$</span> <span class="n">move</span>
+      <span class="n">modify_</span> <span class="o">$</span> <span class="n">applyForce</span>
+</code></pre></div><h2 id="考えたこと">考えたこと</h2>
+<h3 id="位置と速度の書き間違い">位置と速度の書き間違い</h3>
+<p><code>collide</code>を定義するとき、以下のような文があった。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="o">...</span>
+<span class="kr">let</span> <span class="n">r</span> <span class="ow">=</span> <span class="n">getR</span> <span class="n">ball</span>
+    <span class="n">v</span> <span class="ow">=</span> <span class="n">getV</span> <span class="n">ball</span>
+<span class="o">...</span>
+</code></pre></div><p>これを次のようにしてもコンパイルは通ってしまうが、バグを産む
+(実は実際やってしまい、ボールの挙動がおかしくなった)。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="o">...</span>
+<span class="kr">let</span> <span class="n">r</span> <span class="ow">=</span> <span class="n">getV</span> <span class="n">ball</span>
+    <span class="n">v</span> <span class="ow">=</span> <span class="n">getR</span> <span class="n">ball</span>
+<span class="o">...</span>
+</code></pre></div><p>このような論理的な間違いをコンパイルエラーにするためには、
+次のように速度と位置をラッピングすると良いのだろうか、と思った。
+(もっとも、これくらいのミスは自分で気付くべきかもしれないが…)。
+ただし、色々書かなくてはならない部分が増える(例えば、速度と位置の足し算を行う関数など)。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">newtype</span> <span class="kt">Position</span> <span class="ow">=</span> <span class="kt">Position</span> <span class="kt">Vec</span>
+<span class="kr">newtype</span> <span class="kt">Velocity</span> <span class="ow">=</span> <span class="kt">Velocity</span> <span class="kt">Vec</span>
+
+<span class="kr">newtype</span> <span class="kt">Ball</span> <span class="ow">=</span> <span class="kt">Ball</span>
+  <span class="p">{</span> <span class="n">r</span> <span class="ow">::</span> <span class="kt">Position</span>
+  <span class="p">,</span> <span class="n">v</span> <span class="ow">::</span> <span class="kt">Velocity</span>
+  <span class="p">,</span> <span class="o">...</span>
+  <span class="p">}</span>
+</code></pre></div><p>これは力についてもいえて、力を<code>Vec</code>で扱うのではなく<code>newtype Force = Force Vec</code>と使うべきか。</p>
+<h2 id="ソースコードとデモ">ソースコードとデモ</h2>
+<p>ソースコードは<a href="https://github.com/bombrary/bouncing-ball-purescript">GitHubのRepositry</a>として公開した。</p>
+<p>デモは<a href="https://bombrary.github.io/bouncing-ball-purescript/">GitHub Pages</a>として公開した。</p>
+
+</article>
+
+
+
+</html>
