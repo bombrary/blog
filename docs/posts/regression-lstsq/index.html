@@ -63,7 +63,7 @@
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2021-06-20T22:10:00&#43;09:00">June 20, 2021</time>
+        <time datetime="2021-06-20T22:10:00&#43;09:00">June 21, 2021</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -334,9 +334,10 @@ $$</p>
 <p>これを計算するプログラムを書くのは、線型代数のライブラリを持つ言語なら非常に簡単である。
 ここではJuliaでプログラムを書いてみる。</p>
 <p>ちなみに、Pythonではnumpy.linalgを使えば逆行列とかの計算ができる。
-実装を気にすることなく線形回帰したい場合は
+実装を気にすることなく線形回帰をしたい場合は
 scikit-learnの<a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html">LinearRegression</a>
-を使えば良い。</p>
+を使えば良い。scikit-learnのJulia版に<a href="https://scikitlearnjl.readthedocs.io/en/latest/">ScikitLearn.jl</a>がある(内部でscikit-learnを呼び出している模様)ので、
+Juliaでも同じことができる。</p>
 <h3 id="サンプルデータの作成">サンプルデータの作成</h3>
 <p>ここではデータセットは使わず、データは自前で作る。
 ある $\bm{w}$ で作ったデータを元に $\bm{w}_0$ を計算して、これが $\bm{w}$ と近い値なのかどうかを確認する。</p>

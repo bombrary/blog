@@ -272,9 +272,10 @@ $$
 ここではJuliaでプログラムを書いてみる。
 
 ちなみに、Pythonではnumpy.linalgを使えば逆行列とかの計算ができる。
-実装を気にすることなく線形回帰したい場合は
+実装を気にすることなく線形回帰をしたい場合は
 scikit-learnの[LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
-を使えば良い。
+を使えば良い。scikit-learnのJulia版に[ScikitLearn.jl](https://scikitlearnjl.readthedocs.io/en/latest/)がある(内部でscikit-learnを呼び出している模様)ので、
+Juliaでも同じことができる。
 
 ### サンプルデータの作成
 
