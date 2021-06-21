@@ -277,6 +277,17 @@ scikit-learnの[LinearRegression](https://scikit-learn.org/stable/modules/genera
 を使えば良い。scikit-learnのJulia版に[ScikitLearn.jl](https://scikitlearnjl.readthedocs.io/en/latest/)がある(内部でscikit-learnを呼び出している模様)ので、
 Juliaでも同じことができる。
 
+関連モジュールをインポートし、型のエイリアスを作っておく。
+
+```julia
+using Plots
+using LinearAlgebra
+using Random, Distributions
+
+Vec = Vector{Float64}
+Mat = Matrix{Float64}
+```
+
 ### サンプルデータの作成
 
 ここではデータセットは使わず、データは自前で作る。
@@ -296,8 +307,6 @@ $\bm{w}$ を元に $N$ 点のデータを作成する関数は以下のように
 少ないデータで結果を出したい都合上、正規分布の標準偏差を小さく設定している。
 
 ```julia
-using Random, Distributions
-
 function generate_data(w :: Vec, N :: Int64)
   D = length(w)
   @assert D > 1
@@ -313,8 +322,6 @@ end
 作成したデータを試しにプロットしてみたいので、以下のように`main`関数を作成。
 
 ```julia
-using Plots
-
 function main()
   Random.seed!(2021)
 

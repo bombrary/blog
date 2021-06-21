@@ -338,7 +338,14 @@ $$</p>
 scikit-learnの<a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html">LinearRegression</a>
 を使えば良い。scikit-learnのJulia版に<a href="https://scikitlearnjl.readthedocs.io/en/latest/">ScikitLearn.jl</a>がある(内部でscikit-learnを呼び出している模様)ので、
 Juliaでも同じことができる。</p>
-<h3 id="サンプルデータの作成">サンプルデータの作成</h3>
+<p>関連モジュールをインポートし、型のエイリアスを作っておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
+<span class="k">using</span> <span class="n">LinearAlgebra</span>
+<span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
+
+<span class="n">Vec</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
+<span class="n">Mat</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
+</code></pre></div><h3 id="サンプルデータの作成">サンプルデータの作成</h3>
 <p>ここではデータセットは使わず、データは自前で作る。
 ある $\bm{w}$ で作ったデータを元に $\bm{w}_0$ を計算して、これが $\bm{w}$ と近い値なのかどうかを確認する。</p>
 <p>まず、適当なデータを作成する関数を作る。 $\bm{w}$ が与えられたとすると、作るデータ $(\bm{x}, y)$ は</p>
@@ -350,9 +357,7 @@ $\bm{x} = (1, x_1, x_2, \ldots, x_D)$ の最初の成分以外は一様分布乱
 を計算できる。</p>
 <p>$\bm{w}$ を元に $N$ 点のデータを作成する関数は以下のようになる。
 少ないデータで結果を出したい都合上、正規分布の標準偏差を小さく設定している。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
-
-<span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span> <span class="o">::</span> <span class="n">Vec</span><span class="p">,</span> <span class="n">N</span> <span class="o">::</span> <span class="kt">Int64</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span> <span class="o">::</span> <span class="n">Vec</span><span class="p">,</span> <span class="n">N</span> <span class="o">::</span> <span class="kt">Int64</span><span class="p">)</span>
   <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
   <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
@@ -363,9 +368,7 @@ $\bm{x} = (1, x_1, x_2, \ldots, x_D)$ の最初の成分以外は一様分布乱
   <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
 <span class="k">end</span>
 </code></pre></div><p>作成したデータを試しにプロットしてみたいので、以下のように<code>main</code>関数を作成。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
-
-<span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
 
   <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
