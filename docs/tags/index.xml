@@ -6,7 +6,34 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 17 Jun 2021 16:50:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 20 Jun 2021 22:10:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>最小二乗法</title>
+      <link>https://bombrary.github.io/blog/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%97%E6%B3%95/</link>
+      <pubDate>Sun, 20 Jun 2021 22:10:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>線型代数</title>
+      <link>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%9E%8B%E4%BB%A3%E6%95%B0/</link>
+      <pubDate>Sun, 20 Jun 2021 22:10:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%9E%8B%E4%BB%A3%E6%95%B0/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>線形回帰</title>
+      <link>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%BD%A2%E5%9B%9E%E5%B8%B0/</link>
+      <pubDate>Sun, 20 Jun 2021 22:10:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%BD%A2%E5%9B%9E%E5%B8%B0/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Bouncing Ball</title>
       <link>https://bombrary.github.io/blog/tags/bouncing-ball/</link>
