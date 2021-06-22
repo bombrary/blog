@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>勾配降下法 on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95/</link>
+    <description>Recent content in 勾配降下法 on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Tue, 22 Jun 2021 16:08:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>線形回帰メモ 勾配降下法</title>
+      <link>https://bombrary.github.io/blog/posts/regression-gradient-descent/</link>
+      <pubDate>Tue, 22 Jun 2021 16:08:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/regression-gradient-descent/</guid>
+      <description>線形回帰を勾配降下法を使って解いてみたメモ。
+問題設定 $\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T$ とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に
+$$ \begin{aligned} y &amp;amp;= h_{\bm{w}}(\bm{x})\\ &amp;amp;:= w_0 + w_1x_1 + w_2x_2 + \cdots + w_Dx_D\\ &amp;amp;= \bm{w}^T\bm{x} \end{aligned} $$
+が成り立つと仮定し、これに適する$\bm{w}$を見つけたい。「適する」とは具体的に何なのかというと、ここでは予測とデータとの二乗誤差の和
+$$ J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 $$
+が最小となる $\bm{w}$ を求める。この $J$ については呼び名がいくつかあるが、ここではコスト関数と呼ぶ。 係数 $1/2$ は微分した時に出てくる $2$ を消し去るための便宜的なものであり、つける必然はない。
+コスト関数の勾配 $w_j$に関する偏微分を計算すると、
+$$ \frac{\partial J(\bm{w})}{\partial w_j} = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D $$</description>
+    </item>
+    
+  </channel>
+</rss>

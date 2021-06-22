@@ -3,31 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2021-06-21T12:42:35+09:00</lastmod>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/julia/</loc>
-    <lastmod>2021-06-21T12:42:35+09:00</lastmod>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2021-06-21T12:42:35+09:00</lastmod>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/</loc>
-    <lastmod>2021-06-21T12:42:35+09:00</lastmod>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
   </url><url>
-    <loc>https://bombrary.github.io/blog/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%97%E6%B3%95/</loc>
+    <loc>https://bombrary.github.io/blog/tags/%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95/</loc>
     <lastmod>2021-06-21T12:42:35+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/</loc>
-    <lastmod>2021-06-21T12:42:35+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%9E%8B%E4%BB%A3%E6%95%B0/</loc>
-    <lastmod>2021-06-21T12:42:35+09:00</lastmod>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%BD%A2%E5%9B%9E%E5%B8%B0/</loc>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/posts/regression-gradient-descent/</loc>
     <lastmod>2021-06-21T12:42:35+09:00</lastmod>
   </url><url>
+    <loc>https://bombrary.github.io/blog/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%97%E6%B3%95/</loc>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%9E%8B%E4%BB%A3%E6%95%B0/</loc>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
+  </url><url>
     <loc>https://bombrary.github.io/blog/posts/regression-lstsq/</loc>
-    <lastmod>2021-06-21T12:42:35+09:00</lastmod>
+    <lastmod>2021-06-21T15:09:08+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/bouncing-ball/</loc>
     <lastmod>2021-06-17T16:50:35+09:00</lastmod>

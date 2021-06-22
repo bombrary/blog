@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>線形回帰メモ 勾配降下法 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.83.1" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/regression-gradient-descent/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/math.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+                                                                                                                                                                                  onload="renderMathInElement(document.body);"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}]
+    });
+  });
+</script>
+
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/regression-gradient-descent/">線形回帰メモ 勾配降下法</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2021-06-22T16:08:00&#43;09:00">June 22, 2021</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2021-06-22T16:08:00&#43;09:00">June 21, 2021</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e7%b7%9a%e5%bd%a2%e5%9b%9e%e5%b8%b0/">線形回帰</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e5%8b%be%e9%85%8d%e9%99%8d%e4%b8%8b%e6%b3%95/">勾配降下法</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/%e6%a9%9f%e6%a2%b0%e5%ad%a6%e7%bf%92/">機械学習</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/julia/">Julia</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#問題設定">問題設定</a></li>
+    <li><a href="#コスト関数の勾配">コスト関数の勾配</a></li>
+    <li><a href="#バッチ勾配降下法">(バッチ)勾配降下法</a></li>
+    <li><a href="#勾配降下法---juliaによる実装">勾配降下法 - Juliaによる実装</a>
+      <ul>
+        <li><a href="#サンプルデータの生成">サンプルデータの生成</a></li>
+        <li><a href="#勾配の計算">勾配の計算</a></li>
+        <li><a href="#勾配降下法の実装">勾配降下法の実装</a></li>
+        <li><a href="#勾配降下法の出力">勾配降下法の出力</a></li>
+      </ul>
+    </li>
+    <li><a href="#確率的勾配降下法">確率的勾配降下法</a></li>
+    <li><a href="#ミニバッチ勾配降下法">ミニバッチ勾配降下法</a></li>
+    <li><a href="#ミニバッチ勾配降下法---juliaによる実装">ミニバッチ勾配降下法 - Juliaによる実装</a>
+      <ul>
+        <li><a href="#添字をm等分する関数">添字をM等分する関数</a></li>
+        <li><a href="#ミニバッチ勾配法の実装">ミニバッチ勾配法の実装</a></li>
+        <li><a href="#ミニバッチ勾配法の出力">ミニバッチ勾配法の出力</a></li>
+      </ul>
+    </li>
+    <li><a href="#問題設定2-基底関数を含む場合">問題設定(2) 基底関数を含む場合</a>
+      <ul>
+        <li><a href="#勾配降下法-2">勾配降下法 (2)</a></li>
+      </ul>
+    </li>
+    <li><a href="#ミニバッチ勾配降下法-juliaによる実装-2">ミニバッチ勾配降下法 Juliaによる実装 (2)</a>
+      <ul>
+        <li><a href="#サンプルデータの生成-2">サンプルデータの生成 (2)</a></li>
+        <li><a href="#勾配法の実行と出力-2">勾配法の実行と出力 (2)</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    
+  <p>線形回帰を勾配降下法を使って解いてみたメモ。</p>
+<h2 id="問題設定">問題設定</h2>
+<p>$\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T$
+とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に</p>
+<p>$$
+\begin{aligned}
+y
+&amp;= h_{\bm{w}}(\bm{x})\\
+&amp;:= w_0 + w_1x_1 + w_2x_2 + \cdots + w_Dx_D\\
+&amp;= \bm{w}^T\bm{x}
+\end{aligned}
+$$</p>
+<p>が成り立つと仮定し、これに適する$\bm{w}$を見つけたい。「適する」とは具体的に何なのかというと、ここでは予測とデータとの二乗誤差の和</p>
+<p>$$
+J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2
+$$</p>
+<p>が最小となる $\bm{w}$ を求める。この $J$ については呼び名がいくつかあるが、ここではコスト関数と呼ぶ。
+係数 $1/2$ は微分した時に出てくる $2$ を消し去るための便宜的なものであり、つける必然はない。</p>
+<h2 id="コスト関数の勾配">コスト関数の勾配</h2>
+<p>$w_j$に関する偏微分を計算すると、</p>
+<p>$$
+\frac{\partial J(\bm{w})}{\partial w_j}
+= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
+$$</p>
+<p>だたし、$x_0 = 1$ とした。</p>
+<h2 id="バッチ勾配降下法">(バッチ)勾配降下法</h2>
+<p>各ステップで勾配を計算する。勾配と逆向きに進んでいけば、(局所)最小値に近づくことが期待される。
+具体的には、各ステップで以下のように $\bm{w}$ を更新する。$\alpha &gt; 0$ は学習率と呼ばれ、状況に応じて適切な値を設定する。</p>
+<p>$$
+\bm{w} \leftarrow \bm{w} - \alpha \nabla J(\bm{w})
+$$</p>
+<h2 id="勾配降下法---juliaによる実装">勾配降下法 - Juliaによる実装</h2>
+<p>関連モジュールをインポートし、型のエイリアスを作っておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
+<span class="k">using</span> <span class="n">LinearAlgebra</span>
+<span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
+
+<span class="n">Vec</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
+<span class="n">Mat</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
+</code></pre></div><h3 id="サンプルデータの生成">サンプルデータの生成</h3>
+<p>前回同様データを生成する関数を作る。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span> <span class="o">::</span> <span class="n">Vec</span><span class="p">,</span> <span class="n">N</span> <span class="o">::</span> <span class="kt">Int64</span><span class="p">)</span>
+  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+<span class="k">end</span>
+</code></pre></div><h3 id="勾配の計算">勾配の計算</h3>
+<p>以下の計算をJuliaに翻訳したい。</p>
+<p>$$
+\frac{\partial J(\bm{w})}{\partial w_j}
+= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
+$$</p>
+<p>これをよくみると、ベクトル $\bm{a} = (h_{\bm{w}}(\bm{x}_i) - y^{(i)})_{i=1}^{N}$ として、</p>
+<p>$$
+\begin{aligned}
+\frac{\partial J(\bm{w})}{\partial \bm{w}} &amp;=
+\begin{pmatrix}
+\sum_{i=1}^{N} a_i x_0^{(i)}\\
+\sum_{i=1}^{N} a_i x_1^{(i)}\\
+\vdots\\
+\sum_{i=1}^{N} a_i x_D^{(i)}
+\end{pmatrix}\\
+&amp;= \begin{pmatrix}
+x_0^{(1)} &amp; x_0^{(2)} &amp; \cdots &amp; x_0^{(N)}\\
+x_1^{(1)} &amp; x_1^{(2)} &amp; \cdots &amp; x_1^{(N)}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+x_D^{(1)} &amp; x_D^{(2)} &amp; \cdots &amp; x_D^{(N)}\\
+\end{pmatrix}
+\begin{pmatrix}
+a_1 \\ a_2 \\ \vdots \\ a_N
+\end{pmatrix}\\
+&amp;= X^T\bm{a}
+\end{aligned}
+$$</p>
+<p>ただし、</p>
+<p>$$
+X = \begin{pmatrix}
+\bm{x}_1^T\\
+\bm{x}_2^T\\
+\vdots\\
+\bm{x}_N^T
+\end{pmatrix}
+$$</p>
+<p>である。$\bm{a}$ については $\bm{a} = X\bm{w} - \bm{y}$ と書ける。結局、勾配 <code>dJ</code> は次のように計算できる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">dJ</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+</code></pre></div><h3 id="勾配降下法の実装">勾配降下法の実装</h3>
+<p>勾配法は次のように作る。終了条件は、勾配のノルムが十分小さくなったときとする。</p>
+<p><code>w</code>がステップを経るごとにどう動くのかを見たいため、各ステップにおける<code>w</code>すべてを返却値とする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="o">::</span><span class="kt">Mat</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="kt">Vec</span><span class="p">,</span> <span class="n">w0</span><span class="o">::</span><span class="kt">Vec</span><span class="p">;</span> <span class="n">alpha</span><span class="o">::</span><span class="kt">Float64</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">eps</span><span class="o">::</span><span class="kt">Float64</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">1e5</span><span class="p">)</span>
+  <span class="nd">@assert</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+  <span class="n">D</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
+  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_step</span>
+
+    <span class="n">dJ</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">norm</span><span class="p">(</span><span class="n">dJ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="k">break</span>
+
+    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dJ</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div><h3 id="勾配降下法の出力">勾配降下法の出力</h3>
+<p>実際に使ってみる。コスト関数の地形図も描画してみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+
+  <span class="c"># データの作成とプロット</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+
+
+  <span class="c"># wの推定</span>
+  <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
+  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+
+  <span class="c"># wを元に直線を描画</span>
+  <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">=</span> <span class="n">extrema</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+  <span class="n">plot_y</span> <span class="o">=</span> <span class="n">map</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">)</span>
+  <span class="n">plot!</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">plot_y</span><span class="p">)</span>
+
+  
+  <span class="c"># コスト関数の地形を描画</span>
+  <span class="n">J</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span>
+    <span class="n">dot</span><span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+  <span class="k">end</span>
+
+  <span class="n">w0</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+  <span class="n">w1</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+  <span class="n">p2</span> <span class="o">=</span> <span class="n">contour</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+
+
+  <span class="c"># 色々なwについてデータを生成し、勾配法のステップごとのwの動きをみる</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">w_init</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span> <span class="k">in</span> <span class="p">[([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="s">&#34;red&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;green&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;blue&#34;</span><span class="p">)]</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_init</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
+    <span class="n">scatter!</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+    <span class="n">plot!</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="c"># 2つのグラフを並べて表示</span>
+  <span class="n">plot</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="c"># main関数を実行</span>
+<span class="n">main</span><span class="p">()</span>
+</code></pre></div><p>REPLで実行。</p>
+<pre class="cui">
+julia> include("main.jl")
+</pre>
+
+<p>初期値<code>[0.5, 1.5]</code>についての直線が左。データ点に近い直線を描けていることが見て取れる。
+色々な初期値<code>[0.5, 1.5], [0.6, 2.4], [1.4, 2.4]</code>について勾配法を始めて、その<code>w</code>の軌道を右図に示した。
+どれも<code>[1.0, 2.0]</code>へと向かっていることが分かる。</p>
+<figure><img src="img00.png"/>
+</figure>
+
+<h2 id="確率的勾配降下法">確率的勾配降下法</h2>
+<p>勾配降下法において、勾配は以下のように計算した。</p>
+<p>$$
+\nabla J(\bm{w})
+= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
+$$</p>
+<p>これは $N$ 個のデータを考慮して勾配を計算しているが、仮に1個のデータ $(\bm{x}_i, y^{(i)})$ を考慮した場合は次のような式になる。
+$J_i$ は $i$番目の予測とデータとの誤差を表すコスト関数である。</p>
+<p>$$
+\begin{aligned}
+J_i &amp;= \frac{1}{2}( h_{\bm{w}}(\bm{w}_i) - y^{(i)})^2\\
+\frac{\partial J_i(\bm{w})}{\partial w_j} &amp;= (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
+\end{aligned}
+$$</p>
+<p>$\nabla J_i$ はもはや $J$ の勾配ではないのだが、これを $\bm{w}$ の更新に使う。</p>
+<p>$$
+\bm{w} \leftarrow \bm{w} - \alpha \nabla J_i(\bm{w}),\ i = 1, 2, \ldots, N
+$$</p>
+<p>実際には、$i = 1, 2, \ldots, N$ はシャッフルして用いる。</p>
+<p>1ステップあたりの計算量は小さい。$\nabla J$ でないものを勾配降下法の更新式に使っているのにもかかわらず、
+繰り返し更新していけば $J$ の局所最小値に「近いところ」まで行く(ただし $\alpha$ の値を調整しないと近いところまではいくが、近いところで振動する)。
+この手法は 一回の更新あたりの計算量が小さいため、$N$ が巨大な場合に有効。</p>
+<h2 id="ミニバッチ勾配降下法">ミニバッチ勾配降下法</h2>
+<p>1ステップにおいて、バッチ勾配法では全てのデータ、確率的勾配法では1つのデータを使って $\bm{w}$ を更新した。
+ミニバッチ法はその間をとる。バッチ数 $M \ge N$ として、次のように $\bm{w}$ を更新する。
+ただし $I_k$ は、直和 $I_1 \bigsqcup I_2 \bigsqcup \cdots \bigsqcup I_K = \{ 1, 2, \ldots, N \}$ 、$|I_k| = M\ (k = 1, 2, \ldots, K-1),\ |I_K| \le M$ を満たす集合。</p>
+<p>$$
+\bm{w} \leftarrow \bm{w} - \alpha \sum_{i \in I_k} \nabla J_i(\bm{w}),\ k = 1, 2, \ldots, K
+$$</p>
+<p>$I_k$ については何やら難しく書いてしまったが、要するに、添字 1, 2, &hellip;, N をシャッフルしてM個ずつグループ分けしたもの、と捉えれば良い。
+$M = 1$ の場合は確率的勾配降下法に一致する。</p>
+<h2 id="ミニバッチ勾配降下法---juliaによる実装">ミニバッチ勾配降下法 - Juliaによる実装</h2>
+<p>$I_k = \{ i_1, i_2, \ldots, i_M \}$ とする。このとき勾配法の計算において、$X, \bm{y}$ を単に</p>
+<p>$$
+\begin{aligned}
+X &amp;= \begin{pmatrix}
+\bm{x}_{i_1}^T \\
+\bm{x}_{i_2}^T \\
+\vdots\\
+\bm{x}_{i_M}^T
+\end{pmatrix}\\
+\bm{y} &amp;= (y_{i_1}, y_{i_2}, \ldots, y_{i_M})^T
+\end{aligned}
+$$</p>
+<p>と読み替えれば良い。$I_k$ を<code>idcs</code>を書くことにすると、<code>idcs</code>の要素だけ抜き出した<code>X</code>と<code>y</code>は
+それぞれ以下の<code>X1, y1</code>のように書ける。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idcs</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">idcs</span><span class="p">]</span>
+</code></pre></div><h3 id="添字をm等分する関数">添字をM等分する関数</h3>
+<p>$I_k$ ないし <code>idcs</code> の作り方だが、<code>1, 2, ..., N</code>をシャッフルして、$M$ 個ずつ分割すれば良い。
+$M$ 個に分割する関数は以下のように書ける。ただし<code>N</code>が<code>M</code>で割り切れない場合があるため、最後の配列は<code>M</code>個とは限らない。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">split</span><span class="p">(</span><span class="n">x</span> <span class="o">::</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">},</span> <span class="n">m</span> <span class="o">::</span> <span class="kt">Int64</span><span class="p">)</span>
+  <span class="n">res</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">}}()</span>
+  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">m</span><span class="o">:</span><span class="n">N</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">:</span><span class="n">min</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)])</span>
+  <span class="k">end</span>
+  <span class="n">res</span>
+<span class="k">end</span>
+</code></pre></div><h3 id="ミニバッチ勾配法の実装">ミニバッチ勾配法の実装</h3>
+<p><code>idcs</code>を作る処理と<code>X1, y1</code>を作る処理を追加しただけで、他は勾配法とほとんど変わらない。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">X</span><span class="o">::</span><span class="kt">Mat</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="kt">Vec</span><span class="p">,</span> <span class="n">w0</span><span class="o">::</span><span class="kt">Vec</span><span class="p">;</span> <span class="n">M</span><span class="p">,</span> <span class="n">alpha</span><span class="o">::</span><span class="kt">Float64</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">eps</span><span class="o">::</span><span class="kt">Float64</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">1e4</span><span class="p">)</span>
+  <span class="nd">@assert</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+  <span class="n">D</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
+  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_step</span>
+    <span class="k">for</span> <span class="n">idcs</span> <span class="k">in</span> <span class="n">split</span><span class="p">(</span><span class="n">shuffle</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="p">),</span> <span class="n">M</span><span class="p">)</span>
+      <span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idcs</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+      <span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">idcs</span><span class="p">]</span>
+      <span class="n">dJ</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">X1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X1</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
+      <span class="n">norm</span><span class="p">(</span><span class="n">dJ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="k">break</span>
+      <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dJ</span>
+      <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div><h3 id="ミニバッチ勾配法の出力">ミニバッチ勾配法の出力</h3>
+<p>色々な $M$ で試したいので、その部分を関数に分ける。</p>
+<p><strong>(補足)</strong> PlotsのバックエンドがGRのままだとグラフの描画が重かったのでPyPlotに切り替えた。
+しかしPyPlotにするとカラーバーに妙な余白が生まれたため、<code>contour</code>の引数に<code>right_margin=-20mm</code>を指定している。
+もっと良い対処法があるかもしれない。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span><span class="o">.</span><span class="n">PlotMeasures</span>
+<span class="n">pyplot</span><span class="p">()</span>
+
+<span class="k">function</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span> <span class="o">::</span> <span class="n">Mat</span><span class="p">,</span> <span class="n">y</span> <span class="o">::</span> <span class="n">Vec</span><span class="p">,</span> <span class="n">M</span> <span class="o">::</span> <span class="kt">Int64</span><span class="p">)</span>
+  <span class="c"># コスト関数の地形を描画</span>
+  <span class="n">J</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span>
+    <span class="n">dot</span><span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+  <span class="k">end</span>
+  <span class="n">w0</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+  <span class="n">w1</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
+  <span class="n">contour!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">right_margin</span><span class="o">=-</span><span class="mi">20</span><span class="n">mm</span><span class="p">)</span>
+
+  <span class="c"># 色々なwについてデータを生成し、勾配法のステップごとのwの動きをみる</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">w_init</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span> <span class="k">in</span> <span class="p">[([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="s">&#34;red&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;green&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;blue&#34;</span><span class="p">)]</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_init</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
+    <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+    <span class="n">plot!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">p</span>
+<span class="k">end</span>
+</code></pre></div><p>$M = 1, 10, 50$ の3パターンでバッチ勾配降下法を行い、$\bm{w}$ の軌道を描画する。
+$M = 1$ の場合は確率的勾配降下法に一致する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+
+  <span class="c"># データの作成</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+
+  <span class="n">p1</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="n">p2</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+  <span class="n">p3</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+  <span class="n">plot</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1800</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div><p>$M$ の値が大きくなればなるほど、$\bm{w}$ の軌道が滑らかになっているのが分かる。
+しかし、いずれの場合にも $\bm{w} = (1, 2)$ へ収束していることが分かる。</p>
+<figure><img src="img01.png" width="100%"/>
+</figure>
+
+<p>拡大してみると、$\bm{w} = (1, 2)$ 周辺で振動していることが分かる。
+これは $\bm{w} = (1, 2)$ 周辺では学習率 $\alpha$ が大きいことが原因で、学習率を小さくすれば振動も小さくなる。
+しかし小さくしすぎるとなかなか $(1, 2)$ へと進まなくなる。
+どのような学習率を設定すべきなのかについては、様々な手法が提案されている。
+そもそも学習率を定数ではなく、ステップによって変える方法がある
+(学習率のスケジュール、スケジューリングと呼ぶようだが、この辺りはまだ詳しく知らない)。</p>
+<figure><img src="img02.png" width="100%"/>
+</figure>
+
+<h2 id="問題設定2-基底関数を含む場合">問題設定(2) 基底関数を含む場合</h2>
+<p>$\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T, \bm{\phi}(\bm{x}) = (1, \phi_1(\bm{x}), \phi_2(\bm{x}), \ldots, \phi_D(\bm{x}))$
+とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に</p>
+<p>$$
+\begin{aligned}
+y
+&amp;= h_{\bm{w}}(\bm{x})\\
+&amp;:= w_0 + w_1\phi_1(\bm{x}) + w_2\phi_2(\bm{x}) + \cdots + w_D\phi_D(\bm{x})\\
+&amp;= \bm{w}^T\bm{\phi}(\bm{x})
+\end{aligned}
+$$</p>
+<p>が成り立つと仮定し、そのコスト関数</p>
+<p>$$
+\begin{aligned}
+J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2
+\end{aligned}
+$$</p>
+<p>が最小になるように $\bm{w}$ を決定したい。</p>
+<h3 id="勾配降下法-2">勾配降下法 (2)</h3>
+<p>実は、$X$ を以下の $\Phi$ だと思って勾配降下法を行うだけで良い。</p>
+<p>$$
+\begin{aligned}
+\Phi =
+\begin{pmatrix}
+\bm{\phi}(\bm{x}_1)^T\\
+\bm{\phi}(\bm{x}_2)^T\\
+\vdots\\
+\bm{\phi}(\bm{x}_N)^T
+\end{pmatrix}
+\end{aligned}
+$$</p>
+<p>なぜなら、単に $x_1, x_2, \ldots, x_D$ が $\phi_1(\bm{x}), \phi_2(\bm{x}), \ldots, \phi_D(\bm{x})$
+に変わっただけだからである。</p>
+<p>普通の勾配降下法を使っても良いし、ミニバッチ勾配降下法を使っても良い。
+これらの手法を修正する必要はない。</p>
+<h2 id="ミニバッチ勾配降下法-juliaによる実装-2">ミニバッチ勾配降下法 Juliaによる実装 (2)</h2>
+<h3 id="サンプルデータの生成-2">サンプルデータの生成 (2)</h3>
+<p>これは前回と同じ。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span> <span class="o">::</span> <span class="n">Vec</span><span class="p">,</span> <span class="n">N</span> <span class="o">::</span> <span class="kt">Int64</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+  <span class="n">Phi</span> <span class="o">=</span> <span class="n">similar</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
+    <span class="n">Phi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">Phi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+  <span class="k">end</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">Phi</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span>
+<span class="k">end</span>
+</code></pre></div><h3 id="勾配法の実行と出力-2">勾配法の実行と出力 (2)</h3>
+<p>ここでは2次関数 $y = 1 + 2x^2$ からデータを生成し、
+ミニバッチ勾配降下法で $\bm{w}$ を推定してみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+
+  <span class="c"># データの作成</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
+  <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+
+  <span class="n">ws</span> <span class="o">=</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="n">M</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
+  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+  
+  <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">=</span> <span class="n">extrema</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+  <span class="n">plot!</span><span class="p">(</span><span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div><pre class="cui">
+julia> include("gradient_descent.jl")
+2-element Vector{Float64}:
+ 0.9944138112009525
+ 1.9650038380754904
+</pre>
+
+<figure><img src="img03.png" width="70%"/>
+</figure>
+
+
+</article>
+
+
+
+</html>
