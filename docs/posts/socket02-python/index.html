@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Socket通信勉強(2) - Pythonでの書き方/HTTPサーバーもどき作成 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -87,7 +87,7 @@
 <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
 <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
 <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&#34;Hello, World&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
 <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></code></pre></div>
@@ -110,7 +110,7 @@
 <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
 <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></code></pre></div>
 <p>これも2点補足する。</p>
 <h4 id="connect">connect</h4>
@@ -136,7 +136,7 @@
     <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
     <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
     <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
     <span class="k">with</span> <span class="n">sock</span><span class="p">:</span>
         <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&#34;Hello, World&#34;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></code></pre></div>
 <h3 id="clientpy-1">client.py</h3>
@@ -145,7 +145,7 @@
 <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">sock</span><span class="p">:</span>
     <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code></pre></div>
+    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code></pre></div>
 <h3 id="serverpy-2">server.py</h3>
 <h2 id="http通信の基礎知識">HTTP通信の基礎知識</h2>
 <p>PythonにはHTTP通信用のモジュールがあるのでそれを使うべきなのだが、勉強としてSocket通信でHTTP通信っぽいことをしてみる。</p>
@@ -190,10 +190,10 @@
     <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
     <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
     <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
     <span class="k">with</span> <span class="n">sock</span><span class="p">:</span>
         <span class="n">request</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Request: &#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Request: &#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
         <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></code></pre></div>
 <h2 id="レスポンスの書式">レスポンスの書式</h2>
 <p>responseは「ステータス行」「ヘッダ」「ボディ」で構成される。</p>
@@ -293,12 +293,12 @@ Connection: keep-alive</code></pre></div>
 <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
     <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">))</span>
     <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Connected by&#34;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
         <span class="k">with</span> <span class="n">sock</span><span class="p">:</span>
             <span class="n">request</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&#34;Request: &#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Request: &#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
             <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></code></pre></div>
 <p><code>server.py</code>の終了はCtrl+Cで行う。Ctrl+CによってKeyboardInterrupt例外が投げられ、プログラムは終了する。with構文の性質上、例外が投げられたらソケットを閉じてくれる。(ソース:<a href="https://docs.python.org/ja/3/reference/compound_stmts.html#the-with-statement">with構文の説明</a>と<a href="https://docs.python.org/ja/3/library/socket.html#socket-objects">socketオブジェクト説明の2段落目</a>)</p>
 <p>今回はここまで。</p>

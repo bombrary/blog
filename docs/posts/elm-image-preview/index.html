@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ - 画像のプレビュー機能を作る | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -273,7 +273,7 @@ $ elm make src/Main.elm --output=main.js
 <p>これでmakeした後にアプリを動かしても、a要素のサイズが0なのでボタンは現れない。これをCSSで調整する。</p>
 <p>まずは画像とa要素をひとまとめにした領域<code>.image-container</code>を<code>inline-block</code>にすることで、画像のサイズぴったりに全体のサイズを調整する。a要素の位置を絶対座標にしたいので、<code>position: relative</code>を指定する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-css" data-lang="css"><span class="p">.</span><span class="nc">image-container</span> <span class="p">{</span>
-  <span class="k">display</span><span class="p">:</span> <span class="kc">inline</span><span class="o">-</span><span class="kc">block</span><span class="p">;</span>
+  <span class="k">display</span><span class="p">:</span> <span class="kc">inline-block</span><span class="p">;</span>
   <span class="k">position</span><span class="p">:</span> <span class="kc">relative</span><span class="p">;</span>
 <span class="p">}</span></code></pre></div>
 <p>a要素の領域は20px × 20pxにする。背景はグレーとし、丸みを帯びさせる。位置は右上にする。色は少し透明にしておく。マウスを乗せた時のカーソルの設定をする。</p>

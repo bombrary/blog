@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>線形回帰メモ 勾配降下法 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -63,7 +63,7 @@
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2021-06-22T16:08:00&#43;09:00">June 21, 2021</time>
+        <time datetime="2021-06-22T16:08:00&#43;09:00">June 22, 2021</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -216,7 +216,7 @@ X = \begin{pmatrix}
 \end{pmatrix}
 $$</p>
 <p>である。$\bm{a}$ については $\bm{a} = X\bm{w} - \bm{y}$ と書ける。結局、勾配 <code>dJ</code> は次のように計算できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">dJ</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">dJ</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div><h3 id="勾配降下法の実装">勾配降下法の実装</h3>
 <p>勾配法は次のように作る。終了条件は、勾配のノルムが十分小さくなったときとする。</p>
 <p><code>w</code>がステップを経るごとにどう動くのかを見たいため、各ステップにおける<code>w</code>すべてを返却値とする。</p>
@@ -229,7 +229,7 @@ $$</p>
   <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
   <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_step</span>
 
-    <span class="n">dJ</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">dJ</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
     <span class="n">norm</span><span class="p">(</span><span class="n">dJ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="k">break</span>
 
     <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dJ</span>
@@ -264,7 +264,7 @@ $$</p>
   <span class="n">J</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">]</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span>
-    <span class="n">dot</span><span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">a</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="mf">2.0</span>
   <span class="k">end</span>
 
   <span class="n">w0</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -369,7 +369,7 @@ $M$ 個に分割する関数は以下のように書ける。ただし<code>N</c
     <span class="k">for</span> <span class="n">idcs</span> <span class="k">in</span> <span class="n">split</span><span class="p">(</span><span class="n">shuffle</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="p">),</span> <span class="n">M</span><span class="p">)</span>
       <span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idcs</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
       <span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">idcs</span><span class="p">]</span>
-      <span class="n">dJ</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">X1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X1</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
+      <span class="n">dJ</span> <span class="o">=</span> <span class="n">X1</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X1</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
       <span class="n">norm</span><span class="p">(</span><span class="n">dJ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="k">break</span>
       <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dJ</span>
       <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
@@ -390,7 +390,7 @@ $M$ 個に分割する関数は以下のように書ける。ただし<code>N</c
   <span class="n">J</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">]</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span>
-    <span class="n">dot</span><span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">a</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="mf">2.0</span>
   <span class="k">end</span>
   <span class="n">w0</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
   <span class="n">w1</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>

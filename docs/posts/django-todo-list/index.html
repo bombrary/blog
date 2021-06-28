@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Djangoの勉強でTodoリストを作る | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -99,7 +99,7 @@
 <span class="p">]</span></code></pre></div>
 <h2 id="viewの作成">viewの作成</h2>
 <p><code>mysite/todo_list/views.py</code>を編集する。とりあえずviewが動くかどうかだけ確認したいので、レスポンスは適当な文字列にする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
 
 <span class="c1"># Create your views here.</span>
 
@@ -107,17 +107,17 @@
     <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span></code></pre></div>
 <h2 id="urlの設定">urlの設定</h2>
 <p>まず<code>mysite/mysite/urls.py</code>の設定をする。<code>urls.py</code>とは「どんなurlにアクセスされたらどんなviewに処理を任せるか」を記述したものっぽい。ここでは、<code>todo_list/</code>で始まるurlだったら<code>todo_list/urls.py</code>に処理を任せるように書いている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">admin</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">path</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">path</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">path</span><span class="p">(</span><span class="s1">&#39;todo_list/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;todo_list.urls&#39;</span><span class="p">)),</span>
     <span class="n">path</span><span class="p">(</span><span class="s1">&#39;admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
 <span class="p">]</span></code></pre></div>
 <p>ということで<code>mysite/todo_list/urls.py</code>の設定をする。恐らく存在しないので新しく作成する。<code>todo_list/</code>以降に何も指定されなかったら表示を<code>views.py</code>の<code>index</code>関数に任せるように書いている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">path</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">views</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
 
 <span class="n">app_name</span> <span class="o">=</span> <span class="s1">&#39;todo_list&#39;</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
@@ -129,7 +129,7 @@
 <h2 id="model作成">Model作成</h2>
 <p><code>Todo</code>の内容を保存しておくためのデータベースが必要である。Djangoでは、データベースのテーブル要素をModelとして定義する。</p>
 <p><code>mysite/todo_list/models.py</code>の内容を以下のように編集する。今回扱うのはただのテキストだけなので、<code>models.CharField</code>しか用意しない。ただし、内部的には<code>text</code>だけでなく<code>id</code>変数も追加される。これはテーブルの要素を識別するためのもので、後で削除機能を実装する時に利用する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 
 <span class="c1"># Create your models here.</span>
 
@@ -152,7 +152,7 @@ $ python3 manage.py migrate
   <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p><code>mysite/todo_list/views.py</code>を編集する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 
 <span class="c1"># Create your views here.</span>
 
@@ -160,9 +160,9 @@ $ python3 manage.py migrate
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;todo_list/index.html&#39;</span><span class="p">,</span> <span class="p">{})</span></code></pre></div>
 <h2 id="モデルが表示できるようにする">モデルが表示できるようにする</h2>
 <p><code>mysite/todo_list/models.py</code>の<code>Todo</code>クラスをインポートして、<code>Todo.objects.all()</code>でTodoの全要素が取得できるらしい。この情報をrenderに渡すと、前項で作ったTemplateでそれが利用できるようになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
 
-<span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">Todo</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Todo</span>
 
 <span class="c1"># Create your views here.</span>
 
@@ -211,9 +211,9 @@ $ python3 manage.py migrate
   <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p><code>mysite/todo_list/urls.py</code>を編集する。<code>&lt;int:todo_id&gt;</code>は特殊な文法で、ここには何かしらの整数が入る。この<code>todo_id</code>は``views.py<code>の引数として指定する。また</code>index.html<code>で書いていた</code>{% url &lsquo;todo_list:remove<code> todo.id %}</code>の<code>todo.id</code>に当たる数字がここに入って、<code>todo_list/[todo.idの値]/remove</code>というurlに解釈される。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">path</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">views</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
 
 <span class="n">app_name</span> <span class="o">=</span> <span class="s1">&#39;todo_list&#39;</span>
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
@@ -224,11 +224,11 @@ $ python3 manage.py migrate
 <p><code>mysite/todo_list/views.py</code>を編集する。</p>
 <p><code>add</code>ビューではテーブルに要素を追加する。フォーム要素から<code>request.POST[name]</code>で、form部品の情報を取得できる。ここでのnameとは、form部品のname属性である。</p>
 <p><code>remove</code>ビューでは引数に<code>todo_id</code>を指定している。これは<code>urls.py</code>で指定していた<code>&lt;int:todo_id&gt;</code>と同じものである。<code>get_object_or_404</code>でTodoテーブルから<code>id==todo_id</code>となるものを探し出し、もし見つからなかったら<code>404</code>ページを表示する。<code>pk</code>というのはおそらく<code>primary key</code>の略で、デフォルトでは<code>id</code>が主キーになっているのだろう。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponseRedirect</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
+<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
 
-<span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="n">Todo</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Todo</span>
 
 <span class="c1"># Create your views here.</span>
 

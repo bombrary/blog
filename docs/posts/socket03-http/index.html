@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Socket通信勉強(3) - 簡易HTTPサーバー作成 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -141,7 +141,7 @@ Safariがなぜこんな通信をするのかはよく分からない。HTTPの�
 
 <span class="k">def</span> <span class="nf">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="n">soc</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
-    <span class="n">soc</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">soc</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
     <span class="n">soc</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">soc</span>
@@ -149,9 +149,9 @@ Safariがなぜこんな通信をするのかはよく分からない。HTTPの�
 <p>以下のように<code>run_server</code>を作る。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="k">as</span> <span class="n">soc</span><span class="p">:</span>
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">soc</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Connected: {addr}&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Connected: </span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
                 <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
 
@@ -174,7 +174,7 @@ Connected: ('127.0.0.1', 60724)
 <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
     <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
         <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;HTTP/1.1 200 OK</span><span class="se">\r\n</span><span class="s1">Content-Type: text/plain</span><span class="se">\r\n\r\n</span><span class="s1">Hello, World&#39;</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
         <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
 </code></pre></div><p>続いて、<code>run_server</code>を修正する。<code>threading.Thread</code>で、<code>handle_request</code>を別スレッドで実行することができる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">threading</span>
@@ -182,9 +182,9 @@ Connected: ('127.0.0.1', 60724)
 
 <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="k">as</span> <span class="n">soc</span><span class="p">:</span>
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">soc</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Connected: {addr}&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Connected: </span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">handle_request</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">])</span>
             <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </code></pre></div><p>作ったサーバーを実行し、別の端末で<code>curl localhost:8080</code>とすると、<code>curl</code>側で以下のようなメッセージが出力される。
@@ -207,10 +207,10 @@ Connected: ('127.0.0.1', 63066)
         <span class="k">with</span> <span class="n">conn</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">rfile</span><span class="p">:</span>
             <span class="n">request_line</span> <span class="o">=</span> <span class="n">get_request_line</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span> <span class="c1">#これから書く</span>
             <span class="n">headers</span> <span class="o">=</span> <span class="n">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span> <span class="c1">#これから書く</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">)</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
             <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;HTTP/1.1 200 OK</span><span class="se">\r\n</span><span class="s1">Content-Type: text/plain</span><span class="se">\r\n\r\n</span><span class="s1">Hello, World&#39;</span><span class="p">)</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
             <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
 </code></pre></div><h3 id="リクエストラインの取得とパース">リクエストラインの取得とパース</h3>
 <p><a href="https://tools.ietf.org/html/rfc2616#section-5.1">HTTPの仕様</a>より、リクエストラインは
@@ -241,7 +241,7 @@ Connected: ('127.0.0.1', 63066)
 <span class="k">def</span> <span class="nf">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">:</span>
             <span class="k">break</span>
@@ -278,7 +278,7 @@ Connected: ('127.0.0.1', 50076)
 
 <span class="k">def</span> <span class="nf">recv_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
     <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">chunk</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">chunk</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="k">break</span>
@@ -294,7 +294,7 @@ Connected: ('127.0.0.1', 50076)
     <span class="k">with</span> <span class="n">connect</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
         <span class="n">send_request</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">recv_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span>
 </code></pre></div><p>サーバーを起動後、このクライアントを実行すると、クライアント側で以下のメッセージが出力される。</p>
 <pre class="cui">
 HTTP/1.1 200 OK
@@ -341,18 +341,18 @@ ValueError: too many values to unpack (expected 3)
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">request_line</span> <span class="o">=</span> <span class="n">get_request_line</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span>
                     <span class="n">headers</span> <span class="o">=</span> <span class="n">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span>
-                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">)</span>
-                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;HTTP/1.1 200 OK</span><span class="se">\r\n</span><span class="s1">Content-Type: text/plain</span><span class="se">\r\n\r\n</span><span class="s1">Hello, World&#39;</span><span class="p">)</span>
-                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">)</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
-                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;HTTP/1.1 400 BadRequest</span><span class="se">\r\n</span><span class="s1">Content-Type: text/plain</span><span class="se">\r\n\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">f</span><span class="s2">&#34;OSError: {e}&#34;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&#34;OSError: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
 </code></pre></div><h2 id="おまけ簡易的なルーティング">(おまけ)簡易的なルーティング</h2>
 <p>試しにルーティングをやってみる。次のような処理を行う。</p>
 <ul>
@@ -365,14 +365,14 @@ ValueError: too many values to unpack (expected 3)
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="k">def</span> <span class="nf">make_response</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-    <span class="n">headers_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;{h[0]}: {h[1]}&#39;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;HTTP/1.1 {status}&#39;</span><span class="p">,</span> <span class="n">headers_string</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">body</span><span class="p">])</span>
+    <span class="n">headers_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;HTTP/1.1 </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">headers_string</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">body</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">make_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
 </code></pre></div><p>これを元に<code>handle_request</code>を修正する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
     <span class="k">with</span> <span class="n">conn</span><span class="p">:</span>
@@ -385,12 +385,12 @@ ValueError: too many values to unpack (expected 3)
                     <span class="n">route</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
-                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;400 BadRequest&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;BadRequest&#39;</span><span class="p">)</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">f</span><span class="s2">&#34;OSError: {e}&#34;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&#34;OSError: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
 </code></pre></div><p>URIに応じて適切なレスポンスを送る関数<code>route</code>を作成する。<code>/greeting/&lt;name&gt;</code>の<code>name</code>の部分を取り出すために、ここでは正規表現を使っている。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">re</span>
 
@@ -400,9 +400,9 @@ ValueError: too many values to unpack (expected 3)
 
     <span class="k">if</span> <span class="n">request_line</span><span class="o">.</span><span class="n">uri</span> <span class="o">==</span> <span class="s2">&#34;/&#34;</span><span class="p">:</span>
         <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;Hello, World&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="n">f</span><span class="s1">&#39;Hello, {name}!&#39;</span><span class="p">)</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="sa">f</span><span class="s1">&#39;Hello, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">!&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;404 NotFound&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;404 NotFound&#39;</span><span class="p">)</span>
 </code></pre></div><p>作ったサーバーを起動し、別の端末で<code>curl localhost:8080</code>を実行すると、<code>curl</code>側で以下のメッセージが出力される。</p>
@@ -434,7 +434,7 @@ Hello, Taro!
 
 <span class="k">def</span> <span class="nf">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="n">soc</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
-    <span class="n">soc</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="n">soc</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">soc</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
     <span class="n">soc</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">soc</span>
@@ -455,7 +455,7 @@ Hello, Taro!
 <span class="k">def</span> <span class="nf">get_request_headers</span><span class="p">(</span><span class="n">rfile</span><span class="p">:</span> <span class="n">BinaryIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">rfile</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">:</span>
             <span class="k">break</span>
@@ -468,14 +468,14 @@ Hello, Taro!
 
 
 <span class="k">def</span> <span class="nf">make_response</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-    <span class="n">headers_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;{h[0]}: {h[1]}&#39;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;HTTP/1.1 {status}&#39;</span><span class="p">,</span> <span class="n">headers_string</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">body</span><span class="p">])</span>
+    <span class="n">headers_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;HTTP/1.1 </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">headers_string</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">body</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">make_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">request_line</span><span class="p">:</span> <span class="n">RequestLine</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
@@ -483,9 +483,9 @@ Hello, Taro!
 
     <span class="k">if</span> <span class="n">request_line</span><span class="o">.</span><span class="n">uri</span> <span class="o">==</span> <span class="s2">&#34;/&#34;</span><span class="p">:</span>
         <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;Hello, World&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="n">f</span><span class="s1">&#39;Hello, {name}!&#39;</span><span class="p">)</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="sa">f</span><span class="s1">&#39;Hello, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">!&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;404 NotFound&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;404 NotFound&#39;</span><span class="p">)</span>
 
@@ -501,19 +501,19 @@ Hello, Taro!
                     <span class="n">route</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">request_line</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
-                    <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="n">send_response</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="s1">&#39;400 BadRequest&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)],</span> <span class="s1">&#39;BadRequest&#39;</span><span class="p">)</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">f</span><span class="s2">&#34;OSError: {e}&#34;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&#34;OSError: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">server_socket</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="k">as</span> <span class="n">soc</span><span class="p">:</span>
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">soc</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Connected: {addr}&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Connected: </span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">handle_request</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">conn</span><span class="p">,</span> <span class="n">addr</span><span class="p">])</span>
             <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
@@ -536,10 +536,10 @@ WSGIサーバーの実装は<a href="https://docs.python.org/ja/3/library/wsgire
     <span class="k">if</span> <span class="n">uri</span> <span class="o">==</span> <span class="s2">&#34;/&#34;</span><span class="p">:</span>
         <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
         <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;Hello, World&#39;</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">f</span><span class="s1">&#39;Hello, {name}!&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Hello, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">!&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;404 NotFound&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)])</span>
         <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;404 NotFound&#39;</span><span class="p">]</span>

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PythonでPDFの順序並び替えと空白ページ挿入(2種類の方法) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -179,7 +179,7 @@ Page size:      595.28 x 841.89 pts (A4)
     <span class="k">return</span> <span class="n">PDFInfo</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
 </code></pre></div><p>空白ページを1ページ持つのPDFファイルを作成する関数は次のようにする。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_blank_page</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;convert&#39;</span><span class="p">,</span> <span class="s1">&#39;xc:none&#39;</span><span class="p">,</span> <span class="s1">&#39;-page&#39;</span><span class="p">,</span> <span class="n">f</span><span class="s1">&#39;{width}x{height}&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">])</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;convert&#39;</span><span class="p">,</span> <span class="s1">&#39;xc:none&#39;</span><span class="p">,</span> <span class="s1">&#39;-page&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="n">height</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">])</span>
 </code></pre></div><p>平綴じ用の順序を作る関数を定義する。</p>
 <div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">new_page_index</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
     <span class="n">page_index</span> <span class="o">=</span> <span class="p">[]</span>
@@ -210,15 +210,15 @@ Page size:      595.28 x 841.89 pts (A4)
 <span class="k">def</span> <span class="nf">rearrange_pdf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
     <span class="n">tmp_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
     <span class="n">blank_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="s1">&#39;blank.pdf&#39;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">blank_path</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">blank_path</span><span class="p">)</span>
 
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_pdfinfo</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
     <span class="n">create_blank_page</span><span class="p">(</span><span class="n">blank_path</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
     <span class="n">page_index</span> <span class="o">=</span> <span class="n">new_page_index</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">pages</span><span class="p">)</span>
     <span class="n">cat_args</span> <span class="o">=</span> <span class="n">make_cat_args</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">pages</span><span class="p">,</span> <span class="n">page_index</span><span class="p">)</span>
 
-    <span class="n">arg1</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;A={src}&#39;</span>
-    <span class="n">arg2</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;B={blank_path}&#39;</span>
+    <span class="n">arg1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;A=</span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">arg2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;B=</span><span class="si">{</span><span class="n">blank_path</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;pdftk&#39;</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">cat_args</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">dst</span><span class="p">])</span>
 
     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>

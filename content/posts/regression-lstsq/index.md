@@ -356,10 +356,10 @@ $$
 \end{aligned}
 $$
 
-Juliaでは行列の転置を`transpose`、逆行列を`inv`で計算できる。
+Juliaでは行列の転置を`'`、逆行列を`inv`で計算できる。
 
 ```julia
-w =  inv(transpose(X) * X) * (transpose(X) * y)
+w =  inv(X' * X) * (X' * y)
 ```
 
 …と言いたいところだが、逆行列を計算して左から掛けるよりも、
@@ -375,7 +375,7 @@ $$
 Juliaではこれを`\`演算子で行える。
 
 ```julia
-w =  (transpose(X) * X) \ (transpose(X) * y)
+w =  (X' * X) \ (X' * y)
 ```
 
 試しに $\bm{w} = (-1, 2, 4, 1)$ でデータを生成して、そのうえで `w` を計算してみる。
@@ -387,7 +387,7 @@ function main()
   X, y = generate_data([-1.0, 2.0, 4.0, 1.0], 100)
   p1 = scatter(X[:, 2], y)
 
-  w =  (transpose(X) * X) \ (transpose(X) * y)
+  w =  (X' * X) \ (X' * y)
   display(w)
 end
 ```
@@ -415,7 +415,7 @@ function main()
   p1 = scatter(X[:, 2], y)
 
   # wの計算
-  w =  (transpose(X) * X) \ (transpose(X) * y)
+  w =  (X' * X) \ (X' * y)
 
   # y = w[1] + w[2]*x の描画
   plot_x = range(minimum(X[:, 2]), maximum(X[:, 2]), length=100)
@@ -558,7 +558,7 @@ function main()
   X, Phi, y = generate_data([1.0, 2.0], 100, phi=x->[x[1]^2])
   p1 = scatter(X[:, 2], y)
 
-  w =  (transpose(Phi) * Phi) \ (transpose(Phi) * y)
+  w =  (Phi' * Phi) \ (Phi' * y)
   display(w)
 
   plot_x = range(minimum(X[:, 2]), maximum(X[:, 2]), length=100)
@@ -594,7 +594,7 @@ $$
 Juliaではこれを`\`演算子で行える。
 
 ```julia
-w =  (transpose(X) * X) \ (transpose(X) * y)
+w =  (X' * X) \ (X' * y)
 ```
 
 $X^T\bm{y}$ の計算量は、$D \times N$ 行列と $N \times 1$ 行列の積の計算だから $O(DN)$。

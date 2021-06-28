@@ -131,7 +131,7 @@ $$
 である。$\bm{a}$ については $\bm{a} = X\bm{w} - \bm{y}$ と書ける。結局、勾配 `dJ` は次のように計算できる。
 
 ```julia
-dJ = transpose(X) * (X * w - y)
+dJ = X' * (X * w - y)
 ```
 
 ### 勾配降下法の実装
@@ -150,7 +150,7 @@ function gradient_descent(X::Mat, y::Vec, w0::Vec; alpha::Float64 = 0.01, eps::F
   w = w0
   for _ in 1:max_step
 
-    dJ = transpose(X) * (X * w - y)
+    dJ = X' * (X * w - y)
     norm(dJ) < eps && break
 
     w = w - alpha * dJ
@@ -190,7 +190,7 @@ function main()
   J(w0, w1) = begin
     w = [w0, w1]
     a = X * w - y
-    dot(transpose(a), a) / 2.0
+    a' * a / 2.0
   end
 
   w0 = range(0.5, 1.5, length=100)
@@ -327,7 +327,7 @@ function minibatch_descent(X::Mat, y::Vec, w0::Vec; M, alpha::Float64 = 0.01, ep
     for idcs in split(shuffle(1:N), M)
       X1 = X[idcs, :]
       y1 = y[idcs]
-      dJ = transpose(X1) * (X1 * w - y1)
+      dJ = X1' * (X1 * w - y1)
       norm(dJ) < eps && break
       w = w - alpha * dJ
       push!(ws, w)
@@ -354,7 +354,7 @@ function plot_minibatch(X :: Mat, y :: Vec, M :: Int64)
   J(w0, w1) = begin
     w = [w0, w1]
     a = X * w - y
-    dot(transpose(a), a) / 2.0
+    a' * a / 2.0
   end
   w0 = range(0.5, 1.5, length=100)
   w1 = range(1.5, 2.5, length=100)

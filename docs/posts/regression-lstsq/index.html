@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>線形回帰メモ 最小二乗法 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -396,8 +396,8 @@ julia> include("regression.jl")
 \bm{w} = \left( X^TX \right)^{-1} X^T \bm{y}
 \end{aligned}
 $$</p>
-<p>Juliaでは行列の転置を<code>transpose</code>、逆行列を<code>inv</code>で計算できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="n">inv</span><span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+<p>Juliaでは行列の転置を<code>'</code>、逆行列を<code>inv</code>で計算できる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div><p>…と言いたいところだが、逆行列を計算して左から掛けるよりも、
 以下の $\bm{w}$ についての方程式を解く方が、
 数値計算の効率が良い。</p>
@@ -407,7 +407,7 @@ X^TX\bm{w} = X^T \bm{y}
 \end{aligned}
 $$</p>
 <p>Juliaではこれを<code>\</code>演算子で行える。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div><p>試しに $\bm{w} = (-1, 2, 4, 1)$ でデータを生成して、そのうえで <code>w</code> を計算してみる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
@@ -415,7 +415,7 @@ $$</p>
   <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
   <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
 
-  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
   <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
 <span class="k">end</span>
 </code></pre></div><p><code>[-1, 2, 4, 1]</code>に近い値になっていることが分かる。</p>
@@ -437,7 +437,7 @@ julia> include("regression.jl")
   <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
 
   <span class="c"># wの計算</span>
-  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 
   <span class="c"># y = w[1] + w[2]*x の描画</span>
   <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">minimum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">maximum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -550,7 +550,7 @@ $X$ も返り値に含めている。</p>
   <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
   <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
 
-  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">Phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">Phi</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">Phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">Phi</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">Phi</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">Phi</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
   <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
 
   <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">minimum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">maximum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -578,7 +578,7 @@ X^TX\bm{w} = X^T \bm{y}
 \end{aligned}
 $$</p>
 <p>Juliaではこれを<code>\</code>演算子で行える。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div><p>$X^T\bm{y}$ の計算量は、$D \times N$ 行列と $N \times 1$ 行列の積の計算だから $O(DN)$。</p>
 <p>$X^TX$ の計算量は、$D \times N$ 行列と $N \times D$ 行列の積の計算だから $O(ND^2)$。</p>
 <p><a href="https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/#Base.:%5C-Tuple%7BAbstractMatrix%7BT%7D%20where%20T,%20AbstractVecOrMat%7BT%7D%20where%20T%7D">\ のドキュメント</a>によると、

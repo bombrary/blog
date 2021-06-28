@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>HugoセットアップからGitHubにデプロイするまでの備忘録 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.83.1" />
+<meta name="generator" content="Hugo 0.84.0" />
 
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
@@ -97,15 +97,15 @@ forceフラグをつけると、今のディレクトリに何かファイルが
 <div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">$ hugo gen chromastyles --style=github &gt; syntax.css</code></pre></div>
 <h2 id="configの設定">configの設定</h2>
 <p><code>/config.toml</code>の内容を以下の通りにする。ほとんどの設定項目がデフォルトのもので、正直意味が分かっていないものもある。コメントアウトのところはAboutページのリンクを貼るものだが、Aboutページができたらコメントを外そうと思っている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-toml" data-lang="toml"><span class="nx">baseURL</span> <span class="p">=</span> <span class="p">[</span><span class="nx">ブログのURL</span><span class="p">]</span>
-<span class="nx">title</span> <span class="p">=</span> <span class="p">[</span><span class="nx">ブログのタイトル</span><span class="p">]</span>
-<span class="nx">author</span> <span class="p">=</span> <span class="p">[</span><span class="nx">作成者</span><span class="p">]</span>
+<div class="highlight"><pre class="chroma"><code class="language-toml" data-lang="toml"><span class="nx">baseURL</span> <span class="p">=</span> <span class="p">[</span><span class="err">ブログの</span><span class="nx">URL</span><span class="p">]</span>
+<span class="nx">title</span> <span class="p">=</span> <span class="p">[</span><span class="err">ブログのタイトル</span><span class="p">]</span>
+<span class="nx">author</span> <span class="p">=</span> <span class="p">[</span><span class="err">作成者</span><span class="p">]</span>
 <span class="nx">paginate</span> <span class="p">=</span> <span class="mi">3</span>
 <span class="nx">languageCode</span> <span class="p">=</span> <span class="s2">&#34;ja-jp&#34;</span>
 <span class="nx">DefaultContentLanguage</span> <span class="p">=</span> <span class="s2">&#34;ja&#34;</span>
 <span class="nx">enableInlineShortcodes</span> <span class="p">=</span> <span class="kc">true</span>
 <span class="nx">footnoteReturnLinkContents</span> <span class="p">=</span> <span class="s2">&#34;^&#34;</span>
-<span class="nx">theme</span> <span class="p">=</span> <span class="p">[</span><span class="nx">テーマ</span><span class="p">]</span>
+<span class="nx">theme</span> <span class="p">=</span> <span class="p">[</span><span class="err">テーマ</span><span class="p">]</span>
 <span class="nx">publishDir</span><span class="p">=</span><span class="s2">&#34;docs&#34;</span>
 <span class="nx">pygmentsUseClasses</span> <span class="p">=</span> <span class="kc">true</span>
 
