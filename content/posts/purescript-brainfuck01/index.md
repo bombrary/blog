@@ -1,5 +1,5 @@
 ---
-title: "PureScriptで作るBrainfuckインタプリタ 1/3"
+title: "PureScriptで作るBrainfuckインタプリタ 1/3 基礎部分の作成"
 date: 2021-07-04T11:40:00+09:00
 tags: ["モナド変換子"]
 categories: ["PureScript", "Brainfuck"]
