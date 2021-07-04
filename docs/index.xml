@@ -7,6 +7,24 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>PureScriptで作るBrainfuckインタプリタ 1/3</title>
+      <link>https://bombrary.github.io/blog/posts/purescript-brainfuck01/</link>
+      <pubDate>Sun, 04 Jul 2021 11:40:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/purescript-brainfuck01/</guid>
+      <description>Brainfuckの記事ではあるが、実はモナド変換子を使ってみたかっただけだったりする。
+以下の3部の記事で構成されている。
+ インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 Halogenを用いた入出力処理の実装  この記事でインタプリタの基本的な部分を実装し、 残りの2記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
+Brainfuckインタプリタの構造 Brainfuckインタプリタは以下の情報を内部に持っているものとする。
+ program: 命令の列。 iptr: インストラクションポインタ。実行する命令の位置を示す。プログラムカウンタみたいなもの。 dptr: データポインタ。メモリ上のある位置を示す。 memory: メモリ。  インタプリタは以下の手順を踏む。
+ iptr番目の命令をprogramから読み取る。 読み取れなかったらプログラムを終了する。 命令に応じてmemory、dptrの書き換えだったり、入出力を行う。 iptrを1進め、手順1に戻る。  どんな命令があるのかについてはWikipedia参照。
+準備 適当なディレクトリを作って、プロジェクトの初期化を行う。
+% spago init  命令列の作成 src/Brainfuck/Command.pursを作成する。
+Commandを定義。Showクラスのインスタンスにして、Charからの変換をする関数を作る。
+module Brainfuck.Command where import Prelude data Command = IncPtr -- &amp;#34;+&amp;#34; | DecPtr -- &amp;#34;-&amp;#34; | IncDat -- &amp;#34;&amp;gt;&amp;#34; | DecDat -- &amp;#34;&amp;lt;&amp;#34; | LBrace -- &amp;#34;[&amp;#34; | RBrace -- &amp;#34;]&amp;#34; | Output -- &amp;#34;.</description>
+    </item>
+    
+    <item>
       <title>線形回帰メモ 勾配降下法</title>
       <link>https://bombrary.github.io/blog/posts/regression-gradient-descent/</link>
       <pubDate>Tue, 22 Jun 2021 16:08:00 +0900</pubDate>
