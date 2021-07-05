@@ -547,7 +547,7 @@ module Brainfuck where
 import Prelude
 
 import Brainfuck.Env (getProgram, makeEnv)
-import Brainfuck.Interp (Interp(..), InterpResult, runInterp)
+import Brainfuck.Interp (Interp, InterpResult, runInterp)
 import Brainfuck.Interp.Command (interpCommand)
 import Brainfuck.Interp.Util (incInstPtr)
 import Brainfuck.Program (Program(..))
