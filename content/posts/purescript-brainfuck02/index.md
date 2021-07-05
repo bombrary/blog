@@ -26,7 +26,6 @@ module Brainfuck.Interp.Stream where
 import Prelude
 
 import Brainfuck.Interp (Interp)
-import Effect.Console (log)
 ```
 
 `Stream`型を作成する。これは入出力を束ねた型になっている。
@@ -34,48 +33,67 @@ import Effect.Console (log)
 `output`は、`Char`の値を外部に出力する。
 
 ```haskell
-type Stream =
+newtype Stream = Stream
   { input :: Interp Char
   , output ::Char -> Interp Unit
   }
+```
+
+`Stream`を通じてデータを読み書きする関数を作成。
+
+```haskell
+read :: Stream -> Interp Char
+read (Stream { input }) = input
+
+
+write :: Char -> Stream -> Interp Unit
+write c (Stream { output }) =
+  output c
 ```
 
 ```haskell
 defaultStream :: Stream
 defaultStream = Stream { input, output }
   where
-    input = pure (Just 'N') -- Not Implemented
+    input = pure 'N' -- Not Implemented
 
-    output c = log "N" -- Not Implemented
+    output _ = pure unit -- Not Implemented
 ```
+
 
 ### '.'と','
 
 `src/Brainfuck/Interp/Command.purs`を修正する。まず以下のインポート文を追加。
 
 ```haskell
+import Brainfuck.Interp.Util (readCharOrFail)
+import Brainfuck.Interp.Stream (write, read, Stream)
 import Data.Char (toCharCode) as Char
 ```
+
+`Stream`は`Env`のレコードのフィールドとして扱いたいところだが、
+それをやると`Brainfuck.Interp.Stream`、`Brainfuck.Env`、`Brainfuck.Interp`とでcircular importとなってしまう。
+仕方ないので`interpCommand`の引数で扱うことにする。
 
 `interpCommand`の引数を追加し、`.`命令と`,`命令を実装する。
 `input`や`output`の実装は`interpCommand`の管轄外であり、
 とにかく「`input`は1文字返してくれて、`output`は1文字送ってくれる」という気持ちを持って実装する。
 
 ```haskell
-interpCommand :: Stream -> Command -> Interp Unit -- 引数を追加
-interpCommand {input, output} =
+interpCommand :: Stream -> Command -> Interp Unit
+interpCommand stream =
   case _ of
     -- ... 略 ...
 
-    Output -> do
-      c <- readCharOrFail
-      output c
+     Output -> do
+       c <- readCharOrFail
+       write c stream
 
-    Input -> do
-      x <- input
-      modifyDataOrFail (\_ -> Char.toCharCode x)
+     Input -> do
+       x <- read stream
+       modifyDataOrFail (\_ -> Char.toCharCode x)
 
-    _ -> pure unit
+    -- ... 略 ...
 ```
 
 ### Brainfuckの修正
@@ -89,27 +107,29 @@ import Brainfuck.Interp.Stream (Stream, defaultStream)
 `interpCommand`の修正に伴い、`interpProgram`を修正。
 
 ```haskell
-interpProgram :: Stream -> Interp Unit -- 引数を追加
+interpProgram :: Stream -> Interp Unit
 interpProgram stream = do
   -- ... 略 ...
   case readCommand program state of
     Just cmd -> do
       interpCommand stream cmd -- 引数を追加
 
+      incInstPtr
+      interpProgram stream -- 引数を追加
   -- ... 略 ...
 ```
 
-`Stream`を引数にとるバージョンの`run`も定義。
+`Stream`を引数にとるバージョンの`run`を定義。
 それを用いて`runDefault`を書き直す。
 
 ```haskell
-run :: Program -> Stream -> Effect (InterpResult Unit)
-run program stream =
-  runInterp interpProgram (makeEnv program) defaultState
+run :: Stream -> Program -> Effect (InterpResult Unit)
+run stream program =
+  runInterp (interpProgram stream) (makeEnv program) defaultState
 
 
 runDefault :: Program -> Effect (InterpResult Unit)
-runDefault program = run program defaultStream
+runDefault program = run defaultStream program
 ```
 
 ## コンソール出力
@@ -119,10 +139,15 @@ runDefault program = run program defaultStream
 `src/Brainfuck/Interp/Stream.purs`の`defaultStream`において、`output`を`log`で実装してみる。
 
 ```haskell
+-- import文追加
+import Effect.Class (liftEffect)
+import Effect.Console (log)
+
+
 defaultStream :: Stream
 defaultStream = Stream { input, output }
   where
-    input = pure (Just 'N') -- Not Implemented
+    input = pure 'N' -- Not Implemented
 
     output c = liftEffect $ log $ show c
 ```
@@ -130,20 +155,21 @@ defaultStream = Stream { input, output }
 これでようやくHello, Worldが出力できる。[Wikipedia](https://en.wikipedia.org/wiki/Brainfuck)にあるコードを借りる。
 
 {{< cui >}}
+> import Brainfuck.Interp.Stream
 > runDefault $ fromString "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."
-H
-e
-l
-l
-o
-
-W
-o
-r
-l
-d
-!
-
+'H'
+'e'
+'l'
+'l'
+'o'
+' '
+'W'
+'o'
+'r'
+'l'
+'d'
+'!'
+'\n'
 
 { result: (Right unit), state: { dptr: 6, iptr: 106, memory: [0,0,72,100,87,33,10,0,0,0] } }
 {{< /cui >}}
@@ -163,6 +189,7 @@ d
 `src/Stream.purs`にNode.js用のストリームを定義する。以下のパッケージをインポートしておく。
 
 ```haskell
+import Data.String.CodeUnits (singleton) as CodeUnits
 import Node.Process (stdout)
 import Node.Encoding (Encoding(UTF8))
 import Node.Stream (writeString)
@@ -174,9 +201,9 @@ import Node.Stream (writeString)
 
 ```haskell
 nodeStream :: Stream
-nodeStream = { input, output }
+nodeStream = Stream { input, output }
   where
-    input = pure (Just 'N') -- Not Implemented
+    input = pure 'N' -- Not Implemented
 
     output c =
       void $ liftEffect $ writeString stdout UTF8 (CodeUnits.singleton c) (pure unit)
@@ -185,7 +212,7 @@ nodeStream = { input, output }
 REPLで確認してみると、無事改行無しの出力ができている。
 
 {{< cui >}}
-> run (fromString "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.") nodeStream
+> run nodeStream (fromString "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.")
 Hello World!
 { result: (Right unit), state: { dptr: 6, iptr: 106, memory: [0,0,72,100,87,33,10,0,0,0] } }
 {{< /cui >}}
@@ -199,7 +226,6 @@ Hello World!
 {{< cui >}}
 % spago install aff
 {{< /cui >}}
-
 
 
 ### Interpの修正
