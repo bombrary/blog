@@ -71,10 +71,10 @@ data Command
 instance Show Command where
   show =
     case _ of
-      IncPtr -> "+"
-      DecPtr -> "-"
-      IncDat -> ">"
-      DecDat -> "<"
+      IncPtr -> ">"
+      DecPtr -> "<"
+      IncDat -> "+"
+      DecDat -> "-"
       LBrace -> "["
       RBrace -> "]"
       Output -> "."
