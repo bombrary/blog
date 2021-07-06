@@ -7,14 +7,28 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>PureScriptで作るBrainfuckインタプリタ 1/3 基礎部分の作成</title>
+      <title>PureScriptで作るBrainfuckインタプリタ 2/4 CUIでの入出力</title>
+      <link>https://bombrary.github.io/blog/posts/purescript-brainfuck02/</link>
+      <pubDate>Mon, 05 Jul 2021 17:05:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/purescript-brainfuck02/</guid>
+      <description>入出力用のストリーム作成 例えば出力だけ考えてみると、まず考えられるのは単純に、 logで出力することである。しかしlog以外の選択肢も考えられる。 logでコンソール出力するだけでなく、Webページのテキスト上で出力したり、テキストファイルに吐き出したりできるような汎用性が持たせられると良い。
+そこで今回は、いわゆる「ストリームオブジェクト」のようなものを作って、そこから入出力を行うような設計にしてみる。
+Streamの作成 src/Brainfuck/Interp/Stream.pursを作成。この後使うモジュールをインポート。
+module Brainfuck.Interp.Stream where import Prelude import Brainfuck.Interp (Interp) Stream型を作成する。これは入出力を束ねた型になっている。 inputは、外部からの入力を1文字受け取る。 outputは、Charの値を外部に出力する。
+newtype Stream = Stream { input :: Interp Char , output ::Char -&amp;gt; Interp Unit } Streamを通じてデータを読み書きする関数を作成。
+read :: Stream -&amp;gt; Interp Char read (Stream { input }) = input write :: Char -&amp;gt; Stream -&amp;gt; Interp Unit write c (Stream { output }) = output c defaultStream :: Stream defaultStream = Stream { input, output } where input = pure &amp;#39;N&amp;#39; -- Not Implemented output _ = pure unit -- Not Implemented &amp;lsquo;.</description>
+    </item>
+    
+    <item>
+      <title>PureScriptで作るBrainfuckインタプリタ 1/4 基礎部分の作成</title>
       <link>https://bombrary.github.io/blog/posts/purescript-brainfuck01/</link>
       <pubDate>Sun, 04 Jul 2021 11:40:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/posts/purescript-brainfuck01/</guid>
       <description>Brainfuckの記事ではあるが、実はモナド変換子を使ってみたかっただけだったりする。
 以下の3部の記事で構成されている。
- インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 Halogenを用いた入出力処理の実装  この記事でインタプリタの基本的な部分を実装し、 残りの2記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
+ インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 CUIでのインタプリタ可視化 Halogenを用いた入出力処理の実装  この記事でインタプリタの基本的な部分を実装し、 残りの3記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
 Brainfuckインタプリタの構造 Brainfuckインタプリタは以下の情報を内部に持っているものとする。
  program: 命令の列。 iptr: インストラクションポインタ。実行する命令の位置を示す。プログラムカウンタみたいなもの。 dptr: データポインタ。メモリ上のある位置を示す。 memory: メモリ。  インタプリタは以下の手順を踏む。
  iptr番目の命令をprogramから読み取る。 読み取れなかったらプログラムを終了する。 命令に応じてmemory、dptrの書き換えだったり、入出力を行う。 iptrを1進め、手順1に戻る。  どんな命令があるのかについてはWikipedia参照。

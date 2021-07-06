@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja-jp">
-<title>PureScriptで作るBrainfuckインタプリタ 1/3 基礎部分の作成 | Chanomic Blog</title>
+<title>PureScriptで作るBrainfuckインタプリタ 1/4 基礎部分の作成 | Chanomic Blog</title>
 <meta charset="utf-8">
 <meta name="generator" content="Hugo 0.84.0" />
 
@@ -34,7 +34,7 @@
 
 <article>
   <header>
-    <h1><a href="https://bombrary.github.io/blog/posts/purescript-brainfuck01/">PureScriptで作るBrainfuckインタプリタ 1/3 基礎部分の作成</a></h1>
+    <h1><a href="https://bombrary.github.io/blog/posts/purescript-brainfuck01/">PureScriptで作るBrainfuckインタプリタ 1/4 基礎部分の作成</a></h1>
     <div class="meta">
       
       <div class="pub-date">
@@ -44,7 +44,7 @@
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2021-07-04T11:40:00&#43;09:00">July 04, 2021</time>
+        <time datetime="2021-07-04T11:40:00&#43;09:00">July 05, 2021</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -106,10 +106,11 @@
 <ol>
 <li>インタプリタと基本的な命令の実装 (<strong>この記事</strong>)</li>
 <li>CUIでの入出力処理の実装</li>
+<li>CUIでのインタプリタ可視化</li>
 <li>Halogenを用いた入出力処理の実装</li>
 </ol>
 <p>この記事でインタプリタの基本的な部分を実装し、
-残りの2記事はインタプリタとはあまり関係ない話となる
+残りの3記事はインタプリタとはあまり関係ない話となる
 (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。</p>
 <h2 id="brainfuckインタプリタの構造">Brainfuckインタプリタの構造</h2>
 <p>Brainfuckインタプリタは以下の情報を内部に持っているものとする。</p>
@@ -155,10 +156,10 @@
 <span class="kr">instance</span> <span class="kt">Show</span> <span class="kt">Command</span> <span class="kr">where</span>
   <span class="n">show</span> <span class="ow">=</span>
     <span class="kr">case</span> <span class="kr">_</span> <span class="kr">of</span>
-      <span class="kt">IncPtr</span> <span class="ow">-&gt;</span> <span class="s">&#34;+&#34;</span>
-      <span class="kt">DecPtr</span> <span class="ow">-&gt;</span> <span class="s">&#34;-&#34;</span>
-      <span class="kt">IncDat</span> <span class="ow">-&gt;</span> <span class="s">&#34;&gt;&#34;</span>
-      <span class="kt">DecDat</span> <span class="ow">-&gt;</span> <span class="s">&#34;&lt;&#34;</span>
+      <span class="kt">IncPtr</span> <span class="ow">-&gt;</span> <span class="s">&#34;&gt;&#34;</span>
+      <span class="kt">DecPtr</span> <span class="ow">-&gt;</span> <span class="s">&#34;&lt;&#34;</span>
+      <span class="kt">IncDat</span> <span class="ow">-&gt;</span> <span class="s">&#34;+&#34;</span>
+      <span class="kt">DecDat</span> <span class="ow">-&gt;</span> <span class="s">&#34;-&#34;</span>
       <span class="kt">LBrace</span> <span class="ow">-&gt;</span> <span class="s">&#34;[&#34;</span>
       <span class="kt">RBrace</span> <span class="ow">-&gt;</span> <span class="s">&#34;]&#34;</span>
       <span class="kt">Output</span> <span class="ow">-&gt;</span> <span class="s">&#34;.&#34;</span>
@@ -506,7 +507,7 @@ spago install transformers either tuples
 <span class="kr">import</span> <span class="nn">Prelude</span>
 
 <span class="kr">import</span> <span class="nn">Brainfuck.Env</span> <span class="p">(</span><span class="nf">getProgram</span><span class="p">,</span> <span class="nf">makeEnv</span><span class="p">)</span>
-<span class="kr">import</span> <span class="nn">Brainfuck.Interp</span> <span class="p">(</span><span class="kt">Interp</span><span class="p">(</span><span class="o">..</span><span class="p">),</span> <span class="kt">InterpResult</span><span class="p">,</span> <span class="nf">runInterp</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Interp</span> <span class="p">(</span><span class="kt">Interp</span><span class="p">,</span> <span class="kt">InterpResult</span><span class="p">,</span> <span class="nf">runInterp</span><span class="p">)</span>
 <span class="kr">import</span> <span class="nn">Brainfuck.Interp.Command</span> <span class="p">(</span><span class="nf">interpCommand</span><span class="p">)</span>
 <span class="kr">import</span> <span class="nn">Brainfuck.Interp.Util</span> <span class="p">(</span><span class="nf">incInstPtr</span><span class="p">)</span>
 <span class="kr">import</span> <span class="nn">Brainfuck.Program</span> <span class="p">(</span><span class="kt">Program</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>

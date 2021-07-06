@@ -8,14 +8,14 @@
     <language>ja-jp</language>
     <lastBuildDate>Sun, 04 Jul 2021 11:40:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/%E3%83%A2%E3%83%8A%E3%83%89%E5%A4%89%E6%8F%9B%E5%AD%90/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>PureScriptで作るBrainfuckインタプリタ 1/3 基礎部分の作成</title>
+      <title>PureScriptで作るBrainfuckインタプリタ 1/4 基礎部分の作成</title>
       <link>https://bombrary.github.io/blog/posts/purescript-brainfuck01/</link>
       <pubDate>Sun, 04 Jul 2021 11:40:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/posts/purescript-brainfuck01/</guid>
       <description>Brainfuckの記事ではあるが、実はモナド変換子を使ってみたかっただけだったりする。
 以下の3部の記事で構成されている。
- インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 Halogenを用いた入出力処理の実装  この記事でインタプリタの基本的な部分を実装し、 残りの2記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
+ インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 CUIでのインタプリタ可視化 Halogenを用いた入出力処理の実装  この記事でインタプリタの基本的な部分を実装し、 残りの3記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
 Brainfuckインタプリタの構造 Brainfuckインタプリタは以下の情報を内部に持っているものとする。
  program: 命令の列。 iptr: インストラクションポインタ。実行する命令の位置を示す。プログラムカウンタみたいなもの。 dptr: データポインタ。メモリ上のある位置を示す。 memory: メモリ。  インタプリタは以下の手順を踏む。
  iptr番目の命令をprogramから読み取る。 読み取れなかったらプログラムを終了する。 命令に応じてmemory、dptrの書き換えだったり、入出力を行う。 iptrを1進め、手順1に戻る。  どんな命令があるのかについてはWikipedia参照。

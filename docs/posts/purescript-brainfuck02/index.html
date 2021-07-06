@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>PureScriptで作るBrainfuckインタプリタ 2/4 CUIでの入出力 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.84.0" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-brainfuck02/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/purescript-brainfuck02/">PureScriptで作るBrainfuckインタプリタ 2/4 CUIでの入出力</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2021-07-05T17:05:00&#43;09:00">July 05, 2021</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2021-07-05T17:05:00&#43;09:00">July 05, 2021</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/purescript/">PureScript</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/brainfuck/">Brainfuck</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#入出力用のストリーム作成">入出力用のストリーム作成</a>
+      <ul>
+        <li><a href="#streamの作成">Streamの作成</a></li>
+        <li><a href="#と">&lsquo;.&lsquo;と&rsquo;,&rsquo;</a></li>
+        <li><a href="#brainfuckの修正">Brainfuckの修正</a></li>
+      </ul>
+    </li>
+    <li><a href="#コンソール出力">コンソール出力</a>
+      <ul>
+        <li><a href="#出力ストリームの実装">出力ストリームの実装</a></li>
+        <li><a href="#出力先の変更">出力先の変更</a></li>
+      </ul>
+    </li>
+    <li><a href="#修正-interpの抽象化">修正: Interpの抽象化</a>
+      <ul>
+        <li><a href="#interpの修正">Interpの修正</a></li>
+        <li><a href="#streamの修正">Streamの修正</a></li>
+        <li><a href="#utilの修正">Utilの修正</a></li>
+        <li><a href="#commandの修正">Commandの修正</a></li>
+        <li><a href="#brainfuckの修正-1">Brainfuckの修正</a></li>
+      </ul>
+    </li>
+    <li><a href="#コンソール入力">コンソール入力</a>
+      <ul>
+        <li><a href="#入力の確認">入力の確認</a></li>
+      </ul>
+    </li>
+    <li><a href="#次回">次回</a></li>
+  </ul>
+</nav>
+    </aside>
+    
+  <h2 id="入出力用のストリーム作成">入出力用のストリーム作成</h2>
+<p>例えば出力だけ考えてみると、まず考えられるのは単純に、
+<a href="https://pursuit.purescript.org/packages/purescript-console/5.0.0/docs/Effect.Class.Console#v:log">log</a>で出力することである。しかし<code>log</code>以外の選択肢も考えられる。
+<code>log</code>でコンソール出力するだけでなく、Webページのテキスト上で出力したり、テキストファイルに吐き出したりできるような汎用性が持たせられると良い。</p>
+<p>そこで今回は、いわゆる「ストリームオブジェクト」のようなものを作って、そこから入出力を行うような設計にしてみる。</p>
+<h3 id="streamの作成">Streamの作成</h3>
+<p><code>src/Brainfuck/Interp/Stream.purs</code>を作成。この後使うモジュールをインポート。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Brainfuck.Interp.Stream</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Brainfuck.Interp</span> <span class="p">(</span><span class="kt">Interp</span><span class="p">)</span>
+</code></pre></div><p><code>Stream</code>型を作成する。これは入出力を束ねた型になっている。
+<code>input</code>は、外部からの入力を1文字受け取る。
+<code>output</code>は、<code>Char</code>の値を外部に出力する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">newtype</span> <span class="kt">Stream</span> <span class="ow">=</span> <span class="kt">Stream</span>
+  <span class="p">{</span> <span class="n">input</span> <span class="ow">::</span> <span class="kt">Interp</span> <span class="kt">Char</span>
+  <span class="p">,</span> <span class="n">output</span> <span class="ow">::</span><span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="kt">Unit</span>
+  <span class="p">}</span>
+</code></pre></div><p><code>Stream</code>を通じてデータを読み書きする関数を作成。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">read</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="kt">Char</span>
+<span class="nf">read</span> <span class="p">(</span><span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">input</span>
+
+
+<span class="nf">write</span> <span class="ow">::</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">Stream</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="kt">Unit</span>
+<span class="nf">write</span> <span class="n">c</span> <span class="p">(</span><span class="kt">Stream</span> <span class="p">{</span> <span class="n">output</span> <span class="p">})</span> <span class="ow">=</span>
+  <span class="n">output</span> <span class="n">c</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">defaultStream</span> <span class="ow">::</span> <span class="kt">Stream</span>
+<span class="nf">defaultStream</span> <span class="ow">=</span> <span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span><span class="p">,</span> <span class="n">output</span> <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">input</span> <span class="ow">=</span> <span class="n">pure</span> <span class="sc">&#39;N&#39;</span> <span class="c1">-- Not Implemented</span>
+
+    <span class="n">output</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">unit</span> <span class="c1">-- Not Implemented</span>
+</code></pre></div><h3 id="と">&lsquo;.&lsquo;と&rsquo;,&rsquo;</h3>
+<p><code>src/Brainfuck/Interp/Command.purs</code>を修正する。まず以下のインポート文を追加。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Brainfuck.Interp.Util</span> <span class="p">(</span><span class="nf">readCharOrFail</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Interp.Stream</span> <span class="p">(</span><span class="nf">write</span><span class="p">,</span> <span class="nf">read</span><span class="p">,</span> <span class="kt">Stream</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Char</span> <span class="p">(</span><span class="nf">toCharCode</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Char</span>
+</code></pre></div><p><code>Stream</code>は<code>Env</code>のレコードのフィールドとして扱いたいところだが、
+それをやると<code>Brainfuck.Interp.Stream</code>、<code>Brainfuck.Env</code>、<code>Brainfuck.Interp</code>とでcircular importとなってしまう。
+仕方ないので<code>interpCommand</code>の引数で扱うことにする。</p>
+<p><code>interpCommand</code>の引数を追加し、<code>.</code>命令と<code>,</code>命令を実装する。
+<code>input</code>や<code>output</code>の実装は<code>interpCommand</code>の管轄外であり、
+とにかく「<code>input</code>は1文字返してくれて、<code>output</code>は1文字送ってくれる」という気持ちを持って実装する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">interpCommand</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="ow">-&gt;</span> <span class="kt">Command</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="kt">Unit</span>
+<span class="nf">interpCommand</span> <span class="n">stream</span> <span class="ow">=</span>
+  <span class="kr">case</span> <span class="kr">_</span> <span class="kr">of</span>
+    <span class="c1">-- ... 略 ...</span>
+
+     <span class="kt">Output</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+       <span class="n">c</span> <span class="ow">&lt;-</span> <span class="n">readCharOrFail</span>
+       <span class="n">write</span> <span class="n">c</span> <span class="n">stream</span>
+
+     <span class="kt">Input</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+       <span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">read</span> <span class="n">stream</span>
+       <span class="n">modifyDataOrFail</span> <span class="p">(</span><span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="kt">Char</span><span class="o">.</span><span class="n">toCharCode</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="c1">-- ... 略 ...</span>
+</code></pre></div><h3 id="brainfuckの修正">Brainfuckの修正</h3>
+<p><code>src/Brainfuck.purs</code>を修正する。以下のモジュールを追加でインポートしておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Brainfuck.Interp.Stream</span> <span class="p">(</span><span class="kt">Stream</span><span class="p">,</span> <span class="nf">defaultStream</span><span class="p">)</span>
+</code></pre></div><p><code>interpCommand</code>の修正に伴い、<code>interpProgram</code>を修正。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">interpProgram</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="kt">Unit</span>
+<span class="nf">interpProgram</span> <span class="n">stream</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="c1">-- ... 略 ...</span>
+  <span class="kr">case</span> <span class="n">readCommand</span> <span class="n">program</span> <span class="n">state</span> <span class="kr">of</span>
+    <span class="kt">Just</span> <span class="n">cmd</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+      <span class="n">interpCommand</span> <span class="n">stream</span> <span class="n">cmd</span> <span class="c1">-- 引数を追加</span>
+
+      <span class="n">incInstPtr</span>
+      <span class="n">interpProgram</span> <span class="n">stream</span> <span class="c1">-- 引数を追加</span>
+  <span class="c1">-- ... 略 ...</span>
+</code></pre></div><p><code>Stream</code>を引数にとるバージョンの<code>run</code>を定義。
+それを用いて<code>runDefault</code>を書き直す。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">run</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="ow">-&gt;</span> <span class="kt">Program</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">InterpResult</span> <span class="kt">Unit</span><span class="p">)</span>
+<span class="nf">run</span> <span class="n">stream</span> <span class="n">program</span> <span class="ow">=</span>
+  <span class="n">runInterp</span> <span class="p">(</span><span class="n">interpProgram</span> <span class="n">stream</span><span class="p">)</span> <span class="p">(</span><span class="n">makeEnv</span> <span class="n">program</span><span class="p">)</span> <span class="n">defaultState</span>
+
+
+<span class="nf">runDefault</span> <span class="ow">::</span> <span class="kt">Program</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">InterpResult</span> <span class="kt">Unit</span><span class="p">)</span>
+<span class="nf">runDefault</span> <span class="n">program</span> <span class="ow">=</span> <span class="n">run</span> <span class="n">defaultStream</span> <span class="n">program</span>
+</code></pre></div><h2 id="コンソール出力">コンソール出力</h2>
+<h3 id="出力ストリームの実装">出力ストリームの実装</h3>
+<p><code>src/Brainfuck/Interp/Stream.purs</code>の<code>defaultStream</code>において、<code>output</code>を<code>log</code>で実装してみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- import文追加</span>
+<span class="kr">import</span> <span class="nn">Effect.Class</span> <span class="p">(</span><span class="nf">liftEffect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Console</span> <span class="p">(</span><span class="nf">log</span><span class="p">)</span>
+
+
+<span class="nf">defaultStream</span> <span class="ow">::</span> <span class="kt">Stream</span>
+<span class="nf">defaultStream</span> <span class="ow">=</span> <span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span><span class="p">,</span> <span class="n">output</span> <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">input</span> <span class="ow">=</span> <span class="n">pure</span> <span class="sc">&#39;N&#39;</span> <span class="c1">-- Not Implemented</span>
+
+    <span class="n">output</span> <span class="n">c</span> <span class="ow">=</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">log</span> <span class="o">$</span> <span class="n">show</span> <span class="n">c</span>
+</code></pre></div><p>これでようやくHello, Worldが出力できる。<a href="https://en.wikipedia.org/wiki/Brainfuck">Wikipedia</a>にあるコードを借りる。</p>
+<pre class="cui">
+> import Brainfuck.Interp.Stream
+> runDefault $ fromString "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."
+'H'
+'e'
+'l'
+'l'
+'o'
+' '
+'W'
+'o'
+'r'
+'l'
+'d'
+'!'
+'\n'
+
+{ result: (Right unit), state: { dptr: 6, iptr: 106, memory: [0,0,72,100,87,33,10,0,0,0] } }
+</pre>
+
+<h3 id="出力先の変更">出力先の変更</h3>
+<p><code>log</code>関数の仕様上改行が入ってしまう。そもそも<code>log</code>はデバッグ用のものであり、出力には適していない。
+ではデバッグではない標準出力はあるのかとうと、それはNode.jsでいう<code>process.stdout.write</code>に当たる(とはいえNode.jsは詳しくないので確かではないが…)。
+それをラッピングしたものが<a href="https://pursuit.purescript.org/packages/purescript-node-process/8.2.0">purescript-node-process</a>に用意されているので、これを使うことにする。</p>
+<p>該当パッケージをインストールする。</p>
+<pre class="cui">
+% spago install node-process node-buffer node-streams
+</pre>
+
+<p><code>src/Stream.purs</code>にNode.js用のストリームを定義する。以下のパッケージをインポートしておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="p">(</span><span class="nf">singleton</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CodeUnits</span>
+<span class="kr">import</span> <span class="nn">Node.Process</span> <span class="p">(</span><span class="nf">stdout</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Node.Encoding</span> <span class="p">(</span><span class="kt">Encoding</span><span class="p">(</span><span class="kt">UTF8</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Node.Stream</span> <span class="p">(</span><span class="nf">writeString</span><span class="p">)</span>
+</code></pre></div><p><code>nodeStream</code>を定義。
+<a href="https://pursuit.purescript.org/packages/purescript-node-streams/5.0.0/docs/Node.Stream#v:writeString">writeString</a>は、どうやら内部で<a href="https://nodejs.org/api/stream.html#stream_writable_write_chunk_encoding_callback">writable.write</a>を呼び出している模様。
+<code>UTF8</code>でエンコーディングを指定し、第4引数は出力後のコールバック関数のようだ。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">nodeStream</span> <span class="ow">::</span> <span class="kt">Stream</span>
+<span class="nf">nodeStream</span> <span class="ow">=</span> <span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span><span class="p">,</span> <span class="n">output</span> <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">input</span> <span class="ow">=</span> <span class="n">pure</span> <span class="sc">&#39;N&#39;</span> <span class="c1">-- Not Implemented</span>
+
+    <span class="n">output</span> <span class="n">c</span> <span class="ow">=</span>
+      <span class="n">void</span> <span class="o">$</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">writeString</span> <span class="n">stdout</span> <span class="kt">UTF8</span> <span class="p">(</span><span class="kt">CodeUnits</span><span class="o">.</span><span class="n">singleton</span> <span class="n">c</span><span class="p">)</span> <span class="p">(</span><span class="n">pure</span> <span class="n">unit</span><span class="p">)</span>
+</code></pre></div><p>REPLで確認してみると、無事改行無しの出力ができている。</p>
+<pre class="cui">
+> run nodeStream (fromString "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.")
+Hello World!
+{ result: (Right unit), state: { dptr: 6, iptr: 106, memory: [0,0,72,100,87,33,10,0,0,0] } }
+</pre>
+
+<h2 id="修正-interpの抽象化">修正: Interpの抽象化</h2>
+<p>入力を非同期処理で扱う必要があるため、全体の計算を<code>Aff</code>で扱えると良い。
+もっと一般的に、<code>Effect</code>でも<code>Aff</code>でも使えるように<code>Interp</code>を抽象化する
+(やってみたら想像以上に修正箇所が多く、大変だった…)。</p>
+<p><code>Aff</code>を使いたいので、以下のパッケージをインストール。</p>
+<pre class="cui">
+% spago install aff
+</pre>
+
+<h3 id="interpの修正">Interpの修正</h3>
+<p><code>src/Brainfuck/Interp.purs</code>を修正。まず以下のインポート文を追加。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kt">TODO</span>
+</code></pre></div><p>根本となる<code>Interp</code>の型を修正する。<code>Interp</code>に型変数<code>m</code>を持たせる。
+<code>Interp</code>自身がモナド変換子になったような感じ。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">newtype</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Interp</span> <span class="p">(</span><span class="kt">ReaderT</span> <span class="kt">Env</span> <span class="p">(</span><span class="kt">ExceptT</span> <span class="kt">Error</span> <span class="p">(</span><span class="kt">StateT</span> <span class="kt">State</span> <span class="n">m</span><span class="p">))</span> <span class="n">a</span><span class="p">)</span>
+</code></pre></div><p>この時点で<code>spago build</code>すると型エラーがたくさん出るはずなので、エラーメッセージに従って修正していけばよい。
+以下、修正箇所を示すが、抜けがあるかもしれない。</p>
+<p><code>runInterp</code>の型を修正。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">runInterp</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Env</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="p">(</span><span class="kt">InterpResult</span> <span class="n">a</span><span class="p">)</span>
+</code></pre></div><p><code>derive newtype</code>を修正。どのように修正すべきかは、<a href="https://pursuit.purescript.org/packages/purescript-transformers/5.1.0/docs/Control.Monad.State#t:StateT">StateTのinstance</a>を参考にする。
+というのも、<code>m</code>の制約に直接影響するのは<code>StateT</code>だからだ。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Functor</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+<span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">Monad</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Apply</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+<span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">Monad</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Applicative</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+<span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">Monad</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Bind</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+<span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">Monad</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Monad</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+<span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">Monad</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">MonadState</span> <span class="kt">State</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+<span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">Monad</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">MonadAsk</span> <span class="kt">Env</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+<span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">Monad</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">MonadThrow</span> <span class="kt">Error</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+<span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">MonadEffect</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">MonadEffect</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+</code></pre></div><p><code>MonadAff</code>の<code>derive newtype</code>を追加。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">derive</span> <span class="kr">newtype</span> <span class="kr">instance</span> <span class="p">(</span><span class="kt">MonadAff</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">MonadAff</span> <span class="p">(</span><span class="kt">Interp</span> <span class="n">m</span><span class="p">)</span>
+</code></pre></div><h3 id="streamの修正">Streamの修正</h3>
+<p><code>src/Brainfuck/Interp/Stream</code>を修正。まず以下のimportを追加。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff</span> <span class="p">(</span><span class="kt">Aff</span><span class="p">)</span>
+</code></pre></div><p><code>Stream</code>に型変数<code>m</code>をつける。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">newtype</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">=</span> <span class="kt">Stream</span>
+  <span class="p">{</span> <span class="n">input</span> <span class="ow">::</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Char</span>
+  <span class="p">,</span> <span class="n">output</span> <span class="ow">::</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+  <span class="p">}</span>
+</code></pre></div><p>それに合わせて<code>read</code>、<code>write</code>を修正。
+<code>defaultStream</code>と<code>nodeStream</code>の<code>Stream m</code>には具体的な<code>m</code>を指定。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">read</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Char</span>
+
+<span class="nf">write</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">defaultStream</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="kt">Effect</span>
+
+<span class="nf">nodeStream</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="kt">Aff</span>
+</code></pre></div><h3 id="utilの修正">Utilの修正</h3>
+<p><code>src/Brainfuck/Interp/Util.purs</code>において、全ての関数の引数を修正。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">modifyDataOrFail</span> <span class="ow">::</span>  <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">readDataOrFail</span> <span class="ow">::</span>  <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Int</span>
+
+<span class="nf">readCharOrFail</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Char</span>
+
+<span class="nf">readCommandOrFail</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Command</span>
+
+<span class="nf">incInstPtr</span> <span class="ow">::</span>  <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">decInstPtr</span> <span class="ow">::</span>  <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+</code></pre></div><h3 id="commandの修正">Commandの修正</h3>
+<p><code>src/Brainfuck/Interp/Command.purs</code>を修正。こちらも全ての関数の引数を修正。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">interpCommand</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Command</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">incDataPtr</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">decDataPtr</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">incData</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">decData</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">goToRBrace</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">goToLBrace</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+
+<span class="nf">goToMate</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">goToMate</span> <span class="n">move</span> <span class="ow">=</span> <span class="n">go</span> <span class="mi">0</span>
+  <span class="kr">where</span>
+    <span class="n">go</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+    <span class="c1">-- 略</span>
+</code></pre></div><h3 id="brainfuckの修正-1">Brainfuckの修正</h3>
+<p><code>src/Brainfuck.purs</code>を修正。<code>runDefault</code>以外の関数の型を修正。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">run</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Program</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="p">(</span><span class="kt">InterpResult</span> <span class="kt">Unit</span><span class="p">)</span>
+
+<span class="nf">interpProgram</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+</code></pre></div><p>これで<code>spago build</code>するとエラーが無くなるはず。</p>
+<p>(<strong>補足</strong>)
+<code>Aff</code>は<code>Show</code>クラスのインスタンスではないので、REPLで出力を試したいなら<code>launchAff_</code>を利用する。</p>
+<pre class="cui">
+> launchAff_ $ run nodeStream (fromString "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.")
+Hello World!
+</pre>
+
+<p>しかし残念ながら<code>InterpResult Unit</code>は出力されない。もし出力したいのであれば、<code>log</code>とかをつかって出力する関数を新たに作る必要がある。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- 以下のimportを追加</span>
+<span class="kr">import</span> <span class="nn">Effect.Class</span> <span class="p">(</span><span class="nf">class</span> <span class="kt">MonadEffect</span><span class="p">,</span> <span class="nf">liftEffect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Console</span> <span class="p">(</span><span class="nf">log</span><span class="p">)</span>
+
+
+<span class="nf">runWithLog</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Program</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">runWithLog</span> <span class="n">stream</span> <span class="n">program</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">res</span> <span class="ow">&lt;-</span> <span class="n">run</span> <span class="n">stream</span> <span class="n">program</span>
+  <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">log</span> <span class="o">$</span> <span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">res</span><span class="p">)</span>
+</code></pre></div><pre class="cui">
+> launchAff_ $ runWithLog nodeStream (fromString "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.")
+Hello World!
+
+{ result: (Right unit), state: { dptr: 6, iptr: 106, memory: [0,0,72,100,87,33,10,0,0,0] } }
+</pre>
+
+<h2 id="コンソール入力">コンソール入力</h2>
+<p>2つの方法が考えられる。</p>
+<ul>
+<li><a href="https://pursuit.purescript.org/packages/purescript-node-process/8.2.0/docs/Node.Process#v:stdin">stdin</a>から
+<a href="https://pursuit.purescript.org/packages/purescript-node-streams/5.0.0/docs/Node.Stream#v:readString">readString</a>を使って文字列を読み取る。
+ただし標準入力にデータが来ているかどうかを<a href="https://pursuit.purescript.org/packages/purescript-node-streams/5.0.0/docs/Node.Stream#v:onReadable">onReadable</a>
+で待つ必要がある。<code>onReadable</code>にてコールバック関数を指定する。</li>
+<li><a href="https://pursuit.purescript.org/packages/purescript-node-readline/5.0.0">node-readlineパッケージ</a>を利用。
+プロンプトを表示して入力を促すだけなら<a href="https://pursuit.purescript.org/packages/purescript-node-readline/5.0.0/docs/Node.ReadLine#v:question">question</a>関数が使いやすいと思う。
+<code>question</code>にてコールバック関数を指定する。</li>
+</ul>
+<p>いずれにせよ、affパッケージの<a href="https://pursuit.purescript.org/packages/purescript-aff/6.0.0/docs/Effect.Aff#v:makeAff">makeAff</a>を使い、
+コールバック処理を<code>Aff</code>に変換する必要がある
+(後者について、node-readline-affというパッケージがあるようだが、現時点では古いようで利用できない)。</p>
+<p>2種類の方法を試みたが、個人的に後者のほうが分かりやすかったのでそちらを紹介する。</p>
+<p>該当パッケージをインストール。</p>
+<pre class="cui">
+% spago install node-readline exceptions
+</pre>
+
+<p><code>src/Stream.purs</code>を修正。該当モジュールをインポート。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Brainfuck.Error</span> <span class="p">(</span><span class="kt">Error</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Control.Monad.Error.Class</span> <span class="p">(</span><span class="nf">throwError</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Either</span> <span class="p">(</span><span class="kt">Either</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="p">(</span><span class="nf">take</span><span class="p">,</span> <span class="nf">toChar</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CodeUnits</span>
+<span class="kr">import</span> <span class="nn">Effect.Exception</span> <span class="p">(</span><span class="kt">Error</span><span class="p">)</span> <span class="n">as</span> <span class="kt">E</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff.Class</span> <span class="p">(</span><span class="nf">liftAff</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff</span> <span class="p">(</span><span class="kt">Canceler</span><span class="p">,</span> <span class="nf">nonCanceler</span><span class="p">,</span> <span class="nf">makeAff</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Node.ReadLine</span> <span class="p">(</span><span class="nf">createConsoleInterface</span><span class="p">,</span> <span class="nf">noCompletion</span><span class="p">,</span> <span class="nf">close</span><span class="p">,</span> <span class="nf">question</span><span class="p">,</span> <span class="kt">Interface</span><span class="p">)</span> <span class="n">as</span> <span class="kt">RL</span>
+</code></pre></div><p><code>input</code>を実装する。<code>interface</code>を作って、<code>questionAff</code>(これから実装する関数)を使って入力を促し、文字列を取得。
+<code>close</code>で<code>interface</code>を閉じる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">nodeStream</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="kt">Aff</span>
+<span class="nf">nodeStream</span> <span class="ow">=</span> <span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span><span class="p">,</span> <span class="n">output</span> <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">input</span> <span class="ow">=</span> <span class="kr">do</span> 
+      <span class="n">interface</span> <span class="ow">&lt;-</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">RL</span><span class="o">.</span><span class="n">createConsoleInterface</span> <span class="kt">RL</span><span class="o">.</span><span class="n">noCompletion</span>
+      <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">liftAff</span> <span class="o">$</span> <span class="n">questionAff</span> <span class="s">&#34;input&gt; &#34;</span> <span class="n">interface</span>
+      <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">RL</span><span class="o">.</span><span class="n">close</span> <span class="n">interface</span>
+      <span class="kr">case</span> <span class="kt">CodeUnits</span><span class="o">.</span><span class="n">toChar</span> <span class="o">$</span> <span class="kt">CodeUnits</span><span class="o">.</span><span class="n">take</span> <span class="mi">1</span> <span class="n">s</span> <span class="kr">of</span>
+        <span class="kt">Just</span> <span class="n">c</span> <span class="ow">-&gt;</span>
+          <span class="n">pure</span> <span class="n">c</span>
+
+        <span class="kt">Nothing</span> <span class="ow">-&gt;</span>
+          <span class="n">throwError</span> <span class="kt">CharInputFailed</span>
+
+    <span class="n">output</span> <span class="n">c</span> <span class="ow">=</span>
+      <span class="n">void</span> <span class="o">$</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">writeString</span> <span class="n">stdout</span> <span class="kt">UTF8</span> <span class="p">(</span><span class="kt">CodeUnits</span><span class="o">.</span><span class="n">singleton</span> <span class="n">c</span><span class="p">)</span> <span class="p">(</span><span class="n">pure</span> <span class="n">unit</span><span class="p">)</span>
+</code></pre></div><p><code>questionAff</code>は<code>question</code>関数を<code>Aff</code>用にラッピングしたもの。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">questionAff</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">RL</span><span class="o">.</span><span class="kt">Interface</span> <span class="ow">-&gt;</span> <span class="kt">Aff</span> <span class="kt">String</span>
+<span class="nf">questionAff</span> <span class="n">q</span> <span class="n">interface</span> <span class="ow">=</span> <span class="n">makeAff</span> <span class="n">go</span>
+  <span class="kr">where</span>
+    <span class="n">go</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Either</span> <span class="kt">E</span><span class="o">.</span><span class="kt">Error</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Canceler</span>
+    <span class="n">go</span> <span class="n">handler</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="kt">RL</span><span class="o">.</span><span class="n">question</span> <span class="n">q</span> <span class="p">(</span><span class="n">handler</span> <span class="o">&lt;&lt;&lt;</span> <span class="kt">Right</span><span class="p">)</span> <span class="n">interface</span>
+      <span class="n">pure</span> <span class="n">nonCanceler</span>
+</code></pre></div><p><code>makeAff</code>は、</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell">  <span class="n">onSomeEvent</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">callback</span> <span class="n">x</span><span class="p">)</span>
+</code></pre></div><p>というように、コールバック関数を引数にとる関数<code>onSomeEvent</code>を</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell">  <span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">onSomeEventAff</span>
+  <span class="n">callback</span>
+</code></pre></div><p>みたいに使う関数<code>onSomeEventAff</code>に変換するために用いるようだ。</p>
+<p><code>handler</code>は<code>String</code>ではなく<code>Either Error String</code>を持っている。
+今回エラーが起こることはないので、コード中では<code>(handler &lt;&lt;&lt; Right)</code>のように無理矢理<code>Right</code>をくっつけている
+(<code>&lt;&lt;&lt;</code>演算子を使っているが、これは<code>(\s -&gt; handler $ Right s)</code>と同義)。</p>
+<p><code>Canceler</code>というのは非同期処理中にキャンセルが起こった場合に呼ばれる関数の模様(<a href="https://github.com/purescript-contrib/purescript-aff/tree/main/docs#escaping-callback-hell">参考</a>)。
+まだその用途がいまいちよく分かっていないのだが、とりあえず<code>nonCanceler</code>を指定しておいた。</p>
+<h3 id="入力の確認">入力の確認</h3>
+<p>試したところ、REPLでは動作確認できない模様 (入力待ちになってくれない)。なので<code>src/Main.purs</code>に動作確認用のコードを書く。</p>
+<p>3文字の入力を促して、アルファベットを1ずらして出力するBrainfuckプログラムを書いてみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Brainfuck</span> <span class="p">(</span><span class="nf">runWithLog</span><span class="p">)</span> <span class="n">as</span> <span class="kt">B</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Interp.Stream</span> <span class="p">(</span><span class="nf">nodeStream</span><span class="p">)</span> <span class="n">as</span> <span class="kt">BIS</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Program</span> <span class="p">(</span><span class="nf">fromString</span><span class="p">)</span> <span class="n">as</span> <span class="kt">BP</span>
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff</span> <span class="p">(</span><span class="nf">launchAff_</span><span class="p">)</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">main</span> <span class="ow">=</span>
+  <span class="n">launchAff_</span> <span class="o">$</span> <span class="kt">B</span><span class="o">.</span><span class="n">runWithLog</span> <span class="kt">BIS</span><span class="o">.</span><span class="n">nodeStream</span> <span class="p">(</span><span class="kt">BP</span><span class="o">.</span><span class="n">fromString</span> <span class="s">&#34;,&gt;,&gt;,&lt;&lt;+.&gt;+.&gt;+.&#34;</span><span class="p">)</span>
+</code></pre></div><p><code>spago run</code>で実行してみる。</p>
+<pre class="cui">
+% spago run
+input> a
+input> b
+input> c
+bcd
+{ result: (Right unit), state: { dptr: 2, iptr: 15, memory: [98,99,100,0,0,0,0,0,0,0] } }
+</pre>
+
+<p>ちゃんと<code>bcd</code>が出力されている。</p>
+<h2 id="次回">次回</h2>
+<p>CUIで可視化することを考える。Brainfuckのインタプリタが各ステップにおいて、どの命令を指しているのか、どこのメモリを指しているのかを可視化してみる。</p>
+
+</article>
+
+
+
+</html>
