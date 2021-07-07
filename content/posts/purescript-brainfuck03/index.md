@@ -1,7 +1,6 @@
 ---
 title: "PureScriptで作るBrainfuckインタプリタ 3/4 CUIでの可視化"
-date: 2021-07-06T17:00:15+09:00
-draft: true
+date: 2021-07-06T10:35:00+09:00
 tags: []
 categories: ["PureScript", "Brainfuck"]
 toc: true
@@ -17,6 +16,8 @@ toc: true
 - `onState state`: 各ステップで状態を取得したときに起こる。
 - `onCmd cmd`: 各ステップで命令を取得できたときに起こる。
 - `onEnd`: インタプリタが終了するときに起こる。
+
+これらはイベントリスナのように、関数の形で指定する。
 
 ### Logの作成
 
@@ -185,35 +186,85 @@ end
 { result: (Right unit), state: { dptr: 2, iptr: 15, memory: [98,99,100,0,0,0,0,0,0,0] } }
 {{< /cui >}}
 
-## エスケープシーケンスを利用したBrainfuck CLI
+## (寄り道) questionAffを別モジュールに移動
+
+`Brainfuck.Interp.Stream`にある`questionAff`を次の節で使いたい。
+これを`Node.ReadLine.Aff`の`question`関数として移動する。
+
+`src/Node/ReadLine/Aff.purs`を作成して、内容を以下のようにする。
+
+```haskell
+module Node.ReadLine.Aff where
+
+
+import Prelude
+import Effect.Aff (Aff, Canceler, nonCanceler, makeAff)
+import Node.ReadLine (question, Interface) as RL
+import Data.Either (Either(..))
+import Effect.Exception (Error) as E
+import Effect (Effect)
+
+
+question :: String -> RL.Interface -> Aff String
+question q interface = makeAff go
+  where
+    go :: (Either E.Error String -> Effect Unit) -> Effect Canceler
+    go handler = do
+      RL.question q (handler <<< Right) interface
+      pure nonCanceler
+```
+
+`src/Brainfuck/Interp/Stream.purs`を修正。まず以下の関数をインポート。
+
+```haskell
+import Node.ReadLine.Aff (question)
+```
+
+`nodeStream`の`input`を修正。
+
+```haskell
+nodeStream :: Stream Aff
+nodeStream = Stream { input, output }
+  where
+    input = do 
+      interface <- liftEffect $ RL.createConsoleInterface RL.noCompletion
+      s <- liftAff $ question "input> " interface -- questionAffをquestionに変更
+    --- 略
+```
+
+## エスケープシーケンスを利用したBrainfuck CUI
 
 以下のような構成を持つUIを作りたい。
 
-```
+{{< cui >}}
 [プログラム表示エリア]
 [メモリ表示エリア]
 [入出力表示エリア]
-```
+{{< /cui >}}
 
 具体的には次のようになる。
 実行中の命令の位置、メモリの位置がハイライトされるようにしたい。
 
-```
+{{< cui >}}
 ++++++++[>++++++++<-]>+.
 0 65 0 0 0 0 0 0 0 0
 A
-```
+{{< /cui >}}
 
 カーソルの移動や文字色の変更を行いたいので、エスケープシーケンスを利用する。
 
 カーソル移動で問題になるのが、位置の把握である。
 出力エリアでは改行が起こる可能性があり、それによってプログラムやメモリの出力がずれてしまう。
 よって、カーソルの位置データをどこかに保存しておき、適宜参照できるようにしたい。
+
 さらに、`Stream`の`output`は1文字出力しかできないため、いままで出力した文字が把握できない。
 よって、`output`で出力した文字もどこかに保存しておきたい。
 
-問題はどこに保存するかである。`Stream`と`Log`だけが共有できるような場所に保存したい。
-そのために、[refs](https://pursuit.purescript.org/packages/purescript-refs/5.0.0)パッケージを使う。
+そのときの問題はどこに保存するかである。保存したい情報はCUIのみで用いるため、`Brainfuck.State.State`のフィールドとして扱うことはしたくない。
+できれば`Stream`と`Log`だけが共有できるような場所に保存したい。
+
+考えた結果、思いついたのは[refs](https://pursuit.purescript.org/packages/purescript-refs/5.0.0)パッケージの`Ref a`の利用だった。
+`Stream`や`Log`の実装を変えることなくデータを共有するには、`Ref a`が適切なのかなと思う。
 
 {{< cui >}}
 % spago install refs
@@ -221,10 +272,10 @@ A
 
 ### 準備
 
-`src/Brainfuck/Cli/State.purs`を作成し、`State`を作成。
+`src/Brainfuck/CUI/State.purs`を作成し、`State`を作成。その初期値を生成する関数も作成。
 
 ```haskell
-module Brainfuck.Cli.State where
+module Brainfuck.CUI.State where
 
 import Prelude
 
@@ -246,10 +297,10 @@ init =
     }
 ```
 
-`src/Brainfuck/Cli.purs`を作成し、`Stream`と`Log`の雛形を作成。`Cli.State`の`Ref`を引数にとる。
+`src/Brainfuck/CUI.purs`を作成し、`Stream`と`Log`の雛形を作成。これらは`CUI.State`の`Ref`を引数にとることに注目。
 
 ```haskell
-module Brainfuck.Cli where
+module Brainfuck.CUI where
 
 import Prelude
 
@@ -257,20 +308,20 @@ import Brainfuck.Interp.Log (Log(..))
 import Brainfuck.Interp.Stream (Stream(..))
 import Effect (Effect)
 import Effect.Ref (Ref)
-import Brainfuck.Cli.State (State, init) as Cli
+import Brainfuck.CUI.State (State, init) as CUI
 import Effect.Aff.Class (class MonadAff, liftAff)
 
 
-cliStream :: forall m. MonadAff m => Ref Cli.State -> Stream m
-cliStream cliState = Stream { input, output }
+cuiStream :: forall m. MonadAff m => Ref CUI.State -> Stream m
+cuiStream cuiState = Stream { input, output }
   where
     input = pure 'N'
 
     output c = pure unit
 
 
-cliLog :: forall m. MonadAff m => Ref Cli.State -> Log m
-cliLog cliState = Log
+cuiLog :: forall m. MonadAff m => Ref CUI.State -> Log m
+cuiLog cuiState = Log
   { onStart
   , onState
   , onCmd: \_ -> pure unit
@@ -284,7 +335,7 @@ cliLog cliState = Log
     onEnd = pure unit
 ```
 
-`src/Main.purs`を以下のようにする。`cliStream`、`cliLog`の引数はここで与える。
+`src/Main.purs`を以下のようにする。`cuiStream`、`cuiLog`の引数はここで与える。
 
 ```haskell
 module Main where
@@ -296,19 +347,19 @@ import Brainfuck.Program (fromString) as BP
 import Effect (Effect)
 import Effect.Aff (launchAff_)
 
-import Brainfuck.Cli (cliLog, cliStream)
-import Brainfuck.Cli.State (init) as CliState
+import Brainfuck.CUI (cuiLog, cuiStream)
+import Brainfuck.CUI.State (init) as CUIState
 
 
 main :: Effect Unit
 main = do
-  ref <- CliState.init
-  launchAff_ $ B.run (cliStream ref) (cliLog ref) (BP.fromString "++++++++[>++++++++<-]>+.")
+  ref <- CUIState.init
+  launchAff_ $ B.run (cuiStream ref) (cuiLog ref) (BP.fromString "++++++++[>++++++++<-]>+.")
 ```
 
 ### ユーティリティ作成
 
-`src/Brainfuck/Cli/State.purs`に関数を追加。
+`src/Brainfuck/CUI/State.purs`に関数を追加。
 `output`の読み取りや文字の追加の関数を定義。
 `y`の修正やセッターを定義。現在のカーソル位置から行きたい位置までどれだけ離れているかを返す関数を定義。
 
@@ -331,26 +382,22 @@ modifyY :: (Int -> Int) -> State -> State
 modifyY f (State s@{ y }) = State s { y = f y }
 
 
-setY :: Int -> State -> State
-setY y = modifyY (\_ -> y)
-
-
 dist :: Int -> State -> Int
 dist y0 (State { y }) = y0 - y
 ```
 
-続いて、`src/Brainfuck/Cli/Util.purs`を作成。
+続いて、`src/Brainfuck/CUI/Util.purs`を作成。
 出力関数や、カーソル移動系の関数を定義。
-特に重要なのは`printAt`で、これは`y`行目に出力することができる。
+特に重要なのは`printAt y`で、これは`y`行目に文字列を出力することができる。
 
 エスケープシーケンスは[こちら](https://qiita.com/PruneMazui/items/8a023347772620025ad6)を参考にした。
 
 ```haskell
-module Brainfuck.Cli.Util where
+module Brainfuck.CUI.Util where
 
 import Prelude
 
-import Brainfuck.Cli.State (dist, setY, modifyY, State)
+import Brainfuck.CUI.State (dist, modifyY, State)
 import Brainfuck.Interp (Interp)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Ref (Ref, modify_, read) as Ref
@@ -414,10 +461,10 @@ highlight s = "\x01b[7m" <> s <> "\x01b[0m"
 
 ### 命令列とメモリの出力
 
-`src/Brainfuck/Cli.purs`を修正。まず以下の関数をインポート。
+`src/Brainfuck/CUI.purs`を修正。まず以下の関数をインポート。
 
 ```haskell
-import Brainfuck.Cli.Util as Cli
+import Brainfuck.CUI.Util as CUI
 import Brainfuck.State (State(..))
 import Brainfuck.Env (getProgram)
 import Control.Monad.Reader (ask)
@@ -426,7 +473,7 @@ import Effect.Aff (Milliseconds(..), delay)
 import Data.String (joinWith) as String
 ```
 
-特定のインデックスにのみ適用する関数を変えるバージョンのmap関数を定義する。
+特定のインデックスにのみ適用する関数を変えるバージョンのmap関数、`mapWithASpecialIndex`を定義する。
 それを用いて、命令列とメモリの出力をする関数を定義。
 
 ```haskell
@@ -439,7 +486,7 @@ showProgram :: Int -> Program -> String
 showProgram iptr (Program program) =
   String.joinWith "" $
     mapWithASpecialIndex iptr
-      (Cli.highlight <<< show)
+      (CUI.highlight <<< show)
       show
       program
 
@@ -448,17 +495,18 @@ showMemory :: Int -> Array Int -> String
 showMemory dptr memory =
   String.joinWith " " $
     mapWithASpecialIndex dptr
-      (Cli.highlight <<< show)
+      (CUI.highlight <<< show)
       show
       memory
 ```
 
 `showProgram`と`showMemory`を用いて`onState`を実装する。
 カーソル下のスペースを確保するために、`onStart`で前処理を行っている。
+`onEnd`では適当にカーソルを下に移動させているが、ここは後でもう少しちゃんと実装する。
 
 ```haskell
-cliLog :: forall m. MonadAff m => Ref Cli.State -> Log m
-cliLog cliState = Log
+cuiLog :: forall m. MonadAff m => Ref CUI.State -> Log m
+cuiLog cuiState = Log
   { onStart
   , onState
   , onCmd: \_ -> pure unit
@@ -466,16 +514,17 @@ cliLog cliState = Log
   }
   where
     onStart = do
-       Cli.newLineTimes 4
-       Cli.up 4
+       CUI.newLineTimes 2
+       CUI.up 2
 
     onState (State { iptr, dptr, memory }) = do
       program <- getProgram <$> ask
-      Cli.printAt 0 cliState $ showProgram iptr program
-      Cli.printAt 1 cliState $ showMemory dptr memory
+      CUI.printAt 0 cuiState $ showProgram iptr program
+      CUI.printAt 1 cuiState $ showMemory dptr memory
       liftAff $ delay (Milliseconds 100.0)
 
-    onEnd = pure unit
+    onEnd =
+      CUI.down 4
 ```
 
 この時点で`spago run`してみるとこんな感じで動く。
@@ -484,12 +533,12 @@ cliLog cliState = Log
 
 ### 入出力
 
-`src/Brainfuck/Cli/Util.purs`で`questionAndReadChar`を定義。
+`src/Brainfuck/CUI/Util.purs`で`questionAndReadChar`を定義。
 
 ```haskell
 -- 以下のimport文を追加
-import Brainfuck.Interp.Stream (questionAff)
-import Node.ReadLine (createConsoleInterface, noCompletion, close, Interface) as RL
+import Node.ReadLine.Aff (question)
+import Node.ReadLine (createConsoleInterface, noCompletion, close) as RL
 import Data.String.CodeUnits (toChar, take) as CodeUnits
 import Control.Monad.Error.Class (throwError)
 import Brainfuck.Error (Error(..))
@@ -500,7 +549,7 @@ import Data.Maybe (Maybe(..))
 questionAndReadChar :: forall m. MonadAff m => Interp m Char
 questionAndReadChar = do
   interface <- liftEffect $ RL.createConsoleInterface RL.noCompletion
-  s <- liftAff $ questionAff "input> " interface
+  s <- liftAff $ question "input> " interface
   liftEffect $ RL.close interface
   case CodeUnits.toChar $ CodeUnits.take 1 s of
     Just c ->
@@ -510,29 +559,29 @@ questionAndReadChar = do
       throwError CharInputFailed
 ```
 
-`src/Brainfuck/Cli.purs`の`Stream`を実装する。
+`src/Brainfuck/CUI.purs`の`Stream`を実装する。
 
 ```haskell
 -- 以下のimport文を追加
 import Effect.Ref (modify) as Ref
 import Effect.Class (liftEffect)
 import Effect.Aff (Aff)
-import Brainfuck.Cli.State (appendOutput, getOutput) as Cli
+import Brainfuck.CUI.State (appendOutput, getOutput) as CUI
 
 
-cliStream :: forall m. MonadAff m => Ref Cli.State -> Stream m
-cliStream cliState = Stream { input, output }
+cuiStream :: forall m. MonadAff m => Ref CUI.State -> Stream m
+cuiStream cuiState = Stream { input, output }
   where
     input = do
-      Cli.moveAt 2 cliState
-      s <- Cli.questionAndReadChar
-      Cli.up 1 -- 入力時に改行が押されたことによる微調整
-      Cli.clearLine
+      CUI.moveAt 2 cuiState
+      s <- CUI.questionAndReadChar
+      CUI.up 1 -- 入力時に改行が押されたことによる微調整
+      CUI.clearLine
       pure s
 
     output c = do
-      st <- liftEffect $ Ref.modify (Cli.appendOutput c) cliState
-      Cli.printAt 2 cliState $ Cli.getOutput st
+      st <- liftEffect $ Ref.modify (CUI.appendOutput c) cuiState
+      CUI.printAt 2 cuiState $ CUI.getOutput st
 ```
 
 `src/Main.purs`にて`,>,>,<<+.>+.>+.`を実行するように書き換えて、`spago run`してみる。
@@ -568,7 +617,7 @@ C
 改行が起こるたびにプログラムとメモリの出力位置がずれていってしまう。
 
 
-`src/Brainfuck/Cli/State.purs`を修正。改行の個数をカウントするために、`State`のフィールドを追加。
+`src/Brainfuck/CUI/State.purs`を修正。改行の個数をカウントするために、`State`のフィールドを追加。
 ゲッターとインクリメントする関数を定義。
 
 ```haskell
@@ -596,29 +645,82 @@ incOntputLines :: State -> State
 incOntputLines (State s@{ outputLines }) = State s { outputLines = outputLines + 1 }
 ```
 
-`src/Brainfuck/Cli.purs`を修正。現れた改行の数をカウントし、その分だけカーソルを上にずらすことで出力位置を微調整している。
+`src/Brainfuck/CUI.purs`を修正。現れた改行の数をカウントし、その分だけカーソルを上にずらすことで出力位置を微調整している。
 
 ```haskell
 -- 次のimport文を追加
 import Effect.Ref (modify_, read) as Ref
-import Brainfuck.Cli.State (incOntputLines, getOutputLines, modifyY) as Cli
+import Brainfuck.CUI.State (incOntputLines, getOutputLines, modifyY) as CUI
 
 
-cliStream cliState = Stream { input, output }
+cuiStream cuiState = Stream { input, output }
   where
     input = do
       -- 略
 
     output c = do
       when (c == '\n') do
-         liftEffect $ Ref.modify_ Cli.incOntputLines cliState
-      liftEffect $ Ref.modify_ (Cli.appendOutput c) cliState
-      st <- liftEffect $ Ref.read cliState
-      Cli.printAt 2 cliState $ Cli.getOutput st
-      Cli.up $ Cli.getOutputLines st
+         liftEffect $ Ref.modify_ CUI.incOntputLines cuiState
+      liftEffect $ Ref.modify_ (CUI.appendOutput c) cuiState
+      st <- liftEffect $ Ref.read cuiState
+      CUI.printAt 2 cuiState $ CUI.getOutput st
+      CUI.move (-CUI.getOutputLines st) cuiState
+```
+
+`cuiLog`の`onEnd`を修正。出力エリアの行数を元にして、終了後のプロンプトの位置を調整する。
+
+```haskell
+cuiLog cuiState = Log
+  -- 略
+  where
+    -- 略
+
+    onEnd = do
+      st <- liftEffect $ Ref.read cuiState
+      CUI.moveAt (3 + CUI.getOutputLines st) cuiState
+      CUI.newLineTimes 2
 ```
 
 これで`spago run`してみると、正常に出力されるようになる。
+
+## (おまけ) プログラムを入力する仕組みの実装
+
+プログラム開始時に、Brainfuckプログラムを入力するように実装する。
+
+`Main.purs`を以下のようにする。`inputProgram`という関数を定義して、プログラムの入力を促す。
+
+```haskell
+module Main where
+
+import Prelude
+
+import Brainfuck (run) as B
+import Brainfuck.CUI (cuiLog, cuiStream)
+import Brainfuck.CUI.State (init) as CUIState
+import Brainfuck.Program (fromString, Program) as BP
+import Effect (Effect)
+import Effect.Aff (Aff, launchAff_)
+import Effect.Class (liftEffect)
+import Node.ReadLine (createConsoleInterface, noCompletion, close) as RL
+import Node.ReadLine.Aff (question) as RL
+
+main :: Effect Unit
+main = do
+  ref <- CUIState.init
+  launchAff_ do
+    program <- inputProgram
+    B.run (cuiStream ref) (cuiLog ref) program
+
+
+inputProgram :: Aff BP.Program
+inputProgram = do
+  interface <- liftEffect $ RL.createConsoleInterface RL.noCompletion
+  s <- RL.question "program> " interface
+  liftEffect $ RL.close interface
+  pure (BP.fromString s)
+```
+
+{{< figure src="img00.png" width="70%" >}}
 
 ## 次回
 

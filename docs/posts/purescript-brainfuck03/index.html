@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>PureScriptで作るBrainfuckインタプリタ 3/4 CUIでの可視化 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.84.0" />
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-brainfuck03/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/theme.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/classes.css">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/syntax.css">
+
+
+<header class="dark">
+  <h2><a href="https://bombrary.github.io/blog/">Chanomic Blog</a></h2>
+  <nav>
+    
+  </nav>
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/purescript-brainfuck03/">PureScriptで作るBrainfuckインタプリタ 3/4 CUIでの可視化</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2021-07-06T10:35:00&#43;09:00">July 06, 2021</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2021-07-06T10:35:00&#43;09:00">July 06, 2021</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/purescript/">PureScript</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/brainfuck/">Brainfuck</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#動作の可視化">動作の可視化</a>
+      <ul>
+        <li><a href="#logの作成">Logの作成</a></li>
+        <li><a href="#brainfuckの修正">Brainfuckの修正</a></li>
+      </ul>
+    </li>
+    <li><a href="#寄り道-questionaffを別モジュールに移動">(寄り道) questionAffを別モジュールに移動</a></li>
+    <li><a href="#エスケープシーケンスを利用したbrainfuck-cui">エスケープシーケンスを利用したBrainfuck CUI</a>
+      <ul>
+        <li><a href="#準備">準備</a></li>
+        <li><a href="#ユーティリティ作成">ユーティリティ作成</a></li>
+        <li><a href="#命令列とメモリの出力">命令列とメモリの出力</a></li>
+        <li><a href="#入出力">入出力</a></li>
+        <li><a href="#出力の改行に対応する">出力の改行に対応する</a></li>
+      </ul>
+    </li>
+    <li><a href="#おまけ-プログラムを入力する仕組みの実装">(おまけ) プログラムを入力する仕組みの実装</a></li>
+    <li><a href="#次回">次回</a></li>
+  </ul>
+</nav>
+    </aside>
+    
+  <h2 id="動作の可視化">動作の可視化</h2>
+<p>インタプリタ動作中における内部状態を可視化できると面白い。
+そこで、インタプリタ動作中のログを出力できるような仕組みを作る。
+ログは以下のタイミングで起こるようにする。</p>
+<ul>
+<li><code>onStart</code>: インタプリタが動作したときに起こる。</li>
+<li><code>onState state</code>: 各ステップで状態を取得したときに起こる。</li>
+<li><code>onCmd cmd</code>: 各ステップで命令を取得できたときに起こる。</li>
+<li><code>onEnd</code>: インタプリタが終了するときに起こる。</li>
+</ul>
+<p>これらはイベントリスナのように、関数の形で指定する。</p>
+<h3 id="logの作成">Logの作成</h3>
+<p><code>src/Brainfuck/Interp/Log.purs</code>を作成。</p>
+<p>以下のimport文を書く。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Brainfuck.Interp.Log</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Brainfuck.Interp</span> <span class="p">(</span><span class="kt">Interp</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.State</span> <span class="p">(</span><span class="kt">State</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Command</span> <span class="p">(</span><span class="kt">Command</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Class</span> <span class="p">(</span><span class="nf">class</span> <span class="kt">MonadEffect</span><span class="p">,</span> <span class="nf">liftEffect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Console</span> <span class="p">(</span><span class="nf">log</span><span class="p">)</span>
+</code></pre></div><p><code>Log</code>を定義。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">newtype</span> <span class="kt">Log</span> <span class="n">m</span> <span class="ow">=</span> <span class="kt">Log</span>
+  <span class="p">{</span> <span class="n">onStart</span> <span class="ow">::</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+  <span class="p">,</span> <span class="n">onState</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+  <span class="p">,</span> <span class="n">onCmd</span> <span class="ow">::</span> <span class="kt">Command</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+  <span class="p">,</span> <span class="n">onEnd</span> <span class="ow">::</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+  <span class="p">}</span>
+</code></pre></div><p>関連する関数を定義。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">logStart</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Log</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">logStart</span> <span class="p">(</span><span class="kt">Log</span> <span class="p">{</span> <span class="n">onStart</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">onStart</span>
+
+
+<span class="nf">logState</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Log</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">logState</span> <span class="p">(</span><span class="kt">Log</span> <span class="p">{</span> <span class="n">onState</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">onState</span>
+
+
+<span class="nf">logCmd</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Log</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Command</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">logCmd</span> <span class="p">(</span><span class="kt">Log</span> <span class="p">{</span> <span class="n">onCmd</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">onCmd</span>
+
+
+<span class="nf">logEnd</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Log</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">logEnd</span> <span class="p">(</span><span class="kt">Log</span> <span class="p">{</span> <span class="n">onEnd</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">onEnd</span>
+</code></pre></div><p>いくつかの<code>Log m</code>を作っておく。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">noLog</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Log</span> <span class="n">m</span>
+<span class="nf">noLog</span> <span class="ow">=</span> <span class="kt">Log</span>
+  <span class="p">{</span> <span class="n">onStart</span><span class="kt">:</span> <span class="n">pure</span> <span class="n">unit</span>
+  <span class="p">,</span> <span class="n">onState</span><span class="kt">:</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="n">unit</span>
+  <span class="p">,</span> <span class="n">onCmd</span><span class="kt">:</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="n">unit</span>
+  <span class="p">,</span> <span class="n">onEnd</span><span class="kt">:</span> <span class="n">pure</span> <span class="n">unit</span>
+  <span class="p">}</span>
+
+
+<span class="nf">debugLog</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Log</span> <span class="n">m</span>
+<span class="nf">debugLog</span> <span class="ow">=</span> <span class="kt">Log</span>
+  <span class="p">{</span> <span class="n">onStart</span><span class="kt">:</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">log</span> <span class="s">&#34;start&#34;</span>
+  <span class="p">,</span> <span class="n">onState</span><span class="kt">:</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">log</span> <span class="p">(</span><span class="s">&#34;state:&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">s</span><span class="p">)</span>
+  <span class="p">,</span> <span class="n">onCmd</span><span class="kt">:</span> <span class="nf">\</span><span class="n">c</span> <span class="ow">-&gt;</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">log</span> <span class="p">(</span><span class="s">&#34;cmd: &#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">c</span><span class="p">)</span>
+  <span class="p">,</span> <span class="n">onEnd</span><span class="kt">:</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">log</span> <span class="s">&#34;end&#34;</span>
+  <span class="p">}</span>
+</code></pre></div><h3 id="brainfuckの修正">Brainfuckの修正</h3>
+<p><code>src/Brainfuck.purs</code>を修正。まず以下のimport文を追加。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Brainfuck.Interp.Log</span> <span class="p">(</span><span class="kt">Log</span><span class="p">,</span> <span class="nf">logStart</span><span class="p">,</span> <span class="nf">logState</span><span class="p">,</span> <span class="nf">logCmd</span><span class="p">,</span> <span class="nf">logEnd</span><span class="p">,</span> <span class="nf">noLog</span><span class="p">,</span> <span class="nf">debugLog</span><span class="p">)</span>
+</code></pre></div><p><code>interpProgram</code>について、引数に<code>log</code>を追加。<code>log</code>に関する処理をうまく挟めるように修正する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">interpProgram</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Log</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">interpProgram</span> <span class="n">stream</span> <span class="n">log</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">logStart</span> <span class="n">log</span> <span class="c1">-- 開始</span>
+  <span class="n">loop</span>
+  <span class="n">logEnd</span> <span class="n">log</span> <span class="c1">-- 終了</span>
+  <span class="kr">where</span>
+    <span class="n">loop</span> <span class="ow">::</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+    <span class="n">loop</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="n">program</span> <span class="ow">&lt;-</span> <span class="n">getProgram</span> <span class="o">&lt;$&gt;</span> <span class="n">ask</span>
+      <span class="n">state</span> <span class="ow">&lt;-</span> <span class="n">get</span>
+      <span class="n">logState</span> <span class="n">log</span> <span class="n">state</span> <span class="c1">-- 状態</span>
+      <span class="kr">case</span> <span class="n">readCommand</span> <span class="n">program</span> <span class="n">state</span> <span class="kr">of</span>
+        <span class="kt">Just</span> <span class="n">cmd</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+          <span class="n">logCmd</span> <span class="n">log</span> <span class="n">cmd</span> <span class="c1">-- 命令</span>
+          <span class="n">interpCommand</span> <span class="n">stream</span> <span class="n">cmd</span>
+
+          <span class="n">incInstPtr</span>
+          <span class="n">loop</span>
+
+        <span class="kt">Nothing</span> <span class="ow">-&gt;</span>
+          <span class="n">pure</span> <span class="n">unit</span>
+</code></pre></div><p><code>interpProgram</code>の引数追加に伴い<code>run</code>を修正。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">run</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Log</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Program</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="p">(</span><span class="kt">InterpResult</span> <span class="kt">Unit</span><span class="p">)</span>
+<span class="nf">run</span> <span class="n">stream</span> <span class="n">log</span> <span class="n">program</span> <span class="ow">=</span>
+  <span class="n">runInterp</span> <span class="p">(</span><span class="n">interpProgram</span> <span class="n">stream</span> <span class="n">log</span><span class="p">)</span> <span class="p">(</span><span class="n">makeEnv</span> <span class="n">program</span><span class="p">)</span> <span class="n">defaultState</span>
+</code></pre></div><p><code>runDefault</code>と<code>runWithLog</code>は、それぞれ<code>noLog</code>と<code>debugLog</code>を持たせるようにしてみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">runDefault</span> <span class="ow">::</span> <span class="kt">Program</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">InterpResult</span> <span class="kt">Unit</span><span class="p">)</span>
+<span class="nf">runDefault</span> <span class="n">program</span> <span class="ow">=</span> <span class="n">run</span> <span class="n">defaultStream</span> <span class="n">noLog</span> <span class="n">program</span>
+
+
+<span class="nf">runWithLog</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Stream</span> <span class="n">m</span> <span class="ow">-&gt;</span> <span class="kt">Program</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">runWithLog</span> <span class="n">stream</span> <span class="n">program</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">res</span> <span class="ow">&lt;-</span> <span class="n">run</span> <span class="n">stream</span> <span class="n">debugLog</span> <span class="n">program</span>
+  <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">log</span> <span class="o">$</span> <span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">res</span><span class="p">)</span>
+</code></pre></div><p>この時点で<code>spago run</code>してみると、ログが出力される。<code>bcd</code>の出力に改行が無くて、<code>bstate</code>、<code>cstate</code>、<code>dstate</code>と出力されているのは仕様。</p>
+<pre class="cui">
+start
+state:{ dptr: 0, iptr: 0, memory: [0,0,0,0,0,0,0,0,0,0] }
+cmd: ,
+input> a
+state:{ dptr: 0, iptr: 1, memory: [97,0,0,0,0,0,0,0,0,0] }
+cmd: +
+state:{ dptr: 1, iptr: 2, memory: [97,0,0,0,0,0,0,0,0,0] }
+cmd: ,
+input> b
+state:{ dptr: 1, iptr: 3, memory: [97,98,0,0,0,0,0,0,0,0] }
+cmd: +
+state:{ dptr: 2, iptr: 4, memory: [97,98,0,0,0,0,0,0,0,0] }
+cmd: ,
+input> c
+state:{ dptr: 2, iptr: 5, memory: [97,98,99,0,0,0,0,0,0,0] }
+cmd: -
+state:{ dptr: 1, iptr: 6, memory: [97,98,99,0,0,0,0,0,0,0] }
+cmd: -
+state:{ dptr: 0, iptr: 7, memory: [97,98,99,0,0,0,0,0,0,0] }
+cmd: >
+state:{ dptr: 0, iptr: 8, memory: [98,98,99,0,0,0,0,0,0,0] }
+cmd: .
+bstate:{ dptr: 0, iptr: 9, memory: [98,98,99,0,0,0,0,0,0,0] }
+cmd: +
+state:{ dptr: 1, iptr: 10, memory: [98,98,99,0,0,0,0,0,0,0] }
+cmd: >
+state:{ dptr: 1, iptr: 11, memory: [98,99,99,0,0,0,0,0,0,0] }
+cmd: .
+cstate:{ dptr: 1, iptr: 12, memory: [98,99,99,0,0,0,0,0,0,0] }
+cmd: +
+state:{ dptr: 2, iptr: 13, memory: [98,99,99,0,0,0,0,0,0,0] }
+cmd: >
+state:{ dptr: 2, iptr: 14, memory: [98,99,100,0,0,0,0,0,0,0] }
+cmd: .
+dstate:{ dptr: 2, iptr: 15, memory: [98,99,100,0,0,0,0,0,0,0] }
+end
+
+{ result: (Right unit), state: { dptr: 2, iptr: 15, memory: [98,99,100,0,0,0,0,0,0,0] } }
+</pre>
+
+<h2 id="寄り道-questionaffを別モジュールに移動">(寄り道) questionAffを別モジュールに移動</h2>
+<p><code>Brainfuck.Interp.Stream</code>にある<code>questionAff</code>を次の節で使いたい。
+これを<code>Node.ReadLine.Aff</code>の<code>question</code>関数として移動する。</p>
+<p><code>src/Node/ReadLine/Aff.purs</code>を作成して、内容を以下のようにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Node.ReadLine.Aff</span> <span class="kr">where</span>
+
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff</span> <span class="p">(</span><span class="kt">Aff</span><span class="p">,</span> <span class="kt">Canceler</span><span class="p">,</span> <span class="nf">nonCanceler</span><span class="p">,</span> <span class="nf">makeAff</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Node.ReadLine</span> <span class="p">(</span><span class="nf">question</span><span class="p">,</span> <span class="kt">Interface</span><span class="p">)</span> <span class="n">as</span> <span class="kt">RL</span>
+<span class="kr">import</span> <span class="nn">Data.Either</span> <span class="p">(</span><span class="kt">Either</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Effect.Exception</span> <span class="p">(</span><span class="kt">Error</span><span class="p">)</span> <span class="n">as</span> <span class="kt">E</span>
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+
+
+<span class="nf">question</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">RL</span><span class="o">.</span><span class="kt">Interface</span> <span class="ow">-&gt;</span> <span class="kt">Aff</span> <span class="kt">String</span>
+<span class="nf">question</span> <span class="n">q</span> <span class="n">interface</span> <span class="ow">=</span> <span class="n">makeAff</span> <span class="n">go</span>
+  <span class="kr">where</span>
+    <span class="n">go</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Either</span> <span class="kt">E</span><span class="o">.</span><span class="kt">Error</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Canceler</span>
+    <span class="n">go</span> <span class="n">handler</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="kt">RL</span><span class="o">.</span><span class="n">question</span> <span class="n">q</span> <span class="p">(</span><span class="n">handler</span> <span class="o">&lt;&lt;&lt;</span> <span class="kt">Right</span><span class="p">)</span> <span class="n">interface</span>
+      <span class="n">pure</span> <span class="n">nonCanceler</span>
+</code></pre></div><p><code>src/Brainfuck/Interp/Stream.purs</code>を修正。まず以下の関数をインポート。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Node.ReadLine.Aff</span> <span class="p">(</span><span class="nf">question</span><span class="p">)</span>
+</code></pre></div><p><code>nodeStream</code>の<code>input</code>を修正。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">nodeStream</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="kt">Aff</span>
+<span class="nf">nodeStream</span> <span class="ow">=</span> <span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span><span class="p">,</span> <span class="n">output</span> <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">input</span> <span class="ow">=</span> <span class="kr">do</span> 
+      <span class="n">interface</span> <span class="ow">&lt;-</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">RL</span><span class="o">.</span><span class="n">createConsoleInterface</span> <span class="kt">RL</span><span class="o">.</span><span class="n">noCompletion</span>
+      <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">liftAff</span> <span class="o">$</span> <span class="n">question</span> <span class="s">&#34;input&gt; &#34;</span> <span class="n">interface</span> <span class="c1">-- questionAffをquestionに変更</span>
+    <span class="c1">--- 略</span>
+</code></pre></div><h2 id="エスケープシーケンスを利用したbrainfuck-cui">エスケープシーケンスを利用したBrainfuck CUI</h2>
+<p>以下のような構成を持つUIを作りたい。</p>
+<pre class="cui">
+[プログラム表示エリア]
+[メモリ表示エリア]
+[入出力表示エリア]
+</pre>
+
+<p>具体的には次のようになる。
+実行中の命令の位置、メモリの位置がハイライトされるようにしたい。</p>
+<pre class="cui">
+++++++++[>++++++++<-]>+.
+0 65 0 0 0 0 0 0 0 0
+A
+</pre>
+
+<p>カーソルの移動や文字色の変更を行いたいので、エスケープシーケンスを利用する。</p>
+<p>カーソル移動で問題になるのが、位置の把握である。
+出力エリアでは改行が起こる可能性があり、それによってプログラムやメモリの出力がずれてしまう。
+よって、カーソルの位置データをどこかに保存しておき、適宜参照できるようにしたい。</p>
+<p>さらに、<code>Stream</code>の<code>output</code>は1文字出力しかできないため、いままで出力した文字が把握できない。
+よって、<code>output</code>で出力した文字もどこかに保存しておきたい。</p>
+<p>そのときの問題はどこに保存するかである。保存したい情報はCUIのみで用いるため、<code>Brainfuck.State.State</code>のフィールドとして扱うことはしたくない。
+できれば<code>Stream</code>と<code>Log</code>だけが共有できるような場所に保存したい。</p>
+<p>考えた結果、思いついたのは<a href="https://pursuit.purescript.org/packages/purescript-refs/5.0.0">refs</a>パッケージの<code>Ref a</code>の利用だった。
+<code>Stream</code>や<code>Log</code>の実装を変えることなくデータを共有するには、<code>Ref a</code>が適切なのかなと思う。</p>
+<pre class="cui">
+% spago install refs
+</pre>
+
+<h3 id="準備">準備</h3>
+<p><code>src/Brainfuck/CUI/State.purs</code>を作成し、<code>State</code>を作成。その初期値を生成する関数も作成。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Brainfuck.CUI.State</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Ref</span> <span class="p">(</span><span class="kt">Ref</span><span class="p">,</span> <span class="nf">new</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Ref</span>
+
+
+<span class="kr">newtype</span> <span class="kt">State</span> <span class="ow">=</span> <span class="kt">State</span>
+  <span class="p">{</span> <span class="n">output</span> <span class="ow">::</span> <span class="kt">String</span>
+  <span class="p">,</span> <span class="n">y</span> <span class="ow">::</span> <span class="kt">Int</span>
+  <span class="p">}</span>
+
+
+<span class="nf">init</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Ref</span><span class="o">.</span><span class="kt">Ref</span> <span class="kt">State</span><span class="p">)</span>
+<span class="nf">init</span> <span class="ow">=</span>
+  <span class="kt">Ref</span><span class="o">.</span><span class="n">new</span> <span class="o">$</span> <span class="kt">State</span>
+    <span class="p">{</span> <span class="n">output</span><span class="kt">:</span> <span class="s">&#34;&#34;</span>
+    <span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+</code></pre></div><p><code>src/Brainfuck/CUI.purs</code>を作成し、<code>Stream</code>と<code>Log</code>の雛形を作成。これらは<code>CUI.State</code>の<code>Ref</code>を引数にとることに注目。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Brainfuck.CUI</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Brainfuck.Interp.Log</span> <span class="p">(</span><span class="kt">Log</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Interp.Stream</span> <span class="p">(</span><span class="kt">Stream</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Ref</span> <span class="p">(</span><span class="kt">Ref</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.CUI.State</span> <span class="p">(</span><span class="kt">State</span><span class="p">,</span> <span class="nf">init</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CUI</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff.Class</span> <span class="p">(</span><span class="nf">class</span> <span class="kt">MonadAff</span><span class="p">,</span> <span class="nf">liftAff</span><span class="p">)</span>
+
+
+<span class="nf">cuiStream</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadAff</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Ref</span> <span class="kt">CUI</span><span class="o">.</span><span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stream</span> <span class="n">m</span>
+<span class="nf">cuiStream</span> <span class="n">cuiState</span> <span class="ow">=</span> <span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span><span class="p">,</span> <span class="n">output</span> <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">input</span> <span class="ow">=</span> <span class="n">pure</span> <span class="sc">&#39;N&#39;</span>
+
+    <span class="n">output</span> <span class="n">c</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">unit</span>
+
+
+<span class="nf">cuiLog</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadAff</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Ref</span> <span class="kt">CUI</span><span class="o">.</span><span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Log</span> <span class="n">m</span>
+<span class="nf">cuiLog</span> <span class="n">cuiState</span> <span class="ow">=</span> <span class="kt">Log</span>
+  <span class="p">{</span> <span class="n">onStart</span>
+  <span class="p">,</span> <span class="n">onState</span>
+  <span class="p">,</span> <span class="n">onCmd</span><span class="kt">:</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="n">unit</span>
+  <span class="p">,</span> <span class="n">onEnd</span>
+  <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">onStart</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">unit</span>
+
+    <span class="n">onState</span> <span class="n">state</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">unit</span>
+
+    <span class="n">onEnd</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">unit</span>
+</code></pre></div><p><code>src/Main.purs</code>を以下のようにする。<code>cuiStream</code>、<code>cuiLog</code>の引数はここで与える。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Brainfuck</span> <span class="p">(</span><span class="nf">run</span><span class="p">)</span> <span class="n">as</span> <span class="kt">B</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Program</span> <span class="p">(</span><span class="nf">fromString</span><span class="p">)</span> <span class="n">as</span> <span class="kt">BP</span>
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff</span> <span class="p">(</span><span class="nf">launchAff_</span><span class="p">)</span>
+
+<span class="kr">import</span> <span class="nn">Brainfuck.CUI</span> <span class="p">(</span><span class="nf">cuiLog</span><span class="p">,</span> <span class="nf">cuiStream</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.CUI.State</span> <span class="p">(</span><span class="nf">init</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CUIState</span>
+
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">ref</span> <span class="ow">&lt;-</span> <span class="kt">CUIState</span><span class="o">.</span><span class="n">init</span>
+  <span class="n">launchAff_</span> <span class="o">$</span> <span class="kt">B</span><span class="o">.</span><span class="n">run</span> <span class="p">(</span><span class="n">cuiStream</span> <span class="n">ref</span><span class="p">)</span> <span class="p">(</span><span class="n">cuiLog</span> <span class="n">ref</span><span class="p">)</span> <span class="p">(</span><span class="kt">BP</span><span class="o">.</span><span class="n">fromString</span> <span class="s">&#34;++++++++[&gt;++++++++&lt;-]&gt;+.&#34;</span><span class="p">)</span>
+</code></pre></div><h3 id="ユーティリティ作成">ユーティリティ作成</h3>
+<p><code>src/Brainfuck/CUI/State.purs</code>に関数を追加。
+<code>output</code>の読み取りや文字の追加の関数を定義。
+<code>y</code>の修正やセッターを定義。現在のカーソル位置から行きたい位置までどれだけ離れているかを返す関数を定義。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- 以下のimport文を追加</span>
+<span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="p">(</span><span class="nf">singleton</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CodeUnits</span>
+
+
+<span class="nf">getOutput</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">getOutput</span> <span class="p">(</span><span class="kt">State</span> <span class="p">{</span> <span class="n">output</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">output</span>
+
+
+<span class="nf">appendOutput</span> <span class="ow">::</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">State</span>
+<span class="nf">appendOutput</span> <span class="n">c</span> <span class="p">(</span><span class="kt">State</span> <span class="n">s</span><span class="o">@</span><span class="p">{</span> <span class="n">output</span> <span class="p">})</span> <span class="ow">=</span>
+  <span class="kt">State</span> <span class="n">s</span> <span class="p">{</span> <span class="n">output</span> <span class="ow">=</span> <span class="n">output</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="kt">CodeUnits</span><span class="o">.</span><span class="n">singleton</span> <span class="n">c</span><span class="p">)</span> <span class="p">}</span>
+
+
+<span class="nf">modifyY</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">State</span>
+<span class="nf">modifyY</span> <span class="n">f</span> <span class="p">(</span><span class="kt">State</span> <span class="n">s</span><span class="o">@</span><span class="p">{</span> <span class="n">y</span> <span class="p">})</span> <span class="ow">=</span> <span class="kt">State</span> <span class="n">s</span> <span class="p">{</span> <span class="n">y</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">y</span> <span class="p">}</span>
+
+
+<span class="nf">dist</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">dist</span> <span class="n">y0</span> <span class="p">(</span><span class="kt">State</span> <span class="p">{</span> <span class="n">y</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">y0</span> <span class="o">-</span> <span class="n">y</span>
+</code></pre></div><p>続いて、<code>src/Brainfuck/CUI/Util.purs</code>を作成。
+出力関数や、カーソル移動系の関数を定義。
+特に重要なのは<code>printAt y</code>で、これは<code>y</code>行目に文字列を出力することができる。</p>
+<p>エスケープシーケンスは<a href="https://qiita.com/PruneMazui/items/8a023347772620025ad6">こちら</a>を参考にした。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Brainfuck.CUI.Util</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Brainfuck.CUI.State</span> <span class="p">(</span><span class="nf">dist</span><span class="p">,</span> <span class="nf">modifyY</span><span class="p">,</span> <span class="kt">State</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Interp</span> <span class="p">(</span><span class="kt">Interp</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Class</span> <span class="p">(</span><span class="nf">class</span> <span class="kt">MonadEffect</span><span class="p">,</span> <span class="nf">liftEffect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Ref</span> <span class="p">(</span><span class="kt">Ref</span><span class="p">,</span> <span class="nf">modify_</span><span class="p">,</span> <span class="nf">read</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Ref</span>
+<span class="kr">import</span> <span class="nn">Node.Encoding</span> <span class="p">(</span><span class="kt">Encoding</span><span class="p">(</span><span class="kt">UTF8</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Node.Process</span> <span class="p">(</span><span class="nf">stdout</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Node.Stream</span> <span class="p">(</span><span class="nf">writeString</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Array</span> <span class="p">(</span><span class="nf">replicate</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Array</span>
+<span class="kr">import</span> <span class="nn">Data.String</span> <span class="p">(</span><span class="nf">joinWith</span><span class="p">)</span> <span class="n">as</span> <span class="kt">String</span>
+
+
+<span class="nf">print</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">print</span> <span class="n">str</span> <span class="ow">=</span> <span class="n">void</span> <span class="o">$</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="n">writeString</span> <span class="n">stdout</span> <span class="kt">UTF8</span> <span class="n">str</span> <span class="p">(</span><span class="n">pure</span> <span class="n">unit</span><span class="p">)</span>
+
+
+<span class="nf">printAt</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Ref</span><span class="o">.</span><span class="kt">Ref</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">printAt</span> <span class="n">y</span> <span class="n">state</span> <span class="n">str</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">moveAt</span> <span class="n">y</span> <span class="n">state</span>
+  <span class="n">clearLine</span>
+  <span class="n">print</span> <span class="n">str</span>
+
+
+<span class="nf">moveAt</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Ref</span><span class="o">.</span><span class="kt">Ref</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">moveAt</span> <span class="n">y</span> <span class="n">state</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">dist</span> <span class="ow">&lt;-</span> <span class="n">liftEffect</span> <span class="p">(</span><span class="n">dist</span> <span class="n">y</span> <span class="o">&lt;$&gt;</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">read</span> <span class="n">state</span><span class="p">)</span>
+  <span class="n">move</span> <span class="n">dist</span> <span class="n">state</span>
+  
+
+<span class="nf">move</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Ref</span><span class="o">.</span><span class="kt">Ref</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">move</span> <span class="n">x</span> <span class="n">state</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">modify_</span> <span class="p">(</span><span class="n">modifyY</span> <span class="p">(</span><span class="kr">_</span> <span class="o">+</span> <span class="n">x</span><span class="p">))</span> <span class="n">state</span>
+  <span class="kr">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="kr">then</span> <span class="n">down</span> <span class="n">x</span>
+    <span class="kr">else</span> <span class="kr">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span>
+           <span class="kr">then</span> <span class="n">up</span> <span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+           <span class="kr">else</span> <span class="n">mostLeft</span>
+
+
+<span class="nf">down</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">down</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">print</span> <span class="p">(</span><span class="s">&#34;</span><span class="se">\x01b</span><span class="s">[&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">n</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;E&#34;</span><span class="p">)</span>
+
+
+<span class="nf">up</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">up</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">print</span> <span class="p">(</span><span class="s">&#34;</span><span class="se">\x01b</span><span class="s">[&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">n</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;F&#34;</span><span class="p">)</span>
+
+
+<span class="nf">mostLeft</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">mostLeft</span> <span class="ow">=</span> <span class="n">print</span> <span class="s">&#34;</span><span class="se">\x01b</span><span class="s">[1G&#34;</span>
+
+
+<span class="nf">clearLine</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">clearLine</span> <span class="ow">=</span> <span class="n">print</span> <span class="s">&#34;</span><span class="se">\x01b</span><span class="s">[2K&#34;</span>
+
+
+<span class="nf">newLineTimes</span> <span class="ow">::</span> <span class="n">forall</span>  <span class="n">m</span><span class="o">.</span>  <span class="kt">MonadEffect</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Unit</span>
+<span class="nf">newLineTimes</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">print</span> <span class="o">$</span> <span class="kt">String</span><span class="o">.</span><span class="n">joinWith</span> <span class="s">&#34;&#34;</span> <span class="o">$</span> <span class="kt">Array</span><span class="o">.</span><span class="n">replicate</span> <span class="n">n</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span>
+
+
+<span class="nf">highlight</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">highlight</span> <span class="n">s</span> <span class="ow">=</span> <span class="s">&#34;</span><span class="se">\x01b</span><span class="s">[7m&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">s</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;</span><span class="se">\x01b</span><span class="s">[0m&#34;</span>
+</code></pre></div><h3 id="命令列とメモリの出力">命令列とメモリの出力</h3>
+<p><code>src/Brainfuck/CUI.purs</code>を修正。まず以下の関数をインポート。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Brainfuck.CUI.Util</span> <span class="k">as</span> <span class="n">CUI</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.State</span> <span class="p">(</span><span class="kt">State</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Env</span> <span class="p">(</span><span class="nf">getProgram</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Control.Monad.Reader</span> <span class="p">(</span><span class="nf">ask</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Array</span> <span class="p">(</span><span class="nf">mapWithIndex</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Array</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff</span> <span class="p">(</span><span class="kt">Milliseconds</span><span class="p">(</span><span class="o">..</span><span class="p">),</span> <span class="nf">delay</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.String</span> <span class="p">(</span><span class="nf">joinWith</span><span class="p">)</span> <span class="n">as</span> <span class="kt">String</span>
+</code></pre></div><p>特定のインデックスにのみ適用する関数を変えるバージョンのmap関数、<code>mapWithASpecialIndex</code>を定義する。
+それを用いて、命令列とメモリの出力をする関数を定義。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">mapWithASpecialIndex</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span> <span class="n">b</span><span class="o">.</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="n">b</span>
+<span class="nf">mapWithASpecialIndex</span> <span class="n">j</span> <span class="n">fThen</span> <span class="n">fElse</span> <span class="ow">=</span>
+  <span class="kt">Array</span><span class="o">.</span><span class="n">mapWithIndex</span> <span class="p">(</span><span class="nf">\</span><span class="n">i</span> <span class="n">x</span> <span class="ow">-&gt;</span> <span class="kr">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="kr">then</span> <span class="n">fThen</span> <span class="n">x</span> <span class="kr">else</span> <span class="n">fElse</span> <span class="n">x</span><span class="p">)</span>
+
+
+<span class="nf">showProgram</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Program</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">showProgram</span> <span class="n">iptr</span> <span class="p">(</span><span class="kt">Program</span> <span class="n">program</span><span class="p">)</span> <span class="ow">=</span>
+  <span class="kt">String</span><span class="o">.</span><span class="n">joinWith</span> <span class="s">&#34;&#34;</span> <span class="o">$</span>
+    <span class="n">mapWithASpecialIndex</span> <span class="n">iptr</span>
+      <span class="p">(</span><span class="kt">CUI</span><span class="o">.</span><span class="n">highlight</span> <span class="o">&lt;&lt;&lt;</span> <span class="n">show</span><span class="p">)</span>
+      <span class="n">show</span>
+      <span class="n">program</span>
+
+
+<span class="nf">showMemory</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">showMemory</span> <span class="n">dptr</span> <span class="n">memory</span> <span class="ow">=</span>
+  <span class="kt">String</span><span class="o">.</span><span class="n">joinWith</span> <span class="s">&#34; &#34;</span> <span class="o">$</span>
+    <span class="n">mapWithASpecialIndex</span> <span class="n">dptr</span>
+      <span class="p">(</span><span class="kt">CUI</span><span class="o">.</span><span class="n">highlight</span> <span class="o">&lt;&lt;&lt;</span> <span class="n">show</span><span class="p">)</span>
+      <span class="n">show</span>
+      <span class="n">memory</span>
+</code></pre></div><p><code>showProgram</code>と<code>showMemory</code>を用いて<code>onState</code>を実装する。
+カーソル下のスペースを確保するために、<code>onStart</code>で前処理を行っている。
+<code>onEnd</code>では適当にカーソルを下に移動させているが、ここは後でもう少しちゃんと実装する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">cuiLog</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadAff</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Ref</span> <span class="kt">CUI</span><span class="o">.</span><span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Log</span> <span class="n">m</span>
+<span class="nf">cuiLog</span> <span class="n">cuiState</span> <span class="ow">=</span> <span class="kt">Log</span>
+  <span class="p">{</span> <span class="n">onStart</span>
+  <span class="p">,</span> <span class="n">onState</span>
+  <span class="p">,</span> <span class="n">onCmd</span><span class="kt">:</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="n">unit</span>
+  <span class="p">,</span> <span class="n">onEnd</span>
+  <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">onStart</span> <span class="ow">=</span> <span class="kr">do</span>
+       <span class="kt">CUI</span><span class="o">.</span><span class="n">newLineTimes</span> <span class="mi">2</span>
+       <span class="kt">CUI</span><span class="o">.</span><span class="n">up</span> <span class="mi">2</span>
+
+    <span class="n">onState</span> <span class="p">(</span><span class="kt">State</span> <span class="p">{</span> <span class="n">iptr</span><span class="p">,</span> <span class="n">dptr</span><span class="p">,</span> <span class="n">memory</span> <span class="p">})</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="n">program</span> <span class="ow">&lt;-</span> <span class="n">getProgram</span> <span class="o">&lt;$&gt;</span> <span class="n">ask</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">printAt</span> <span class="mi">0</span> <span class="n">cuiState</span> <span class="o">$</span> <span class="n">showProgram</span> <span class="n">iptr</span> <span class="n">program</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">printAt</span> <span class="mi">1</span> <span class="n">cuiState</span> <span class="o">$</span> <span class="n">showMemory</span> <span class="n">dptr</span> <span class="n">memory</span>
+      <span class="n">liftAff</span> <span class="o">$</span> <span class="n">delay</span> <span class="p">(</span><span class="kt">Milliseconds</span> <span class="mf">100.0</span><span class="p">)</span>
+
+    <span class="n">onEnd</span> <span class="ow">=</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">down</span> <span class="mi">4</span>
+</code></pre></div><p>この時点で<code>spago run</code>してみるとこんな感じで動く。</p>
+<figure><img src="mov00.gif" width="70%"/>
+</figure>
+
+<h3 id="入出力">入出力</h3>
+<p><code>src/Brainfuck/CUI/Util.purs</code>で<code>questionAndReadChar</code>を定義。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- 以下のimport文を追加</span>
+<span class="kr">import</span> <span class="nn">Node.ReadLine.Aff</span> <span class="p">(</span><span class="nf">question</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Node.ReadLine</span> <span class="p">(</span><span class="nf">createConsoleInterface</span><span class="p">,</span> <span class="nf">noCompletion</span><span class="p">,</span> <span class="nf">close</span><span class="p">)</span> <span class="n">as</span> <span class="kt">RL</span>
+<span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="p">(</span><span class="nf">toChar</span><span class="p">,</span> <span class="nf">take</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CodeUnits</span>
+<span class="kr">import</span> <span class="nn">Control.Monad.Error.Class</span> <span class="p">(</span><span class="nf">throwError</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Error</span> <span class="p">(</span><span class="kt">Error</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff.Class</span> <span class="p">(</span><span class="nf">class</span> <span class="kt">MonadAff</span><span class="p">,</span> <span class="nf">liftAff</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+
+
+<span class="nf">questionAndReadChar</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadAff</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Interp</span> <span class="n">m</span> <span class="kt">Char</span>
+<span class="nf">questionAndReadChar</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">interface</span> <span class="ow">&lt;-</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">RL</span><span class="o">.</span><span class="n">createConsoleInterface</span> <span class="kt">RL</span><span class="o">.</span><span class="n">noCompletion</span>
+  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">liftAff</span> <span class="o">$</span> <span class="n">question</span> <span class="s">&#34;input&gt; &#34;</span> <span class="n">interface</span>
+  <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">RL</span><span class="o">.</span><span class="n">close</span> <span class="n">interface</span>
+  <span class="kr">case</span> <span class="kt">CodeUnits</span><span class="o">.</span><span class="n">toChar</span> <span class="o">$</span> <span class="kt">CodeUnits</span><span class="o">.</span><span class="n">take</span> <span class="mi">1</span> <span class="n">s</span> <span class="kr">of</span>
+    <span class="kt">Just</span> <span class="n">c</span> <span class="ow">-&gt;</span>
+      <span class="n">pure</span> <span class="n">c</span>
+
+    <span class="kt">Nothing</span> <span class="ow">-&gt;</span>
+      <span class="n">throwError</span> <span class="kt">CharInputFailed</span>
+</code></pre></div><p><code>src/Brainfuck/CUI.purs</code>の<code>Stream</code>を実装する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- 以下のimport文を追加</span>
+<span class="kr">import</span> <span class="nn">Effect.Ref</span> <span class="p">(</span><span class="nf">modify</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Ref</span>
+<span class="kr">import</span> <span class="nn">Effect.Class</span> <span class="p">(</span><span class="nf">liftEffect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff</span> <span class="p">(</span><span class="kt">Aff</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.CUI.State</span> <span class="p">(</span><span class="nf">appendOutput</span><span class="p">,</span> <span class="nf">getOutput</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CUI</span>
+
+
+<span class="nf">cuiStream</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span><span class="o">.</span> <span class="kt">MonadAff</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Ref</span> <span class="kt">CUI</span><span class="o">.</span><span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Stream</span> <span class="n">m</span>
+<span class="nf">cuiStream</span> <span class="n">cuiState</span> <span class="ow">=</span> <span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span><span class="p">,</span> <span class="n">output</span> <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">input</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">moveAt</span> <span class="mi">2</span> <span class="n">cuiState</span>
+      <span class="n">s</span> <span class="ow">&lt;-</span> <span class="kt">CUI</span><span class="o">.</span><span class="n">questionAndReadChar</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">up</span> <span class="mi">1</span> <span class="c1">-- 入力時に改行が押されたことによる微調整</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">clearLine</span>
+      <span class="n">pure</span> <span class="n">s</span>
+
+    <span class="n">output</span> <span class="n">c</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="n">st</span> <span class="ow">&lt;-</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">modify</span> <span class="p">(</span><span class="kt">CUI</span><span class="o">.</span><span class="n">appendOutput</span> <span class="n">c</span><span class="p">)</span> <span class="n">cuiState</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">printAt</span> <span class="mi">2</span> <span class="n">cuiState</span> <span class="o">$</span> <span class="kt">CUI</span><span class="o">.</span><span class="n">getOutput</span> <span class="n">st</span>
+</code></pre></div><p><code>src/Main.purs</code>にて<code>,&gt;,&gt;,&lt;&lt;+.&gt;+.&gt;+.</code>を実行するように書き換えて、<code>spago run</code>してみる。</p>
+<figure><img src="mov01.gif" width="70%"/>
+</figure>
+
+<h3 id="出力の改行に対応する">出力の改行に対応する</h3>
+<p><code>A</code>、<code>B</code>、<code>C</code>を改行区切りで出力するプログラムを書く。本当は</p>
+<pre class="cui">
+++++++++[>++++++++>+<<-]>>++<+.+>.<.+>.<.
+0 66 10 0 0 0 0 0 0 0
+A
+B
+C
+</pre>
+
+<p>のように出力されて欲しいが、実際には以下のように表示が崩れてしまう。</p>
+<pre class="cui">
+++++++++[>++++++++>+<<-]>>++<+.+>.<.+>.<.
+++++++++[>++++++++>+<<-]>>++<+.+>.<.+>.<.
+++++++++[>++++++++>+<<-]>>++<+.+>.<.+>.<.
+0 67 10 0 0 0 0 0 0 0
+++++++++[>++++++++>+<<-]>>++<+.+>.<.+>.<.
+0 67 10 0 0 0 0 0 0 0
+++++++++[>++++++++>+<<-]>>++<+.+>.<.+>.<.
+0 67 10 0 0 0 0 0 0 0
+</pre>
+
+<p>これは、<code>output</code>の実装に改行文字の出力まで考慮されていないからだ。
+改行が起こるたびにプログラムとメモリの出力位置がずれていってしまう。</p>
+<p><code>src/Brainfuck/CUI/State.purs</code>を修正。改行の個数をカウントするために、<code>State</code>のフィールドを追加。
+ゲッターとインクリメントする関数を定義。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">newtype</span> <span class="kt">State</span> <span class="ow">=</span> <span class="kt">State</span>
+  <span class="p">{</span> <span class="n">output</span> <span class="ow">::</span> <span class="kt">String</span>
+  <span class="p">,</span> <span class="n">y</span> <span class="ow">::</span> <span class="kt">Int</span>
+  <span class="p">,</span> <span class="n">outputLines</span> <span class="ow">::</span> <span class="kt">Int</span>
+  <span class="p">}</span>
+
+
+<span class="nf">init</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Ref</span><span class="o">.</span><span class="kt">Ref</span> <span class="kt">State</span><span class="p">)</span>
+<span class="nf">init</span> <span class="ow">=</span>
+  <span class="kt">Ref</span><span class="o">.</span><span class="n">new</span> <span class="o">$</span> <span class="kt">State</span>
+    <span class="p">{</span> <span class="n">output</span><span class="kt">:</span> <span class="s">&#34;&#34;</span>
+    <span class="p">,</span> <span class="n">y</span><span class="kt">:</span> <span class="mi">0</span>
+    <span class="p">,</span> <span class="n">outputLines</span><span class="kt">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+
+
+<span class="nf">getOutputLines</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">getOutputLines</span> <span class="p">(</span><span class="kt">State</span> <span class="p">{</span> <span class="n">outputLines</span> <span class="p">})</span> <span class="ow">=</span> <span class="n">outputLines</span>
+
+
+<span class="nf">incOntputLines</span> <span class="ow">::</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">State</span>
+<span class="nf">incOntputLines</span> <span class="p">(</span><span class="kt">State</span> <span class="n">s</span><span class="o">@</span><span class="p">{</span> <span class="n">outputLines</span> <span class="p">})</span> <span class="ow">=</span> <span class="kt">State</span> <span class="n">s</span> <span class="p">{</span> <span class="n">outputLines</span> <span class="ow">=</span> <span class="n">outputLines</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">}</span>
+</code></pre></div><p><code>src/Brainfuck/CUI.purs</code>を修正。現れた改行の数をカウントし、その分だけカーソルを上にずらすことで出力位置を微調整している。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- 次のimport文を追加</span>
+<span class="kr">import</span> <span class="nn">Effect.Ref</span> <span class="p">(</span><span class="nf">modify_</span><span class="p">,</span> <span class="nf">read</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Ref</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.CUI.State</span> <span class="p">(</span><span class="nf">incOntputLines</span><span class="p">,</span> <span class="nf">getOutputLines</span><span class="p">,</span> <span class="nf">modifyY</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CUI</span>
+
+
+<span class="nf">cuiStream</span> <span class="n">cuiState</span> <span class="ow">=</span> <span class="kt">Stream</span> <span class="p">{</span> <span class="n">input</span><span class="p">,</span> <span class="n">output</span> <span class="p">}</span>
+  <span class="kr">where</span>
+    <span class="n">input</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="c1">-- 略</span>
+
+    <span class="n">output</span> <span class="n">c</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="n">when</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span><span class="p">)</span> <span class="kr">do</span>
+         <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">modify_</span> <span class="kt">CUI</span><span class="o">.</span><span class="n">incOntputLines</span> <span class="n">cuiState</span>
+      <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">modify_</span> <span class="p">(</span><span class="kt">CUI</span><span class="o">.</span><span class="n">appendOutput</span> <span class="n">c</span><span class="p">)</span> <span class="n">cuiState</span>
+      <span class="n">st</span> <span class="ow">&lt;-</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">read</span> <span class="n">cuiState</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">printAt</span> <span class="mi">2</span> <span class="n">cuiState</span> <span class="o">$</span> <span class="kt">CUI</span><span class="o">.</span><span class="n">getOutput</span> <span class="n">st</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">move</span> <span class="p">(</span><span class="o">-</span><span class="kt">CUI</span><span class="o">.</span><span class="n">getOutputLines</span> <span class="n">st</span><span class="p">)</span> <span class="n">cuiState</span>
+</code></pre></div><p><code>cuiLog</code>の<code>onEnd</code>を修正。出力エリアの行数を元にして、終了後のプロンプトの位置を調整する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">cuiLog</span> <span class="n">cuiState</span> <span class="ow">=</span> <span class="kt">Log</span>
+  <span class="c1">-- 略</span>
+  <span class="kr">where</span>
+    <span class="c1">-- 略</span>
+
+    <span class="n">onEnd</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="n">st</span> <span class="ow">&lt;-</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">read</span> <span class="n">cuiState</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">moveAt</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="kt">CUI</span><span class="o">.</span><span class="n">getOutputLines</span> <span class="n">st</span><span class="p">)</span> <span class="n">cuiState</span>
+      <span class="kt">CUI</span><span class="o">.</span><span class="n">newLineTimes</span> <span class="mi">2</span>
+</code></pre></div><p>これで<code>spago run</code>してみると、正常に出力されるようになる。</p>
+<h2 id="おまけ-プログラムを入力する仕組みの実装">(おまけ) プログラムを入力する仕組みの実装</h2>
+<p>プログラム開始時に、Brainfuckプログラムを入力するように実装する。</p>
+<p><code>Main.purs</code>を以下のようにする。<code>inputProgram</code>という関数を定義して、プログラムの入力を促す。</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+
+<span class="kr">import</span> <span class="nn">Brainfuck</span> <span class="p">(</span><span class="nf">run</span><span class="p">)</span> <span class="n">as</span> <span class="kt">B</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.CUI</span> <span class="p">(</span><span class="nf">cuiLog</span><span class="p">,</span> <span class="nf">cuiStream</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.CUI.State</span> <span class="p">(</span><span class="nf">init</span><span class="p">)</span> <span class="n">as</span> <span class="kt">CUIState</span>
+<span class="kr">import</span> <span class="nn">Brainfuck.Program</span> <span class="p">(</span><span class="nf">fromString</span><span class="p">,</span> <span class="kt">Program</span><span class="p">)</span> <span class="n">as</span> <span class="kt">BP</span>
+<span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Aff</span> <span class="p">(</span><span class="kt">Aff</span><span class="p">,</span> <span class="nf">launchAff_</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Effect.Class</span> <span class="p">(</span><span class="nf">liftEffect</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Node.ReadLine</span> <span class="p">(</span><span class="nf">createConsoleInterface</span><span class="p">,</span> <span class="nf">noCompletion</span><span class="p">,</span> <span class="nf">close</span><span class="p">)</span> <span class="n">as</span> <span class="kt">RL</span>
+<span class="kr">import</span> <span class="nn">Node.ReadLine.Aff</span> <span class="p">(</span><span class="nf">question</span><span class="p">)</span> <span class="n">as</span> <span class="kt">RL</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">ref</span> <span class="ow">&lt;-</span> <span class="kt">CUIState</span><span class="o">.</span><span class="n">init</span>
+  <span class="n">launchAff_</span> <span class="kr">do</span>
+    <span class="n">program</span> <span class="ow">&lt;-</span> <span class="n">inputProgram</span>
+    <span class="kt">B</span><span class="o">.</span><span class="n">run</span> <span class="p">(</span><span class="n">cuiStream</span> <span class="n">ref</span><span class="p">)</span> <span class="p">(</span><span class="n">cuiLog</span> <span class="n">ref</span><span class="p">)</span> <span class="n">program</span>
+
+
+<span class="nf">inputProgram</span> <span class="ow">::</span> <span class="kt">Aff</span> <span class="kt">BP</span><span class="o">.</span><span class="kt">Program</span>
+<span class="nf">inputProgram</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">interface</span> <span class="ow">&lt;-</span> <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">RL</span><span class="o">.</span><span class="n">createConsoleInterface</span> <span class="kt">RL</span><span class="o">.</span><span class="n">noCompletion</span>
+  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="kt">RL</span><span class="o">.</span><span class="n">question</span> <span class="s">&#34;program&gt; &#34;</span> <span class="n">interface</span>
+  <span class="n">liftEffect</span> <span class="o">$</span> <span class="kt">RL</span><span class="o">.</span><span class="n">close</span> <span class="n">interface</span>
+  <span class="n">pure</span> <span class="p">(</span><span class="kt">BP</span><span class="o">.</span><span class="n">fromString</span> <span class="n">s</span><span class="p">)</span>
+</code></pre></div><figure><img src="img00.png" width="70%"/>
+</figure>
+
+<h2 id="次回">次回</h2>
+<p>今回はCUIでの入出力を行ったが、最後にWebページ上で動かすことをやってみる。
+UIのフレームワークとして<a href="https://pursuit.purescript.org/packages/purescript-halogen/6.1.2">halogen</a>を使う予定。</p>
+
+</article>
+
+
+
+</html>
