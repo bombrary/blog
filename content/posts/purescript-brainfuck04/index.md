@@ -1,7 +1,6 @@
 ---
-title: "PureScriptで作るBrainfuckインタプリタ 4/4"
-date: 2021-07-03T18:59:19+09:00
-draft: true
+title: "PureScriptで作るBrainfuckインタプリタ 4/4 Halogenの利用"
+date: 2021-07-09T23:15:00+09:00
 tags: ["Halogen"]
 categories: ["PureScript", "Brainfuck"]
 toc: true
@@ -11,7 +10,7 @@ toc: true
 
 続いて、GUIでBrainfuckを動かすことをやってみる。
 GUIのフレームワークとして、ここでは[purescript-halogen](https://pursuit.purescript.org/packages/purescript-halogen/6.1.2)を使ってみる。
-あまりしっかり学びきれてはいないため、分からないところはぼかして書く。
+Halogenについてはまだ勉強中で、この記事は解説記事というより勉強記録である(いままでの記事もそうではあるのだが)。
 
 {{< cui >}}
 % spago install halogen
@@ -41,16 +40,6 @@ main = HA.runHalogenAff do
 ```
 
 `component`は`src/Component.purs`で定義する。とりあえず雛形を作成。
-
-Elmとの比較でいうと、`State`が`Model`、`Action`が`Msg`、`render`が`view`、`handleAction`が`update`に当たる。
-
-何やら各関数の型がごついので、これについて一応補足しておく。
-型変数`query`、`output`に関しては、複数のコンポーネントを作った場合にそれら同士のやりとりで使うようだが、今回は必要ないため、型変数のままにしておく。
-`H.ComponentHTML Action () m`の`()`についても同様に、複数コンポーネントを扱う場合に関わってくるものなので、今回は必要ない。
-`input`は、コンポーネントの状態を初期化するときに指定する引数の型。これは入力エリア作成のときに利用する。
-`m`はモナドで、`handleAction`で副作用を扱うときに必要となる。
-後で`Aff`関係の処理を書きたいときに、`MonadAff m`の型クラス制約を追加する (実際は、[runUI](https://pursuit.purescript.org/packages/purescript-halogen/6.1.2/docs/Halogen.VDom.Driver#v:runUI)のときに`m`は`Aff`に推論される)。
-この辺りについて、詳しくは[Halogen Guide 02](https://github.com/purescript-halogen/purescript-halogen/blob/master/docs/guide/02-Introducing-Components.md)を参照。
 
 ```haskell
 module Component where
@@ -95,6 +84,20 @@ handleAction =
       pure unit
 ```
 
+[Halogen Guide 02](https://github.com/purescript-halogen/purescript-halogen/blob/master/docs/guide/02-Introducing-Components.md)の2段落目によると、Componentとは、
+「入力を受け付けて、HTMLを生成するもの」のこと。さらにComponentは内部状態を持っている。そして何かイベントを定義することができ、それに応じて内部状態を変えたり、副作用を起こしたりできる。
+
+Halogenにおいて、状態は *State*、イベントは *Action*、と呼ばれる。`render`でHTMLを生成することができる。`handleAction`で Action を補足し、何かしらの処理を行うことができる。
+Elmとの比較でいうと、State が Model、Action が Msg、render が view、handleAction が update に当たる。
+
+何やら各関数の型がごついので、これについて一応補足しておく。
+型変数`query`、`output`に関しては、複数のコンポーネントを作った場合にそれら同士のやりとりで使うようだが、今回は必要ないため、型変数のままにしておく。
+`H.ComponentHTML Action () m`の`()`についても同様に、複数コンポーネントを扱う場合に関わってくるものなので、今回は必要ない。
+`input`は、コンポーネントの状態を初期化するときに指定する引数の型。これは入力エリア作成のときに利用する。
+`m`はモナドで、`handleAction`で副作用を扱うときに必要となる。
+後で`Aff`関係の処理を書きたいときに、`MonadAff m`の型クラス制約を追加する (実際は、[runUI](https://pursuit.purescript.org/packages/purescript-halogen/6.1.2/docs/Halogen.VDom.Driver#v:runUI)のときに`m`は`Aff`に推論される)。
+
+
 この時点で`bundle-app`してみる。
 
 {{< cui >}}
@@ -117,11 +120,10 @@ handleAction =
 
 ## 仕様
 
-1. プログラム入力エリアにプログラムを入力
-2. 実行ボタンを押すとプログラムが実行される
-3. 実行後の`iptr`、`dptr`、`memory`を表示する。
-4. 実行時に出力命令を踏んだときに、出力エリアに文字が表示される。
-5. 実行時に入力命令を踏んだときに、入力エリアが出現。それまでプログラムは停止し、入力を確定すると再開する。
+1. プログラム入力エリアにプログラムを入力し、実行ボタンを押すとプログラムが実行される
+2. 実行結果と実行後の`iptr`、`dptr`、`memory`を表示する。
+3. 実行時に出力命令を踏んだときに、出力エリアに文字が表示される。
+4. 実行時に入力命令を踏んだときに、入力エリアが出現。それまでプログラムは停止し、入力を確定すると再開する。
 
 1と2は簡単。3は`Brainfuck.State.State`の内部状態をダンプする関数を実装すれば良いだけなので、難しくない。
 4は[Halogen GuideのSubscriptionの項](https://github.com/purescript-halogen/purescript-halogen/blob/master/docs/guide/04-Lifecycles-Subscriptions.md#subscriptions)を読むとできる。
@@ -129,38 +131,29 @@ handleAction =
 5が結構悩ましく、2つの方法が思いついた。
 
 - `interpProgram`や`interpCommand`を使わず、`handleAction`の中で`Interp`を逐次評価する。すると入力処理は`Action`の中で自然に扱える。
-- [avar](https://pursuit.purescript.org/packages/purescript-avar/4.0.0)を使い、BrainfuckプログラムとComponent間でデータのやりとりをする。
+- [avar](https://pursuit.purescript.org/packages/purescript-avar/4.0.0)を使い、BrainfuckインタプリタとComponent間でデータのやりとりをする。
 
 後者が実装が楽なのでこれを用いる。
 
 ## プログラム入力エリアと実行結果エリアの作成
 
-### dump関数
-
-`src/Brainfuck/State.purs`に以下の関数を追記。
-
-```haskell
-dump :: State -> { dptr :: Int, iptr :: Int, memory :: Array Int }
-dump (State s) = s
-```
-
-### componentの状態
+### Stateの追加
 
 `src/Component.purs`に戻る。以下のインポート文を追加。
 
 ```haskell
-import Brainfuck as B
-import Brainfuck.Env as BE
-import Brainfuck.Interp  as BI
-import Brainfuck.Interp.Command  as BIC
-import Brainfuck.Interp.Stream  as BIS
-import Brainfuck.Interp.Util  as BIU
-import Brainfuck.Program as BP
-import Brainfuck.State as BS
-import Data.Either (Either(..))
+import Brainfuck (run) as B
+import Brainfuck.Interp.Stream (defaultStream) as BIS
+import Brainfuck.Interp.Log (noLog) as BIL
+import Brainfuck.State (State(..)) as BS
+import Brainfuck.Interp (InterpResult) as BI
+import Brainfuck.Program (fromString) as BP
 import Data.Maybe (Maybe(..))
-import Effect.Aff.Class (class MonadAff, liftAff)
+import Data.Either (Either(..))
+import Effect.Aff.Class (class MonadAff)
+import Effect.Class (liftEffect)
 import Halogen.HTML.Events as HE
+import Halogen.HTML.Properties as HP
 ```
 
 状態を決める。
@@ -250,7 +243,7 @@ handleAction =
 
     ExecuteProgram -> do
       { program } <- H.get
-      res <- liftAff $ B.run (BP.fromString program) BIS.defaultStream
+      res <- liftEffect $ B.run BIS.defaultStream BIL.noLog (BP.fromString program)
       H.modify_ _ { result = Just res }
 ```
 
@@ -313,9 +306,9 @@ programArea isExecutable =
 handleAction =
    -- 略
     ExecuteProgram -> do
-      { program, stream } <- H.get
+      { program } <- H.get
       H.modify_ _ { result = Nothing, isExecutable = false }
-      res <- liftAff $ B.run (BP.fromString program) stream
+      res <- liftEffect $ B.run BIS.defaultStream BIL.noLog (BP.fromString program)
       H.modify_ _ { result = Just res, isExecutable = true }
 ```
 
@@ -332,32 +325,46 @@ halogen-subscriptionsを使うと、`component`の外部から`Action`を通知�
 - `Branfuck.Stream.Stream`の`output`フィールドは、`Output Char`という`Action`を通知する。
 - `Output Char`を通知すると、`component`は文字を出力する。
 
-そのために、Halogen専用のStreamを作成する必要がある。ストリームの初期化は`component`の初期化時に行う。
+
+そのために、Halogen専用のStreamを作成する必要がある。問題はそのStreamをどこに置くかだが、これは2通り考えられる。
+
+- Componentのinputとして与える。これは`Main.purs`の`runUI`の引数で与えられる。
+- `State`のフィールドとして与え、その初期化は`handleAction`で行う。
+
+後者の欠点はStreamが常に`Maybe`に包まれてしまうことだが、前者に比べると実装が簡単なので後者を採用する。
 
 まず以下のインポート文を追加。
 
 ```haskell
+import Brainfuck.Interp.Stream (Stream(..)) as BIS
 import Data.String.CodeUnits (singleton) as CodeUnits
-import Halogen.Subscription (Listener, create, notify) as HS
-import Brainfuck.Interp.Stream (Stream) as BIS
+import Data.Traversable (for_)
+import Effect.Aff (Aff)
+import Effect.Aff.Class (liftAff)
+import Halogen.Subscription as HS
 ```
 
-### State、Viewの追加
+`for_`関数を使いたいので、以下の関連パッケージをインストール。
+
+{{< cui >}}
+spago install foldable-traversable
+{{< /cui >}}
+
+### State、renderの追加
 
 出力結果を`output`として、`State`に持たせる。`Stream`も`State`に持たせる。
 
 ```haskell
 type State =
   { --- 略
-  , stream :: BIS.Stream
+  , streamMay :: Maybe (BIS.Stream Aff)
   , output :: String
   }
 
 
-initialState :: forall input. input -> State
 initialState _ =
   { --- 略
-  , stream: BIS.defaultStream
+  , streamMay: Nothing
   , output: ""
   }
 ```
@@ -365,10 +372,9 @@ initialState _ =
 Viewにて、出力エリア`outputArea`を追加。
 
 ```haskell
-render :: forall m. State -> H.ComponentHTML Action () m
 render state =
   HH.div_
-    [ programArea
+    [ programArea state.isExecutable
     , outputArea state.output -- 追加
     , case state.result of
         Just res ->
@@ -403,7 +409,6 @@ data Action
 `component`の初期化の処理を`Initialize`に任せるために、`H.defaultEval`の`initialize`フィールドを設定する。
 
 ```haskell
-component :: forall query input output m. MonadAff m => H.Component query input output m
 component =
   H.mkComponent
     { -- 略
@@ -418,27 +423,21 @@ component =
 
 `handleAction`の`case`文に、`Initialize`を付け足す。
 
-`HS.create`は`Emitter a`と`Listener a`を返す関数。`Emitter a`とはイベントの受信者であり、`Listener a`はイベントの送信者である。
-イベントとはただの`a`型の値のことである。`String`でも`Int`でもなんでもありえるが、`H.subscribe`の都合上`Action`をイベントとする。
-
-`H.subscribe emitter`を使うと、`emitter`で受け取った`Action`を`handleAction`に回すことができる。
-`H.notify listener x`を使うと、`listener`に紐づいた`emitter`に対して値`x`を送ることができる。
-
 ```haskell
 handleAction =
   case _ of
     Initialize -> do
       { emitter, listener } <- liftEffect HS.create
       _ <- H.subscribe emitter
-      H.modify_ _ { stream = createStream listener }
+      H.modify_ _ { streamMay = Just $ createStream listener }
 
     -- 略
 
 
-createStream :: HS.Listener Action -> BIS.Stream
-createStream listener = { input, output }
+createStream :: HS.Listener Action -> BIS.Stream Aff
+createStream listener = BIS.Stream { input, output }
   where
-    input = pure 'N' -- Not Implemented
+    input = pure 'N'
 
     output c =
       liftEffect $ HS.notify listener (Output c)
@@ -455,7 +454,14 @@ handleAction =
       H.modify_ (\s -> s { output = s.output <> (CodeUnits.singleton c) })
 ```
 
-`ExecuteProgram`を修正。`stream`を使って`Brainfuck`プログラムを走らせる。`output`は実行の度に空に初期化しておく。
+`HS.create`は`Emitter a`と`Listener a`を返す関数。`Emitter a`とはイベントの受信者であり、`Listener a`はイベントの送信者である。
+ここでのイベントとは`a`型の値のことである。`String`でも`Int`でもなんでもありえるが、`H.subscribe`の都合上`Action`をイベントとする。
+
+`H.subscribe emitter`を使うと、`emitter`で受け取った`Action`を`handleAction`に回すことができる。
+`HS.notify listener x`を使うと、`listener`に紐づいた`emitter`に対して値`x`を送ることができる。
+
+
+続いて、`ExecuteProgram`を修正。`stream`を使って`Brainfuck`プログラムを走らせる。`output`は実行の度に空に初期化しておく。
 
 ```haskell
 handleAction =
@@ -463,11 +469,17 @@ handleAction =
     -- 略
 
     ExecuteProgram -> do
-      { program, stream } <- H.get
-      H.modify_ _ { output = "" , result = Nothing, isExecutable = false }
-      res <- liftAff $ B.run (BP.fromString program) stream
-      H.modify_ _ { result = Just res, isExecutable = true }
+      { program, streamMay } <- H.get
+      for_ streamMay \s -> do
+          H.modify_ _ { output = "" , result = Nothing, isExecutable = false }
+          res <- liftAff $ B.run s BIL.noLog (BP.fromString program)
+          H.modify_ _ { result = Just res, isExecutable = true }
 ```
+
+(**補足**) `for_`について。これは他言語のforループみたいに「与えられた配列一つ一つに対して何か処理をする」ような場合に用いられるが、
+以下のように、「`Maybe`型の値が`Just`なら何か処理を行い、`Nothing`なら何もしない」ような場合にも使える。
+`case`文を書かずに済むので、コードが若干見易くなる。
+
 
 `bundle-app`してみると、Hello, Worldのプログラムが動くようになる。
 
@@ -481,7 +493,7 @@ handleAction =
 % spago install avar
 {{< /cui >}}
 
-avarパッケージは`AVar a`を提供する。これは、`a`型の値が入る「非同期の変数」を表す。
+avarパッケージは`AVar a`を提供する。これは、`a`型の値が入る「非同期の変数(**a**synchronous **var**iable)」を表す。
 「非同期の変数」と聞くとよく分からないが、ソケット通信におけるソケットのようなものだと理解すれば良さそう。
 この`AVar a`を介してデータのやりとりを行う。
 
@@ -492,7 +504,7 @@ avarパッケージは`AVar a`を提供する。これは、`a`型の値が入�
 1. 入力命令`,`を踏むと、入力エリアが出現(これは`H.notify`を利用すれば可能)
 2. `take`関数で`AVar Char`に値が入ってくるまで待つ
 3. 入力エリアに文字を入力し、確定ボタンを押すと、`put`関数によって`AVar Char`に値が入る。
-4. 待機中だった`take`関数が完了し、Brainfuckプログラムの動作が再開する。
+4. 待機中だった`take`関数が完了し、Brainfuckインタプリタの動作が再開する。
 
 
 以下のインポート文を追加しておく。
@@ -506,7 +518,7 @@ import Data.String.CodeUnits (take, toChar) as CodeUnits
 
 以下のフィールドを追加。
 
-- `avar`: Brainfuckプログラムと入力エリアをつなぐ変数
+- `avar`: Brainfuckインタプリタと入力エリアをつなぐ変数
 - `input`: 入力エリアに入っている文字
 - `isInputEnabled`: 入力エリアが表示されているかどうか
 
@@ -515,7 +527,7 @@ type State =
   { -- 略
   , avar :: AVar.AVar Char
   , input :: String
-  , isInputEnabled: Boolean
+  , isInputEnabled :: Boolean
   }
 ```
 
@@ -538,7 +550,6 @@ initialState avar =
 ```haskell
 import Effect.Aff.AVar (empty) as AVar --追加
 
-main :: Effect Unit
 main = HA.runHalogenAff do
   body <- HA.awaitBody
   avar <- AVar.empty -- 追加
@@ -556,7 +567,7 @@ component :: forall query output m. MonadAff m => H.Component query (AVar.AVar C
 
 3つの`Action`を追加
 
-- `RequestInput`: Brainfuckプログラムが`,`命令を踏んだときに起こる。
+- `RequestInput`: Brainfuckインタプリタが`,`命令を踏んだときに起こる。
 - `ChangeInput String`: 入力エリアにテキストを入力したときに起こる
 - `ConfirmInput`: 入力確定ボタンが押されたときに起こる。
 
@@ -599,17 +610,17 @@ BrainfuckとComponent間でのデータのやりとりはある種の通信と�
 
 ```haskell
 handleAction =
-  -- 略
+  case _ of
+    Initialize -> do
+      { emitter, listener } <- liftEffect HS.create
+      _ <- H.subscribe emitter
+      H.modify_ \s -> s { streamMay = Just $ createStream listener s.avar }
 
-    ExecuteProgram -> do
-      { program, stream } <- H.get
-      H.modify_ _ { output = "" , result = Nothing }
-      res <- liftAff $ B.run (BP.fromString program) stream
-      H.modify_ _ { result = Just res }
+    -- 略
 
 
-createStream :: HS.Listener Action -> AVar.AVar Char -> BIS.Stream
-createStream listener avar = { input, output }
+createStream :: HS.Listener Action -> AVar.AVar Char -> BIS.Stream Aff
+createStream listener avar = BIS.Stream { input, output }
   where
     input = do
       liftEffect $ HS.notify listener RequestInput
@@ -619,7 +630,7 @@ createStream listener avar = { input, output }
       liftEffect $ HS.notify listener (Output c)
 ```
 
-### Viewの実装
+### renderの実装
 
 入力エリアを実装する。
 
@@ -659,39 +670,64 @@ inputArea =
 
 ## プログラムの実行中の様子を可視化する
 
-Brainfuckプログラムの動きを可視化するためには、ステップごとのプログラムの状態をComponentに出力してあげる必要がある。
-残念ながら、これを行う機能を`B.interpProgram`は持ち合わせていない。状態を出力する機能をつけた新しい`interpProgram`を作る必要がある。
+Brainfuckインタプリタの動きを可視化するためには、ステップごとのプログラムの状態をComponentに出力してあげる必要がある。
+これを実装するには前回実装した、`Brainfuck.Interp.Log`の`Log m`を使えば良い。具体的には、以下の手順を実装する。
 
-### LogStateの定義
+1. Brainfuckインタプリタの各ステップで`Log m`の`onState`が呼ばれる。このとき`RequestLogState state`という`Action`が通知される。
+2. `RequestLogState state`を`handleAction`で受け取り、`State`のフィールドとして格納される。
+3. `render`で`state`を描画する。
 
-`BIS.Stream`のときと同じように、`BS.State`を引数にとって何か外部に出力する関数を作るひつようがある。
-この型のエイリアスとして`LogState`を定義しておく。
-
-`LogState`を`State`に持たせておく。
+以下のimport文を追加。
 
 ```haskell
-type LogState = BS.State -> BI.Interp Unit
+import Brainfuck.Interp.Log (Log(..)) as BIL
+import Brainfuck.Program (Program(..)) as BP
+import Data.Array (mapWithIndex) as Array
+import Effect.Aff (delay, Milliseconds(..))
 ```
+
+### Stateの定義
+
+ `Log m`を`State`のフィールドに持たせる。
 
 ```haskell
 type State =
   { -- 略
-  , stateMay :: Maybe BS.State
-  , logState :: LogState
+  , logMay :: Maybe (BIL.Log Aff)
+  , stateMay :: Maybe (BS.State)
   }
 
 
 initialState :: AVar.AVar Char -> State
 initialState avar =
   { -- 略
+  , logMay: Nothing
   , stateMay: Nothing
-  , logState: \_ -> pure unit
   }
 ```
 
+### Logの定義
+
+Logを作成する関数`createLogState`を作る。これは`RequestLogState state`を通知する。
+
+```haskell
+createLog :: HS.Listener Action -> BIL.Log Aff
+createLog listener = BIL.Log
+    { onStart: pure unit
+    , onState
+    , onCmd: \_ -> pure unit
+    , onEnd: pure unit
+    }
+  where
+    onState state = do
+      liftEffect $ HS.notify listener (RequestLogState state)
+      liftAff $ delay (Milliseconds 100.0)
+```
+
+
 ### Actionの定義
 
-`RequestLogState`を追加。これは`logState`が呼び出されたときに引き起こされる`Action`。
+`RequestLogState`を追加。
 
 ```haskell
 data Action
@@ -699,24 +735,36 @@ data Action
   | RequestLogState BS.State
 ```
 
-`handleAction`の`Initialize`の際に、`logState`をセットする。
-これは単に`RequestLogState`を呼び出しているだけである。
+`handleAction`の`Initialize`の際に、`logMay`をセットする。
 
 `RequestLogState`が起こると、`stateMay`に現在のプログラムの状態をセットする。
+
+`ExecuteProgram`の`B.run`の引数にLogが指定できるよう修正。
 
 ```haskell
 handleAction =
   case _ of
     Initialize -> do
-      -- 略
-      let logState state = liftEffect $ HS.notify listener (RequestLogState state) -- 追加
-      H.modify_ _ { stream = createStream listener avar, logState = logState }
+      { emitter, listener } <- liftEffect HS.create
+      _ <- H.subscribe emitter
+      H.modify_ \s ->
+        s { streamMay = Just $ createStream listener s.avar
+          , logMay = Just $ createLog listener -- 追加
+          }
 
 
     RequestLogState state -> do
        H.modify_ _ { stateMay = Just state }
-```
 
+
+    ExecuteProgram -> do
+      { program, streamMay, logMay } <- H.get
+      for_ streamMay \s ->
+        for_ logMay \l -> do
+          H.modify_ _ { output = "" , result = Nothing, isExecutable = false }
+          res <- liftAff $ B.run s l (BP.fromString program)
+          H.modify_ _ { result = Just res, isExecutable = true }
+```
 
 ### Viewの定義
 
@@ -741,83 +789,139 @@ render state =
 
 
 stateArea :: forall w i. BP.Program -> BS.State -> HH.HTML w i
-stateArea program state =
-  let { iptr, dptr, memory } = BS.dump state
-  in
-    HH.div_
-      [ programLogArea iptr program
-      , memoryLogArea dptr memory
-      ]
+stateArea program (BS.State { iptr, dptr, memory }) =
+  HH.div_
+    [ programLogArea iptr program
+    , memoryLogArea dptr memory
+    ]
+
+
+mapWithASpecialIndex :: forall a b. Int -> (a -> b) -> (a -> b) -> Array a -> Array b
+mapWithASpecialIndex j fThen fElse =
+  Array.mapWithIndex (\i x -> if i == j then fThen x else fElse x)
 
 
 programLogArea :: forall w i. Int -> BP.Program -> HH.HTML w i
-programLogArea iptr program =
-  let f i cmd = if i == iptr
-                  then HH.span [ HP.style "background-color: salmon;" ] [ HH.text $ show cmd ]
-                  else HH.span [ HP.style "background-color: white;" ] [ HH.text $ show cmd ]
-  in
-    HH.div_
-      (mapWithIndex f $ BP.dump program)
-
+programLogArea iptr (BP.Program program) =
+  HH.div_ $
+    mapWithASpecialIndex iptr
+      (\cmd -> HH.span [ HP.style "background-color: salmon;" ] [ HH.text $ show cmd ])
+      (\cmd -> HH.span [ HP.style "background-color: white;" ] [ HH.text $ show cmd ])
+      program
 
 
 memoryLogArea :: forall w i. Int -> Array Int -> HH.HTML w i
 memoryLogArea dptr memory =
-  let f i dat = if i == dptr
-                  then HH.span [ HP.style "background-color: salmon; margin-right: 1em;" ] [ HH.text $ show dat ]
-                  else HH.span [ HP.style "background-color: white; margin-right: 1em;" ] [ HH.text $ show dat ]
-  in
-    HH.div_
-      (mapWithIndex f memory)
+  HH.div_ $
+    mapWithASpecialIndex dptr
+      (\dat -> HH.span [ HP.style "background-color: salmon; margin-right: 1em;" ] [ HH.text $ show dat ])
+      (\dat -> HH.span [ HP.style "background-color: white; margin-right: 1em;" ] [ HH.text $ show dat ])
+      memory
 ```
 
-### interpProgramの再定義
-
-`logState`を入れた新しい`interpProgram`を定義する。また可視化したときに見やすくするために、`delay`関数を使って動作を遅くしている。
-
-```haskell
-interpProgram :: LogState -> BIS.Stream -> BI.Interp Unit
-interpProgram logState stream = do
-  program <- BE.getProgram <$> ask
-  state <- get
-
-  logState state
-  liftAff $ delay (Milliseconds 100.0)
-
-  case BS.readCommand program state of
-    Just cmd -> do
-      BIC.interpCommand stream cmd
-
-      BIU.incInstPtr
-      interpProgram logState stream
-
-    Nothing ->
-      pure unit
-```
-
-これに伴い`run`関数も再定義。
-
-```haskell
-run :: LogState -> BP.Program -> BIS.Stream -> Aff (BI.InterpResult Unit)
-run logState program stream =
-  BI.runInterp (interpProgram logState stream)
-               (BE.makeEnv program)
-               BS.defaultState
-```
-
-`ExecuteProgram`の処理を`run`を使ったものに修正する。
-
-```haskell
-handleAction =
-  -- 略
-
-    ExecuteProgram -> do
-      { program, stream, logState } <- H.get
-      H.modify_ _ { output = "" , result = Nothing, isExecutable = false }
-      res <- liftAff $ run logState (BP.fromString program) stream -- 変更
-      H.modify_ _ { result = Just res, isExecutable = true }
-```
 
 いい感じで可視化されている。
 
 {{< figure src="mov01.gif" width="70%" >}}
+
+## ソースコードとデモ
+
+CSSやHTML要素の順番などを微調整したバージョンを
+[GitHubのRepositry](https://github.com/bombrary/brainfuck-purescript)に上げた。
+実際に動くものを[GitHub Pages](https://bombrary.github.io/brainfuck-purescript/)に上げた。
+
+
+## 感想とまとめ
+
+### Brainfuckの思い出
+
+Brainfuckとの初めての出会いは[BrainfuckをJavaScriptを使って実装する動画](https://www.nicovideo.jp/watch/sm10384056)を見つけたところからだった。
+当時プログラミングは学んでおらず、書いていることや喋っている意味はまったく分からなかった。分からないけど、なんか面白そう、とは思っていた。
+
+その2、3年後くらいにC言語を学び、力試しとしてBrainfuckを作った。とはいえ単に文字列を1文字づつ見ていくだけだし、入出力はそれぞれ`printf`と`scanf`で行う簡単なものだった。
+
+さらに年月は経ち、大学のJavaの授業でSwingを使ったGUIアプリ作成の課題があったのだが、電卓にBrainfuckを組み込んだ。
+オブジェクト指向に入門したのがこのときで、Brainfuckインタプリタをクラスとして分離して汎用性を持たせようとした記憶がある。
+入力命令は面倒だと考え実装しなかった。
+
+そして今回、PureScriptでBrainfuckを作った。
+
+### まとめ
+
+PureScriptでBrainfuckインタプリタを作成した。インタプリタの骨組みを作り、それがCUI、GUI両方で使えることを示した。
+インタプリタの動作の様子を可視化する仕組みも実装した。
+
+Brainfuckなんて、抽象化を気にせずC言語で書くと、以下のように60行に満たない。
+
+```c
+#include <stdio.h>
+
+#define S_SIZE 1100
+#define D_SIZE 31000
+
+int main(void) {
+  char S[S_SIZE];
+  int data[D_SIZE] = { 0 };
+  int dp = 0;
+  int ip;
+
+  while (1) {
+    scanf("%s", S);
+    if (S[0] == 'q') break; // qを入力すると終了
+
+    for (ip = 0; S[ip] != 0; ip++) {
+      if (S[ip] == '>' && dp < D_SIZE) {
+        dp++;
+      } else if (S[ip] == '<' && dp > 0) {
+        dp--;
+      } else if (S[ip] == '+') {
+        data[dp]++;
+      } else if (S[ip] == '-') {
+        data[dp]--;
+      } else if (S[ip] == '.') {
+        printf("%c", data[dp]);
+      } else if (S[ip] == ',') {
+        scanf("%c", &data[ip]);
+      } else if (S[ip] == '[' && data[dp] == 0) {
+        int cnt = 1;
+        while (cnt != 0) {
+          ip++;
+          if (S[ip] == '\0') {
+            printf("Error\n");
+            return 0;
+          }
+          if (S[ip] == '[') cnt++;
+          else if (S[ip] == ']') cnt--;
+        }
+      } else if (S[ip] == ']' && data[dp] != 0) {
+        int cnt = -1;
+        while (cnt != 0) {
+          ip--;
+          if (ip < 0) {
+            printf("Error\n");
+            return 0;
+          }
+          if (S[ip] == '[') cnt++;
+          else if (S[ip] == ']') cnt--;
+        }
+      }
+    }
+
+    printf("\n");
+  }
+  return 0;
+}
+```
+
+しかし今回PureScriptでBrainfuckを実装するにあたり、
+
+- 命令を代数的データで扱う: 
+  (文字の書き間違いにある程度は気づけるようになるし、`><+-.,[]`以外の命令セットにも対応できるようになるため。
+- 入出力に汎用性を持たせる。
+- 可視化をする。
+- 適当にモジュールに分割する
+
+などの制約を自分に課した結果、結構実装が大変になった。そして想像以上に長い記事となってしまった。
+
+しかし実装に当たって初めて使ったパッケージ(avar, refs, halogen-subscriptionsなど)もあったし、
+実装に当たってモナド変換子を利用できたので非常に勉強になった。

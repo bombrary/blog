@@ -725,6 +725,7 @@ inputProgram = do
 ## ここまでのソースコード
 
 [GitHubのRepository](https://github.com/bombrary/brainfuck-purescript)に上げた。
+ただし、次回の記事での都合上、`Main.purs`は`MainCUI.purs`に変更している。
 
 ## 次回
 
