@@ -161,13 +161,13 @@ body {
   border-radius: 3px;
 }
 
-@media (prefers-color-scheme: dark) {
+.tags li a:hover, .categories li a:hover {
+  opacity: .7;
+}
+
+/*@media (prefers-color-scheme: dark) {
   .categories li a {
     color: #ccc;
     border-color: #ccc;
   }
-}
-
-.tags li a:hover, .categories li a:hover {
-  opacity: .7;
-}
+}*/
