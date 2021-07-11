@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<head>
+  <title>ロジスティック回帰 メモ | Chanomic Blog</title>
+  <meta charset="utf-8">
+  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
+  <link rel="canonical" href="https://bombrary.github.io/blog/posts/logistic-regression/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+  <link rel="stylesheet" href="https://bombrary.github.io/blog/katex/katex.min.css">
+  <script defer src="https://bombrary.github.io/blog/katex/katex.min.js"></script>
+  <script defer src="https://bombrary.github.io/blog/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body)"></script>
+  
+  <link rel="stylesheet" href="/blog/css/custom.css">
+
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+
+
+
+  
+  <link rel="stylesheet" href="https://bombrary.github.io/blog/css/math.css">
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}]
+    });
+  });
+</script>
+
+  
+</head>
+
+<body>
+<header>
+  
+    <a href="https://bombrary.github.io/blog/" class="title">Chanomic Blog</a>
+  
+  
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/logistic-regression/">ロジスティック回帰 メモ</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2021-07-11T12:40:00&#43;09:00">July 11, 2021</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2021-07-11T12:40:00&#43;09:00">July 04, 2021</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e3%83%ad%e3%82%b8%e3%82%b9%e3%83%86%e3%82%a3%e3%83%83%e3%82%af%e5%9b%9e%e5%b8%b0/">ロジスティック回帰</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e5%8b%be%e9%85%8d%e9%99%8d%e4%b8%8b%e6%b3%95/">勾配降下法</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/%e6%a9%9f%e6%a2%b0%e5%ad%a6%e7%bf%92/">機械学習</a></li> <li class="tags_item"><a href="https://bombrary.github.io/blog//categories/julia/">Julia</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#問題設定">問題設定</a></li>
+    <li><a href="#確率モデルの定義">確率モデルの定義</a></li>
+    <li><a href="#確率モデルによる予測関数モデルの意味">確率モデルによる予測関数、モデルの意味</a></li>
+    <li><a href="#確率モデルの尤度関数とその微分">確率モデルの尤度関数とその微分</a>
+      <ul>
+        <li><a href="#シグモイド関数の微分">シグモイド関数の微分</a></li>
+        <li><a href="#対数尤度関数の勾配の計算">対数尤度関数の勾配の計算</a></li>
+        <li><a href="#対数尤度関数の勾配のベクトル表現">対数尤度関数の勾配のベクトル表現</a></li>
+        <li><a href="#おまけ-ミニバッチ勾配降下法の場合">(おまけ) ミニバッチ勾配降下法の場合</a></li>
+      </ul>
+    </li>
+    <li><a href="#juliaによる実装">Juliaによる実装</a>
+      <ul>
+        <li><a href="#サンプルデータの生成">サンプルデータの生成</a></li>
+        <li><a href="#勾配降下法の実装">勾配降下法の実装</a></li>
+        <li><a href="#データ点と境界の描画">データ点と境界の描画</a></li>
+      </ul>
+    </li>
+    <li><a href="#考察---ロジスティック回帰の実行結果について">考察 - ロジスティック回帰の実行結果について</a>
+      <ul>
+        <li><a href="#ステップ数におけるシグモイド関数の変化">ステップ数におけるシグモイド関数の変化</a></li>
+        <li><a href="#線形分離不可能なデータ">線形分離不可能なデータ</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    
+  <p>式変形の一部は<a href="https://probml.github.io/pml-book/book1.html">Probabilistic Machine Learning: An Introduction</a>を参考にしている。</p>
+<h2 id="問題設定">問題設定</h2>
+<p>データが $N$ 個あり、入力は $\bm{x}_n = (x_{n1}, x_{n2}, \ldots, x_{nD})$、出力は $y_n \in \{ 0, 1 \}$ とする。
+このとき、入力 $\bm{x}$ が与えられたとき出力 $y$ を予測したい。</p>
+<h2 id="確率モデルの定義">確率モデルの定義</h2>
+<p>ここでは確率的なモデルを考える。すなわち、 データ $\bm{x}$ が与えられたとき、 $y = 0, 1$ のどちらの確率が高いのかを考える。</p>
+<p>$y$ は2値だから、ベルヌーイ分布としてモデル化できる。</p>
+<p>$$
+p(y ; \mu) = \mu^y (1 - \mu)^{1 - y}
+$$</p>
+<p>これは、$y = 1$ である確率が $\mu$ 、$y = 0$ である確率が $1 - \mu$ であることを意味する。
+$\mu$ は確率だから、$0 \le \mu \le 1$ である必要がある。</p>
+<p>入力 $\bm{x}$ によって $y$ の確率が決まって欲しいから、$\mu$ は $\bm{x}$ に依存する量である。
+よって、本当は次のように書くのが適当。</p>
+<p>$$
+p(y | \bm{x}) = g(\bm{x})^y (1 - g(\bm{x}))^{1 - y}
+$$</p>
+<p>関数 $g$ は $0 \le g(\bm{x}) \le 1$ を満たしている必要がある。
+このような $g$ は作りたいモデルによって適当に決める必要がある。</p>
+<p>今回は次のようにモデル化してみる。</p>
+<p>$$
+p(y | \bm{x}, \bm{w}) = \sigma(\bm{w}^T\bm{x})^y (1 - \sigma(\bm{w}^T\bm{x}))^{1 - y}
+$$</p>
+<p>ここで、$\sigma$ はシグモイド関数。このモデルがどんな状況に適するのかについては、次の節で明らかにする。</p>
+<p>$\bm{w}^T\bm{x}$ について、定数項を $w_0$ として扱いたい。
+そこで、$\bm{w} = (w_0, w_1, \ldots, w_D),\ \bm{x} = (1, x_1, x_2, \ldots, x_D)$ と表すことにし、
+データの入力 $\bm{x}_n$ についても改めて $\bm{x}_n = (1, x_{n1}, x_{n2}, \ldots, x_{nD})$ と表す。</p>
+<h2 id="確率モデルによる予測関数モデルの意味">確率モデルによる予測関数、モデルの意味</h2>
+<p>この確率モデルを元に $\bm{x}$ から $y$ を予測する関数を作る。それは
+「$y = 1$ である確率が $y = 0$ である確率より高ければ $1$ と予測、そうでなければ $0$ と予測」
+という条件を満たしているのが適当である。そこで、予測する関数を</p>
+<p>$$
+f(\bm{x}) = \bm{1}(p(y = 1 | \bm{x}, \bm{w}) &gt; p(y = 0 | \bm{w}, \bm{w}))
+$$</p>
+<p>と定義する。ただし、$\bm{1}$ は指示関数。
+ここで、</p>
+<p>$$
+\begin{aligned}
+&amp;\quad p(y = 1 | \bm{x}, \bm{w}) &gt; p(y = 0 | \bm{w}, \bm{w})\\
+\Leftrightarrow &amp;\quad \frac{p(y = 1 | \bm{x}, \bm{w})}{p(y = 0 | \bm{w}, \bm{w})} &gt; 1\\
+\Leftrightarrow &amp;\quad \log \frac{p(y = 1 | \bm{x}, \bm{w})}{p(y = 0 | \bm{w}, \bm{w})} &gt; 0
+\end{aligned}
+$$</p>
+<p>であり、</p>
+<p>$$
+\begin{aligned}
+\log \frac{p(y = 1 | \bm{x}, \bm{w})}{p(y = 0 | \bm{x}, \bm{w})}
+&amp;= \log \frac{\sigma(\bm{w}^T\bm{x})}{1 - \sigma(\bm{w}^T\bm{x})}\\
+&amp;= \log \frac{\frac{1}{1 + e^{-\bm{w}^T\bm{x}}}}{1 - \frac{1}{1 + e^{-\bm{w}^T\bm{x}}}}\\
+&amp;= \log \frac{1}{1 + e^{-\bm{w}^T\bm{x}} - 1}\\
+&amp;= \log \frac{1}{e^{-\bm{w}^T\bm{x}}}\\
+&amp;= \bm{w}^T \bm{x}
+\end{aligned}
+$$</p>
+<p>だから、結局 $f$ は、</p>
+<p>$$
+f(\bm{w}) = \bm{1}(\bm{w}^T \bm{x} &gt; 0)
+$$</p>
+<p>に読み替えられる。これは、$D$ 次元の空間を平面 $\bm{w}^T \bm{x} = 0$ で分離することを意味する。
+つまり、平面で分けられそうなデータに対しては、今回の $\sigma(\bm{w}^T \bm{x})$ を使ったモデルが利用できる。</p>
+<h2 id="確率モデルの尤度関数とその微分">確率モデルの尤度関数とその微分</h2>
+<p>便宜上、$\mu_n = \sigma(\bm{w}^T\bm{x}_n)$ とおく。扱う確率モデルを再掲すると、以下の通り。</p>
+<p>$$
+p(y | \bm{x}, \bm{w}) = \mu^y (1 - \mu)^{1 - y}
+$$</p>
+<p>尤度関数は $N$ 個のデータ $(\bm{x}_n, y_n),\ n = 1, 2, \ldots, N$ が実現される確率である:</p>
+<p>$$
+L(\bm{w}) = \prod_{n = 1}^{N} p(y_n | \bm{x}_n, \bm{w}) = \prod_{n = 1}^{N} \mu_n^{y_n} (1 - \mu_n)^{1 - y_n}
+$$</p>
+<p>$N$ 個のデータが実現したということは、それらが実現される確率は高いと考えるのが適当である。
+よって、尤度関数を最大化するような $\bm{w}$ を求めれば良い。</p>
+<p>最大化問題を解くために、勾配降下法が利用できる。そのためには勾配を計算する必要がある。
+そこで、微分をし易くするために対数をとっておく。また、勾配降下法は最小化問題を解く手法だから、
+負号をつけて最大化問題を最小化問題に読み替える。そうして出来上がる関数 $l$ を負の対数尤度関数という。</p>
+<p>$$
+l(\bm{w}) = -\sum_{n = 1}^{N} \left\{ y_n \log \mu_n + (1 - y_n) \log (1 - \mu_n) \right\}
+$$</p>
+<p>これを微分すれば勾配が出せる。以下、勾配の計算について段階的に説明する。</p>
+<h3 id="シグモイド関数の微分">シグモイド関数の微分</h3>
+<p>有名な事実だが、一応ここでまとめておく。</p>
+<p>まずシグモイド関数は以下の式で与えられる。</p>
+<p>$$
+\sigma(x) = \frac{1}{1 + e^{-x}}
+$$</p>
+<p>これを $x$ で微分すると次のようになる。</p>
+<p>$$
+\begin{aligned}
+\frac{d\sigma(x)}{dx}
+&amp;= \frac{e^{-x}}{(1 + e^{-x})^2}\\
+&amp;= \frac{(1 + e^{-x}) - 1}{(1 + e^{-x})^2}\\
+&amp;= \frac{1}{1 + e^{-x}} - \frac{1}{(1 + e^{-x})^2}\\
+&amp;= \sigma(x) - \sigma(x)^2\\
+&amp;= \sigma(x)(1 - \sigma(x))
+\end{aligned}
+$$</p>
+<h3 id="対数尤度関数の勾配の計算">対数尤度関数の勾配の計算</h3>
+<p>$\mu_n = \sigma(\bm{w}^T\bm{x}_n)$ は合成関数の微分で簡単に計算できる。</p>
+<p>$$
+\begin{aligned}
+\frac{\partial \mu_n}{\partial w_j} = x_{nj}\mu_n (1 - \mu_n)
+\end{aligned}
+$$</p>
+<p>$\log \mu_n$ と $\log (1 - \mu_n)$ の微分は次のようになる。</p>
+<p>$$
+\begin{aligned}
+\frac{\partial \log \mu_n}{\partial w_j}
+&amp;= \frac{x_{nj}\mu_n (1 - \mu_n)}{\mu_n}\\
+&amp;= x_{nj}(1 - \mu_n)\\
+\frac{\partial \log (1 - \mu_n)}{\partial w_j}
+&amp;= \frac{-x_{nj}\mu_n (1 - \mu_n)}{1 - \mu_n}\\
+&amp;= -x_{nj}\mu_n\\
+\end{aligned}
+$$</p>
+<p>これらを合わせると、対数尤度関数の勾配が得られる。</p>
+<p>$$
+\begin{aligned}
+\frac{\partial l}{\partial w_j}
+&amp;= -\sum_{n = 1}^{N} \left\{ y_nx_{nj}(1 - \mu_n) - (1 - y_n)x_{nj}\mu_n \right\}\\
+&amp;= -\sum_{n = 1}^{N} \left\{ y_nx_{nj} - x_{nj}\mu_n \right\}\\
+&amp;= \sum_{n = 1}^{N} ( \mu_n - y_n )x_{nj}
+\end{aligned}
+$$</p>
+<h3 id="対数尤度関数の勾配のベクトル表現">対数尤度関数の勾配のベクトル表現</h3>
+<p>数式をコードに落とし込み易くするために、ベクトルと行列を使った表現に変形する。まず、</p>
+<p>$$
+\begin{aligned}
+\frac{\partial l}{\partial \bm{w}}
+&amp;= \begin{pmatrix}
+\sum_{n = 1}^{N} ( \mu_n - y_n )x_{n1}\\
+\sum_{n = 1}^{N} ( \mu_n - y_n )x_{n2}\\
+\vdots\\
+\sum_{n = 1}^{N} ( \mu_n - y_n )x_{nD}
+\end{pmatrix}\\
+&amp;= \begin{pmatrix}
+x_{10} &amp; x_{20} &amp; \cdots &amp; x_{N0}\\
+x_{11} &amp; x_{21} &amp; \cdots &amp; x_{N1}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+x_{1D} &amp; x_{2D} &amp; \cdots &amp; x_{ND}
+\end{pmatrix}
+\begin{pmatrix}
+\mu_1 - y_1\\
+\mu_2 - y_2\\
+\vdots\\
+\mu_N - y_N
+\end{pmatrix}
+\end{aligned}
+$$</p>
+<p>となる。そこで、</p>
+<p>$$
+\begin{aligned}
+X &amp;=
+\begin{pmatrix}
+\bm{x}_1^T\\
+\bm{x}_2^T\\
+\vdots\\
+\bm{x}_N^T
+\end{pmatrix}\\
+\bm{y} &amp;= (y_1, y_2, \ldots, y_N)^T\\
+\bm{\mu} &amp;= (\mu_1, \mu_2, \ldots, \mu_N)^T
+\end{aligned}
+$$</p>
+<p>とおけば、</p>
+<p>$$
+\begin{aligned}
+\frac{\partial l}{\partial \bm{w}}
+= X^T (\bm{\mu} - \bm{y})
+\end{aligned}
+$$</p>
+<p>変えられる。</p>
+<h3 id="おまけ-ミニバッチ勾配降下法の場合">(おまけ) ミニバッチ勾配降下法の場合</h3>
+<p>ミニバッチの添字を $I = \{ i_1, i_2, \ldots, i_M \}$ とする。
+ミニバッチ勾配降下法の場合は、$X, \bm{y}, \bm{\mu}$ を</p>
+<p>$$
+\begin{aligned}
+X &amp;=
+\begin{pmatrix}
+\bm{x}_{i_1}^T\\
+\bm{x}_{i_2}^T\\
+\vdots\\
+\bm{x}_{i_M}^T
+\end{pmatrix}\\
+\bm{y} &amp;= (y_{i_1}, y_{i_2}, \ldots, y_{i_M})^T\\
+\bm{\mu} &amp;= (\mu_{i_1}, \mu_{i_2}, \ldots, \mu_{i_M})^T
+\end{aligned}
+$$</p>
+<p>だと思って勾配の計算を行えば良い。</p>
+<h2 id="juliaによる実装">Juliaによる実装</h2>
+<p>自分自身、Juliaについてまだ学習中のため、気になる文法や関数があれば適宜補足する。</p>
+<h3 id="サンプルデータの生成">サンプルデータの生成</h3>
+<p>$\bm{w}$ からデータを作成する。
+まず一様分布乱数で $\bm{x} = (1, x_1, x_2, \ldots, x_D)$ を生成し、 $\bm{w}^T\bm{x} &gt; 0$ なら $y = 1$、そうでなければ $y = 0$ とする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Random</span>
+
+<span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mf">0.01</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span><span class="p">)))</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="kt">Int</span><span class="p">(</span><span class="n">w</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="p">]</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+<span class="k">end</span>
+</code></pre></div><p>試しにプロットしてみる。
+(<code>X[y .== 0, :]</code>の文法については<a href="https://docs.julialang.org/en/v1/manual/arrays/#Logical-indexing">Logical Indexing</a>と
+<a href="https://docs.julialang.org/en/v1/manual/mathematical-operations/#man-dot-operators">Dot operator</a>を参照)</p>
+<p>方程式 $1 + 2x_1 + 3x_2 = 0$ を境界とするデータを作成する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
+<span class="n">gr</span><span class="p">()</span>
+
+<span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+
+  <span class="n">X0</span><span class="p">,</span> <span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">.==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">.==</span> <span class="mi">1</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+
+  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
+  <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">X0</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">X0</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+  <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">X1</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="k">end</span>
+
+<span class="n">main</span><span class="p">()</span>
+</code></pre></div><figure><img src="img00.png" width="70%"/>
+</figure>
+
+<h3 id="勾配降下法の実装">勾配降下法の実装</h3>
+<p>勾配降下法では、各ステップで以下のように更新する($\alpha$ は学習率)。</p>
+<p>$$
+\bm{w} \leftarrow \bm{w} - \alpha \frac{\partial l}{\partial \bm{w}}
+$$</p>
+<p>勾配は次の式で与えられた。</p>
+<p>$$
+\begin{aligned}
+\frac{\partial l}{\partial \bm{w}}
+= X^T (\bm{\mu} - \bm{y})
+\end{aligned}
+$$</p>
+<p>ここで、$\bm{\mu} = (\sigma(\bm{w}^T\bm{x}_1), \sigma(\bm{w}^T\bm{x}_2), \ldots, \sigma(\bm{w}^T\bm{x}_N))$ であった。
+これを計算するためには、まず</p>
+<p>$$
+\begin{pmatrix}
+\bm{w}^T\bm{x}_1\\ \bm{w}^T\bm{x}_2\\ \vdots\\ \bm{w}^T\bm{x}_N
+\end{pmatrix}
+= X\bm{w}
+$$</p>
+<p>を計算し、その各成分に対して $\sigma$ を適用すれば良い。
+各成分に関数を適用するには、<a href="https://docs.julialang.org/en/v1/manual/functions/#man-vectorized">Dot syntax</a>を使えば良い。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+<span class="k">end</span>
+
+
+<span class="k">function</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mi">200000</span><span class="p">)</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
+  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="p">]</span>
+  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_step</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="o">.</span><span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">dl</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">mu</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dl</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span><span class="o">&#39;</span>
+<span class="k">end</span>
+</code></pre></div><h3 id="データ点と境界の描画">データ点と境界の描画</h3>
+<p>勾配降下法で求めた $\bm{w}$ を使って決定境界を描画する。
+ここではcontourを使って境界を描画する。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">plot_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
+
+  <span class="c"># データ点の描画</span>
+  <span class="n">X0</span><span class="p">,</span> <span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">.==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">.==</span> <span class="mi">1</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+  <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">X0</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">X0</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+  <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">X1</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+  <span class="c"># 識別境界の描画</span>
+  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">extrema</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span><span class="o">...</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.025</span><span class="p">)</span>
+  <span class="n">plot_y</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">extrema</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">...</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.025</span><span class="p">)</span>
+  <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">y</span>
+  <span class="n">contour!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">plot_y</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+  <span class="n">p</span>
+<span class="k">end</span>
+</code></pre></div><p><code>main</code>関数は以下のようにする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+
+  <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+  <span class="n">display</span><span class="p">(</span><span class="n">ws</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">])</span>
+
+  <span class="n">plot_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div><figure><img src="img01.png" width="70%"/>
+</figure>
+
+<h2 id="考察---ロジスティック回帰の実行結果について">考察 - ロジスティック回帰の実行結果について</h2>
+<p><code>w</code>の出力結果は以下の通りになる。</p>
+<pre class="cui">
+3-element Vector{Float64}:
+ 18.31482287336798
+ 41.77389167306359
+ 60.63214831358917
+</pre>
+
+<p><code>w = [1.0, 2.0, 3.0]</code> と全然異なる結果が出ている。</p>
+<p>一般に、$\bm{w}^T\bm{x} = 0$ が決定境界ならば、その定数倍 $(c\bm{w})^T\bm{x} = 0,\ c \neq 0$ も同じ決定境界である。
+実際、<code>w</code>を<code>w[1]</code>で割ると次のようになる。<code>w = [1.0, 2.0, 3.0]</code> に近い値が出ている。</p>
+<pre class="cui">
+3-element Vector{Float64}:
+ 1.0
+ 2.280878824867479
+ 3.310550625185451
+</pre>
+
+<p>これは、$l(\bm{w})$ を最小にする $\bm{w}$ が一意に定まらないことを意味する。
+では、$l(\bm{w}) = l(\bm{w} / w_0)$ かというと、そうでもないようだ。
+このことを以下でみていく。</p>
+<p>$l$ は次のように定義されていた。</p>
+<p>$$
+l(\bm{w}) = -\sum_{n = 1}^{N} \left\{ y_n \log \mu_n + (1 - y_n) \log (1 - \mu_n) \right\}
+$$</p>
+<p>$\mu_n$ が $0$ や $1$ に近い値をとっていると不安定になるのを多少軽減するために、
+$l$ は次のように $y = 0, 1$ で場合分けする実装にする。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">l</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+  <span class="n">mu</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="o">.</span><span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span>
+  <span class="n">f</span><span class="p">(</span><span class="n">y_n</span><span class="p">,</span> <span class="n">mu_n</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
+    <span class="k">if</span> <span class="n">y_n</span> <span class="o">==</span> <span class="mi">0</span>
+      <span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mu_n</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="n">log</span><span class="p">(</span><span class="n">mu_n</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="n">res</span> <span class="o">=</span> <span class="o">-</span><span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">mu</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div><p><code>l(X, y, w)</code>と<code>l(X, y, w/w[1])</code>を計算してみると次のようになる。</p>
+<pre class="cui">
+l(X, y, w)     : 0.23612882321327353
+l(X, y, w/w[1]): 23.332398469069894
+</pre>
+
+<p>前者の方が非常に小さい。</p>
+<p>$\bm{w}$は一定の値に収束しているのかというと、どうやら違うらしい。
+ステップ数を伸ばし、$\bm{w}$ の各成分の動きを見てみる。
+また、$l$ の値も見てみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">plot_ws</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span>
+  <span class="n">N</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">ws</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+  <span class="n">p1</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s">&#34;w0&#34;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="ss">:bottomright</span><span class="p">)</span>
+  <span class="n">p2</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s">&#34;w1&#34;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="ss">:bottomright</span><span class="p">)</span>
+  <span class="n">p3</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s">&#34;w2&#34;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="ss">:bottomright</span><span class="p">)</span>
+  <span class="n">plot</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+
+  <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">max_step</span><span class="o">=</span><span class="mi">500000</span><span class="p">)</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+  <span class="n">plot_ws</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div><p>$l$ の値はほぼ$0$に収束しているが、
+$\bm{w}$ の各成分はいくらでも大きくなっているように見える。</p>
+<figure><img src="img02.png" width="70%"/>
+</figure>
+
+<p>このグラフから、どうやら $\bm{w}$ の各成分が無限大に飛べば $l$ の値が最小値 $0$ をとりそうだと予想できる。
+では、なぜこのようにいくらでも大きくできるような状況が起こるのか。</p>
+<p>色々調べてみたところ、どうやら「データが線形分離可能な場合は $\bm{w}$ は収束しない」らしい。
+これについては、
+<a href="https://stats.stackexchange.com/questions/224863/understanding-complete-separation-for-logistic-regression">Stack Exchange</a>に直感的な説明が書かれていた。
+シグモイド関数の $e$ の肩に乗っている $\bm{w}^T\bm{x}$ を大きくすれば、いくらでも $0, 1$ の境界を急峻にできるから、ということらしい。
+このことを数学的にきちんと示す方法は不明だが、ここまでは深入りしないことにする。</p>
+<h3 id="ステップ数におけるシグモイド関数の変化">ステップ数におけるシグモイド関数の変化</h3>
+<p>試しに、ステップ数において $\sigma(\bm{w}^T\bm{x})$ がどう変化するのかをみてみる。
+$p(y = 1 | \bm{x}, \bm{w}) = \sigma(\bm{w}^T\bm{x})$ であったことに注意。</p>
+<p>以下は、勾配法のステップ数を2000とした場合。
+<figure><img src="img03.png" width="70%"/>
+</figure>
+</p>
+<p>以下は、勾配法のステップ数を200000とした場合。
+<figure><img src="img04.png" width="70%"/>
+</figure>
+</p>
+<p>ステップを経る毎に、シグモイド関数が急峻になり、$y = 0$ と $y = 1$ の領域がくっきりしていくことが分かる。
+$\bm{w}$ を大きくすればするほど境界が急峻になっていくことが読み取れる。
+無限に大きくすれば、直感的には<a href="https://ja.wikipedia.org/wiki/%E3%83%98%E3%83%B4%E3%82%A3%E3%82%B5%E3%82%A4%E3%83%89%E3%81%AE%E9%9A%8E%E6%AE%B5%E9%96%A2%E6%95%B0">ヘビサイド関数</a>のような形になるのだろう。</p>
+<h3 id="線形分離不可能なデータ">線形分離不可能なデータ</h3>
+<p>線形分離不可能なデータでは $\bm{w}$ の値は収束するのかを確かめる。</p>
+<p>まず、$y$ の値が確率 $\sigma(\bm{w}^T\bm{x})$ によって変わるようにデータを作る。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">not_separatable_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">:</span><span class="mf">0.01</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span><span class="p">)))</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}()</span>
+  <span class="k">for</span> <span class="n">n</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">w</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="o">:</span><span class="p">])</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">p</span>
+      <span class="n">push!</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="n">push!</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+<span class="k">end</span>
+</code></pre></div><p>これを元に勾配法を実行してみる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">not_separatable_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+
+  <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">max_step</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+  <span class="n">plot_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div><p><code>w</code>の値は以下のようになる。<code>[1.0, 2.0, 3.0]</code>に近い値とはいえないが、
+これはデータが原因。線形分離できない上に，データ数が100と少ない。</p>
+<pre class="cui">
+3-element Vector{Float64}:
+ 0.6832573469772867
+ 1.8878405217006031
+ 2.9078528249758757
+</pre>
+
+<p>ただし、データを分離する点はなんとなく引けているように見える。</p>
+<figure><img src="img05.png" width="70%"/>
+</figure>
+
+<p>$\bm{w}$ の動きをみてみると、一定値に収束していることが確認できる。</p>
+<figure><img src="img06.png" width="70%"/>
+</figure>
+
+
+</article>
+
+
+</body>
+</html>

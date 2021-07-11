@@ -6,7 +6,25 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 09 Jul 2021 23:15:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 11 Jul 2021 12:40:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Julia</title>
+      <link>https://bombrary.github.io/blog/categories/julia/</link>
+      <pubDate>Sun, 11 Jul 2021 12:40:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/julia/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>機械学習</title>
+      <link>https://bombrary.github.io/blog/categories/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/</link>
+      <pubDate>Sun, 11 Jul 2021 12:40:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Brainfuck</title>
       <link>https://bombrary.github.io/blog/categories/brainfuck/</link>
@@ -22,24 +40,6 @@
       <pubDate>Fri, 09 Jul 2021 23:15:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/purescript/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Julia</title>
-      <link>https://bombrary.github.io/blog/categories/julia/</link>
-      <pubDate>Tue, 22 Jun 2021 16:08:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/julia/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>機械学習</title>
-      <link>https://bombrary.github.io/blog/categories/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/</link>
-      <pubDate>Tue, 22 Jun 2021 16:08:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/</guid>
       <description></description>
     </item>
     

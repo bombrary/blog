@@ -7,6 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>ロジスティック回帰 メモ</title>
+      <link>https://bombrary.github.io/blog/posts/logistic-regression/</link>
+      <pubDate>Sun, 11 Jul 2021 12:40:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/logistic-regression/</guid>
+      <description>式変形の一部はProbabilistic Machine Learning: An Introductionを参考にしている。
+問題設定 データが $N$ 個あり、入力は $\bm{x}_n = (x_{n1}, x_{n2}, \ldots, x_{nD})$、出力は $y_n \in \{ 0, 1 \}$ とする。 このとき、入力 $\bm{x}$ が与えられたとき出力 $y$ を予測したい。
+確率モデルの定義 ここでは確率的なモデルを考える。すなわち、 データ $\bm{x}$ が与えられたとき、 $y = 0, 1$ のどちらの確率が高いのかを考える。
+$y$ は2値だから、ベルヌーイ分布としてモデル化できる。
+$$ p(y ; \mu) = \mu^y (1 - \mu)^{1 - y} $$
+これは、$y = 1$ である確率が $\mu$ 、$y = 0$ である確率が $1 - \mu$ であることを意味する。 $\mu$ は確率だから、$0 \le \mu \le 1$ である必要がある。</description>
+    </item>
+    
+    <item>
       <title>PureScriptで作るBrainfuckインタプリタ 4/4 Halogenの利用</title>
       <link>https://bombrary.github.io/blog/posts/purescript-brainfuck04/</link>
       <pubDate>Fri, 09 Jul 2021 23:15:00 +0900</pubDate>
