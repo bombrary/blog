@@ -333,8 +333,6 @@ Juliaでも同じことができる。</p>
 <span class="k">using</span> <span class="n">LinearAlgebra</span>
 <span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
 
-<span class="n">Vec</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
-<span class="n">Mat</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}</span>
 </code></pre></div><h3 id="サンプルデータの作成">サンプルデータの作成</h3>
 <p>ここではデータセットは使わず、データは自前で作る。
 ある $\bm{w}$ で作ったデータを元に $\bm{w}_0$ を計算して、これが $\bm{w}$ と近い値なのかどうかを確認する。</p>
@@ -347,7 +345,7 @@ $\bm{x} = (1, x_1, x_2, \ldots, x_D)$ の最初の成分以外は一様分布乱
 を計算できる。</p>
 <p>$\bm{w}$ を元に $N$ 点のデータを作成する関数は以下のようになる。
 少ないデータで結果を出したい都合上、正規分布の標準偏差を小さく設定している。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span> <span class="o">::</span> <span class="n">Vec</span><span class="p">,</span> <span class="n">N</span> <span class="o">::</span> <span class="kt">Int64</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
   <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
   <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
@@ -444,7 +442,7 @@ julia> include("regression.jl")
 </figure>
 
 <h2 id="問題設定2---基底関数を含む場合">問題設定(2) - 基底関数を含む場合</h2>
-<p>$\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T, \bm{\phi}(\bm{x}) = (1, \phi_1(\bm{x}), \phi_2(\bm{x}), \ldots, \phi_D(\bm{x}))$
+<p>$\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_{D_0}^{(i)})^T, \bm{\phi}(\bm{x}) = (1, \phi_1(\bm{x}), \phi_2(\bm{x}), \ldots, \phi_D(\bm{x}))$
 とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に</p>
 <p>$$
 \begin{aligned}
@@ -504,27 +502,27 @@ $$</p>
 <p>$\Phi$ を計算するために、ベクトル値関数 $\bm{\phi}(\bm{x})$ を引数に持たせる。
 $\bm{w}$ の計算にもはや $X$ は必要ないのだが、グラフにデータをプロットする際に必要になるので、
 $X$ も返り値に含めている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span> <span class="o">::</span> <span class="n">Vec</span><span class="p">,</span> <span class="n">N</span> <span class="o">::</span> <span class="kt">Int64</span><span class="p">;</span> <span class="n">phi</span><span class="o">=</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="p">)</span>
-  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
+<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+  <span class="n">dummy</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}(</span><span class="nb">undef</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">)</span>
+  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">phi</span><span class="p">(</span><span class="n">dummy</span><span class="p">))</span>
 
   <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">))</span>
 
-  <span class="n">Phi</span> <span class="o">=</span> <span class="n">similar</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
-    <span class="n">Phi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="n">Phi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+  <span class="n">Phi</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}(</span><span class="nb">undef</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">n</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
+    <span class="n">Phi</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">Phi</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
   <span class="k">end</span>
-  <span class="n">y</span> <span class="o">=</span> <span class="n">Phi</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
 
+  <span class="n">y</span> <span class="o">=</span> <span class="n">Phi</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
   <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span>
 <span class="k">end</span>
 </code></pre></div><p>試しに関数 $y = 1 + 2x^2$ によるデータをプロットしてみる。</p>
 <div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
 
-  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
   <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
 
   <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
@@ -537,7 +535,7 @@ $X$ も返り値に含めている。</p>
 <div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
 
-  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
+  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
   <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
 
   <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">Phi</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">Phi</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">Phi</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>

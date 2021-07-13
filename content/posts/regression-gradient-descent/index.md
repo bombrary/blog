@@ -62,9 +62,6 @@ $$
 using Plots
 using LinearAlgebra
 using Random, Distributions
-
-Vec = Vector{Float64}
-Mat = Matrix{Float64}
 ```
 
 ### サンプルデータの生成
@@ -72,7 +69,7 @@ Mat = Matrix{Float64}
 前回同様データを生成する関数を作る。
 
 ```julia
-function generate_data(w :: Vec, N :: Int64)
+function generate_data(w, N)
   D = length(w)
   @assert D > 1
 
@@ -141,7 +138,7 @@ dJ = X' * (X * w - y)
 `w`がステップを経るごとにどう動くのかを見たいため、各ステップにおける`w`すべてを返却値とする。
 
 ```julia
-function gradient_descent(X::Mat, y::Vec, w0::Vec; alpha::Float64 = 0.01, eps::Float64 = 1e-8, max_step=1e5)
+function gradient_descent(X, y, w0, eps, max_step=1e5)
   @assert size(X, 1) == length(y)
   N = length(y)
   D = size(X, 2)
@@ -301,7 +298,7 @@ $I_k$ ないし `idcs` の作り方だが、`1, 2, ..., N`をシャッフルし�
 $M$ 個に分割する関数は以下のように書ける。ただし`N`が`M`で割り切れない場合があるため、最後の配列は`M`個とは限らない。
 
 ```julia
-function split(x :: Vector{Int}, m :: Int64)
+function split(x, m)
   res = Vector{Vector{Int}}()
   N = length(x)
   for i in 1:m:N
@@ -316,7 +313,7 @@ end
 `idcs`を作る処理と`X1, y1`を作る処理を追加しただけで、他は勾配法とほとんど変わらない。
 
 ```julia
-function minibatch_descent(X::Mat, y::Vec, w0::Vec; M, alpha::Float64 = 0.01, eps::Float64 = 1e-3, max_step=1e4)
+function minibatch_descent(X, y, w0; M, alpha = 0.01, eps = 1e-3, max_step=1e4)
   @assert size(X, 1) == length(y)
   N = length(y)
   D = size(X, 2)
@@ -349,7 +346,7 @@ end
 using Plots.PlotMeasures
 pyplot()
 
-function plot_minibatch(X :: Mat, y :: Vec, M :: Int64)
+function plot_minibatch(X, y, M)
   # コスト関数の地形を描画
   J(w0, w1) = begin
     w = [w0, w1]
@@ -461,7 +458,7 @@ $$
 これは前回と同じ。
 
 ```julia
-function generate_data(w :: Vec, N :: Int64, phi)
+function generate_data(w, N, phi)
   D = length(w)
   @assert D > 1
 

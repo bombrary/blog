@@ -284,8 +284,6 @@ using Plots
 using LinearAlgebra
 using Random, Distributions
 
-Vec = Vector{Float64}
-Mat = Matrix{Float64}
 ```
 
 ### サンプルデータの作成
@@ -307,7 +305,7 @@ $\bm{w}$ を元に $N$ 点のデータを作成する関数は以下のように
 少ないデータで結果を出したい都合上、正規分布の標準偏差を小さく設定している。
 
 ```julia
-function generate_data(w :: Vec, N :: Int64)
+function generate_data(w, N)
   D = length(w)
   @assert D > 1
 
@@ -436,7 +434,7 @@ julia> include("regression.jl")
 ## 問題設定(2) - 基底関数を含む場合
 
 
-$\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T, \bm{\phi}(\bm{x}) = (1, \phi_1(\bm{x}), \phi_2(\bm{x}), \ldots, \phi_D(\bm{x}))$
+$\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x\_{D_0}^{(i)})^T, \bm{\phi}(\bm{x}) = (1, \phi_1(\bm{x}), \phi_2(\bm{x}), \ldots, \phi_D(\bm{x}))$
 とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に
 
 $$
@@ -514,20 +512,20 @@ $\bm{w}$ の計算にもはや $X$ は必要ないのだが、グラフにデー
 $X$ も返り値に含めている。
 
 ```julia
-function generate_data(w :: Vec, N :: Int64; phi=x -> x)
-  D = length(w)
-  @assert D > 1
+function generate_data(N, num_of_var, w, phi)
+  dummy = Vector{Float64}(undef, num_of_var)
+  D = length(phi(dummy))
 
   d = Normal(0, 0.1)
-  X = hcat(ones(N), rand(N, D - 1))
+  X = hcat(ones(N), rand(N, num_of_var))
 
-  Phi = similar(X)
-  for i in 1:N
-    Phi[i,1] = 1.0
-    Phi[i,2:end] = phi(X[i,2:end])
+  Phi = Matrix{Float64}(undef, N, D + 1)
+  for n in 1:N
+    Phi[n,1] = 1.0
+    Phi[n,2:end] = phi(X[n,2:end])
   end
-  y = Phi * w + rand(d, N)
 
+  y = Phi * w + rand(d, N)
   X, Phi, y
 end
 ```
@@ -538,7 +536,7 @@ end
 function main()
   Random.seed!(2021)
 
-  X, Phi, y = generate_data([1.0, 2.0], 100, phi=x->[x[1]^2])
+  X, Phi, y = generate_data(100, 1, [1.0, 2.0], x->[x[1]^2])
   p1 = scatter(X[:, 2], y)
 
   display(p1)
@@ -555,7 +553,7 @@ end
 function main()
   Random.seed!(2021)
 
-  X, Phi, y = generate_data([1.0, 2.0], 100, phi=x->[x[1]^2])
+  X, Phi, y = generate_data(100, 1, [1.0, 2.0], x->[x[1]^2])
   p1 = scatter(X[:, 2], y)
 
   w =  (Phi' * Phi) \ (Phi' * y)
