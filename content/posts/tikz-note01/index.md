@@ -1,9 +1,8 @@
 ---
 title: "TikZ 備忘録"
-date: 2021-07-26T19:51:04+09:00
-draft: true
-tags: []
-categories: []
+date: 2021-07-30T22:30:00+09:00
+tags: ["作図"]
+categories: ["TikZ", "TeX"]
 toc: true
 ---
 
