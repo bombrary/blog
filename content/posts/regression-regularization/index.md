@@ -1,14 +1,11 @@
 ---
 title: "線形回帰メモ 正則化"
-date: 2021-07-07T23:58:24+09:00
-draft: true
-tags: []
-categories: []
+date: 2021-08-07T07:17:00+09:00
+tags: ["線形回帰", "正則化"]
+categories: ["機械学習", "Julia"]
 math: true
 toc: true
 ---
-
-正則化自体は線形回帰に限らないことに注意。
 
 ## 問題設定
 
@@ -58,6 +55,7 @@ $$
 ただし、$\lambda$ は適当な定数。$\lambda$ に $1/2$ をつける理由は微分し易くするためのもの。
 
 一般に，コスト関数に $\bm{w}_i$ のLpノルムのp乗の項を付けることをLp正則化という。
+正則化はデータの過学習を防ぐ目的で使われる。
 
 ## Ridge回帰
 
@@ -94,7 +92,6 @@ x_{N0} & x_{N1} & \cdots & x_{ND}
 \end{pmatrix}
 $$
 
-
 ## Lasso回帰
 
 L1正則化
@@ -113,6 +110,8 @@ $$
 \frac{\partial J_1}{\partial w_j}
 = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_{ij} + \lambda \frac{\partial |w_j|}{\partial w_j}
 $$
+
+さて、最後の項が計算できないため、通常の勾配降下法が利用できない。いくつか方法があるらしいが、ここでは座標降下法で解くことを目指す。その準備として、「1変数のみ動かしたときの$J$の最小値」を求めることにする。
 
 ### 1変数以外は固定した場合の最小値
 
@@ -163,15 +162,13 @@ $$
 \end{cases}
 $$
 
-代わりに "0 $\in$ 劣勾配" を満たす $\bm{w}$ を求める。やや天下り的ではあるが、$c_d$ の値で場合分けする。
+"勾配 = 0" を解く代わりに "0 $\in$ 劣勾配" を満たす $\bm{w}$ を求める。やや天下り的ではあるが、$c_d$ の値で場合分けする。
 
-$c_d < -\lambda$ のとき、$\hat{\bm{w}} = \frac{c_d + \lambda}{a_d}$ とおけば、$\hat{\bm{w}} < 0$。
+1. $c_d < -\lambda$ のとき、$\hat{\bm{w}} = \frac{c_d + \lambda}{a_d}$ とおけば、$\hat{\bm{w}} < 0$。
 よって、上式の1行目に代入できて、$\frac{\partial J_1}{\partial w_d} = \\{ 0 \\}$。
-
-$c_d > \lambda$ のとき、$\hat{\bm{w}} = \frac{c_d - \lambda}{a_d}$ とおけば、$\hat{\bm{w}} > 0$。
+2. $c_d > \lambda$ のとき、$\hat{\bm{w}} = \frac{c_d - \lambda}{a_d}$ とおけば、$\hat{\bm{w}} > 0$。
 よって、上式の3行目に代入できて、$\frac{\partial J_1}{\partial w_d} = \\{ 0 \\}$。
-
-$-\lambda \le c_d \le \lambda$ のとき、$-c_d-\lambda \le 0 \le -c_d+\lambda$ すなわち $0 \in [-c_d-\lambda, -c_d+\lambda]$。
+3. $-\lambda \le c_d \le \lambda$ のとき、$-c_d-\lambda \le 0 \le -c_d+\lambda$ すなわち $0 \in [-c_d-\lambda, -c_d+\lambda]$。
 そこで、$\hat{\bm{w}} = 0$ とすれば、上式の2行目より $0 \in \frac{\partial J_1}{\partial w_d}$。
 
 まとめると、"0 $\in$ 劣勾配" を満たす $\bm{w}$ は以下のようになる。
@@ -203,7 +200,7 @@ $$
 
 各ステップで以下の手順を行う。
 
-$d = 1, 2, \ldots, D$ について、$\bm{w} \leftarrow \argmin_{w_d} J_1(\bm{w})$ 
+1. $d = 1, 2, \ldots, D$ について、$\bm{w} \leftarrow \argmin_{w_d} J_1(\bm{w})$ 
 
 つまり、色々な $d$ で、$w_d$ についての最小化問題を解くことを繰り返す。
 
@@ -220,6 +217,77 @@ $d = 1, 2, \ldots, D$ について、
 
 ## Juliaによる実装
 
+雛形を用意．
+
+```julia
+using Plots
+using Random, Distributions
+using LinearAlgebra
+gr()
+
+function main()
+  Random.seed!(2021)
+
+  # ここに色々書く
+end
+
+main()
+```
+
+### データの生成
+
+以下のモデルを満たすデータ$(x, y)$を生成する。
+$$
+y = w_0 + w_1x + \cdots + w_dx^d + \varepsilon
+$$
+ただし，$\varepsilon \sim \mathcal{N}(0, \sigma^2)$．
+
+```julia
+function generate_data(w, N; sigma=0.05)
+  dist = Normal(0, sigma)
+  x = rand(N)
+  f(x) = evalpoly(x, w)
+  y = f.(x) + rand(dist, N)
+  x, y
+end
+```
+
+### Ridge回帰
+
+以下の勾配を使った勾配降下法を適用すればよい。
+
+$$
+\frac{\partial J_2}{\partial \bm{w}} = X^T(X\bm{w} - \bm{y}) + \lambda \bm{w}
+$$
+
+勾配はJuliaだと以下のように書ける。
+
+```julia
+X'*(X*w - y) + lambda*w
+```
+
+```julia
+function fit_by_ridge(X, y, w0; alpha=0.01, lambda=0.01, max_iter=10000)
+  ws = [w0]
+  w = w0
+  for i in 1:max_iter
+    dw = X'*(X*w - y) + lambda*w
+    w = w - alpha * dw
+    push!(ws, w)
+  end
+  hcat(ws...)'
+end
+```
+
+### Lasso回帰
+
+座標降下法による手順を再掲する。
+
+$d = 1, 2, \ldots, D$ について、
+1. $a_d = \\| \bm{x}_{:, d} \\|_2^2$ を計算。
+1. $c_d = x_{:, d}^T \bm{r}\_{-d}$ を計算。
+2. $\bm{w} \leftarrow S(\frac{c_d}{a_d}, \frac{\lambda}{a_d})$。
+
 $a_d$ については、単純に`X[:, d]`のノルムを計算すれば良い。$c_d$については、
 
 $$
@@ -234,10 +302,119 @@ $$
 
 と式変形すれば、
 
-```jula
-X[:, d]^T(y - X * w) - w[d] * a
+```julia
+X[:, d]'*(y - X * w) + w[d] * a
 ```
 
 と計算できる。
 
+ソフト閾値作用素 $S$ は次のように定義できる．
 
+```julia
+function soft_thresholding(theta, lambda)
+  if theta < -lambda
+    theta + lambda
+  elseif theta > lambda
+    theta - lambda
+  else
+    0
+  end
+end
+```
+
+これを用いてLasso回帰のアルゴリズムを定義．
+
+```julia
+function fit_by_lasso(X, y, w0; alpha=0.01, lambda=0.01, max_iter=300)
+  D = length(w0)
+  ws = [w0]
+  w = w0
+  for _ in 1:max_iter
+    for d in 1:D
+      a_d = X[:, d]' * X[:, d]
+      c_d = X[:, d]' * (y - X * w) + w[d] * a_d
+      w[d] = soft_thresholding(c_d/a_d, lambda/a_d)
+      push!(ws, copy(w))
+    end
+  end
+  hcat(ws...)'
+end
+```
+
+### グラフのプロット
+
+予測関数を描画する関数を定義．
+
+```julia
+function plot_w!(p, w, x, label)
+  d = length(w) - 1
+  plot_x = range(extrema(x)..., length=100)
+  plot!(p, plot_x, x -> w' * poly_vec(x, d), label=label)
+end
+```
+
+### main関数
+
+まずはRidge回帰、Lasso回帰の結果をグラフで図示してみる．
+ついでに普通の最小二乗法で解いた$w$もプロットしてみる．
+
+```julia
+function poly_vec(x, d)
+  [x^i for i in 0:d]
+end
+
+function main()
+  Random.seed!(2021)
+  p = plot()
+
+  x, y = generate_data([1.0,2.0,-3.0], 5)
+
+  d = 5
+  X = hcat(poly_vec.(x, d)...)'
+
+  ws_ridge = fit_by_ridge(X, y, rand(d+1))
+  display(ws_ridge[end, :])
+
+  ws_lasso = fit_by_lasso(X, y, rand(d+1))
+  display(ws_lasso[end, :])
+
+  w_overfitting = (X' * X) \ (X' * y)
+
+  p = plot()
+  scatter!(p, x, y)
+  plot_w!(p, ws_ridge[end, :], x, "ridge")
+  plot_w!(p, ws_lasso[end, :], x, "lasso")
+  plot_w!(p, w_overfitting, x, "overfitting")
+end
+```
+
+最小二乗法の方は過学習を起こしているが、
+Ridge回帰とLasso回帰は自然な曲線を描いていることが読み取れる。
+
+{{< figure src="img0.png" >}}
+
+$w$の値を見る。前者がRidge回帰、後者がLasso回帰。
+
+{{< cui >}}
+6-element Vector{Float64}:
+  1.185633350868915
+  0.5514935176341534
+ -0.3138792668283392
+ -0.7019412321018753
+ -0.5448897044829057
+ -0.5005843434957847
+6-element Vector{Float64}:
+  1.2261293729701306
+  0.27148775417222326
+  0.0
+ -0.45102159950359655
+ -1.2632744627838859
+  0.0
+{{< /cui >}}
+
+Lassoで特徴的なのは、一部のパラメータが完全に0になっている点。
+0になったパラメータは、今回のモデルにとって必要のないパラメータであった、と解釈できる。
+このように、Lasso回帰ではモデルにとって必要のないパラメータを見つけることができる。
+ただし、「どの程度必要ないのか」は $\lambda$ の値によることに注意。$\lambda$ を大きくすればするほどパラメータが0になりやすくなる。
+
+Lasso回帰ではいくつかのパラメータを捨てることになるが、すべてのパラメータを考慮したい場合にはRidge回帰を利用すれば良いのだと思う。

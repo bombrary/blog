@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>正則化 on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/%E6%AD%A3%E5%89%87%E5%8C%96/</link>
+    <description>Recent content in 正則化 on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Sat, 07 Aug 2021 07:17:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/%E6%AD%A3%E5%89%87%E5%8C%96/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>線形回帰メモ 正則化</title>
+      <link>https://bombrary.github.io/blog/posts/regression-regularization/</link>
+      <pubDate>Sat, 07 Aug 2021 07:17:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/regression-regularization/</guid>
+      <description>問題設定 $\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T$ とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に
+$$ \begin{aligned} y &amp;amp;= h_{\bm{w}}(\bm{x})\\ &amp;amp;:= w_0 + w_1x_1 + w_2x_2 + \cdots + w_Dx_D\\ &amp;amp;= \bm{w}^T\bm{x} \end{aligned} $$
+が成り立つと仮定し、これに適する$\bm{w}$を見つけたい。
+(正則化前の)コスト関数 ここで「適する」とは具体的に何なのかというと、ここでは予測とデータとの二乗誤差の和
+$$ J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 $$
+が最小となる $\bm{w}$ を求める。この $J$ をここではコスト関数と呼ぶ。 係数 $1/2$ は微分した時に出てくる $2$ を消し去るための便宜的なものであり、つける必然はない。
+L1正則化とL2正則化 コスト関数に $\bm{w}_i$ のL1ノルム(の1乗)の項を付けることをL1正則化という。
+$$ J_1(\bm{w}) = J(\bm{w}) + \lambda \|\bm{w}\|_1 $$</description>
+    </item>
+    
+  </channel>
+</rss>
