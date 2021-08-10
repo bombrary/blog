@@ -44,6 +44,15 @@
     </item>
     
     <item>
+      <title>Elm</title>
+      <link>https://bombrary.github.io/blog/categories/elm/</link>
+      <pubDate>Mon, 26 Jul 2021 19:50:48 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/elm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Brainfuck</title>
       <link>https://bombrary.github.io/blog/categories/brainfuck/</link>
       <pubDate>Fri, 09 Jul 2021 23:15:00 +0900</pubDate>
@@ -184,15 +193,6 @@
       <pubDate>Wed, 04 Mar 2020 13:50:16 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/zip/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Elm</title>
-      <link>https://bombrary.github.io/blog/categories/elm/</link>
-      <pubDate>Thu, 27 Feb 2020 12:39:44 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/elm/</guid>
       <description></description>
     </item>
     

@@ -3,28 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2021-07-30T22:31:02+09:00</lastmod>
+    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/julia/</loc>
-    <lastmod>2021-07-20T17:01:20+09:00</lastmod>
+    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2021-07-30T22:31:02+09:00</lastmod>
+    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/</loc>
-    <lastmod>2021-07-30T22:31:02+09:00</lastmod>
+    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/</loc>
-    <lastmod>2021-07-20T17:01:20+09:00</lastmod>
+    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E6%AD%A3%E5%89%87%E5%8C%96/</loc>
-    <lastmod>2021-07-20T17:01:20+09:00</lastmod>
+    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%BD%A2%E5%9B%9E%E5%B8%B0/</loc>
-    <lastmod>2021-07-20T17:01:20+09:00</lastmod>
+    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/regression-regularization/</loc>
-    <lastmod>2021-07-20T17:01:20+09:00</lastmod>
+    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/tex/</loc>
     <lastmod>2021-07-30T22:31:02+09:00</lastmod>
@@ -37,6 +37,15 @@
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E4%BD%9C%E5%9B%B3/</loc>
     <lastmod>2021-07-30T22:31:02+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/elm/</loc>
+    <lastmod>2021-07-26T19:50:48+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/posts/elm-tetris/</loc>
+    <lastmod>2021-07-26T19:50:48+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9/</loc>
+    <lastmod>2021-07-26T19:50:48+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E3%83%AD%E3%82%B8%E3%82%B9%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E5%9B%9E%E5%B8%B0/</loc>
     <lastmod>2021-07-11T12:42:34+09:00</lastmod>
@@ -252,9 +261,6 @@
     <lastmod>2020-03-06T11:26:07+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/elm/</loc>
-    <lastmod>2020-03-04T13:44:16+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/categories/elm/</loc>
     <lastmod>2020-03-04T13:44:16+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/elm-draggable/</loc>
