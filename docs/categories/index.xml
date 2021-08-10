@@ -6,7 +6,16 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 07 Aug 2021 07:17:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 Aug 2021 17:10:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Elm</title>
+      <link>https://bombrary.github.io/blog/categories/elm/</link>
+      <pubDate>Tue, 10 Aug 2021 17:10:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/elm/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Julia</title>
       <link>https://bombrary.github.io/blog/categories/julia/</link>
@@ -40,15 +49,6 @@
       <pubDate>Fri, 30 Jul 2021 22:30:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/tikz/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Elm</title>
-      <link>https://bombrary.github.io/blog/categories/elm/</link>
-      <pubDate>Mon, 26 Jul 2021 19:50:48 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/elm/</guid>
       <description></description>
     </item>
     

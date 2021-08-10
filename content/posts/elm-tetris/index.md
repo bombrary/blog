@@ -1,6 +1,6 @@
 ---
 title: "Elmでテトリスを作った話"
-date: 2021-07-26T19:50:48+09:00
+date: 2021-08-10T17:10:00+09:00
 tags: ["テトリス"]
 categories: ["Elm"]
 toc: true
