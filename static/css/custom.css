@@ -172,6 +172,7 @@ body {
   }
 }*/
 
-code {
+code, pre.cui {
   font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
 }
+
