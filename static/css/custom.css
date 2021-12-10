@@ -171,3 +171,7 @@ body {
     border-color: #ccc;
   }
 }*/
+
+code {
+  font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+}
