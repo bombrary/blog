@@ -2,14 +2,29 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2021-12-15T20:21:07+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/posts/get-img-url-static-python/</loc>
-    <lastmod>2021-12-15T20:21:07+09:00</lastmod>
-  </url><url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
     <lastmod>2021-12-15T19:28:56+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/cli/</loc>
+    <lastmod>2021-12-09T11:08:15+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/flask/</loc>
+    <lastmod>2021-12-09T11:08:15+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2021-12-15T19:28:56+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/python/</loc>
+    <lastmod>2021-12-09T11:08:15+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/posts/python-get-img-url-static/</loc>
+    <lastmod>2021-12-09T11:08:15+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2021-12-09T11:08:15+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/web/</loc>
+    <lastmod>2021-12-09T11:08:15+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/neovim/</loc>
     <lastmod>2021-12-15T19:28:56+09:00</lastmod>
@@ -24,9 +39,6 @@
     <lastmod>2021-08-10T17:10:34+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/elm-tetris/</loc>
-    <lastmod>2021-08-10T17:10:34+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/tags/</loc>
     <lastmod>2021-08-10T17:10:34+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9/</loc>
@@ -119,17 +131,11 @@
     <loc>https://bombrary.github.io/blog/tags/state/</loc>
     <lastmod>2021-06-17T16:50:35+09:00</lastmod>
   </url><url>
-    <loc>https://bombrary.github.io/blog/tags/flask/</loc>
-    <lastmod>2021-06-04T21:28:29+09:00</lastmod>
-  </url><url>
     <loc>https://bombrary.github.io/blog/tags/marshmallow/</loc>
     <lastmod>2021-06-04T21:28:29+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/peewee/</loc>
     <lastmod>2021-06-04T21:28:29+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/categories/python/</loc>
-    <lastmod>2021-06-13T09:49:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/todo-api-flask/</loc>
     <lastmod>2021-06-04T21:28:29+09:00</lastmod>

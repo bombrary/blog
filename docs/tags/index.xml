@@ -6,7 +6,34 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 10 Aug 2021 17:10:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 09 Dec 2021 11:08:15 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CLI</title>
+      <link>https://bombrary.github.io/blog/tags/cli/</link>
+      <pubDate>Thu, 09 Dec 2021 11:08:15 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/cli/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Flask</title>
+      <link>https://bombrary.github.io/blog/tags/flask/</link>
+      <pubDate>Thu, 09 Dec 2021 11:08:15 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/flask/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web</title>
+      <link>https://bombrary.github.io/blog/tags/web/</link>
+      <pubDate>Thu, 09 Dec 2021 11:08:15 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/web/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>テトリス</title>
       <link>https://bombrary.github.io/blog/tags/%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9/</link>
@@ -130,15 +157,6 @@
       <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/state/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Flask</title>
-      <link>https://bombrary.github.io/blog/tags/flask/</link>
-      <pubDate>Thu, 03 Jun 2021 23:29:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/flask/</guid>
       <description></description>
     </item>
     

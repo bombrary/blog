@@ -8,10 +8,10 @@
     <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Pythonを使った(静的)ページの画像のURL取得</title>
-      <link>https://bombrary.github.io/blog/posts/get-img-url-static-python/</link>
+      <link>https://bombrary.github.io/blog/posts/python-get-img-url-static/</link>
       <pubDate>Thu, 09 Dec 2021 11:08:15 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/posts/get-img-url-static-python/</guid>
+      <guid>https://bombrary.github.io/blog/posts/python-get-img-url-static/</guid>
       <description>Webページの画像だけを手っ取り早く取得したい場合にどうすれば良いのかを考えた。 これを行うプログラムをPythonで取得する。
 この記事で作成したプログラムはGitHubのRepositoryに公開した。
 前提   Pythonのバージョンは3.10を想定。

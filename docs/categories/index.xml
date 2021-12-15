@@ -6,7 +6,16 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 01 Oct 2021 09:19:20 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 09 Dec 2021 11:08:15 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python</title>
+      <link>https://bombrary.github.io/blog/categories/python/</link>
+      <pubDate>Thu, 09 Dec 2021 11:08:15 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/python/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>neovim</title>
       <link>https://bombrary.github.io/blog/categories/neovim/</link>
@@ -85,15 +94,6 @@
       <pubDate>Fri, 09 Jul 2021 23:15:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/purescript/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Python</title>
-      <link>https://bombrary.github.io/blog/categories/python/</link>
-      <pubDate>Thu, 03 Jun 2021 23:29:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/python/</guid>
       <description></description>
     </item>
     
