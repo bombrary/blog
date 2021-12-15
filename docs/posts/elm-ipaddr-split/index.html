@@ -3,7 +3,7 @@
 <head>
   <title>Elmメモ - 文字列をIPアドレスに変換(1) splitを用いる方法 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-ipaddr-split/">
@@ -77,7 +77,7 @@
   </header>
   
   <p>IPv4アドレスの文字列&quot;192.168.1.1&quot;をパースする方法を考える。IPAddrの内部表現は次のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">IPAddr</span> <span class="nf">=</span> <span class="kt">IPAddr</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">IPAddr</span> <span class="nf">=</span> <span class="kt">IPAddr</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span></code></pre></div>
 <p>思いつくのは次の2通り。</p>
 <ol>
 <li>ピリオドでsplitして、整数値に変換する。</li>
@@ -91,7 +91,7 @@ $ elm init
 $ elm install elm/parser
 </pre>
 <p><code>src/IPAddr.elm</code>を作り、内容を以下の通りにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">IPAddr</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">IPAddr</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 
 <span class="kr">type</span> <span class="kt">IPAddr</span> <span class="nf">=</span> <span class="kt">IPAddr</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span></code></pre></div>
 <pre class="cui">
@@ -108,10 +108,10 @@ $ elm repl
 </ol>
 <h2 id="traverseの実装">traverseの実装</h2>
 <p>3の処理は、次の関数として抽象化できる: リストの各要素にfを適用し、その結果すべてが<code>Just</code>を返したときだけ、全体の結果を返す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">List</span> <span class="nv">b</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">List</span> <span class="nv">b</span></code></pre></div>
 <h3 id="原始的な実装">原始的な実装</h3>
 <p>なるべく<code>foldr</code>とかを使わずに書こうとするとこんな感じになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
 <span class="nv">traverse</span> <span class="nv">f</span> <span class="nv">list</span> <span class="nf">=</span>
   <span class="kr">case</span> <span class="nv">list</span> <span class="kr">of</span>
     <span class="p">[]</span> <span class="nf">-&gt;</span>
@@ -145,7 +145,7 @@ $ elm repl
 <span class="cyan">Nothing</span> <span class="dgray">: Maybe.Maybe number</span>
 </pre>
 <p>これを利用して書き直すと以下のようになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
 <span class="nv">traverse</span> <span class="nv">f</span> <span class="nv">list</span> <span class="nf">=</span>
   <span class="kr">case</span> <span class="nv">list</span> <span class="kr">of</span>
     <span class="p">[]</span> <span class="nf">-&gt;</span>
@@ -156,7 +156,7 @@ $ elm repl
 <p>これはなかなか感動的。</p>
 <h3 id="maybemap2--foldrを利用した実装">Maybe.map2 + foldrを利用した実装</h3>
 <p>上の定義を見ているとfoldrでもっと簡単に書けそうだと気づく。なので書く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">traverse</span> <span class="nf">:</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="nv">b</span><span class="p">)</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="nv">a</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="kt">List</span> <span class="nv">b</span><span class="p">)</span>
 <span class="nv">traverse</span> <span class="nv">f</span> <span class="nv">list</span> <span class="nf">=</span>
   <span class="kt">List</span><span class="nf">.</span><span class="nv">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="nv">x</span> <span class="nv">acc</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span><span class="nf">.</span><span class="nv">map</span><span class="mi">2</span> <span class="nf">(::)</span> <span class="p">(</span><span class="nv">f</span> <span class="nv">x</span><span class="p">)</span> <span class="nv">acc</span><span class="p">)</span> <span class="p">(</span><span class="kt">Just</span> <span class="p">[])</span> <span class="nv">list</span></code></pre></div>
 <h3 id="補足">補足</h3>
@@ -165,7 +165,7 @@ $ elm repl
 <h2 id="fromstringの実装">fromStringの実装</h2>
 <p>ようやく本題に入る。といってもtraverseさえできればあとは簡単。</p>
 <p>まずは、文字列を整数値に変換し、さらに[0,255]に収まっているかどうかをチェックする関数<code>parseByte</code>を定義する。<code>Maybe.andThen</code>は以下のように、<code>Maybe</code>値に対してさらに条件をかけて、不正なものを落とすために使われる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">parseByte</span> <span class="nf">:</span> <span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Int</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">parseByte</span> <span class="nf">:</span> <span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Int</span>
 <span class="nv">parseByte</span> <span class="nv">string</span> <span class="nf">=</span>
   <span class="kt">String</span><span class="nf">.</span><span class="nv">toInt</span> <span class="nv">string</span>
   <span class="nf">|&gt;</span> <span class="kt">Maybe</span><span class="nf">.</span><span class="nv">andThen</span> <span class="nv">toByteInt</span>
@@ -177,7 +177,7 @@ $ elm repl
   <span class="kr">else</span>
     <span class="kt">Nothing</span></code></pre></div>
 <p>これを元に<code>fromString</code>を実装する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">fromString</span> <span class="nf">:</span> <span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">IPAddr</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">fromString</span> <span class="nf">:</span> <span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">IPAddr</span>
 <span class="nv">fromString</span> <span class="nv">string</span> <span class="nf">=</span>
   <span class="kr">let</span> <span class="nv">list</span> <span class="nf">=</span> <span class="nv">string</span>
              <span class="nf">|&gt;</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">split</span> <span class="s">&#34;.&#34;</span>

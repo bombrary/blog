@@ -3,7 +3,7 @@
 <head>
   <title>線形回帰メモ 正則化 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/regression-regularization/">
@@ -163,7 +163,7 @@ $$</p>
 <p>L2正則化の場合は単純に微分できる。まず $w_j$ で微分すると、$\| \bm{w} \|_2^2 = \sum_{j=1}^{D}w_j^2$ であることに注意して、</p>
 <p>$$
 \frac{\partial J_2}{\partial w_j}
-= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_{ij} + \lambda w_j
+= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}<em>i) - y^{(i)})x</em>{ij} + \lambda w_j
 $$</p>
 <p>となる。 これより勾配が計算できる。
 $J$ の部分のベクトル表現については、<a href="https://bombrary.github.io/blog/posts/regression-gradient-descent/#勾配の計算">線形回帰の勾配法のときの計算</a>と同様にして、</p>
@@ -189,7 +189,7 @@ $$</p>
 <p>$w_j$ で微分すると、$\| \bm{w} \|_1 = \sum_{j=1}^{D} |w_j|$ であることに注意して、</p>
 <p>$$
 \frac{\partial J_1}{\partial w_j}
-= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_{ij} + \lambda \frac{\partial |w_j|}{\partial w_j}
+= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}<em>i) - y^{(i)})x</em>{ij} + \lambda \frac{\partial |w_j|}{\partial w_j}
 $$</p>
 <p>さて、最後の項が計算できないため、通常の勾配降下法が利用できない。いくつか方法があるらしいが、ここでは座標降下法で解くことを目指す。その準備として、「1変数のみ動かしたときの$J$の最小値」を求めることにする。</p>
 <h3 id="1変数以外は固定した場合の最小値">1変数以外は固定した場合の最小値</h3>
@@ -205,9 +205,9 @@ $$</p>
 <p>$$
 \begin{aligned}
 \frac{\partial J_1}{\partial w_d}
-&amp;= \sum_{n=1}^{N} (\bm{w}^T\bm{x}_n - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
-&amp;= \sum_{n=1}^{N} (\bm{w}_{-d}^T\bm{x}_{n,-d} + w_dx_{nd} - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
-&amp;= \sum_{n=1}^{N} (\bm{w}_{-d}^T\bm{x}_{n,-d} - y^{(n)})x_{nd} + w_d\sum_{n=1}^{N} x_{nd}^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&amp;= \sum_{n=1}^{N} (\bm{w}^T\bm{x}<em>n - y^{(n)})x</em>{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&amp;= \sum_{n=1}^{N} (\bm{w}<em>{-d}^T\bm{x}</em>{n,-d} + w_dx_{nd} - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&amp;= \sum_{n=1}^{N} (\bm{w}<em>{-d}^T\bm{x}</em>{n,-d} - y^{(n)})x_{nd} + w_d\sum_{n=1}^{N} x_{nd}^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
 &amp;= -x_{:, d}^T \bm{r}_{-d} + w_d\| \bm{x}_{:, d} ||_2^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
 &amp;= -c_d + w_da_d + \lambda \frac{\partial |w_d|}{\partial w_d}
 \end{aligned}
@@ -278,7 +278,7 @@ $$</p>
 <p>と読み替えられる。</p>
 <h2 id="juliaによる実装">Juliaによる実装</h2>
 <p>雛形を用意．</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
 <span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
 <span class="k">using</span> <span class="n">LinearAlgebra</span>
 <span class="n">gr</span><span class="p">()</span>
@@ -296,7 +296,7 @@ $$
 y = w_0 + w_1x + \cdots + w_dx^d + \varepsilon
 $$
 ただし，$\varepsilon \sim \mathcal{N}(0, \sigma^2)$．</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">;</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">;</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
   <span class="n">dist</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
   <span class="n">x</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
   <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">evalpoly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
@@ -309,8 +309,8 @@ $$
 \frac{\partial J_2}{\partial \bm{w}} = X^T(X\bm{w} - \bm{y}) + \lambda \bm{w}
 $$</p>
 <p>勾配はJuliaだと以下のように書ける。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">lambda</span><span class="o">*</span><span class="n">w</span>
-</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">fit_by_ridge</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lambda</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">lambda</span><span class="o">*</span><span class="n">w</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">fit_by_ridge</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lambda</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
   <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
   <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
   <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_iter</span>
@@ -331,18 +331,18 @@ $$</p>
 <p>$a_d$ については、単純に<code>X[:, d]</code>のノルムを計算すれば良い。$c_d$については、</p>
 <p>$$
 \begin{aligned}
-x_{:, d}^T\bm{r}_{-d}
-&amp;= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}_{-d}^T\bm{x}_{n,-d})\\
-&amp;= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}_n + w_dx_{nd})\\
-&amp;= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}_n) + w_d\sum_{n=1}^Nx_{nd}^2\\
+x_{:, d}^T\bm{r}<em>{-d}
+&amp;= \sum</em>{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}<em>{-d}^T\bm{x}</em>{n,-d})\\
+&amp;= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}<em>n + w_dx</em>{nd})\\
+&amp;= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}<em>n) + w_d\sum</em>{n=1}^Nx_{nd}^2\\
 &amp;= x_{:, d}^T(\bm{y} - X\bm{w}) + w_da_d
 \end{aligned}
 $$</p>
 <p>と式変形すれば、</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span>
 </code></pre></div><p>と計算できる。</p>
 <p>ソフト閾値作用素 $S$ は次のように定義できる．</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">soft_thresholding</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">lambda</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">soft_thresholding</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">lambda</span><span class="p">)</span>
   <span class="k">if</span> <span class="n">theta</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">lambda</span>
     <span class="n">theta</span> <span class="o">+</span> <span class="n">lambda</span>
   <span class="k">elseif</span> <span class="n">theta</span> <span class="o">&gt;</span> <span class="n">lambda</span>
@@ -352,7 +352,7 @@ $$</p>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div><p>これを用いてLasso回帰のアルゴリズムを定義．</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">fit_by_lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lambda</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">fit_by_lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lambda</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
   <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w0</span><span class="p">)</span>
   <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
   <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
@@ -368,7 +368,7 @@ $$</p>
 <span class="k">end</span>
 </code></pre></div><h3 id="グラフのプロット">グラフのプロット</h3>
 <p>予測関数を描画する関数を定義．</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
   <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">extrema</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">...</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
   <span class="n">plot!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">poly_vec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
@@ -376,7 +376,7 @@ $$</p>
 </code></pre></div><h3 id="main関数">main関数</h3>
 <p>まずはRidge回帰、Lasso回帰の結果をグラフで図示してみる．
 ついでに普通の最小二乗法で解いた$w$もプロットしてみる．</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">poly_vec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">poly_vec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
   <span class="p">[</span><span class="n">x</span><span class="o">^</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">:</span><span class="n">d</span><span class="p">]</span>
 <span class="k">end</span>
 

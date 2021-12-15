@@ -1,12 +1,12 @@
 ---
 title: "neovimのプラグインがうまく動かなかったので原因を探した話"
 date: 2021-10-01T09:19:20+09:00
-draft: true
 tags: []
-categories: ["vim"]
+categories: ["vim", "neovim"]
 toc: true
 ---
 
+**(2021/12/25追記)** この記事で話題にした問題は最新のddc-nvim-lspで修正されている。[こちらのissue](https://github.com/Shougo/ddc-nvim-lsp/issues/20)及び[こちらのcommit](https://github.com/Shougo/ddc-nvim-lsp/commit/8ba086730c73520b5e6967c53c972201f15b6359#diff-f31f15464d0e6e3aea7161dd93d57fc08aeeca12304547f6cd0162b0c53d0f4f)を参照。もっとも、この記事を書いてから大分経ったため、`ddc_nvim_lsp.lua`のソースコードも今では大分変わっている。
 
 ## 以下の文章のまとめ
 

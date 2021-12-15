@@ -3,7 +3,7 @@
 <head>
   <title>Elmメモ - ランダムな位置に円を描画する | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-random-circle/">
@@ -88,7 +88,7 @@ $ elm install elm/svg
 $ elm install elm/random
 </pre>
 <p><code>Main.elm</code>を作成し、最低限の文を定義しておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Main</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Main</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 
 <span class="kn">import </span><span class="nc">Browser</span>
 <span class="kn">import </span><span class="nc">Svg</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
@@ -104,7 +104,7 @@ $ elm install elm/random
   </g>
 </svg>
 <p>SVGでは次のように書く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-svg" data-lang="svg"><span class="nt">&lt;svg</span> <span class="na">width=</span><span class="s">&#34;100px&#34;</span> <span class="na">height=</span><span class="s">&#34;100px&#34;</span><span class="nt">&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-svg" data-lang="svg"><span class="nt">&lt;svg</span> <span class="na">width=</span><span class="s">&#34;100px&#34;</span> <span class="na">height=</span><span class="s">&#34;100px&#34;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;g</span> <span class="na">transform=</span><span class="s">&#34;translate(50, 50)&#34;</span><span class="nt">&gt;</span>
     <span class="nt">&lt;circle</span> <span class="na">r=</span><span class="s">&#34;10&#34;</span> <span class="na">fill=</span><span class="s">&#34;white&#34;</span> <span class="na">stroke=</span><span class="s">&#34;black&#34;</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;text</span> <span class="na">text-anchor=</span><span class="s">&#34;middle&#34;</span> <span class="na">dominant-baseline=</span><span class="s">&#34;central&#34;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/text&gt;</span>
@@ -118,14 +118,14 @@ $ elm install elm/random
 <li>text要素の文字列</li>
 </ul>
 <p>そこで円は次のように定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Circle</span> <span class="nf">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Circle</span> <span class="nf">=</span>
   <span class="p">{</span> <span class="nv">r</span><span class="nf">:</span> <span class="kt">Float</span>
   <span class="p">,</span> <span class="nv">x</span><span class="nf">:</span> <span class="kt">Float</span>
   <span class="p">,</span> <span class="nv">y</span><span class="nf">:</span> <span class="kt">Float</span>
   <span class="p">,</span> <span class="nv">text</span><span class="nf">:</span> <span class="kt">String</span>
   <span class="p">}</span></code></pre></div>
 <p>Elmでは宣言的にSVGやHTMLを書けるので、SVGの文法とほとんど似た構造でかける。直感的で嬉しい。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewCircle</span> <span class="p">{</span> <span class="nv">r</span><span class="p">,</span> <span class="nv">x</span><span class="p">,</span> <span class="nv">y</span><span class="p">,</span> <span class="nv">text</span> <span class="p">}</span> <span class="nf">=</span>
   <span class="kt">Svg</span><span class="nf">.</span><span class="nv">g</span>
     <span class="p">[</span> <span class="kt">SA</span><span class="nf">.</span><span class="nv">transform</span> <span class="nf">&lt;|</span> <span class="nv">translateAttr</span> <span class="nv">x</span> <span class="nv">y</span>
@@ -152,7 +152,7 @@ $ elm install elm/random
   <span class="nf">++</span> <span class="kt">String</span><span class="nf">.</span><span class="nv">fromFloat</span> <span class="nv">y</span>
   <span class="nf">++</span> <span class="s">&#34;)&#34;</span></code></pre></div>
 <p>他は定型通りに書く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">main </span><span class="nf">=</span> <span class="kt">Browser</span><span class="nf">.</span><span class="nv">element</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">main </span><span class="nf">=</span> <span class="kt">Browser</span><span class="nf">.</span><span class="nv">element</span>
   <span class="p">{</span> <span class="nv">init</span> <span class="nf">=</span> <span class="nv">init</span>
   <span class="p">,</span> <span class="nv">update</span> <span class="nf">=</span> <span class="nv">update</span>
   <span class="p">,</span> <span class="nv">view</span> <span class="nf">=</span> <span class="nv">view</span>
@@ -204,17 +204,17 @@ $ elm install elm/random
 
 <h3 id="補足-レコード">(補足) レコード</h3>
 <p><code>Circle</code>の定義はレコードだから、次のように定義するべきだろう。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="p">{</span> <span class="nv">r</span> <span class="nf">=</span> <span class="mi">10</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="p">{</span> <span class="nv">r</span> <span class="nf">=</span> <span class="mi">10</span>
 <span class="p">,</span> <span class="nv">x</span> <span class="nf">=</span> <span class="mi">100</span>
 <span class="p">,</span> <span class="nv">y</span> <span class="nf">=</span> <span class="mi">20</span>
 <span class="p">,</span> <span class="nv">text</span> <span class="nf">=</span> <span class="s">&#34;1&#34;</span>
 <span class="p">}</span></code></pre></div>
 <p>しかし型エイリアスとしてレコードが定義された場合、次のように<code>Circle</code>を定義することも可能。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">100</span> <span class="mi">20</span> <span class="s">&#34;1&#34;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Circle</span> <span class="mi">10</span> <span class="mi">100</span> <span class="mi">20</span> <span class="s">&#34;1&#34;</span></code></pre></div>
 <p>Haskellのフィールドラベルに近いものを感じる。</p>
 <h2 id="乱数を試す">乱数を試す</h2>
 <p>Elmでほとんど乱数を使ったことがないので、色々試す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
   <span class="p">({</span> <span class="nv">circles</span> <span class="nf">=</span> <span class="p">[]</span>
    <span class="p">}</span>
@@ -232,16 +232,16 @@ $ elm install elm/random
       <span class="kr">in</span>
         <span class="p">(</span><span class="nv">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
 <p>ブラウザのデバッグコンソールを開くと、以下の文が出力される。</p>
-<pre><code>Random: [1-6のどれか]
+<pre tabindex="0"><code>Random: [1-6のどれか]
 </code></pre><h3 id="randomgenerate">Random.generate</h3>
 <p>乱数を作るcommandを返す。第2引数には乱数生成器を指定する。ここでは<code>Random.int 1 6</code>としている。これは、<code>[1,6]</code>の<code>Int</code>型の乱数を作る生成器。乱数は第1引数のMsg型変数で受け取る。</p>
 <p>様々な形の乱数生成器を作るための関数が用意されている。その一部については次で扱う。</p>
 <h3 id="補足-debuglog">(補足) Debug.log</h3>
 <p>いわゆるprintデバッグをするために使われる関数。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="c1">-- JSにおけるconsole.log(`Label: ${value}`)と同義</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="c1">-- JSにおけるconsole.log(`Label: ${value}`)と同義</span>
 <span class="kt">Debug</span><span class="nf">.</span><span class="nv">log</span> <span class="s">&#34;Label&#34;</span> <span class="nv">value</span></code></pre></div>
 <p>Elmの仕様上、手続き的に書けないので、次のようにletをうまく利用して書く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="cm">{- Elmでは
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="cm">{- Elmでは
 </span><span class="cm">   Debug.log &#34;Random&#34; n
 </span><span class="cm">   return (model, Cmd.none)
 </span><span class="cm">   のように書けない。
@@ -250,7 +250,7 @@ $ elm install elm/random
 <span class="kr">in</span>
   <span class="p">(</span><span class="nv">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
 <h2 id="リストの乱数生成器">リストの乱数生成器</h2>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">randomList</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">Random</span><span class="nf">.</span><span class="kt">Generator</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">randomList</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">Random</span><span class="nf">.</span><span class="kt">Generator</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span><span class="p">)</span>
 <span class="nv">randomList</span> <span class="nv">n</span> <span class="nf">=</span>
   <span class="kt">Random</span><span class="nf">.</span><span class="nv">list</span> <span class="nv">n</span> <span class="nf">&lt;|</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">int</span> <span class="mi">1</span> <span class="mi">6</span>
 
@@ -272,12 +272,12 @@ $ elm install elm/random
       <span class="kr">in</span>
         <span class="p">(</span><span class="nv">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="nf">.</span><span class="nv">none</span><span class="p">)</span></code></pre></div>
 <p>ブラウザのデバッグコンソールを開くと、以下の文が出力される。</p>
-<pre><code>Random: [1-6の乱数リスト]
+<pre tabindex="0"><code>Random: [1-6の乱数リスト]
 </code></pre><h3 id="randomlist">Random.list</h3>
 <p>乱数のリストを作るための乱数生成器を返す。第1引数にリストの長さ、第2引数に乱数生成器を指定する。</p>
 <h2 id="circleの乱数">Circleの乱数</h2>
 <p><code>Circle</code>において、x、y座標だけがランダムであるような乱数を作る。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">randomCircleLackedText</span> <span class="nf">:</span> <span class="kt">Random</span><span class="nf">.</span><span class="kt">Generator</span> <span class="p">(</span><span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">randomCircleLackedText</span> <span class="nf">:</span> <span class="kt">Random</span><span class="nf">.</span><span class="kt">Generator</span> <span class="p">(</span><span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span><span class="p">)</span>
 <span class="nv">randomCircleLackedText</span> <span class="nf">=</span>
   <span class="kr">let</span> <span class="nv">rf</span> <span class="nf">=</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">float</span> <span class="mi">0</span> <span class="mi">600</span>
   <span class="kr">in</span>
@@ -315,7 +315,7 @@ $ elm install elm/random
 <p>2つの乱数生成器に何かしらの処理を施して、新たな乱数生成器を作る関数。</p>
 <p>以下では、<code>[0,600]</code>の<code>Float</code>乱数を2つ使って、それを<code>Circle</code>のx、yとしたものを作るようにしている。</p>
 <p>ただし、textについてはまだ設定できないので、引数は3つにとどめておく。すると、乱数として作られるのは<code>Circle</code>ではなく厳密には<code>String -&gt; Circle</code>となることに注意。データコンストラクタは関数みたいなものだから、このようにカリー化ができる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">randomCircleLackedText</span> <span class="nf">:</span> <span class="kt">Random</span><span class="nf">.</span><span class="kt">Generator</span> <span class="p">(</span><span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">randomCircleLackedText</span> <span class="nf">:</span> <span class="kt">Random</span><span class="nf">.</span><span class="kt">Generator</span> <span class="p">(</span><span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span><span class="p">)</span>
 <span class="nv">randomCircleLackedText</span> <span class="nf">=</span>
   <span class="kr">let</span> <span class="nv">rf</span> <span class="nf">=</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">float</span> <span class="mi">0</span> <span class="mi">600</span>
   <span class="kr">in</span>
@@ -323,7 +323,7 @@ $ elm install elm/random
 <h3 id="randommap">Random.map</h3>
 <p>1つの乱数生成器に何かしらの処理を施して、新たな乱数生成器を作る関数。</p>
 <p>以下では、randomCircleLackedTextで作られた乱数にtextを付加している。ここではリストの添字をtextとしている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">randomCircles</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">Random</span><span class="nf">.</span><span class="kt">Generator</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Circle</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">randomCircles</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">Random</span><span class="nf">.</span><span class="kt">Generator</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Circle</span><span class="p">)</span>
 <span class="nv">randomCircles</span> <span class="nv">n</span> <span class="nf">=</span>
   <span class="kr">let</span> <span class="nv">randomCirclesGenerator</span> <span class="nf">=</span> <span class="kt">Random</span><span class="nf">.</span><span class="nv">list</span> <span class="nv">n</span> <span class="nf">&lt;|</span> <span class="nv">randomCircleLackedText</span>
   <span class="kr">in</span>

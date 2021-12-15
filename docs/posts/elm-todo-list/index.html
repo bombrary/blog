@@ -3,7 +3,7 @@
 <head>
   <title>Elmで超簡易Todoリスト | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-todo-list/">
@@ -72,7 +72,7 @@
   <p>Todoリストと言っても、フィールドに入力した内容が<code>li</code>要素として追加されるだけ。</p>
 <p>Elm習いたてなので、何か無駄があるかも。</p>
 <p>個人的になるほどと思った点は<code>List.map</code>を利用して<code>li</code>要素を生成するところで、これは要素を生成する関数が子要素の<strong>リスト</strong>を引数に取るから実現できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">import </span><span class="nc">Browser</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">import </span><span class="nc">Browser</span>
 <span class="kn">import </span><span class="nc">Html</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 <span class="kn">import </span><span class="nc">Html.Attributes</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 <span class="kn">import </span><span class="nc">Html.Events</span> <span class="nv">exposing</span> <span class="p">(</span><span class="nv">onClick</span><span class="p">,</span> <span class="nv">onInput</span><span class="p">)</span>

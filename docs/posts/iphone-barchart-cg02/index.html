@@ -3,7 +3,7 @@
 <head>
   <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (2) | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-cg02/">
@@ -88,7 +88,7 @@
 <p>プロジェクトは前回のものを引き継がず、新しく作る。</p>
 <h2 id="用いるデータ">用いるデータ</h2>
 <p><code>ViewController.swift</code>が次のようなデータを持っていることを想定する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">var</span> <span class="nv">dataSource</span> <span class="p">=</span> <span class="p">[</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">var</span> <span class="nv">dataSource</span> <span class="p">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s">&#34;太郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;次郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;三郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;四郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;五郎&#34;</span><span class="p">),</span>
     <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s">&#34;六郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;七郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;八郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;九郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s">&#34;十郎&#34;</span><span class="p">),</span>
     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;十一郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;十二郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;十三郎&#34;</span><span class="p">)</span>
@@ -109,7 +109,7 @@
 </figure>
 
 <p>なのでコードはこんな感じにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
 
     <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">scrollView</span><span class="p">:</span> <span class="n">UIScrollView</span><span class="p">!</span>
     <span class="kd">let</span> <span class="nv">marginX</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">80</span>
@@ -132,7 +132,7 @@
 <h3 id="ダミー用graphview作成">ダミー用GraphView作成</h3>
 <p>GraphViewに関する位置、サイズの設定は、イニシャライザに任せるように書く。引数として、<code>(ページ番号, スクロールビューのサイズ, データ)</code>を与える。とりあえず今の所はデータを色として、これを<code>backgroundColor</code>に設定する。</p>
 <p>上のレイアウトから、i番目のページのx座標は<code>i * size.width</code>で与えられることが分かる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">GraphView</span><span class="p">:</span> <span class="n">UIView</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">GraphView</span><span class="p">:</span> <span class="n">UIView</span> <span class="p">{</span>
 
     <span class="kd">init</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">Int</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">CGSize</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">UIColor</span><span class="p">)</span> <span class="p">{</span>
         <span class="kc">super</span><span class="p">.</span><span class="kd">init</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">.</span><span class="n">zero</span><span class="p">)</span>
@@ -154,7 +154,7 @@
 <span class="p">}</span></code></pre></div>
 <h2 id="viecontrollerswift">VieController.swift</h2>
 <p>ページ数とデータを定数として定義する。contentsViewを作る処理は関数に分けておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[</span><span class="n">UIColor</span><span class="p">]</span> <span class="p">=</span> <span class="p">[.</span><span class="n">systemRed</span><span class="p">,</span> <span class="p">.</span><span class="n">systemIndigo</span><span class="p">,</span> <span class="p">.</span><span class="n">systemPink</span><span class="p">,</span> <span class="p">.</span><span class="n">systemGreen</span><span class="p">]</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[</span><span class="n">UIColor</span><span class="p">]</span> <span class="p">=</span> <span class="p">[.</span><span class="n">systemRed</span><span class="p">,</span> <span class="p">.</span><span class="n">systemIndigo</span><span class="p">,</span> <span class="p">.</span><span class="n">systemPink</span><span class="p">,</span> <span class="p">.</span><span class="n">systemGreen</span><span class="p">]</span>
 <span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">numOfPages</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="n">data</span><span class="p">.</span><span class="bp">count</span>
 <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">scrollView</span><span class="p">:</span> <span class="n">UIScrollView</span><span class="p">!</span>
   <span class="p">...</span>
@@ -181,7 +181,7 @@
 
 <h2 id="ユーティリティ関数メソッドの定義">ユーティリティ関数/メソッドの定義</h2>
 <p><code>Util.swift</code>を作成して、以下の記述を追加する。これは前回お世話になったscaleLinear関数。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">import</span> <span class="nc">UIKit</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">import</span> <span class="nc">UIKit</span>
 
 <span class="c1">//         ran[1] - ran[0]</span>
 <span class="c1">// f(x) = ----------------- * (x - dom[0]) + ran[0]</span>
@@ -193,7 +193,7 @@
 <span class="p">}</span></code></pre></div>
 <p>続いて、以下の記述を追加する。これは<code>Array</code>のextensionで、ある配列をk個単位に分割するときに用いる。例えば、<code>[1,2,3,4,5,6,7,8].chunked(into: 3)</code>とすると、<code>[[1,2,3],[4,5,6],[7.8]]</code>が返ってくる。</p>
 <p>ちなみにこのメソッド定義は<a href="https://www.hackingwithswift.com/example-code/language/how-to-split-an-array-into-chunks">こちら</a>のもの。<code>stride</code>を使ってうまく書けている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">extension</span> <span class="nc">Array</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">extension</span> <span class="nc">Array</span> <span class="p">{</span>
     <span class="kd">func</span> <span class="nf">chunked</span><span class="p">(</span><span class="n">into</span> <span class="n">size</span><span class="p">:</span> <span class="nb">Int</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="p">[[</span><span class="n">Element</span><span class="p">]]</span> <span class="p">{</span>
         <span class="k">return</span> <span class="bp">stride</span><span class="p">(</span><span class="n">from</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="bp">count</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="n">size</span><span class="p">).</span><span class="bp">map</span> <span class="p">{</span>
             <span class="nb">Array</span><span class="p">(</span><span class="kc">self</span><span class="p">[</span><span class="nv">$0</span> <span class="p">..</span><span class="o">&lt;</span> <span class="n">Swift</span><span class="p">.</span><span class="bp">min</span><span class="p">(</span><span class="nv">$0</span> <span class="o">+</span> <span class="n">size</span><span class="p">,</span> <span class="bp">count</span><span class="p">)])</span>
@@ -210,7 +210,7 @@
 <h3 id="グラフ描画情報を持つクラスの作成">グラフ描画情報を持つクラスの作成</h3>
 <p>グラフの大きさやscale関数、テキストの大きさやフォントなどの設定はクラスとしてまとめておく。</p>
 <p>新たに<code>BarChart.swift</code>を作成し、内容を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="nc">BarChartScale</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="nc">BarChartScale</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nv">x</span><span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span>
     <span class="kd">var</span> <span class="nv">y</span><span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span>
     <span class="kd">var</span> <span class="nv">h</span><span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span>
@@ -240,9 +240,9 @@
 <h3 id="グラフのレイアウト設定">グラフのレイアウト設定</h3>
 <p>先ほど作った<code>BarChartConfig</code>をインスタンス化して、グラフ描画の情報を設定する。</p>
 <p><code>ViewController</code>の先頭に以下の記述を追加する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">barChartConf</span> <span class="p">=</span> <span class="n">configureBarChart</span><span class="p">()</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">barChartConf</span> <span class="p">=</span> <span class="n">configureBarChart</span><span class="p">()</span></code></pre></div>
 <p>さらにクラス内に以下のメソッドを追加する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">configureBarChart</span><span class="p">()</span> <span class="p">-&gt;</span> <span class="n">BarChartConfig</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">configureBarChart</span><span class="p">()</span> <span class="p">-&gt;</span> <span class="n">BarChartConfig</span> <span class="p">{</span>
     <span class="kd">let</span> <span class="nv">numOfBars</span> <span class="p">=</span> <span class="mi">5</span>
     <span class="kd">let</span> <span class="nv">rect</span> <span class="p">=</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span>
     <span class="kd">let</span> <span class="nv">barWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">40</span>
@@ -281,7 +281,7 @@
 <h2 id="データの整形">データの整形</h2>
 <h3 id="barchartmodel">BarChartModel</h3>
 <p>棒グラフに必要なデータを定義したモデルを定義する。前回は最大値の棒だけ色をオレンジにしていたが、今回はそれをもっと抽象化し、色をモデルに含めることにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="nc">BarChartModel</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="nc">BarChartModel</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nv">value</span><span class="p">:</span> <span class="n">CGFloat</span>
   <span class="kd">var</span> <span class="nv">name</span><span class="p">:</span> <span class="nb">String</span>
   <span class="kd">var</span> <span class="nv">color</span><span class="p">:</span> <span class="n">UIColor</span>
@@ -293,7 +293,7 @@
 <span class="p">}</span></code></pre></div>
 <h3 id="dataの変更とdatasourceの定義">dataの変更とdataSourceの定義</h3>
 <p>先ほど定義していた<code>data: [UIColor]</code>は消す。代わりに以下のようにする。<code>data</code>は二次元配列であることに注意。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">var</span> <span class="nv">dataSource</span> <span class="p">=</span> <span class="p">[</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">var</span> <span class="nv">dataSource</span> <span class="p">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s">&#34;太郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;次郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;三郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;四郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;五郎&#34;</span><span class="p">),</span>
     <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s">&#34;六郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;七郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;八郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;九郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s">&#34;十郎&#34;</span><span class="p">),</span>
     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;十一郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;十二郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;十三郎&#34;</span><span class="p">)</span>
@@ -301,7 +301,7 @@
 <span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[[</span><span class="n">BarChartModel</span><span class="p">]]</span> <span class="p">=</span> <span class="n">format</span><span class="p">(</span><span class="n">dataSource</span><span class="p">)</span></code></pre></div>
 <h3 id="datasourceの整形">dataSourceの整形</h3>
 <p>次のメソッドを追加する。これは<code>dataSource</code>を<code>BarChartModel</code>の形式に変換し、<code>numOfBars</code>個ずつに区切った配列を返す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">format</span><span class="p">(</span><span class="kc">_</span> <span class="n">data</span><span class="p">:</span> <span class="p">[(</span><span class="nb">Int</span><span class="p">,</span> <span class="nb">String</span><span class="p">)])</span> <span class="p">-&gt;</span> <span class="p">[[</span><span class="n">BarChartModel</span><span class="p">]]</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">format</span><span class="p">(</span><span class="kc">_</span> <span class="n">data</span><span class="p">:</span> <span class="p">[(</span><span class="nb">Int</span><span class="p">,</span> <span class="nb">String</span><span class="p">)])</span> <span class="p">-&gt;</span> <span class="p">[[</span><span class="n">BarChartModel</span><span class="p">]]</span> <span class="p">{</span>
     <span class="k">guard</span> <span class="kd">let</span> <span class="nv">maxDatum</span> <span class="p">=</span> <span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">max</span> <span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="nv">$1</span><span class="p">.</span><span class="mi">0</span> <span class="p">})</span> <span class="k">else</span> <span class="p">{</span>
         <span class="bp">print</span><span class="p">(</span><span class="s">&#34;Failed to get max.&#34;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[]</span>
@@ -317,7 +317,7 @@
 <span class="p">}</span></code></pre></div>
 <h3 id="graphviewswiftの修正">GraphView.swiftの修正</h3>
 <p><code>init</code>の引数を修正し、<code>backgroundColor</code>は<code>.white</code>で固定にする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">init</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">Int</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">CGSize</span><span class="p">,</span> <span class="n">barChartConf</span><span class="p">:</span> <span class="n">BarChartConfig</span><span class="p">,</span> <span class="n">barItems</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">])</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">init</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">Int</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">CGSize</span><span class="p">,</span> <span class="n">barChartConf</span><span class="p">:</span> <span class="n">BarChartConfig</span><span class="p">,</span> <span class="n">barItems</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">])</span> <span class="p">{</span>
     <span class="kc">super</span><span class="p">.</span><span class="kd">init</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">.</span><span class="n">zero</span><span class="p">)</span>
     <span class="n">backgroundColor</span> <span class="p">=</span> <span class="p">.</span><span class="n">white</span>
     <span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
@@ -328,14 +328,14 @@
     <span class="p">)</span>
 <span class="p">}</span></code></pre></div>
 <p>これに合わせて、<code>ViewController.swift</code>において、<code>createContentsView</code>関数内の<code>GraphView</code>のインスタンス化部分を以下のように修正する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
       <span class="kd">let</span> <span class="nv">pageView</span> <span class="p">=</span> <span class="n">GraphView</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">,</span> <span class="n">barChartConf</span><span class="p">:</span> <span class="n">barChartConf</span><span class="p">,</span> <span class="n">barItems</span><span class="p">:</span> <span class="n">datum</span><span class="p">)</span>
       <span class="n">contentsView</span><span class="p">.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">pageView</span><span class="p">)</span>
   <span class="p">}</span></code></pre></div>
 <p>これでエラーは出なくなるが、まだ何も描いてない。</p>
 <h2 id="グラフ描画">グラフ描画</h2>
 <p>ここまでくるとあとは前回と同じなので、さっと書く。<code>GraphView.swift</code>に以下の記述を追加する。前回とは違って、いくつかの処理をメソッドに分離している。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift">   <span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift">   <span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">guard</span> <span class="kd">let</span> <span class="nv">context</span> <span class="p">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
             <span class="bp">print</span><span class="p">(</span><span class="s">&#34;Failed to get context.&#34;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -408,7 +408,7 @@
 <p><code>ViewController</code>において、<code>marginX</code>と<code>marginY</code>の宣言を削除する。</p>
 <h3 id="scrollviewのframe設定">scrollViewのframe設定</h3>
 <p><code>viewDidLoad</code>において、<code>scrollView.frame</code>の代入文を以下のように修正する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>

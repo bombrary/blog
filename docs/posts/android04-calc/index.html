@@ -3,7 +3,7 @@
 <head>
   <title>Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/android04-calc/">
@@ -90,7 +90,7 @@
 <li><code>CalcFragment</code>を作成する。xmlファイルは<code>fragment_calc.xml</code>とする。</li>
 <li><code>activity_main.xml</code>の内容を以下のようにする。</li>
 </ol>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;merge</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -109,7 +109,7 @@
 <h2 id="calcfragmentの設定">CalcFragmentの設定</h2>
 <h3 id="stringxml">string.xml</h3>
 <p><code>fragment_calc.xml</code>に設定するための文字列定数を定義する。<code>string.xml</code>を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;resources&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;resources&gt;</span>
     <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;app_name&#34;</span><span class="nt">&gt;</span>Calculator<span class="nt">&lt;/string&gt;</span>
     <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_0&#34;</span><span class="nt">&gt;</span>0<span class="nt">&lt;/string&gt;</span>
     <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;calc_1&#34;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/string&gt;</span>
@@ -132,7 +132,7 @@
 <span class="nt">&lt;/resources&gt;</span></code></pre></div>
 <h3 id="fmagment_calcxml">fmagment_calc.xml</h3>
 <p><code>fragment_calc.xml</code>を以下のようにする。初めて触れた要素・属性があるので、これらは後で補足する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;layout</span>
     <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
@@ -315,7 +315,7 @@
 <span class="nt">&lt;/layout&gt;</span></code></pre></div>
 <h3 id="tablelayout">TableLayout</h3>
 <p>電卓アプリを作る場合、ボタンは格子状に並べたい。これはTableLayoutで実現できる。次のように書く。<code>TableRow</code>はテーブルの行を定義する要素で、その中に実際のセル要素を並べていく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableLayout</span> <span class="err">...</span><span class="nt">&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableLayout</span> <span class="err">...</span><span class="nt">&gt;</span>
   <span class="nt">&lt;TableRow</span> <span class="err">...</span><span class="nt">&gt;</span>
     <span class="nt">&lt;要素...&gt;</span>
     ...
@@ -331,7 +331,7 @@
 <p>他に似たようなレイアウトを実現する方法にGridLayoutというものがあるらしいので、必要になったらまた勉強する。</p>
 <h3 id="layout_weight">layout_weight</h3>
 <p>テーブル幅もしくは高さの比率を設定する。例えば次のように設定されたいた場合、ボタンは1:2:1の比率で並ぶ。幅の比率を設定したいなら、<code>layout_width=&quot;0dp&quot;</code>を設定する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;Button</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;Button</span>
   <span class="na">layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
   <span class="na">layout_width=</span><span class="s">&#34;0dp&#34;</span>
   <span class="na">layout_weight=</span><span class="s">&#34;1&#34;</span><span class="nt">/&gt;</span>
@@ -346,7 +346,7 @@
 <h3 id="layout_gravity">layout_gravity</h3>
 <p>位置や幅を制御するための属性。その名の通り、重力が発生していると捉えるのが適当。例えば<code>center</code>なら中央に重力が発生するため、Viewの部品は中央に移動する。</p>
 <p>今回の例では<code>fill</code>が設定されている。四隅に重力が発生するので、Viewの部品は全体に引き伸ばされる。前にも見た通り<code>layout_height=&quot;0dp&quot;</code>や<code>layout_width=&quot;0dp&quot;</code>は特殊な意味を持つようで、今回の場合は<code>height</code>にのみ<code>0dp</code>を設定し、上下方向だけ引き伸ばされるようにしているようだ。<code>layout_height=&quot;match_parent&quot;</code>と挙動が似ているが、こっちの方は「親要素に高さを合わせる」という意味なので微妙に異なる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableLayout</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableLayout</span>
     <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
     <span class="na">android:layout_height=</span><span class="s">&#34;0dp&#34;</span>
     <span class="err">...</span>
@@ -361,7 +361,7 @@
 <li><code>gone</code>: 要素は存在しないものとして扱われる。つまりView上で領域は確保されない。</li>
 </ul>
 <p>今回の例では、次のように設定することで、ACボタンを右寄せかつ他のテーブルセルに幅を合わせている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableRow</span> <span class="err">...</span> <span class="nt">&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;TableRow</span> <span class="err">...</span> <span class="nt">&gt;</span>
     <span class="nt">&lt;Button</span>
         <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
         <span class="na">android:layout_weight=</span><span class="s">&#34;3&#34;</span>
@@ -377,7 +377,7 @@
 <span class="nt">&lt;/TableRow&gt;</span></code></pre></div>
 <h3 id="calcfragmentktの設定">CalcFragment.ktの設定</h3>
 <p><code>CalcFragment.kt</code>の内容を以下の通りにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentCalcBinding</span>
     <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModel</span><span class="p">:</span> <span class="n">CalcViewModel</span>
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
@@ -401,7 +401,7 @@
 </ul>
 <h3 id="calcviewmodelkt">CalcViewModel.kt</h3>
 <p>持たせるデータは「電卓の表示」だけで良いだろう。ここには数字だけでなく演算子の記号も入りうるので、型は<code>String</code>とする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcViewModel</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcViewModel</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">private</span> <span class="k">var</span> <span class="py">_text</span> <span class="p">=</span> <span class="n">MutableLiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;()</span>
     <span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
         <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span>
@@ -411,15 +411,15 @@
 <span class="p">}</span></code></pre></div>
 <p>以下の記述はある種のパターンとして覚えて良いかもしれない。1行目は「読み書き可能なLiveData」で、2行目は「読み取り専用のLiveData」である。<code>fragment_calc.xml</code>や<code>CalcFragment.kt</code>では<code>text</code>の方を用いることで、データが変更されることを防いでいる。<code>CalcFragment</code>では「データ<code>CalcViewModel</code>から読み取って描画する」、<code>CalcViewModel</code>では「データに関する整形や変更の処理をする」という分業になっていることに注目。</p>
 <p><code>get() = _text</code>という文法は初めて見たが、これはゲッターの設定みたい。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">private</span> <span class="k">var</span> <span class="py">_text</span> <span class="p">=</span> <span class="n">MutableLiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;()</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">private</span> <span class="k">var</span> <span class="py">_text</span> <span class="p">=</span> <span class="n">MutableLiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;()</span>
 <span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
     <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span></code></pre></div>
 <p>LivaDataは次のように<code>value</code>メンバ変数でアクセスできる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s2">&#34;0&#34;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="s2">&#34;0&#34;</span></code></pre></div>
 <h3 id="fragment_calcxml">fragment_calc.xml</h3>
 <p>DataBindingを用いて、CalcViewModelのデータを利用できるようにする。</p>
 <p>ViewModel自体をFragmentに結びつけるのがポイント。データに対する諸々の情報は全て<code>ViewModel</code>がまとめてくれているから、<code>variable</code>をたくさん書く必要はない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;layout</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;layout</span>
     <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -432,7 +432,7 @@
     <span class="nt">&lt;/data&gt;</span>
     ...</code></pre></div>
 <p>さらに、<code>TextView</code>要素の<code>text</code>属性を変更する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;TextView</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;TextView</span>
       <span class="na">android:id=</span><span class="s">&#34;@+id/textView&#34;</span>
       <span class="err">...</span>
       <span class="na">android:text=</span><span class="s">&#34;@{String.valueOf(calcViewModel.text)}&#34;</span>
@@ -440,7 +440,7 @@
 <p>LiveDataを文字列として埋め込みたいなら、<code>String.valueOf(calcViewModel.text)</code>のように書く。この場合は<code>calcViewModel.text.value</code>でなくても良い。</p>
 <h2 id="calcfragmentkt">CalcFragment.kt</h2>
 <p><code>viewModel</code>を宣言する。<code>ViewModelProviders</code>を用いて初期化するところは前回の通り。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentCalcBinding</span>
     <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModel</span><span class="p">:</span> <span class="n">CalcViewModel</span>
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
@@ -458,7 +458,7 @@
 <span class="p">}</span></code></pre></div>
 <p><code>binding.lifecycleOwner = this</code>とすると、<code>CalcViewModel.text</code>の変化を感知して<code>TextView</code>の値が変更されるようになる。</p>
 <p>これを設定せずにやる方法として、次の<code>observe</code>メソッドがある。これは<code>viewModel.text</code>に<code>Observer</code>を設定する。<code>fragment_calc.xml</code>に変更を反映するという目的だけなら<code>binding.lifecycleOwner = this</code>だけで良いが、それ以外のことをやりたい場合はこのメソッドを使うことになりそう。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">viewModel</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="n">observe</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">Observer</span> <span class="p">{</span> <span class="n">newText</span><span class="p">:</span> <span class="n">String</span> <span class="o">-&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">viewModel</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="n">observe</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">Observer</span> <span class="p">{</span> <span class="n">newText</span><span class="p">:</span> <span class="n">String</span> <span class="o">-&gt;</span>
     <span class="n">binding</span><span class="p">.</span><span class="n">invalidateAll</span><span class="p">()</span>
 <span class="p">})</span></code></pre></div>
 <p>まだボタンを押した時の挙動を一切設定していないので、設定する。</p>
@@ -470,7 +470,7 @@
 <li><code>onCharacterButtonClicked(c: String)</code>: ACと=以外のボタンが押された時に呼び出す。単に_textの末尾に文字を追加するだけ。引数は<code>calc_fragment.xml</code>で呼び出す際に使用し、これは押された文字を指定する。xmlファイルとの兼ね合いにより、「左括弧のときは<code>&quot;lp&quot;</code>、右括弧のときは<code>rp</code>が引数に渡される」と約束する。</li>
 </ul>
 <p><code>when</code>文は、他言語でいう<code>switch</code>文のこと。場合分けが結構シンプルに表現できて良い。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcViewModel</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">CalcViewModel</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">private</span> <span class="k">var</span> <span class="py">_text</span> <span class="p">=</span> <span class="n">MutableLiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;()</span>
     <span class="k">val</span> <span class="py">text</span><span class="p">:</span> <span class="n">LiveData</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span>
         <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">_text</span>
@@ -495,14 +495,14 @@
 <h3 id="fragment_calcxml-1">fragment_calc.xml</h3>
 <p>各<code>Button</code>要素について、<code>onClick</code>属性を追加する。</p>
 <p>以下はACボタンについての記述。以下のように、<code>@{ラムダ式}</code>みたいな文法が使えるようだ。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
       <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
       <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
       <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
       <span class="na">android:text=</span><span class="s">&#34;@string/calc_ac&#34;</span>
       <span class="na">android:onClick=</span><span class="s">&#34;@{() -&gt; calcViewModel.onAllClearButtonClicked()}&#34;</span><span class="nt">/&gt;</span></code></pre></div>
 <p>以下は=ボタンについての記述。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
       <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
       <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
       <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
@@ -510,7 +510,7 @@
       <span class="na">android:id=</span><span class="s">&#34;@+id/buttonEq&#34;</span>
       <span class="na">android:onClick=</span><span class="s">&#34;@{() -&gt; calcViewModel.onEqualButtonClicked()}&#34;</span><span class="nt">/&gt;</span></code></pre></div>
 <p>以下は.ボタンについての記述。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
       <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
       <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
       <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
@@ -518,7 +518,7 @@
       <span class="na">android:id=</span><span class="s">&#34;@+id/buttonPeriod&#34;</span>
       <span class="na">android:onClick=</span><span class="s">&#34;@{() -&gt; calcViewModel.onPeriodButtonClicked()}&#34;</span><span class="nt">/&gt;</span></code></pre></div>
 <p>以下はそれ以外のボタンについての記述。ここでは7ボタンについてを例にしているが、他のボタンもちゃんと書く。ボタン数が多くて大変だが頑張る。左括弧は<code>lp;</code>、右括弧は<code>rp;</code>と書かなければいけないことに注意。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;Button</span>
       <span class="na">android:layout_width=</span><span class="s">&#34;0dp&#34;</span>
       <span class="na">android:layout_weight=</span><span class="s">&#34;1&#34;</span>
       <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
@@ -532,7 +532,7 @@
 <p>まず<code>State</code>クラスを作る。これは文字列に対して「今どの位置を見ているのか」「見ている位置を1つずらす」処理を持つクラスである。いわゆるイテレータである。前者は<code>peek</code>、後者は<code>next</code>というメンバ関数で実現する。<code>peek</code>について、もし位置が終端に達していたら<code>null</code>を返す。</p>
 <p>あとはBNFっぽいルールを作って、ルール通りに解析すれば良い。構文解析に失敗したら例外を投げるようにする。</p>
 <p><code>number</code>関数については補足する。連続する数字とピリオドを取得し、これを Doubleに変換する。ただしピリオドが2個以上現れるなどの不正な入力があるかもしれないので、もしDoubleへの変換に失敗したら例外を投げるようにしている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">com.example.calculator</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">com.example.calculator</span>
 
 <span class="k">class</span> <span class="nc">CalcParser</span><span class="p">(</span><span class="n">str</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">class</span> <span class="nc">State</span><span class="p">(</span><span class="k">private</span> <span class="k">var</span> <span class="py">str</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">{</span>
@@ -615,7 +615,7 @@
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>最後に、<code>CalcViewModel.kt</code>の<code>onEqualButtonClicked</code>を編集すれば完成。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="k">fun</span> <span class="nf">onEqualButtonClicked</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin">  <span class="k">fun</span> <span class="nf">onEqualButtonClicked</span><span class="p">()</span> <span class="p">{</span>
       <span class="k">val</span> <span class="py">str</span> <span class="p">=</span> <span class="n">_text</span><span class="p">.</span><span class="n">value</span>
       <span class="k">if</span> <span class="p">(</span><span class="n">str</span> <span class="o">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
           <span class="n">_text</span><span class="p">.</span><span class="n">value</span> <span class="p">=</span> <span class="n">CalcParser</span><span class="p">(</span><span class="n">str</span><span class="p">).</span><span class="n">parse</span><span class="p">()</span>

@@ -3,7 +3,7 @@
 <head>
   <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1) | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-cg01/">
@@ -132,7 +132,7 @@ $$</p>
 
 <h2 id="graphviewswiftを作る">GraphView.swiftを作る</h2>
 <p>以下が雛形。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">GraphView</span><span class="p">:</span> <span class="n">UIView</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">GraphView</span><span class="p">:</span> <span class="n">UIView</span> <span class="p">{</span>
     
     <span class="kr">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
     <span class="p">}</span>
@@ -144,13 +144,13 @@ $$</p>
 <span class="p">}</span></code></pre></div>
 <h2 id="viewの枠線">Viewの枠線</h2>
 <p><code>layer.borderWidth</code>と<code>layer.borderColor</code>で枠線を設定できる。これはCoreGraphicsとは関係ない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">layer</span><span class="p">.</span><span class="n">borderWidth</span> <span class="p">=</span> <span class="mf">1.0</span>
     <span class="n">layer</span><span class="p">.</span><span class="n">borderColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">.</span><span class="n">black</span><span class="p">.</span><span class="n">cgColor</span>
 <span class="p">}</span></code></pre></div>
 <h2 id="各種定数の設定">各種定数の設定</h2>
 <p>作ったレイアウトを元に定数を定義しておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">let</span> <span class="nv">barWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="p">{</span>
         <span class="kd">let</span> <span class="nv">numer</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">rect</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span>
         <span class="kd">let</span> <span class="nv">denom</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
@@ -167,7 +167,7 @@ $$</p>
 <h2 id="棒グラフ描画">棒グラフ描画</h2>
 <h3 id="graphiccontext取得">GraphicContext取得</h3>
 <p>strokeとかfillとかの、描画に関する諸々の設定を行うためには、<code>GraphicContext</code>を取得する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
     <span class="k">guard</span> <span class="kd">let</span> <span class="nv">context</span> <span class="p">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
         <span class="bp">print</span><span class="p">(</span><span class="s">&#34;Failed to get context&#34;</span><span class="p">)</span>
@@ -178,7 +178,7 @@ $$</p>
 <p>描画の座標系は左上から右下が正の方向。しかし、左下から右上に向かって伸びる棒グラフにしたいので、何番目の棒グラフがどの位置で、どんな長さなのかを計算する必要がある。これをできるだけ簡単に行うための関数を定義する。</p>
 <h4 id="scalelinear">scaleLinear</h4>
 <p>D3.jsでお馴染み。ある定義域からある値域への一次関数を作る関数。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="c1">//         ran[1] - ran[0]</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="c1">//         ran[1] - ran[0]</span>
 <span class="c1">// f(x) = ----------------- * (x - dom[0]) + ran[0]</span>
 <span class="c1">//         dom[1] - dom[0]</span>
 <span class="kd">func</span> <span class="nf">scaleLinear</span><span class="p">(</span><span class="n">domain</span> <span class="n">dom</span> <span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">),</span> <span class="n">range</span> <span class="n">ran</span><span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">))</span> <span class="p">-&gt;</span> <span class="p">((</span><span class="n">CGFloat</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span><span class="p">)</span> <span class="p">{</span>
@@ -192,7 +192,7 @@ $$</p>
 <li><code>yScale</code>: 配列の値から、棒グラフのy座標を算出してくれる関数</li>
 <li><code>hScale</code>: 配列の値から、棒グラフの高さを算出してくれる関数</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
     <span class="kd">let</span> <span class="nv">xScale</span> <span class="p">=</span> <span class="n">scaleLinear</span><span class="p">(</span><span class="n">domain</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">)),</span> <span class="n">range</span><span class="p">:</span> <span class="p">(</span><span class="n">padX</span><span class="p">,</span> <span class="n">rect</span><span class="p">.</span><span class="n">width</span><span class="p">))</span>
     <span class="kd">let</span> <span class="nv">yScale</span> <span class="p">=</span> <span class="n">scaleLinear</span><span class="p">(</span><span class="n">domain</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">valueMax</span><span class="p">),</span> <span class="n">range</span><span class="p">:</span> <span class="p">(</span><span class="n">rect</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">textAreaHeight</span><span class="p">,</span> <span class="n">padY</span><span class="p">))</span>
@@ -200,7 +200,7 @@ $$</p>
 <span class="p">}</span></code></pre></div>
 <h3 id="棒グラフ描画-1">棒グラフ描画</h3>
 <p>ここからはfor文を使って各要素ごとに処理する。もしvalが最大値だったらfillをオレンジに、そうでなければ青に設定する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
   <span class="p">...</span>
   <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
       <span class="kd">let</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="p">=</span> <span class="n">datum</span>
@@ -212,7 +212,7 @@ $$</p>
   <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>実際の棒グラフの描画には<code>UIBezierPath.fill()</code>を使う。この<code>UIBezierPath</code>は、矩形を描いたりベジェ曲線を描いたり、円弧を描いたりなど、様々な使い方ができる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
   <span class="p">...</span>
   <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
     <span class="p">...</span>
@@ -225,7 +225,7 @@ $$</p>
   <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>for文の直後に、横軸を描画するコードを書く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
   <span class="p">...</span>
   <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
     <span class="p">...</span>
@@ -250,7 +250,7 @@ $$</p>
 <li>テキストの枠は90pt×30pt</li>
 </ul>
 <p>これらはtext描画の際の引数に指定する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
   <span class="p">...</span>
   <span class="kd">let</span> <span class="nv">font</span> <span class="p">=</span> <span class="n">UIFont</span><span class="p">.</span><span class="n">systemFont</span><span class="p">(</span><span class="n">ofSize</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span>
   <span class="kd">let</span> <span class="nv">textStyle</span> <span class="p">=</span> <span class="n">NSMutableParagraphStyle</span><span class="p">()</span>
@@ -268,7 +268,7 @@ $$</p>
 <span class="p">}</span></code></pre></div>
 <h3 id="名前の描画">名前の描画</h3>
 <p>テキストの位置、サイズを<code>CGRect</code>として用意し、表示するテキストと、前で定義した<code>textFontAttributes</code>を用意する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span> <span class="p">{</span>
       <span class="p">...</span>
       <span class="kd">let</span> <span class="nv">titleTextRect</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
           <span class="n">x</span><span class="p">:</span> <span class="n">xScale</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="o">+</span> <span class="n">barWidth</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">textWidth</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
@@ -281,7 +281,7 @@ $$</p>
   <span class="p">}</span></code></pre></div>
 <h3 id="数値の描画">数値の描画</h3>
 <p>やってることは上とまったく同じ。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span> <span class="p">{</span>
       <span class="p">...</span>
       <span class="kd">let</span> <span class="nv">valueTextRect</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
           <span class="n">x</span><span class="p">:</span> <span class="n">xScale</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="o">+</span> <span class="n">barWidth</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">textWidth</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>

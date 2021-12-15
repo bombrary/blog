@@ -3,7 +3,7 @@
 <head>
   <title>PythonとWSGIで作るToDoリストAPI | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/todo-api-wsgi/">
@@ -162,7 +162,7 @@ WSGI対応のどんなWebサーバーとも連携することができる。</p>
 <h2 id="雛形">雛形</h2>
 <p>まずはサーバーを作る。この時点ではルーティング処理を書いていない。
 どのようなリクエストをしても<code>Hello, World</code>をレスポンスとして返す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
 
 
 <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
@@ -184,7 +184,7 @@ Hello, World.
 <p>以下、<a href="https://www.python.org/dev/peps/pep-3333/#specification-details">PEP3333のSpecification Details</a>を参考に書く。</p>
 <p>Webアプリの実態は関数<code>app</code>そのもの。厳密には、Webアプリは2引数を持つcallableなオブジェクトとして定義される。
 callableであれば良いので、例えば以下のように<code>__call__</code>を実装したクラスのインスタンスもWebアプリとみなせる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
 
 
 <span class="k">class</span> <span class="nc">App</span><span class="p">:</span>
@@ -228,7 +228,7 @@ iterableであればなんでも良いので、上のコードではlistでbyte�
 
 <h2 id="ルーティング">ルーティング</h2>
 <p>URLとリクエストメソッドは<code>env</code>から取得できるので、<code>if</code>文を使って以下のように書くことも、一応はできる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
   <span class="n">path</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;PATH_INFO&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;/&#39;</span>
   <span class="n">method</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;REQUEST_METHOD&#39;</span><span class="p">]</span>
   <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/todo/&#39;</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
@@ -244,7 +244,7 @@ iterableであればなんでも良いので、上のコードではlistでbyte�
 <p>コードについては<a href="https://c-bata.link/webframework-in-python/routing.html">ルーティング - Webアプリケーションフレームワークの作り方 in Python</a>
 を一部参考にしている。</p>
 <p>まず、<code>app.py</code>を以下のようにする(<code>if __name__ == '__main__'...</code>の処理は省略)。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">views</span> <span class="kn">import</span> <span class="n">todo</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">views</span> <span class="kn">import</span> <span class="n">todo</span>
 <span class="kn">from</span> <span class="nn">util</span> <span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">NotFound</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
@@ -276,7 +276,7 @@ iterableであればなんでも良いので、上のコードではlistでbyte�
     <span class="k">except</span> <span class="n">HTTPException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">e</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
 </code></pre></div><p><code>util.py</code>を作成して、内容は以下のようにする。<code>BadRequest</code>例外については次節で使う。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">HTTPException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">HTTPException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
 
 
@@ -292,7 +292,7 @@ iterableであればなんでも良いので、上のコードではlistでbyte�
         <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;400 Bad Request&#39;</span><span class="p">]</span>
 </code></pre></div><p><code>views/__init__.py</code>と<code>views/todo.py</code>を作成。前者は空のファイルのままで、後者はとりあえず以下のようにする。
 これらの関数の中身は後で大きく書き換える。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
     <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain; charset=utf-8&#39;</span><span class="p">)])</span>
     <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;todo.get_all&#39;</span><span class="p">]</span>
 
@@ -337,7 +337,7 @@ todo.delete: 1
 一方で、対応するコールバック関数が離れたところで定義されているため、URL、メソッドに対してどんな処理が行われるのかが
 一目で分かりづらい、というデメリットもある。FlaskやBottleなどのフレームワークでは、<code>ROUTES</code>にまとめる代わりに、デコレータを使って以下のように書けるように設計されている(以下はFlaskの例)。
 どちらの設計にも良し悪しがあるので、どちらを選ぶかは好みだと思う。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">get_todo_all</span><span class="p">(</span><span class="n">todo_id</span><span class="p">):</span>
   <span class="o">...</span>
 
@@ -414,7 +414,7 @@ todo.delete: 1
 </tbody>
 </table>
 <p>上の定義で、実際に<code>views/todo.py</code>で使ってみると以下の通りになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span><span class="p">,</span> <span class="n">TodoNotFound</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span><span class="p">,</span> <span class="n">TodoNotFound</span>
 <span class="kn">from</span> <span class="nn">util</span> <span class="kn">import</span> <span class="n">BadRequest</span><span class="p">,</span> <span class="n">NotFound</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
@@ -496,7 +496,7 @@ todo.delete: 1
     <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotFound</span>
 </code></pre></div><p>ひとまずダミーを実装する。<code>models/__init__.py</code>と<code>models/todo.py</code>を作成し、前者は空のままで、後者は以下の通りにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
 
 
@@ -549,7 +549,7 @@ todo.delete: 1
 存在しない<code>todo_id</code>にアクセスされた場合は、<code>NotFound</code>例外を投げる。2つとも<code>HTTPException</code>を継承しているので、<code>app.py</code>の<code>app</code>関数で捕捉され、それぞれ400 BadRequest、404 NotFoundのレスポンスを返す。</p>
 <h2 id="todoリスト---listによる実装">ToDoリスト - listによる実装</h2>
 <p>データが永続ではないが、一応listでToDoリストを実装してみる。<code>models/todo.py</code>を次のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 
 
 <span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -626,7 +626,7 @@ todo.delete: 1
 <h2 id="todoリスト---sqliteによる実装">ToDoリスト - sqliteによる実装</h2>
 <p>RDBMSでToDoリストを管理するようにしてみる。使うRDBMSはここではSQLiteとする。
 <code>models/todo.py</code>を次のようにする．</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sqlite3</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sqlite3</span>
 
 
 <span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -694,7 +694,7 @@ todo.delete: 1
 </span><span class="s1">                           )&#39;&#39;&#39;</span><span class="p">)</span>
             <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 </code></pre></div><p>データベースを初期化するためには<code>Todo.init_table()</code>を実行する。そこで、初期化用のスクリプト<code>init_db.py</code>を作成する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>

@@ -7,6 +7,30 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>neovimのプラグインがうまく動かなかったので原因を探した話</title>
+      <link>https://bombrary.github.io/blog/posts/nvim-note0/</link>
+      <pubDate>Fri, 01 Oct 2021 09:19:20 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/nvim-note0/</guid>
+      <description>(2021/12/25追記) この記事で話題にした問題は最新のddc-nvim-lspで修正されている。こちらのissue及びこちらのcommitを参照。もっとも、この記事を書いてから大分経ったため、ddc_nvim_lsp.luaのソースコードも今では大分変わっている。
+以下の文章のまとめ バージョン違いには注意する
+ddc-nvim-lspは2021/10/1時点では、neovim 0.5.0を想定して作られているプラグインである。しかし自分はneovim 0.5.1を使ってしまっていた。neovim 0.5.1からlsp handlerの引数に破壊的変更があったため、LSPの補完が効かなかった。
+究明に当たってDockerを触ったり、Luaを触ったり、ドキュメントを漁ったりして色々糧にはなったので、記録しておく。
+何が起きたのか まず、プラグインの管理にはShougo/dein.vimを使った。
+neovimのbuildin LSPを使ってLSPが使える環境を構築した。設定に当たって以下のプラグインを導入した。
+ neovim/nvim-lspconfig  入力補完はShougo/ddc.vimを使った。それにあたって以下のプラグインを導入した。
+ vim-denops/denops.vim: ddc.vimがDenoの機能を使うため必要。 Shougo/ddc-matcher_head Shougo/ddc-sorter_rank Shougo/ddc-around Shougo/ddc-nvim-lsp  最後のddc-nvim-lspがうまく動かなかった．
+Language Serverとしてpyrightを導入したのだが、実際にPythonのファイルで入力補完を試したところ，ddc-aroundの補完は反応するが，ddc-nvim-lspの補完候補が現れなかった。
+Dockerを使って再現性を検証する まず、
+ 何か他のプラグインが邪魔しているのではないか Macという環境だから問題なのだろうか  という仮説を立てた。そのためには、何も無い素のneovimの環境を作る必要があると考えた。そこで、環境をDockerで構築しようと考えた。
+Docker環境の構築 適当なディレクトリを作って、そこにDockerfileとdocker-compose.ymlを作成する。
+Dockerfileを以下のようにする。ベースイメージはanatolelucet/neovimにした。この時点でdeinを導入する。コマンドはdeinのQuick startを参照した。deinのインストールにあたってcurl、gitコマンドが必要なので、ここで導入する。
+FROManatolelucet/neovim:stable-ubuntuRUN apt-get update &amp;amp;&amp;amp; apt-get install -y curl gitRUN curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh &amp;gt; installer.sh &amp;amp;&amp;amp; sh ./installer.sh ~/.cache/deinneovimの設定ファイルはコンテナ外で編集できるようにしておく。同ディレクトリにディレクトリ.config/nvim/を作成し、その上で、docker-compose.ymlを以下のようにする。
+version:&amp;#39;3&amp;#39;services:nvim:build:.volumes:- .config:/root/.configentrypoint:&amp;#39;bash&amp;#39;working_dir:/root.config/nvim/の中にinit.vim、dein.toml&#39;、&#39;dein_lazy.tomlを作成。init.vimは以下の通り。
+&amp;#34;dein Scripts-----------------------------if &amp;amp;compatible set nocompatible &amp;#34; Be iMprovedendif&amp;#34; Required:set runtimepath+=/root/.cache/dein/repos/github.com/Shougo/dein.vim&amp;#34; Required:call dein#begin(&amp;#39;/root/.</description>
+    </item>
+    
+    <item>
       <title>Elmでテトリスを作った話</title>
       <link>https://bombrary.github.io/blog/posts/elm-tetris/</link>
       <pubDate>Tue, 10 Aug 2021 17:10:00 +0900</pubDate>
@@ -165,7 +189,7 @@ $$ \begin{aligned} y &amp;amp;= h_{\bm{w}}(\bm{x})\\ &amp;amp;:= w_0 + w_1x_1 + 
 $$ J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 $$
 が最小となる $\bm{w}$ を求める。この $J$ については呼び名がいくつかあるが、ここではコスト関数と呼ぶ。 係数 $1/2$ は微分した時に出てくる $2$ を消し去るための便宜的なものであり、つける必然はない。
 コスト関数の最小値を求める(1) コスト関数の行列表現 まず $J$ を行列だけで表現してみる。
-$$ \begin{aligned} J(\bm{w}) &amp;amp;= \frac{1}{2} \sum_{i=1}^{N} (\bm{w}^T\bm{x}_i - y^{(i)})^2\\ &amp;amp;= \frac{1}{2} \sum_{i=1}^{N} (\bm{x}_i^T\bm{w} - y^{(i)})^2\\ &amp;amp;= \frac{1}{2} \begin{pmatrix} \bm{x}_1^T\bm{w} - y^{(1)}\\ \bm{x}_2^T\bm{w} - y^{(2)}\\ \vdots\\ \bm{x}_N^T\bm{w} - y^{(N)}\\ \end{pmatrix}^T \begin{pmatrix} \bm{x}_1^T\bm{w} - y^{(1)}\\ \bm{x}_2^T\bm{w} - y^{(2)}\\ \vdots\\ \bm{x}_N^T\bm{w} - y^{(N)}\\ \end{pmatrix}\\ &amp;amp;= \frac{1}{2} \left( \begin{pmatrix} \bm{x}_1^T\bm{w}\\ \bm{x}_2^T\bm{w}\\ \vdots\\ \bm{x}_N^T\bm{w}\\ \end{pmatrix} - \bm{y} \right)^T \left( \begin{pmatrix} \bm{x}_1^T\bm{w}\\ \bm{x}_2^T\bm{w}\\ \vdots\\ \bm{x}_N^T\bm{w}\\ \end{pmatrix} - \bm{y} \right) \end{aligned} $$</description>
+$$ \begin{aligned} J(\bm{w}) &amp;amp;= \frac{1}{2} \sum_{i=1}^{N} (\bm{w}^T\bm{x}i - y^{(i)})^2\\ &amp;amp;= \frac{1}{2} \sum{i=1}^{N} (\bm{x}_i^T\bm{w} - y^{(i)})^2\\ &amp;amp;= \frac{1}{2} \begin{pmatrix} \bm{x}_1^T\bm{w} - y^{(1)}\\ \bm{x}_2^T\bm{w} - y^{(2)}\\ \vdots\\ \bm{x}_N^T\bm{w} - y^{(N)}\\ \end{pmatrix}^T \begin{pmatrix} \bm{x}_1^T\bm{w} - y^{(1)}\\ \bm{x}_2^T\bm{w} - y^{(2)}\\ \vdots\\ \bm{x}_N^T\bm{w} - y^{(N)}\\ \end{pmatrix}\\ &amp;amp;= \frac{1}{2} \left( \begin{pmatrix} \bm{x}_1^T\bm{w}\\ \bm{x}_2^T\bm{w}\\ \vdots\\ \bm{x}_N^T\bm{w}\\ \end{pmatrix} - \bm{y} \right)^T \left( \begin{pmatrix} \bm{x}_1^T\bm{w}\\ \bm{x}_2^T\bm{w}\\ \vdots\\ \bm{x}_N^T\bm{w}\\ \end{pmatrix} - \bm{y} \right) \end{aligned} $$</description>
     </item>
     
     <item>

@@ -3,7 +3,7 @@
 <head>
   <title>iPhoneアプリ開発メモ - 棒グラフの作成(Chartsの利用) | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/">
@@ -97,14 +97,14 @@
 <h2 id="chartsのインストール">Chartsのインストール</h2>
 <p>まず、CocoaPodsがインストールされていることが前提。</p>
 <p>プロジェクトフォルダで以下のコマンドを実行。</p>
-<pre><code>$ pod init
+<pre tabindex="0"><code>$ pod init
 </code></pre><p><code>podfile</code>が作成されるので、それを編集する。<code>use_frameworks!</code>の下に以下の記述を追加。</p>
-<pre><code class="language-podfile" data-lang="podfile">pod &#39;Charts&#39;</code></pre>
+<pre tabindex="0"><code class="language-podfile" data-lang="podfile">pod &#39;Charts&#39;</code></pre>
 <p>プロジェクトフォルダで以下のコマンドを実行。</p>
-<pre><code>$ pod install
+<pre tabindex="0"><code>$ pod install
 </code></pre><p>以降、プロジェクトは<code>プロジェクト名.xcodeproj</code>ではなく<code>プロジェクト名.xcworkspace</code>から開く。</p>
 <h2 id="基本">基本</h2>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">import</span> <span class="nc">UIKit</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">import</span> <span class="nc">UIKit</span>
 <span class="kd">import</span> <span class="nc">Charts</span>
 
 <span class="kd">struct</span> <span class="nc">BarChartModel</span> <span class="p">{</span>
@@ -162,22 +162,22 @@
 </ul>
 <h2 id="色をつける">色をつける</h2>
 <p><code>ViewController</code>に最大値のプロパティを持たせる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">maxVal</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="n">barItems</span><span class="p">.</span><span class="bp">map</span><span class="p">({</span> <span class="nv">$0</span><span class="p">.</span><span class="mi">0</span> <span class="p">}).</span><span class="bp">max</span><span class="p">()</span><span class="o">!</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">maxVal</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="n">barItems</span><span class="p">.</span><span class="bp">map</span><span class="p">({</span> <span class="nv">$0</span><span class="p">.</span><span class="mi">0</span> <span class="p">}).</span><span class="bp">max</span><span class="p">()</span><span class="o">!</span></code></pre></div>
 <p><code>barChartDataSet</code>に色の配列をセットする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartDataSet</span><span class="p">.</span><span class="n">colors</span> <span class="p">=</span> <span class="n">items</span><span class="p">.</span><span class="bp">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="n">value</span> <span class="p">==</span> <span class="n">maxVal</span> <span class="p">?</span> <span class="p">.</span><span class="n">systemOrange</span> <span class="p">:</span> <span class="p">.</span><span class="n">systemBlue</span> <span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartDataSet</span><span class="p">.</span><span class="n">colors</span> <span class="p">=</span> <span class="n">items</span><span class="p">.</span><span class="bp">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="n">value</span> <span class="p">==</span> <span class="n">maxVal</span> <span class="p">?</span> <span class="p">.</span><span class="n">systemOrange</span> <span class="p">:</span> <span class="p">.</span><span class="n">systemBlue</span> <span class="p">}</span></code></pre></div>
 <figure><img src="./iphone02.png" width="30%"/>
 </figure>
 
 <h2 id="アニメーション">アニメーション</h2>
 <p><code>createBarChartView</code>関数に以下の記述を追加。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="n">yAxisDuration</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="n">yAxisDuration</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span></code></pre></div>
 <figure><img src="./mov01.gif" width="30%"/>
 </figure>
 
 <h2 id="棒グラフの下に名前を表示する">棒グラフの下に名前を表示する</h2>
 <p>これは、棒グラフのx軸を設定することで実現できる。</p>
 <p><code>createBarChartView</code>関数に以下の記述を追加。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">xAxis</span><span class="p">.</span><span class="n">labelCount</span> <span class="p">=</span> <span class="n">items</span><span class="p">.</span><span class="bp">count</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">xAxis</span><span class="p">.</span><span class="n">labelCount</span> <span class="p">=</span> <span class="n">items</span><span class="p">.</span><span class="bp">count</span>
 <span class="n">barChartView</span><span class="p">.</span><span class="n">xAxis</span><span class="p">.</span><span class="n">labelPosition</span> <span class="p">=</span> <span class="p">.</span><span class="n">bottom</span>
 <span class="n">barChartView</span><span class="p">.</span><span class="n">xAxis</span><span class="p">.</span><span class="n">valueFormatter</span> <span class="p">=</span> <span class="n">IndexAxisValueFormatter</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">items</span><span class="p">.</span><span class="bp">map</span><span class="p">({</span><span class="nv">$0</span><span class="p">.</span><span class="n">name</span><span class="p">}))</span></code></pre></div>
 <ul>
@@ -187,7 +187,7 @@
 </ul>
 <p><code>IndexAxisValueFormatter</code>の代わりに、<code>IAxisValueFormatter</code>に準拠したオブジェクトを指定すると、x軸の書式をカスタマイズできる。</p>
 <p>例えば、以下のように<code>XAxisFormatter</code>を定義すると、これは<code>IndexAxisValueFormatter</code>と同じような振る舞いをする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">XAxisFormatter</span><span class="p">:</span> <span class="n">IAxisValueFormatter</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">XAxisFormatter</span><span class="p">:</span> <span class="n">IAxisValueFormatter</span> <span class="p">{</span>
     <span class="kd">let</span> <span class="nv">items</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">]</span>
     <span class="kd">init</span><span class="p">(</span><span class="n">of</span> <span class="n">items</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">])</span> <span class="p">{</span>
         <span class="kc">self</span><span class="p">.</span><span class="n">items</span> <span class="p">=</span> <span class="n">items</span>
@@ -202,10 +202,10 @@
 
 <h2 id="棒グラフの上にある数字の書式設定">棒グラフの上にある数字の書式設定</h2>
 <p><code>createBarChartData</code>関数に以下の記述を追加。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">valueFont</span> <span class="p">=</span> <span class="p">.</span><span class="n">systemFont</span><span class="p">(</span><span class="n">ofSize</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">valueFont</span> <span class="p">=</span> <span class="p">.</span><span class="n">systemFont</span><span class="p">(</span><span class="n">ofSize</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span>
 <span class="n">barChartDataSet</span><span class="p">.</span><span class="n">valueFormatter</span> <span class="p">=</span> <span class="n">ValueFormatter</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">items</span><span class="p">)</span></code></pre></div>
 <p><code>ValueFormatter</code>を定義する。これは<code>IValueFormatter</code>に準拠したクラス。この<code>stringForValue</code>で、x軸の値<code>value</code>に対するラベルの値を返すように設定する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ValueFormatter</span><span class="p">:</span> <span class="n">IValueFormatter</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ValueFormatter</span><span class="p">:</span> <span class="n">IValueFormatter</span> <span class="p">{</span>
     <span class="kd">let</span> <span class="nv">items</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">]</span>
     <span class="kd">init</span><span class="p">(</span><span class="n">of</span> <span class="n">items</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">])</span> <span class="p">{</span>
         <span class="kc">self</span><span class="p">.</span><span class="n">items</span> <span class="p">=</span> <span class="n">items</span>
@@ -220,7 +220,7 @@
 <h2 id="細かい設定">細かい設定</h2>
 <p>グリッドとかy軸とかはいらないので、それを消す設定をする。</p>
 <p><code>createBarChartView</code>関数に以下の記述を追加。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="c1">// グリッドやy軸を非表示</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="c1">// グリッドやy軸を非表示</span>
 <span class="n">barChartView</span><span class="p">.</span><span class="n">xAxis</span><span class="p">.</span><span class="n">drawGridLinesEnabled</span> <span class="p">=</span> <span class="kc">false</span>
 <span class="n">barChartView</span><span class="p">.</span><span class="n">leftAxis</span><span class="p">.</span><span class="n">enabled</span> <span class="p">=</span> <span class="kc">false</span>
 <span class="n">barChartView</span><span class="p">.</span><span class="n">rightAxis</span><span class="p">.</span><span class="n">enabled</span> <span class="p">=</span> <span class="kc">false</span>
@@ -243,7 +243,7 @@
 
 <h3 id="viewcontrollerswift">ViewController.swift</h3>
 <p><code>viewDidLoad</code>では主に<code>scrollView</code>の設定をする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
     <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
     
     <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
@@ -261,7 +261,7 @@
     <span class="n">scrollView</span><span class="p">.</span><span class="n">isPagingEnabled</span> <span class="p">=</span> <span class="kc">true</span>
 <span class="p">}</span></code></pre></div>
 <p><code>createContentsView</code>を定義する。こちらもやってること自体は前回とあまり変わっていない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">createContentsView</span><span class="p">(</span><span class="n">of</span> <span class="n">items</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">],</span> <span class="n">barsCountPerPage</span><span class="p">:</span> <span class="nb">Int</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIView</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">createContentsView</span><span class="p">(</span><span class="n">of</span> <span class="n">items</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">],</span> <span class="n">barsCountPerPage</span><span class="p">:</span> <span class="nb">Int</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIView</span> <span class="p">{</span>
     <span class="kd">let</span> <span class="nv">itemsPerPage</span> <span class="p">=</span> <span class="bp">stride</span><span class="p">(</span><span class="n">from</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="n">items</span><span class="p">.</span><span class="bp">count</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="n">barsCountPerPage</span><span class="p">).</span><span class="bp">map</span> <span class="p">{</span>
         <span class="nb">Array</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="nv">$0</span> <span class="p">..</span><span class="o">&lt;</span> <span class="bp">min</span><span class="p">(</span><span class="nv">$0</span> <span class="o">+</span> <span class="n">barsCountPerPage</span><span class="p">,</span> <span class="n">items</span><span class="p">.</span><span class="bp">count</span><span class="p">)])</span>
     <span class="p">}</span>
@@ -285,15 +285,15 @@
     <span class="k">return</span> <span class="n">contentsView</span>
 <span class="p">}</span></code></pre></div>
 <p><code>createBarChartView</code>に以下の記述を追加。これで全ページで同じ縮尺になる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">leftAxis</span><span class="p">.</span><span class="n">axisMaximum</span> <span class="p">=</span> <span class="nb">Double</span><span class="p">(</span><span class="n">maxVal</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">leftAxis</span><span class="p">.</span><span class="n">axisMaximum</span> <span class="p">=</span> <span class="nb">Double</span><span class="p">(</span><span class="n">maxVal</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span></code></pre></div>
 <figure><img src="./mov02.gif" width="30%"/>
 </figure>
 
 <h2 id="タップイベント">タップイベント</h2>
 <p><code>createBarChartView</code>に以下の記述を追加。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">delegate</span> <span class="p">=</span> <span class="kc">self</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barChartView</span><span class="p">.</span><span class="n">delegate</span> <span class="p">=</span> <span class="kc">self</span></code></pre></div>
 <p><code>ViewController</code>の<code>extension</code>を追加する。<code>chartValueSelected</code>メソッドでタップ時の処理を指定する。例えば次のようにすると、棒グラフの名前と値を取得できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">extension</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">ChartViewDelegate</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">extension</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">ChartViewDelegate</span> <span class="p">{</span>
     <span class="kd">func</span> <span class="nf">chartValueSelected</span><span class="p">(</span><span class="kc">_</span> <span class="n">chartView</span><span class="p">:</span> <span class="n">ChartViewBase</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="n">ChartDataEntry</span><span class="p">,</span> <span class="n">highlight</span><span class="p">:</span> <span class="n">Highlight</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">let</span> <span class="nv">axisFormatter</span> <span class="p">=</span> <span class="n">chartView</span><span class="p">.</span><span class="n">xAxis</span><span class="p">.</span><span class="n">valueFormatter</span><span class="p">!</span>
         <span class="kd">let</span> <span class="nv">label</span> <span class="p">=</span> <span class="n">axisFormatter</span><span class="p">.</span><span class="n">stringForValue</span><span class="p">(</span><span class="n">entry</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
@@ -301,7 +301,7 @@
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p>ちなみに、先ほど<code>ValueFormatter</code>に<code>items</code>を持たせていたため、次のようにしてitemの値を取得することも可能(あまり綺麗な方法ではないが)。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">extension</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">ChartViewDelegate</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">extension</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">ChartViewDelegate</span> <span class="p">{</span>
     <span class="kd">func</span> <span class="nf">chartValueSelected</span><span class="p">(</span><span class="kc">_</span> <span class="n">chartView</span><span class="p">:</span> <span class="n">ChartViewBase</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="n">ChartDataEntry</span><span class="p">,</span> <span class="n">highlight</span><span class="p">:</span> <span class="n">Highlight</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">let</span> <span class="nv">valueFormatter</span> <span class="p">=</span> <span class="n">chartView</span><span class="p">.</span><span class="n">data</span><span class="p">?.</span><span class="n">dataSets</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">valueFormatter</span> <span class="k">as</span><span class="p">!</span> <span class="n">ValueFormatter</span>
         <span class="kd">let</span> <span class="nv">items</span> <span class="p">=</span> <span class="n">valueFormatter</span><span class="p">.</span><span class="n">items</span>

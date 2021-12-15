@@ -3,7 +3,7 @@
 <head>
   <title>GraphvizでTeXの数式を表示する(2) - PDFにしたい場合 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/graphviz-tex02/">
@@ -79,7 +79,7 @@
   <p>TeXのレポートに貼り付けたいが、TeXではSVG形式は扱えないのでPDFにしたくなった。やってみたら思ったより面倒だったので備忘録として残す。</p>
 <h3 id="dotファイルの用意">dotファイルの用意</h3>
 <p>前回と同じにする。ファイル名は<code>graph.dot</code>とする。</p>
-<pre><code class="language-dot" data-lang="dot">digraph {
+<pre tabindex="0"><code class="language-dot" data-lang="dot">digraph {
   graph [ rankdir=&quot;LR&quot; ];
   node [ shape=&quot;circle&quot;, fixedsize=true, height=0.6 ];
   Q0 [texlbl=&quot;$q_0$&quot;];
@@ -127,7 +127,7 @@ $ dvipdf graph.dvi
 <p>これをやると、一部が画面からはみ出したグラフが作成されてしまう。</p>
 <h3 id="調査">調査</h3>
 <p><code>graph.tex</code>のプリアンブルを見てみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\documentclass</span><span class="nb">{</span>standalone<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\documentclass</span><span class="nb">{</span>standalone<span class="nb">}</span>
 <span class="k">\usepackage</span><span class="na">[x11names, svgnames, rgb]</span><span class="nb">{</span>xcolor<span class="nb">}</span>
 <span class="k">\usepackage</span><span class="na">[utf8]</span><span class="nb">{</span>inputenc<span class="nb">}</span>
 <span class="k">\usepackage</span><span class="nb">{</span>tikz<span class="nb">}</span>
@@ -141,7 +141,7 @@ $ dvipdf graph.dvi
   ...</code></pre></div>
 <p><code>documentclass</code>が<code>article</code>になっている。この設定だと、pdfのサイズがA4になる。enlargethispageでサイズを広げているようだが、なぜかうまくいっていないようだ。</p>
 <p><code>article</code>を<code>standalone</code>に変えてみる。<code>standalone</code>のときは<code>enlargethispage</code>が使えないようなので、削除する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\documentclass</span><span class="nb">{</span>standalone<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\documentclass</span><span class="nb">{</span>standalone<span class="nb">}</span>
 <span class="k">\usepackage</span><span class="na">[x11names, svgnames, rgb]</span><span class="nb">{</span>xcolor<span class="nb">}</span>
 <span class="k">\usepackage</span><span class="na">[utf8]</span><span class="nb">{</span>inputenc<span class="nb">}</span>
 <span class="k">\usepackage</span><span class="nb">{</span>tikz<span class="nb">}</span>
@@ -159,7 +159,7 @@ $ dvipdf graph.dvi
 <h3 id="自動化">自動化</h3>
 <p>いちいち<code>standalone</code>に変えて<code>enlargepagesize</code>を削除するのは面倒なので、シェルスクリプトにまとめる。</p>
 <p>例えば以下の内容を<code>dot2pdf.sh</code>として保存する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">dot2tex <span class="nv">$1</span>.dot &gt; <span class="nv">$1</span>.tex
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">dot2tex <span class="nv">$1</span>.dot &gt; <span class="nv">$1</span>.tex
 cat <span class="nv">$1</span>.tex<span class="se">\
 </span><span class="se"></span>  <span class="p">|</span> sed <span class="s1">&#39;s/\\documentclass{article}/\\documentclass{standalone}/&#39;</span><span class="se">\
 </span><span class="se"></span>  <span class="p">|</span> sed <span class="s1">&#39;s/\\enlargethispage.*//&#39;</span> <span class="se">\

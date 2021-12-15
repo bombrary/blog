@@ -3,7 +3,7 @@
 <head>
   <title>Elmメモ ドラッグ移動の実現(1) | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-drag01/">
@@ -80,7 +80,7 @@
 <h2 id="初期状態">初期状態</h2>
 <p>詳細は省略するが、Elmプロジェクトを作成して<code>elm/svg</code>と<code>elm/json</code>をインストールしておく。</p>
 <p><code>src/Main.elm</code>は以下のようにしておく。<code>elm reactor</code>で動くことを確認する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Main</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Main</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 
 <span class="kn">import </span><span class="nc">Browser</span>
 <span class="kn">import </span><span class="nc">Browser.Events</span> <span class="kr">as</span> <span class="kt">BE</span>
@@ -166,7 +166,7 @@
 <a href="https://github.com/zaboco/elm-draggable/blob/master/examples/MultipleTargetsExample.elm">elm-draggableのサンプルの1つ</a>に、上記と似た実装があった。ただし、ここではドラッグ中の要素<code>movingBox</code>を<code>Model</code>ではなく要素の集合<code>BoxGroup</code>内に持たせている。座標を更新したいときは<code>movingBox</code>を変更すればよいだけ。この方針も悪くない、と思った。</p>
 <h2 id="circlecircles-の定義">Circle/Circles の定義</h2>
 <p><code>src/Circle.elm</code>を作成し、そちらで<code>Circle</code>と<code>Circles</code>を定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Circle</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Circle</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 
 <span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Id</span> <span class="nf">=</span> <span class="kt">Int</span>
 
@@ -184,7 +184,7 @@
     <span class="p">}</span></code></pre></div>
 <h3 id="ユーティリティ関数の定義">ユーティリティ関数の定義</h3>
 <p><code>Circles</code>の内部表現を気にせずに扱えるように、いくつかのユーティリティ関数を定義しておく。<code>add</code>関数は円を追加したいときに呼び出す関数だが、今回は利用しない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">empty</span> <span class="nf">:</span> <span class="kt">Circles</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">empty</span> <span class="nf">:</span> <span class="kt">Circles</span>
 <span class="nv">empty</span> <span class="nf">=</span>
     <span class="p">{</span> <span class="nv">all</span> <span class="nf">=</span> <span class="p">[]</span>
     <span class="p">,</span> <span class="nv">nextId</span> <span class="nf">=</span> <span class="mi">0</span>
@@ -242,10 +242,10 @@
     <span class="p">{</span> <span class="nv">circles</span> <span class="nf">|</span> <span class="nv">all</span> <span class="nf">=</span> <span class="nv">new</span> <span class="p">}</span></code></pre></div>
 <h2 id="円の描画">円の描画</h2>
 <p><code>src/Main.elm</code>に戻る。次の<code>import</code>文を追加。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">import </span><span class="nc">Circle</span> <span class="kr">as</span> <span class="kt">C</span> <span class="nv">exposing</span> <span class="p">(</span><span class="kt">Circle</span><span class="p">,</span> <span class="kt">CircleNoId</span><span class="p">,</span> <span class="kt">Circles</span><span class="p">,</span> <span class="kt">Id</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">import </span><span class="nc">Circle</span> <span class="kr">as</span> <span class="kt">C</span> <span class="nv">exposing</span> <span class="p">(</span><span class="kt">Circle</span><span class="p">,</span> <span class="kt">CircleNoId</span><span class="p">,</span> <span class="kt">Circles</span><span class="p">,</span> <span class="kt">Id</span><span class="p">)</span></code></pre></div>
 <h3 id="modelの変更">Modelの変更</h3>
 <p><code>Model</code>に<code>Circles</code>を追加しておく。<code>circles</code>としていくつかの初期データを投入しておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
     <span class="p">{</span> <span class="nv">circles</span> <span class="nf">:</span> <span class="kt">Circles</span>
     <span class="p">}</span>
 
@@ -264,7 +264,7 @@
     <span class="p">)</span></code></pre></div>
 <h3 id="viewの変更">Viewの変更</h3>
 <p>SVG描画の処理は<code>viewSvg</code>に任せる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="nv">div</span> <span class="p">[]</span>
         <span class="p">[</span> <span class="nv">viewSvg</span> <span class="nv">model</span>
@@ -281,7 +281,7 @@
         <span class="p">[</span> <span class="nv">viewCircles</span> <span class="nv">model</span>
         <span class="p">]</span></code></pre></div>
 <p><code>Circle(s)</code>の描画を<code>viewCircle(s)</code>に任せる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewCircles</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewCircles</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewCircles</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span> <span class="p">[]</span>
         <span class="p">(</span><span class="kt">List</span><span class="nf">.</span><span class="nv">map</span> <span class="p">(</span><span class="nv">viewCircle</span> <span class="nv">model</span><span class="p">)</span> <span class="p">(</span><span class="kt">C</span><span class="nf">.</span><span class="nv">toList</span> <span class="nv">model</span><span class="nf">.</span><span class="nv">circles</span><span class="p">))</span>
@@ -313,7 +313,7 @@
 <h2 id="円をクリック中の色変化">円をクリック中の色変化</h2>
 <h3 id="holdの定義">holdの定義</h3>
 <p>ドラッグ状態にある円を<code>hold</code>として<code>Model</code>に持たせる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
     <span class="p">{</span> <span class="nv">circles</span> <span class="nf">:</span> <span class="kt">Circles</span>
     <span class="p">,</span> <span class="nv">hold</span> <span class="nf">:</span> <span class="kt">Maybe</span> <span class="kt">Id</span>
     <span class="p">}</span>
@@ -329,7 +329,7 @@
     <span class="p">)</span></code></pre></div>
 <h3 id="ドラッグ開始イベントの定義">ドラッグ開始イベントの定義</h3>
 <p>circle要素に対してマウスが押下されたときに、<code>CircleHeld id</code>という<code>Msg</code>を送る。<code>CircleHeld</code>を受け取ったとき、<code>hold</code>に円のデータを入れる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="nf">=</span> <span class="kt">CircleHeld</span> <span class="kt">Id</span>
 
 <span class="nf">...</span>
@@ -357,7 +357,7 @@
         <span class="p">]</span></code></pre></div>
 <h3 id="ドラッグ中の色の変更">ドラッグ中の色の変更</h3>
 <p><code>fillCircle</code>関数が担う。これは、ドラッグ中の円のときだけ橙色のカラーコードを返す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewCircle</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Circle</span> <span class="nf">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
 <span class="nv">viewCircle</span> <span class="nv">model</span> <span class="nv">circle</span> <span class="nf">=</span>
     <span class="kt">S</span><span class="nf">.</span><span class="nv">g</span>
         <span class="p">[</span> <span class="nf">...</span>
@@ -385,7 +385,7 @@
                 <span class="s">&#34;#fff&#34;</span></code></pre></div>
 <h3 id="ドラッグ終了イベントの定義">ドラッグ終了イベントの定義</h3>
 <p>マウスが離されたときに、<code>CircleReleased</code>というメッセージを送る。特定のDOM要素に依存しないイベントを監視する場合は、<code>subscription</code>を用いる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="nf">=</span> <span class="kt">CircleHeld</span> <span class="kt">Id</span>
     <span class="nf">|</span> <span class="kt">CircleReleased</span>
 
@@ -427,7 +427,7 @@
 <p>補足。マウスの移動量については<code>movementX</code>と<code>movementY</code>が使えそうかなと思ったが、ドラッグ位置がずれた。<a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/movementX">movementXの説明</a>的にはずれなさそうなのだが。よくわからない。</p>
 <h3 id="modelの定義">Modelの定義</h3>
 <p><code>mouse : MousePosition</code>を定義する。「マウスがどれだけ動いたか」の情報は<code>dx: Float</code>と<code>dy: Float</code>で持たせる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
     <span class="p">{</span> <span class="nv">circles</span> <span class="nf">:</span> <span class="kt">Circles</span>
     <span class="p">,</span> <span class="nv">hold</span> <span class="nf">:</span> <span class="kt">Maybe</span> <span class="kt">Circle</span>
     <span class="p">,</span> <span class="nv">mouse</span> <span class="nf">:</span> <span class="kt">MousePosition</span>
@@ -452,7 +452,7 @@
     <span class="p">)</span></code></pre></div>
 <h3 id="マウス移動のイベント">マウス移動のイベント</h3>
 <p>SVG領域内の左上を原点として座標を取得したいので、SVGに対して<code>mousemove</code>イベントを登録したい。しかし<code>Svg.Event.onMouseMove</code>みたいな関数は用意されていないので、自作する。<code>Svg.Event.on</code>関数を使う。これも<code>Browser.Event.onMouseUp</code>のときと同様引数に<code>Json.Decode.Decoder msg</code>をとり、JSのEventをDecodeする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="nf">=</span> <span class="nf">...</span>
     <span class="nf">|</span> <span class="kt">MouseMoved</span> <span class="kt">Float</span> <span class="kt">Float</span>
 
@@ -498,7 +498,7 @@
             <span class="p">(</span><span class="kt">JD</span><span class="nf">.</span><span class="nv">field</span> <span class="s">&#34;offsetY&#34;</span> <span class="kt">JD</span><span class="nf">.</span><span class="nv">float</span><span class="p">)</span>
         <span class="p">)</span></code></pre></div>
 <p>試しにマウス座標を出力してみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="nv">div</span> <span class="p">[]</span>
         <span class="p">[</span> <span class="nf">...</span>
@@ -530,7 +530,7 @@
 
 <h2 id="円を動かす">円を動かす</h2>
 <p><code>MouseMoved</code>を受け取ったときに、<code>Circle</code>の座標を更新すればよい。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
         <span class="nf">...</span>

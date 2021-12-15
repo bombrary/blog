@@ -3,7 +3,7 @@
 <head>
   <title>iPhoneアプリ開発メモ - TableViewCellのスワイプ処理 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-table-swipe/">
@@ -85,7 +85,7 @@
 </figure>
 
 <p><code>ViewController.swift</code>の内容を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
     
     <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">tableView</span><span class="p">:</span> <span class="n">UITableView</span><span class="p">!</span>
     <span class="kd">var</span> <span class="nv">items</span> <span class="p">=</span> <span class="p">[</span><span class="s">&#34;Item1&#34;</span><span class="p">,</span> <span class="s">&#34;Item2&#34;</span><span class="p">,</span> <span class="s">&#34;Item3&#34;</span><span class="p">,</span> <span class="s">&#34;Item4&#34;</span><span class="p">,</span> <span class="s">&#34;Item5&#34;</span><span class="p">]</span>
@@ -113,7 +113,7 @@
 <span class="p">}</span></code></pre></div>
 <h2 id="スワイプしたらボタンが出る処理">スワイプしたらボタンが出る処理</h2>
 <p>次のメソッドを実装する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift">    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="kc">_</span> <span class="n">tableView</span><span class="p">:</span> <span class="n">UITableView</span><span class="p">,</span> <span class="n">trailingSwipeActionsConfigurationForRowAt</span> <span class="n">indexPath</span><span class="p">:</span> <span class="n">IndexPath</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UISwipeActionsConfiguration</span><span class="p">?</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift">    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="kc">_</span> <span class="n">tableView</span><span class="p">:</span> <span class="n">UITableView</span><span class="p">,</span> <span class="n">trailingSwipeActionsConfigurationForRowAt</span> <span class="n">indexPath</span><span class="p">:</span> <span class="n">IndexPath</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UISwipeActionsConfiguration</span><span class="p">?</span> <span class="p">{</span>
         <span class="kd">let</span> <span class="nv">destructiveAction</span> <span class="p">=</span> <span class="n">UIContextualAction</span><span class="p">(</span><span class="n">style</span><span class="p">:</span> <span class="p">.</span><span class="n">destructive</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&#34;&#34;</span><span class="p">)</span> <span class="p">{</span> <span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">completionHandler</span><span class="p">)</span> <span class="k">in</span>
             <span class="kc">self</span><span class="p">.</span><span class="n">items</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">at</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">.</span><span class="n">row</span><span class="p">)</span>
             <span class="n">tableView</span><span class="p">.</span><span class="n">deleteRows</span><span class="p">(</span><span class="n">at</span><span class="p">:</span> <span class="p">[</span><span class="n">indexPath</span><span class="p">],</span> <span class="n">with</span><span class="p">:</span> <span class="p">.</span><span class="n">automatic</span><span class="p">)</span>
@@ -148,14 +148,14 @@
 </ul>
 <p>最後に、<code>UISwipeActionsConfiguration</code>のコンストラクタに<code>UIContextualAction</code>を設定して、それを<code>return</code>で返す。</p>
 <p>複数のアクションを設定することも可能で、例えば以下のように書く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">configuration</span> <span class="p">=</span> <span class="n">UISwipeActionsConfiguration</span><span class="p">(</span><span class="n">actions</span><span class="p">:</span> <span class="p">[</span><span class="n">destructiveAction</span><span class="p">,</span> <span class="n">normalAction01</span><span class="p">,</span> <span class="n">normalAction02</span><span class="p">])</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">configuration</span> <span class="p">=</span> <span class="n">UISwipeActionsConfiguration</span><span class="p">(</span><span class="n">actions</span><span class="p">:</span> <span class="p">[</span><span class="n">destructiveAction</span><span class="p">,</span> <span class="n">normalAction01</span><span class="p">,</span> <span class="n">normalAction02</span><span class="p">])</span></code></pre></div>
 <h2 id="フルスワイプしたら処理">フルスワイプしたら処理</h2>
 <p>実はもう実装は終わっている。もともと、フルスワイプによってActionが実行されるように作られている。<code>UISwipeActionsConfiguration</code>のコンストラクタで設定したactionsのうち、先頭のものが実行される仕様になっている。</p>
 <figure><img src="./mov02.gif" width="50%"/>
 </figure>
 
 <p>もしフルスワイプをオフにしたいなら、configurationを次のようにいじる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">configuration</span><span class="p">.</span><span class="n">performsFirstActionWithFullSwipe</span> <span class="p">=</span> <span class="kc">false</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">configuration</span><span class="p">.</span><span class="n">performsFirstActionWithFullSwipe</span> <span class="p">=</span> <span class="kc">false</span></code></pre></div>
 <h2 id="スワイプの程度によって処理を実行">スワイプの程度によって処理を実行</h2>
 <p>例えばGmailでは、セルの1/4くらい以上スワイプしたときだけアクションが実行されるように作られている。これを実現する方法はないか。</p>
 <p>調べ方が悪いのか、解決方法が出てこない。TableViewの標準機能でどうにかなる問題では無さそう。</p>
@@ -178,7 +178,7 @@
 
 <h3 id="taskcellswift">TaskCell.swift</h3>
 <p>先に作っておく。AutoLayoutを一切使っていないのは、ゴミ箱を表示するためのImageViewのサイズを可変にしたいため。ゴミ箱以外については別にAutoLayoutでもよかったかもしれないが、統一性に欠けるので結局使わないことにした。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">TestCell</span><span class="p">:</span> <span class="n">UITableViewCell</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">TestCell</span><span class="p">:</span> <span class="n">UITableViewCell</span> <span class="p">{</span>
 
     <span class="kd">let</span> <span class="nv">trashImage</span><span class="p">:</span> <span class="n">UIImageView</span> <span class="p">=</span> <span class="p">{</span>
         <span class="kd">let</span> <span class="nv">imageView</span> <span class="p">=</span> <span class="n">UIImageView</span><span class="p">()</span>
@@ -248,7 +248,7 @@
 <li><code>UIPanGestureRecognizer</code>は位置(<code>location</code>)だけでなく、どれだけ動かしたか(<code>translation</code>)、という情報が得られる。タップ状態は<code>state</code>プロパティで調べる。</li>
 </ul>
 <p><code>panChanged</code>と<code>panEnded</code>メソッドがごちゃごちゃしている。リファクタリングの余地があるかも。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
     
     <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">tableView</span><span class="p">:</span> <span class="n">UITableView</span><span class="p">!</span>
     <span class="kd">private</span> <span class="kd">var</span> <span class="nv">items</span> <span class="p">=</span> <span class="p">[</span><span class="s">&#34;items-1&#34;</span><span class="p">,</span> <span class="s">&#34;items-2&#34;</span><span class="p">,</span> <span class="s">&#34;items-3&#34;</span><span class="p">,</span> <span class="s">&#34;items-4&#34;</span><span class="p">,</span> <span class="s">&#34;items-5&#34;</span><span class="p">]</span>

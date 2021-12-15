@@ -3,7 +3,7 @@
 <head>
   <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (2) アニメーションとタップ処理 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-view02/">
@@ -79,34 +79,34 @@
   <p>棒グラフをアニメーションさせたり、タップしたら詳細画面に遷移するようにしたい。</p>
 <h2 id="寄り道-stackviewのアニメーション">(寄り道) StackViewのアニメーション</h2>
 <p>自分がいままでやったことがあるのは以下のような感じで、<code>frame</code>や<code>layer.position</code>をいじるパターン。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="n">withDuration</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">animations</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="n">withDuration</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">animations</span><span class="p">:</span> <span class="p">{</span>
   <span class="n">view</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">x</span> <span class="o">+=</span> <span class="mi">100</span>
   <span class="n">view</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">+=</span> <span class="mi">20</span>
 <span class="p">});</span></code></pre></div>
 <p>ただし、これをAutoLayoutと混ぜて使おうとすると動かなかったり、動いたとしても変な挙動を起こす。そもそも、AutoLayoutは制約を設定して位置やサイズを決定する仕組みで、<code>frame</code>は位置やサイズを手動で決める仕組み。これが競合を起こすのは当たり前な気もする。</p>
 <p>StackViewはframeを設定しても何も反応しない。これは内部的にAutoLayoutっぽいことをやっているからなのかもしれない。例えば次のようにしてもStackViewの子要素は変更されない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">subView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="p">=</span> <span class="mi">100</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">subView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="p">=</span> <span class="mi">100</span>
 <span class="n">stackView</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">subView</span><span class="p">)</span></code></pre></div>
 <p>その代わり、次のようにすると、ちゃんと子要素の高さは100になる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">subView</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="mi">100</span><span class="p">).</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">subView</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="mi">100</span><span class="p">).</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span>
 <span class="n">stackView</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">subView</span><span class="p">)</span></code></pre></div>
 <p>よって、StackViewでアニメーションするためには、AutoLayoutでのアニメーションの方法を知る必要がある。</p>
 <h3 id="autolayoutでのアニメーション">AutoLayoutでのアニメーション</h3>
 <p>例えば、「ボタンを押すと長方形が0から伸びる」アニメーションを実現したい。</p>
 <p>まずは次のように、高さ制約を0に設定しておく。ただし、それを何か変数に入れておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">var</span> <span class="nv">constraint</span><span class="p">:</span> <span class="n">NSLayoutConstraint</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">var</span> <span class="nv">constraint</span><span class="p">:</span> <span class="n">NSLayoutConstraint</span>
 
 <span class="n">view</span><span class="p">.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">view0</span><span class="p">)</span>
 <span class="n">constraint</span> <span class="p">=</span> <span class="n">view0</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">constraint</span><span class="p">.</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span></code></pre></div>
 <p>アニメーションをしたいタイミングで、次のように書けば良い。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="n">withDuration</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">animations</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="n">withDuration</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">animations</span><span class="p">:</span> <span class="p">{</span>
   <span class="n">constraint</span><span class="p">.</span><span class="n">constant</span> <span class="p">=</span> <span class="mi">100</span>
   <span class="n">view</span><span class="p">.</span><span class="n">layoutIfNeeded</span><span class="p">()</span>
 <span class="p">})</span></code></pre></div>
 <p><code>constraint</code>には<code>constant</code>プロパティがあるので、そこで制約の定数を変更できる。<code>layoutIfNeeded</code>は、アプリにレイアウト変更を直ちにさせるメソッド。</p>
 <p>画面遷移後、下から長方形が伸びてくる処理は次のように書ける。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nv">constraint</span><span class="p">:</span> <span class="n">NSLayoutConstraint</span><span class="p">!</span>
 
   <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
@@ -139,7 +139,7 @@
 
 <h3 id="stackviewのアニメーション">StackViewのアニメーション</h3>
 <p>上の事実がわかってしまうと、StackViewのアニメーションもそこまで難しくない。子要素すべてのConstraintを変更すれば良いだけ。ただしそのために、各Constraintを保存した配列を用意しておく必要がある。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
     <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">stackView</span><span class="p">:</span> <span class="n">UIStackView</span><span class="p">!</span>
     
     <span class="kd">let</span> <span class="nv">colors</span><span class="p">:</span> <span class="p">[</span><span class="n">UIColor</span><span class="p">]</span>  <span class="p">=</span> <span class="p">[.</span><span class="n">systemRed</span><span class="p">,</span> <span class="p">.</span><span class="n">systemIndigo</span><span class="p">,</span> <span class="p">.</span><span class="n">systemGreen</span><span class="p">,</span> <span class="p">.</span><span class="n">systemPink</span><span class="p">,</span> <span class="p">.</span><span class="n">systemOrange</span><span class="p">]</span>
@@ -193,7 +193,7 @@
 
 <h3 id="viewcontrollerswift">ViewController.swift</h3>
 <p>ここも特には変わっていない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="nc">BarChartModel</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="nc">BarChartModel</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nv">percentage</span><span class="p">:</span> <span class="n">CGFloat</span>
     <span class="kd">var</span> <span class="nv">value</span><span class="p">:</span> <span class="nb">Int</span>
     <span class="kd">var</span> <span class="nv">name</span><span class="p">:</span> <span class="nb">String</span>
@@ -263,7 +263,7 @@
 <span class="p">}</span></code></pre></div>
 <h3 id="barchartviewswift">BarChartView.swift</h3>
 <p><code>barContainer</code>の作成を別クラスに任せる。また、水平線の描画をメソッドに分離。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">BarChartView</span><span class="p">:</span> <span class="n">UIStackView</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">BarChartView</span><span class="p">:</span> <span class="n">UIStackView</span> <span class="p">{</span>
     <span class="kd">let</span> <span class="nv">fontSize</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">20</span>
     <span class="kd">let</span> <span class="nv">textPad</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">10</span>
     
@@ -317,7 +317,7 @@
 <span class="p">}</span></code></pre></div>
 <h3 id="barcontainerviewswift">BarContainerView.swift</h3>
 <p>前回まではなかった。棒とラベルの組を管理するクラス。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">BarContainerView</span><span class="p">:</span> <span class="n">UIStackView</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">BarContainerView</span><span class="p">:</span> <span class="n">UIStackView</span> <span class="p">{</span>
 
     <span class="kd">var</span> <span class="nv">barView</span><span class="p">:</span> <span class="n">UIView</span><span class="p">!</span>
     <span class="kd">var</span> <span class="nv">valueLabel</span><span class="p">:</span> <span class="n">UILabel</span><span class="p">!</span>
@@ -372,9 +372,9 @@
 <p>初めは棒の高さ0で、そこから伸びていくアニメーションを実装する。そこで、まず高さのConstraintは0でなければならない。また、画面が完全に表示しきった後にアニメーションを開始させたいので、<code>ViewController</code>の<code>viewDidAppear</code>メソッドにその処理を記述する。とはいえ「scrollViewの中の各ページにおいて、BarChartViewの中の各BarContainerViewのConstraintを変更する」をベタ書きすると汚いので、少し工夫する。</p>
 <h3 id="barcontainerviewswift-1">BarContainerView.swift</h3>
 <p><code>makeBar</code>関数のConstraintの記述を以下のように変更する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barViewHeightConstraint</span> <span class="p">=</span> <span class="n">barView</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">barViewHeightConstraint</span> <span class="p">=</span> <span class="n">barView</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span></code></pre></div>
 <p><code>barHeight</code>を保存するためのプロパティを追加する。init関数で初期化する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">barHeight</span><span class="p">:</span> <span class="n">CGFloat</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">barHeight</span><span class="p">:</span> <span class="n">CGFloat</span>
 <span class="p">...</span>
 
 <span class="kd">init</span><span class="p">(...)</span> <span class="p">{</span>
@@ -382,19 +382,19 @@
   <span class="p">...</span>
 <span class="p">}</span></code></pre></div>
 <p>次の関数を追加しておく。外部から呼び出す予定なので<code>private</code>にはしない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">growUpBar</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">growUpBar</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">barViewHeightConstraint</span><span class="p">.</span><span class="n">constant</span> <span class="p">=</span> <span class="n">barHeight</span>
 <span class="p">}</span></code></pre></div>
 <h3 id="barchartviewswift-1">BarChartView.swift</h3>
 <p>上記の関数をまとめる関数を定義。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">growUpBars</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">growUpBars</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">barContainerView</span> <span class="k">in</span> <span class="p">(</span><span class="n">arrangedSubviews</span> <span class="k">as</span><span class="p">!</span> <span class="p">[</span><span class="n">BarContainerView</span><span class="p">])</span> <span class="p">{</span>
         <span class="n">barContainerView</span><span class="p">.</span><span class="n">growUpBar</span><span class="p">()</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <h3 id="viewcontrollerswift-1">ViewController.swift</h3>
 <p>上記の関数をまとめる関数を書く。最後に<code>layoutIfNeeded</code>をすることを忘れずに。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift">  <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidAppear</span><span class="p">(</span><span class="kc">_</span> <span class="n">animated</span><span class="p">:</span> <span class="nb">Bool</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift">  <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidAppear</span><span class="p">(</span><span class="kc">_</span> <span class="n">animated</span><span class="p">:</span> <span class="nb">Bool</span><span class="p">)</span> <span class="p">{</span>
       <span class="kc">super</span><span class="p">.</span><span class="n">viewDidAppear</span><span class="p">(</span><span class="n">animated</span><span class="p">)</span>
       <span class="n">animateBarChartView</span><span class="p">()</span>
   <span class="p">}</span>
@@ -415,7 +415,7 @@
 <p><code>viewDidAppear</code>でないタイミングでアニメーションを実行したいことがある。</p>
 <p>例えば、「データを受信した後に棒グラフのアニメーションを実行する」というケースを考える。この場合は、アニメーション実行前に<code>layoutIfNeeded</code>を実行することで対応できる。</p>
 <p>以下は、通信する関数を<code>communicateSomeone</code>、受け取ったデータをdataとしている例である。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="n">communicateSomeone</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="p">{</span> <span class="n">data</span> <span class="k">in</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">communicateSomeone</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="p">{</span> <span class="n">data</span> <span class="k">in</span>
   <span class="c1">// ==============</span>
   <span class="c1">// 何かの処理</span>
   <span class="c1">// ==============</span>
@@ -431,7 +431,7 @@
 <p>上記のやり方を真似れば簡単に実現できる。</p>
 <h3 id="詳細画面の準備">詳細画面の準備</h3>
 <p><code>DetailViewController.swift</code>を作成し、内容を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">DetailViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">DetailViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
     <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">nameLabel</span><span class="p">:</span> <span class="n">UILabel</span><span class="p">!</span>
     <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">valueLabel</span><span class="p">:</span> <span class="n">UILabel</span><span class="p">!</span>
     <span class="kd">var</span> <span class="nv">item</span><span class="p">:</span> <span class="n">BarChartModel</span><span class="p">!</span>
@@ -449,13 +449,13 @@
 
 <h3 id="諸々の追加">諸々の追加</h3>
 <p><code>BarChartView.swift</code>で次の関数を定義する。<code>barContainerView</code>すべてのタップイベントを登録するメソッド。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">addGestureRecognizersToBarViews</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="nb">Any</span><span class="p">?,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">Selector</span><span class="p">?)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">addGestureRecognizersToBarViews</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="nb">Any</span><span class="p">?,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">Selector</span><span class="p">?)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="n">barContainerView</span> <span class="k">in</span> <span class="p">(</span><span class="n">arrangedSubviews</span> <span class="k">as</span><span class="p">!</span> <span class="p">[</span><span class="n">BarContainerView</span><span class="p">])</span> <span class="p">{</span>
         <span class="n">barContainerView</span><span class="p">.</span><span class="n">addGestureRecognizer</span><span class="p">(</span><span class="n">UITapGestureRecognizer</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">target</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">action</span><span class="p">))</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p><code>ViewController.swift</code>の<code>configureScrollView</code>にて、<code>view</code>の宣言の直後に<code>addGestureRecognizersToBarViews</code>を呼び出す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
     <span class="p">...</span>
     <span class="kd">let</span> <span class="nv">view</span> <span class="p">=</span> <span class="n">BarChartView</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">:</span> <span class="n">barChartItems</span><span class="p">)</span>
     <span class="c1">// 追加</span>
@@ -463,7 +463,7 @@
     <span class="n">contentsView</span><span class="p">.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
 <span class="p">}</span></code></pre></div>
 <p>タップ時のメソッドを定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">@objc</span> <span class="kd">func</span> <span class="nf">barViewTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">UITapGestureRecognizer</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">@objc</span> <span class="kd">func</span> <span class="nf">barViewTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">UITapGestureRecognizer</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">let</span> <span class="nv">barContainerView</span> <span class="p">=</span> <span class="n">sender</span><span class="p">.</span><span class="n">view</span> <span class="k">as</span><span class="p">!</span> <span class="n">BarContainerView</span>
     <span class="kd">let</span> <span class="nv">item</span> <span class="p">=</span> <span class="n">barContainerView</span><span class="p">.</span><span class="n">item</span>
     <span class="kd">let</span> <span class="nv">vc</span> <span class="p">=</span> <span class="n">storyboard</span><span class="p">?.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="s">&#34;detail&#34;</span><span class="p">)</span> <span class="k">as</span><span class="p">!</span> <span class="n">DetailViewController</span>

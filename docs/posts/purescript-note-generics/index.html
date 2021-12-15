@@ -3,7 +3,7 @@
 <head>
   <title>PureScriptメモ - Generics | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-note-generics/">
@@ -121,7 +121,7 @@ $ spago install arrays
 $ spago install generics-rep
 </pre>
 </p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Array</span> <span class="p">((</span><span class="o">:</span><span class="p">))</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Array</span> <span class="p">((</span><span class="o">:</span><span class="p">))</span>
 </code></pre></div><p>REPLで色々実験するので、あらかじめ起動しておく。
 <pre class="cui">
 $ spago repl
@@ -133,16 +133,16 @@ $ spago repl
 <p>そもそもSerializerとは何か。ここでは単に「データをビット列に変換するもの」程度の意味で捉えれば良い。
 厳密にはJSONなどの階層を持つデータを，文字列などの平坦なデータに変換するという意味合いとしてシリアライズ(直列化)という言葉を使う。実際、本記事では最終的に木構造をシリアライズする。</p>
 <p>まずビットは次のように定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Bit</span> <span class="ow">=</span> <span class="kt">O</span> <span class="o">|</span> <span class="kt">I</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Bit</span> <span class="ow">=</span> <span class="kt">O</span> <span class="o">|</span> <span class="kt">I</span>
 
 <span class="kr">instance</span> <span class="n">showBit</span> <span class="ow">::</span> <span class="kt">Show</span> <span class="kt">Bit</span> <span class="kr">where</span>
   <span class="n">show</span> <span class="kt">O</span> <span class="ow">=</span> <span class="s">&#34;O&#34;</span>
   <span class="n">show</span> <span class="kt">I</span> <span class="ow">=</span> <span class="s">&#34;I&#34;</span>
 </code></pre></div><p><code>Serializer</code>型クラスを以下のように定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">class</span> <span class="kt">Serializer</span> <span class="n">a</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">class</span> <span class="kt">Serializer</span> <span class="n">a</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="kt">Bit</span>
 </code></pre></div><p>試しに適当な型をつくり、それを<code>Serializer</code>型クラスのインスタンスにしてみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Person</span> <span class="ow">=</span> <span class="kt">Alice</span> <span class="o">|</span> <span class="kt">Bob</span> <span class="o">|</span> <span class="kt">Carol</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Person</span> <span class="ow">=</span> <span class="kt">Alice</span> <span class="o">|</span> <span class="kt">Bob</span> <span class="o">|</span> <span class="kt">Carol</span>
 
 <span class="kr">instance</span> <span class="n">serializerUser</span> <span class="ow">::</span> <span class="kt">Serializer</span> <span class="kt">Person</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="kt">Alice</span> <span class="ow">=</span> <span class="p">[</span> <span class="kt">I</span> <span class="p">]</span>
@@ -163,13 +163,13 @@ $ spago repl
 
 <h2 id="tree型をserializer型クラスのインスタンスにする素朴な方法">Tree型をSerializer型クラスのインスタンスにする(素朴な方法)</h2>
 <p>2分木のデータ構造である<code>Tree</code>型を作る。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="o">|</span> <span class="kt">Leaf</span> <span class="n">a</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="o">|</span> <span class="kt">Leaf</span> <span class="n">a</span>
 
 <span class="kr">instance</span> <span class="n">serializerTree</span> <span class="ow">::</span> <span class="kt">Serializer</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">l</span> <span class="n">r</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">I</span> <span class="kt">:</span> <span class="p">(</span><span class="n">serialize</span> <span class="n">l</span> <span class="o">&lt;&gt;</span> <span class="n">serialize</span> <span class="n">r</span><span class="p">)</span>
   <span class="n">serialize</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">O</span> <span class="kt">:</span> <span class="n">serialize</span> <span class="n">x</span>
 </code></pre></div><p>テスト用のデータを作ってREPLでシリアライズしてみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">tree</span> <span class="ow">::</span> <span class="kt">Tree</span> <span class="kt">Person</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">tree</span> <span class="ow">::</span> <span class="kt">Tree</span> <span class="kt">Person</span>
 <span class="nf">tree</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">Alice</span><span class="p">)</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">Bob</span><span class="p">))</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">Carol</span><span class="p">)</span>
 </code></pre></div><pre class="cui">
 > serialize tree
@@ -178,13 +178,13 @@ $ spago repl
 
 <h2 id="一般化">一般化</h2>
 <p>さて、3分木なら例えば次のように<code>Serializer</code>型クラスのインスタンスにできる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="o">|</span> <span class="kt">Leaf</span> <span class="n">a</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="o">|</span> <span class="kt">Leaf</span> <span class="n">a</span>
 
 <span class="kr">instance</span> <span class="n">serializerTree</span> <span class="ow">::</span> <span class="kt">Serializer</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">n1</span> <span class="n">n2</span> <span class="n">n3</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">I</span> <span class="kt">:</span> <span class="p">(</span><span class="n">serialize</span> <span class="n">n1</span> <span class="o">&lt;&gt;</span> <span class="n">serialize</span> <span class="n">n2</span> <span class="o">&lt;&gt;</span> <span class="n">serialize</span> <span class="n">n3</span><span class="p">)</span>
   <span class="n">serialize</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">O</span> <span class="kt">:</span> <span class="n">serialize</span> <span class="n">x</span>
 </code></pre></div><p>木に限らず、有名な型については例えば次のようにインスタンスにできるだろう。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">serializerMaybe</span> <span class="ow">::</span> <span class="kt">Serializer</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">Maybe</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">serializerMaybe</span> <span class="ow">::</span> <span class="kt">Serializer</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">Maybe</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="p">(</span><span class="kt">Just</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">I</span> <span class="kt">:</span> <span class="n">serialize</span> <span class="n">x</span>
   <span class="n">serialize</span> <span class="kt">Nothing</span>  <span class="ow">=</span> <span class="kt">[]</span>
 
@@ -196,7 +196,7 @@ $ spago repl
   <span class="n">serialize</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">I</span> <span class="kt">:</span> <span class="n">serialize</span> <span class="n">x</span> <span class="o">&lt;&gt;</span> <span class="n">serialize</span> <span class="n">xs</span>
   <span class="n">serialize</span> <span class="kt">Nil</span>  <span class="ow">=</span> <span class="kt">[]</span>
 </code></pre></div><p>3つの値を持つデータ型なら例えば次のようにできる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">T0</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">One</span> <span class="n">a</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">Two</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">Three</span> <span class="n">c</span> <span class="n">b</span> <span class="n">a</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">T0</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">One</span> <span class="n">a</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">Two</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">Three</span> <span class="n">c</span> <span class="n">b</span> <span class="n">a</span>
 
 <span class="kr">instance</span> <span class="n">serializerT0</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Serializer</span> <span class="n">b</span><span class="p">,</span> <span class="kt">Serializer</span> <span class="n">c</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">T0</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="p">(</span><span class="kt">One</span> <span class="n">x</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">I</span> <span class="kt">:</span> <span class="p">(</span><span class="n">serialize</span> <span class="n">x</span> <span class="o">&lt;&gt;</span> <span class="n">serialize</span> <span class="n">y</span><span class="p">)</span>
@@ -215,12 +215,12 @@ $ spago repl
 それを可能にするのが、purescript-generics-repパッケージである。これは、データ型の持つ表現そのものを型にする手段を提供する。</p>
 <h2 id="datagenericrep">Data.Generic.Rep</h2>
 <p>モジュールをインポートする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Generic.Rep</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Generic.Rep</span>
 </code></pre></div><h3 id="generic型クラス">Generic型クラス</h3>
 <p><code>Generic</code>型クラスのインスタンスを導出させることで、<code>Tree</code>の表現が生成される。アンダーバーはコンパイラが自動で埋めてくれる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">derive</span> <span class="kr">instance</span> <span class="n">genericTree</span> <span class="ow">::</span> <span class="kt">Generic</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">_</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">derive</span> <span class="kr">instance</span> <span class="n">genericTree</span> <span class="ow">::</span> <span class="kt">Generic</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">_</span>
 </code></pre></div><p><a href="https://pursuit.purescript.org/packages/purescript-generics-rep/6.1.1/docs/Data.Generic.Rep">ドキュメント</a>によると、<code>Generic</code>型クラスは次のように定義されている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">class</span> <span class="kt">Generic</span> <span class="n">a</span> <span class="n">rep</span> <span class="o">|</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">rep</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">class</span> <span class="kt">Generic</span> <span class="n">a</span> <span class="n">rep</span> <span class="o">|</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">rep</span> <span class="kr">where</span>
   <span class="n">to</span> <span class="ow">::</span> <span class="n">rep</span> <span class="ow">-&gt;</span> <span class="n">a</span>
   <span class="n">from</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">rep</span>
 </code></pre></div><p><code>rep</code>が、型<code>a</code>の表現を表す(<code>rep</code>というのは、恐らく<em>representation</em>(表現)の略)。<code>from</code>を使えば、<code>a</code>の表現が得られる。REPLで<code>Tree</code>の表現の型を確認してみる。
@@ -231,7 +231,7 @@ Sum (Constructor "Node" (Product (Argument (Tree Person)) (Argument (Tree Person
 </pre>
 </p>
 <p>なので実際には、アンダーバーのところを埋めると次のようになるようだ(ただし、必ずアンダーバーでなければならないようで、これはコンパイルエラーになる)。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">derive</span> <span class="kr">instance</span> <span class="n">genericTree</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">derive</span> <span class="kr">instance</span> <span class="n">genericTree</span>
   <span class="ow">::</span> <span class="kt">Generic</span>
        <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span>
        <span class="p">(</span><span class="kt">Sum</span> <span class="p">(</span><span class="kt">Constructor</span> <span class="s">&#34;Node&#34;</span> <span class="p">(</span><span class="kt">Product</span> <span class="p">(</span><span class="kt">Argument</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">))</span>
@@ -239,7 +239,7 @@ Sum (Constructor "Node" (Product (Argument (Tree Person)) (Argument (Tree Person
             <span class="p">(</span><span class="kt">Constructor</span> <span class="s">&#34;Leaf&#34;</span> <span class="p">(</span><span class="kt">Argument</span> <span class="n">a</span><span class="p">)))</span>
 </code></pre></div><h3 id="表現の構成要素">表現の構成要素</h3>
 <p>表現が構成する型は次の4つ。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Sum</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="kt">Inl</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Inr</span> <span class="n">b</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Sum</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="kt">Inl</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Inr</span> <span class="n">b</span>
 <span class="kr">data</span> <span class="kt">Constructor</span> <span class="p">(</span><span class="n">name</span> <span class="ow">::</span> <span class="kt">Symbol</span><span class="p">)</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Constructor</span> <span class="n">a</span>
 <span class="kr">data</span> <span class="kt">Product</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="kt">Product</span> <span class="n">a</span> <span class="n">b</span>
 <span class="kr">data</span> <span class="kt">Argument</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Argument</span> <span class="n">a</span>
@@ -254,13 +254,13 @@ Sum (Constructor "Node" (Product (Argument (Tree Person)) (Argument (Tree Person
 <li><code>NoArguments</code>は値コンストラクタの引数が存在しないことを表現する型。</li>
 </ul>
 <p>であることを踏まえると、</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="p">(</span><span class="kt">Sum</span> <span class="p">(</span><span class="kt">Constructor</span> <span class="s">&#34;Node&#34;</span> <span class="p">(</span><span class="kt">Product</span> <span class="p">(</span><span class="kt">Argument</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">))</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="p">(</span><span class="kt">Sum</span> <span class="p">(</span><span class="kt">Constructor</span> <span class="s">&#34;Node&#34;</span> <span class="p">(</span><span class="kt">Product</span> <span class="p">(</span><span class="kt">Argument</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">))</span>
                                   <span class="p">(</span><span class="kt">Argument</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">))))</span>
      <span class="p">(</span><span class="kt">Constructor</span> <span class="s">&#34;Leaf&#34;</span> <span class="p">(</span><span class="kt">Argument</span> <span class="n">a</span><span class="p">)))</span>
 </code></pre></div><p>は、次のように読める：この型は2つのコンストラクタがあることを表現している。1つ目の値コンストラクタ名は<code>Node</code>で、その引数として<code>Tree a</code>型の値を2つ持つ。
 2つめの値コンストラクタ名は<code>Leaf</code>で、その引数として<code>a</code>型の値を1つ持つ。</p>
 <p>ちなみに<code>derive</code>を使わないで<code>Tree</code>についてのインスタンス宣言をすると次のようになる。勿論<code>derive</code>を使えばいい話なので、普通こんなことはやらない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">genericTree</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">genericTree</span>
   <span class="ow">::</span> <span class="kt">Generic</span>
        <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span>
        <span class="p">(</span><span class="kt">Sum</span> <span class="p">(</span><span class="kt">Constructor</span> <span class="s">&#34;Node&#34;</span> <span class="p">(</span><span class="kt">Product</span> <span class="p">(</span><span class="kt">Argument</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">))</span>
@@ -274,9 +274,9 @@ Sum (Constructor "Node" (Product (Argument (Tree Person)) (Argument (Tree Person
 </code></pre></div><h3 id="応用例showクラスのインスタンスにする">応用例：Showクラスのインスタンスにする</h3>
 <p>PureScriptでは、Haskellと違って、<code>Show</code>型クラスのインスタンス導出ができない(<a href="https://github.com/purescript/documentation/blob/master/language/Type-Classes.md#type-class-deriving">参考</a>)。しかし代わりに、<code>Generic</code>型クラスを利用すれば、導出と同じようなことができる。</p>
 <p>まずは、関連モジュールをインポートする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Generic.Rep.Show</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Generic.Rep.Show</span>
 </code></pre></div><p>試しに、<code>Person</code>型を<code>Show</code>型クラスのインスタンスにしてみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">derive</span> <span class="kr">instance</span> <span class="n">genericPerson</span> <span class="ow">::</span> <span class="kt">Generic</span> <span class="kt">Person</span> <span class="kr">_</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">derive</span> <span class="kr">instance</span> <span class="n">genericPerson</span> <span class="ow">::</span> <span class="kt">Generic</span> <span class="kt">Person</span> <span class="kr">_</span>
 <span class="kr">instance</span> <span class="n">showPerson</span> <span class="ow">::</span> <span class="kt">Show</span> <span class="kt">Person</span> <span class="kr">where</span>
   <span class="n">show</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">genericShow</span> <span class="n">x</span>
 </code></pre></div><p><code>genericShow</code>は、<code>Person</code>の表現をもとに値を文字列に変換する関数。単に<code>Person</code>を<code>Generic</code>型クラスのインスタンスにするだけで利用できる。</p>
@@ -292,7 +292,7 @@ Carol
 </pre>
 
 <p><code>Tree</code>も同様に<code>Show</code>型クラスのインスタンスにできる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">showTree</span> <span class="ow">::</span> <span class="kt">Show</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Show</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">showTree</span> <span class="ow">::</span> <span class="kt">Show</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Show</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">show</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">genericShow</span> <span class="n">x</span>
 </code></pre></div><pre class="cui">
 > tree
@@ -302,7 +302,7 @@ Carol
 <p><a href="https://github.com/purescript/purescript-generics-rep/blob/v6.1.1/src/Data/Generic/Rep/Show.purs">Data.Generic.Rep.Showのコード</a>を読んでみると、どうやって表現を使って実装するのかがよく分かる。</p>
 <h3 id="補足showクラスのインスタンス化に関する注意点">補足：Showクラスのインスタンス化に関する注意点</h3>
 <p>次のように書くと、<code>show</code>関数を呼び出した際に実行時エラー：<code>Maximum call stack size exceeded</code>起こす。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">showTree</span> <span class="ow">::</span> <span class="kt">Show</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Show</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">showTree</span> <span class="ow">::</span> <span class="kt">Show</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Show</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">show</span> <span class="ow">=</span> <span class="n">genericShow</span>
 </code></pre></div><p><code>show x = genericShow x</code>も<code>show = genericShow</code>も本質的には同じ意味なのに、前者はうまくいき、後者は実行時エラーを吐くのはおかしい。</p>
 <p>この問題について<a href="https://github.com/purescript/purescript-generics-rep/issues/23">generics-repのissue</a>や<a href="https://github.com/purescript/purescript/issues/3807">purescriptのissue</a>でも上がっている。
@@ -314,10 +314,10 @@ Carol
 <li><code>Tree</code>や<code>Person</code>などの普通の値をシリアライズする型クラスは<code>Serializer</code>が担う。</li>
 </ul>
 <p>そこで、<code>Serializer'</code>型クラスを作る。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">class</span> <span class="kt">Serializer&#39;</span> <span class="n">a</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">class</span> <span class="kt">Serializer&#39;</span> <span class="n">a</span> <span class="kr">where</span>
   <span class="n">serialize&#39;</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="kt">Bit</span>
 </code></pre></div><p>表現に関連する部分は全て<code>Serializer'</code>型クラスのインスタンスにする。最後の<code>Argument</code>だけ、引数に普通の型が含まれているため、型クラス制約が<code>Serializer'</code>ではなく<code>Serializer</code>であることに注意。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">serializerSum</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer&#39;</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Serializer&#39;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer&#39;</span> <span class="p">(</span><span class="kt">Sum</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">serializerSum</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer&#39;</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Serializer&#39;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer&#39;</span> <span class="p">(</span><span class="kt">Sum</span> <span class="n">a</span> <span class="n">b</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize&#39;</span> <span class="p">(</span><span class="kt">Inl</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">I</span> <span class="kt">:</span> <span class="n">serialize&#39;</span> <span class="n">x</span>
   <span class="n">serialize&#39;</span> <span class="p">(</span><span class="kt">Inr</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">O</span> <span class="kt">:</span> <span class="n">serialize&#39;</span> <span class="n">x</span>
 
@@ -333,7 +333,7 @@ Carol
 <span class="kr">instance</span> <span class="n">serializerArgument</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer&#39;</span> <span class="p">(</span><span class="kt">Argument</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize&#39;</span> <span class="p">(</span><span class="kt">Argument</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="n">serialize</span> <span class="n">x</span>
 </code></pre></div><p>最後に、<code>serialize'</code>を使って<code>Tree</code>を<code>Serializer</code>型クラスのインスタンスにする。<a href="#tree%E5%9E%8B%E3%82%92serializer%E5%9E%8B%E3%82%AF%E3%83%A9%E3%82%B9%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%81%AB%E3%81%99%E3%82%8B%E7%B4%A0%E6%9C%B4%E3%81%AA%E6%96%B9%E6%B3%95">前に作成したインスタンス宣言</a>は消す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">serializerTree</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">serializerTree</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">serialize&#39;</span> <span class="o">$</span> <span class="n">from</span> <span class="n">x</span>
 </code></pre></div><p>素朴に作った場合と同じ結果が出ている。</p>
 <pre class="cui">
@@ -349,14 +349,14 @@ Carol
 <p>という2つの条件が揃えば、<code>T0</code>はシリアライズできることになる。</p>
 <h3 id="補足tree以外の型をserializer型クラスのインスタンスにする">補足：Tree以外の型をSerializer型クラスのインスタンスにする</h3>
 <p>自作の型なら、容易に<code>Serizlizer</code>のインスタンスにできる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">T0</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">One</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Two</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">Tree</span> <span class="n">c</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">T0</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">One</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Two</span> <span class="n">b</span> <span class="o">|</span> <span class="kt">Tree</span> <span class="n">c</span>
 
 <span class="nf">derive</span> <span class="kr">instance</span> <span class="n">genericT0</span> <span class="ow">::</span> <span class="kt">Generic</span> <span class="p">(</span><span class="kt">T0</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span><span class="p">)</span> <span class="kr">_</span>
 
 <span class="kr">instance</span> <span class="n">serializerT0</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Serializer</span> <span class="n">b</span><span class="p">,</span> <span class="kt">Serialier</span> <span class="n">c</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">T0</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">serialize&#39;</span> <span class="o">$</span> <span class="n">from</span> <span class="n">x</span>
 </code></pre></div><p><code>Maybe a</code>に関しては特別に<code>Data.Generic.Rep</code>でインスタンス宣言がなされているため、次のように<code>Serializer</code>のインスタンスにできる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">serializerTree</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">instance</span> <span class="n">serializerTree</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Serializer</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Serializer</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
   <span class="n">serialize</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">serialize&#39;</span> <span class="o">$</span> <span class="n">from</span> <span class="n">x</span>
 </code></pre></div><p>別モジュールで定義された型を、<code>Generic</code>を使って<code>Serializer</code>のインスタンスにすることはできない。
 なぜなら、今回の場合「<code>Main</code>外で定義された型」に対して「<code>Main</code>外で定義された型クラス<code>Generic</code>」のインスタンス宣言をすることになり、これはOrphan instanceに当たるからだ
@@ -364,7 +364,7 @@ PureScriptではOrphan instanceは禁止されている(<a href="https://github.
 <p>この問題を解決するためにぱっと思いついた方法は、以下のようなもの。以下は<code>Either</code>を<code>Serializer</code>型クラスのインスタンスにしている。<code>Either</code>の別表現として<code>Either'</code>を用意する。
 <code>Either</code>は<code>Main</code>外のモジュールで定義されているため、直接<code>Generic</code>型インスタンスにすることはできない。しかし、<code>Either'</code>は<code>Generic</code>にすることはできる。
 よって、一旦<code>Either'</code>を経由して<code>Either</code>の<code>Serializer</code>インスタンス宣言をすることができる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Either&#39;</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="kt">Left&#39;</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Right&#39;</span> <span class="n">b</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Either&#39;</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="kt">Left&#39;</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Right&#39;</span> <span class="n">b</span>
 
 <span class="nf">fromEither</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span> <span class="n">b</span><span class="o">.</span> <span class="kt">Either</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Either&#39;</span> <span class="n">a</span> <span class="n">b</span>
 <span class="nf">fromEither</span> <span class="p">(</span><span class="kt">Left</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Left&#39;</span> <span class="n">x</span>

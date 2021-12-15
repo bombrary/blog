@@ -3,7 +3,7 @@
 <head>
   <title>Androidアプリ開発勉強(2) - Navigationの基本 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/android02-navigation/">
@@ -91,7 +91,7 @@
 <h2 id="fragmentの作成">Fragmentの作成</h2>
 <p><code>layouts/</code>にFragmentを作成する。&ldquo;Create layout XML?&ldquo;だけチェックをつけておく。Fragmentは2つ作成し、それぞれ&quot;Fragment01&quot;と&quot;Fragment02&quot;とする。xmlファイルはそれぞれ<code>fragment_fragment01.xml</code>、<code>fragment_fragment02.xml</code>とする。</p>
 <p>まず<code>TextView</code>の<code>text</code>要素に設定するための定数を<code>strings.xml</code>に内容を追加しておく。
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;resources&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;resources&gt;</span>
     <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;app_name&#34;</span><span class="nt">&gt;</span>NavigationTest<span class="nt">&lt;/string&gt;</span>
 
     <span class="c">&lt;!-- TODO: Remove or change this placeholder text --&gt;</span>
@@ -101,7 +101,7 @@
     <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;click&#34;</span><span class="nt">&gt;</span>Click<span class="nt">&lt;/string&gt;</span>
 <span class="nt">&lt;/resources&gt;</span></code></pre></div></p>
 <p><code>fragment_fragment01.xml</code>の内容は以下の通りにする。<code>Button</code>を追加し、<code>text</code>を<code>@string/click</code>に設定する。<code>TextView</code>の<code>text</code>を<code>@string/fragment01</code>に設定する。また全体を<code>ConstraintLayout</code>で包み、DataBindingのために<code>layout</code>でさらに包む。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -134,7 +134,7 @@
 
 <span class="nt">&lt;/layout&gt;</span></code></pre></div>
 <p><code>fragment_fragment02.xml</code>もほぼ同じ。<code>Button</code>が無い点だけ異なる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -163,7 +163,7 @@
 <li>Resource Type: Navigation</li>
 </ul>
 <p>&ldquo;OK&quot;を押すと、ポップアップが出てきて、&ldquo;Add dependencies?&ldquo;みたいなメッセージが出てくるので&quot;OK&quot;を押す。このとき、Navigationを利用するための依存関係が<code>build.gradle(Module: app)</code>に設定されていることが確認できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">dependencies</span> <span class="o">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">dependencies</span> <span class="o">{</span>
     <span class="o">...</span>
     <span class="n">implementation</span> <span class="s1">&#39;androidx.navigation:navigation-fragment-ktx:2.1.0&#39;</span>
     <span class="n">implementation</span> <span class="s1">&#39;androidx.navigation:navigation-ui-ktx:2.1.0&#39;</span>
@@ -174,7 +174,7 @@
 </figure>
 
 <p>textで表示すると以下のようになっている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;navigation</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -200,7 +200,7 @@
 <h2 id="navigationをactivity_mainに設定">Navigationをactivity_mainに設定</h2>
 <p><code>activity_main.xml</code>を編集する。まず<code>layout</code>で全体を包み、さらに<code>LinearLayout</code>-<code>fragment</code>と階層構造にしている。</p>
 <p><code>fragment</code>の<code>name</code>属性に<code>androidx.navigation.fragment.NavHostFragment</code>を設定すると、この<code>fragment</code>が<code>Navigation</code>として振る舞うようになる。<code>navGraph</code>には接続関係を記した<code>xml</code>ファイルを指定する。ここでは<code>navigation/navigation.xml</code>を設定している。<code>defaultNavHost=&quot;true&quot;</code>としておくと、backボタンで戻れるようになるらしい。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -224,7 +224,7 @@
 <h2 id="寄り道databindingの設定">(寄り道)DataBindingの設定</h2>
 <p><code>MainActivity.kt</code>と<code>Fragment02.kt</code>のDataBindingを設定しておく。</p>
 <p><code>MainActivity.kt</code>を編集する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">MainActivity</span> <span class="p">:</span> <span class="n">AppCompatActivity</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">MainActivity</span> <span class="p">:</span> <span class="n">AppCompatActivity</span><span class="p">()</span> <span class="p">{</span>
 
     <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">ActivityMainBinding</span>
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?)</span> <span class="p">{</span>
@@ -233,7 +233,7 @@
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
 <p><code>Fragment02.kt</code>を編集する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">Fragment02</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">Fragment02</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
 
     <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentFragment02Binding</span>
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
@@ -248,7 +248,7 @@
 <h2 id="ボタンが押された時の遷移の設定">ボタンが押された時の遷移の設定</h2>
 <p><code>Fragment01.kt</code>を編集する。</p>
 <p><code>view.findNavController()</code>で<code>Navigation</code>を取得し、<code>navigate(actionのid)</code>で遷移する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">Fragment01</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">Fragment01</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentFragment01Binding</span>
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
         <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>

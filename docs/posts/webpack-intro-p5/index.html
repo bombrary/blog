@@ -3,7 +3,7 @@
 <head>
   <title>webpackに入門する - p5.jsの開発環境作り | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/webpack-intro-p5/">
@@ -71,7 +71,7 @@
   
   <p>webpackを利用してp5.jsの開発環境を作り、ボールが弾むプログラムを作成する。</p>
 <h2 id="使用するパッケージのバージョン">使用するパッケージのバージョン</h2>
-<pre><code>webpack@5.15.0
+<pre tabindex="0"><code>webpack@5.15.0
 webpack-cli@4.3.1
 webpack-dev-server@3.11.2
 p5@1.2.0
@@ -118,17 +118,17 @@ $ mkdir -p public/js
 
 <h3 id="indexjsの作成">index.jsの作成</h3>
 <p><code>/src/index.js</code>を作成。動作確認のため適当に書く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Hello, World&#34;</span><span class="p">);</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Hello, World&#34;</span><span class="p">);</span>
 </code></pre></div><h3 id="webpackの設定">webpackの設定</h3>
 <p><code>/webpack.config.js</code>を作成する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
 
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
   <span class="nx">mode</span><span class="o">:</span> <span class="s1">&#39;development&#39;</span><span class="p">,</span>
   <span class="nx">entry</span><span class="o">:</span> <span class="s1">&#39;./src/index.js&#39;</span><span class="p">,</span>
   <span class="nx">output</span><span class="o">:</span> <span class="p">{</span>
     <span class="nx">filename</span><span class="o">:</span> <span class="s1">&#39;bundle.js&#39;</span><span class="p">,</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">__</span><span class="nx">dirname</span><span class="p">,</span> <span class="s1">&#39;public/js&#39;</span><span class="p">)</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public/js&#39;</span><span class="p">)</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div><h4 id="説明">説明</h4>
@@ -163,10 +163,10 @@ $ npm install webpack-dev-server --save-dev
 
 <h3 id="設定">設定</h3>
 <p><code>webpack.config.js</code>の<code>module.exports</code>に<code>devServer</code>プロパティを追記する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
   <span class="p">...</span>
   <span class="nx">devServer</span><span class="o">:</span> <span class="p">{</span>
-    <span class="nx">contentBase</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">__</span><span class="nx">dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">),</span>
+    <span class="nx">contentBase</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">),</span>
     <span class="nx">publicPath</span><span class="o">:</span> <span class="s2">&#34;/js/&#34;</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -178,7 +178,7 @@ $ npm install webpack-dev-server --save-dev
 </ul>
 <h3 id="indexhtmlの作成">index.htmlの作成</h3>
 <p><code>/public/index.html</code>を作成し、内容を以下のようにする．</p>
-<div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
@@ -200,7 +200,7 @@ $ npx webpack serve
 <p>webpack-dev-serverにはlive reloading機能が付いている。なので<code>index.js</code>を変更すると、自動でbundleが行われ、ページがリロードされる。</p>
 <h2 id="コマンドの別名を追加する">コマンドの別名を追加する</h2>
 <p><code>/package.json</code>を編集する。<code>script</code>プロパティに<code>build</code>と<code>start</code>の2項目を追加。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="p">{</span>
 <span class="p">...</span>
   <span class="s2">&#34;scripts&#34;</span><span class="o">:</span> <span class="p">{</span>
     <span class="s2">&#34;test&#34;</span><span class="o">:</span> <span class="s2">&#34;echo \&#34;Error: no test specified\&#34; &amp;&amp; exit 1&#34;</span><span class="p">,</span>
@@ -228,14 +228,14 @@ $ npm install p5
 <p>試しに円を書いてみる。</p>
 <p><code>/src/index.js</code>を以下のようにする。</p>
 <p>p5.jsがモジュールである都合上、p5.jsは<a href="https://github.com/processing/p5.js/wiki/Global-and-instance-mode">instance mode</a>で用いる必要がある。また、p5.jsのキャンバスに余白が空くため、<code>body</code>要素のmarginを0にしている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kr">import</span> <span class="nx">p5</span> <span class="nx">from</span> <span class="s1">&#39;p5&#39;</span><span class="p">;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kr">import</span> <span class="nx">p5</span> <span class="nx">from</span> <span class="s1">&#39;p5&#39;</span><span class="p">;</span>
 <span class="kr">import</span> <span class="p">{</span> <span class="nx">sketch</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./sketch.js&#39;</span><span class="p">;</span>
 
 <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">margin</span> <span class="o">=</span> <span class="s2">&#34;0&#34;</span><span class="p">;</span>
 
 <span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">p5</span><span class="p">(</span><span class="nx">sketch</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
 </code></pre></div><p><code>/src/sketch.js</code>を作成し、内容を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">sketch</span> <span class="o">=</span> <span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">sketch</span> <span class="o">=</span> <span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
   <span class="nx">p</span><span class="p">.</span><span class="nx">setup</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
     <span class="nx">p</span><span class="p">.</span><span class="nx">createCanvas</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">windowWidth</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">windowHeight</span><span class="p">);</span>
   <span class="p">}</span>
@@ -257,7 +257,7 @@ $ npm install p5
 <p><code>/src/sketch.js</code>を以下のようにする。</p>
 <p><code>setup</code>にて、<code>Ball</code>のインスタンスを作成。引数は<code>(p, 位置ベクトル, 速度ベクトル, 直径)</code>の順に指定する。<code>Ball</code>の実装は次の項で行う。</p>
 <p><code>draw</code>にて、<code>ball.applyForce</code>で重力を加え、<code>ball.run</code>で位置、速度の更新、画面描画を行う。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Ball</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Ball&#39;</span><span class="p">;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Ball</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Ball&#39;</span><span class="p">;</span>
 
 <span class="kr">export</span> <span class="kr">const</span> <span class="nx">sketch</span> <span class="o">=</span> <span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
   <span class="kd">let</span> <span class="nx">ball</span><span class="p">;</span>
@@ -286,7 +286,7 @@ $ npm install p5
 <li><code>display</code>: ボールを描画する。</li>
 <li><code>applyForce</code>: 外力を加える。運動方程式を満たすように、力÷質量を加速度として加える。</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kr">import</span> <span class="nx">p5</span> <span class="nx">from</span> <span class="s1">&#39;p5&#39;</span><span class="p">;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kr">import</span> <span class="nx">p5</span> <span class="nx">from</span> <span class="s1">&#39;p5&#39;</span><span class="p">;</span>
 
 <span class="kr">export</span> <span class="kr">class</span> <span class="nx">Ball</span> <span class="p">{</span>
   <span class="nx">constructor</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="nx">location</span><span class="p">,</span> <span class="nx">velocity</span><span class="p">,</span> <span class="nx">diameter</span><span class="p">,</span> <span class="nx">mass</span><span class="p">)</span> <span class="p">{</span>

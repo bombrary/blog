@@ -3,7 +3,7 @@
 <head>
   <title>Purescriptメモ - 配列のシャッフルを様々な方法で実装する | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-shuffle/">
@@ -99,7 +99,7 @@
     </aside>
     
   <p>PureScriptで配列のシャッフルをしたい。型はこんな感じ。乱数は副作用を伴うため、返り値の型は<code>Effect</code>で包まれる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
 </code></pre></div><p>アルゴリズムは<a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm">Fisher-Yates ShuffleのModern Algorithmの項の2つ目</a>を利用する。これをさまざまな方法で作成したところ、Functor, Applicative, Monadなどに関連する事項だったり、<code>ST</code>モナドの使い方、FFIの使い方だったりが学べたので、備忘のために書く。</p>
 <h2 id="準備">準備</h2>
 <p>適当なディレクトリでプロジェクトを作成する。今回使うパッケージをインストールする。</p>
@@ -113,7 +113,7 @@ $ spago install foldable-traversable
 <h2 id="方法1-素直な書き方">方法1: 素直(?)な書き方</h2>
 <p>ここでは、<code>src/Shuffle.purs</code>に記述する。</p>
 <p>天下り的ではあるが、これから使う関数、型をimportしておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Shuffle</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Shuffle</span> <span class="kr">where</span>
 
 <span class="kr">import</span> <span class="nn">Prelude</span>
 
@@ -124,7 +124,7 @@ $ spago install foldable-traversable
 <span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="nf">maybe</span><span class="p">)</span>
 <span class="kr">import</span> <span class="nn">Data.Foldable</span> <span class="p">(</span><span class="nf">foldr</span><span class="p">)</span>
 </code></pre></div><p>まずは、「どの添字ととの添字の値を交換するか」という情報をもったデータ<code>ExchangeIndex</code>と、それを作成する関数<code>exchangeIndicies</code>を作成する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">ExchangeIndex</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">ExchangeIndex</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">i</span> <span class="ow">::</span> <span class="kt">Int</span>
   <span class="p">,</span> <span class="n">j</span> <span class="ow">::</span> <span class="kt">Int</span>
   <span class="p">}</span>
@@ -135,16 +135,16 @@ $ spago install foldable-traversable
      <span class="n">j</span> <span class="ow">&lt;-</span> <span class="n">randomInt</span> <span class="n">i</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
      <span class="n">pure</span> <span class="p">{</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="p">}</span>
 </code></pre></div><p>次に、<code>ExchangeIndex</code>の情報を元に配列を交換する関数<code>exchange</code>を作成。配列の添字が不正だった場合(配列外参照を起こしそうなとき)は<code>!!</code>演算子が<code>Nothing</code>を返すため、一連の計算は<code>Maybe</code>に包まれる。今回は簡単のため、交換に失敗したら元の配列をそのまま返すような実装にする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">exchange</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">ExchangeIndex</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="n">a</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">exchange</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">ExchangeIndex</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="n">a</span>
 <span class="nf">exchange</span> <span class="p">{</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">}</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">maybe</span> <span class="n">xs</span> <span class="n">identity</span> <span class="kr">do</span>
   <span class="n">xi</span> <span class="ow">&lt;-</span> <span class="n">xs</span> <span class="o">!!</span> <span class="n">i</span>
   <span class="n">xj</span> <span class="ow">&lt;-</span> <span class="n">xs</span> <span class="o">!!</span> <span class="n">j</span>
   <span class="n">updateAt</span> <span class="n">j</span> <span class="n">xi</span> <span class="o">=&lt;&lt;</span> <span class="n">updateAt</span> <span class="n">i</span> <span class="n">xj</span> <span class="n">xs</span>
 </code></pre></div><p>最後に、<code>shuffle</code>関数を作成。「どことどこを交換すべきか」という複数の情報の配列を<code>exchangeIndicies (length xs)</code>で作成する。それらを元に<code>xs</code>の要素を交換したい。このような、あるデータ<code>xs</code>に対してデータ列<code>exchangeIndicies (length xs)</code>を順々に適用していきたい場合は、<code>foldr</code>が有効である。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
 <span class="nf">shuffle</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">exchange</span> <span class="n">xs</span> <span class="o">&lt;$&gt;</span> <span class="n">exchangeIndicies</span> <span class="p">(</span><span class="n">length</span> <span class="n">xs</span><span class="p">)</span>
 </code></pre></div><p><code>&lt;$&gt;</code>のところだけ補足しておく。もし<code>exchangeIndicies (length xs)</code>が<code>Array ExchangeIndex</code>を返すなら、単に</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
 <span class="nf">shuffle</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">exchange</span> <span class="n">xs</span> <span class="p">(</span><span class="n">exchangeIndicies</span> <span class="p">(</span><span class="n">length</span> <span class="n">xs</span><span class="p">))</span>
 </code></pre></div><p>とすれば良い。ところが、<code>exchangeIndicies (length xs)</code>は<code>Effect</code>に包まれた型なので、間に<code>&lt;$&gt;</code>を挟む必要がある。</p>
 <h2 id="方法2-statetの利用">方法2: StateTの利用</h2>
@@ -156,7 +156,7 @@ $ spago install transformers
 
 <p>ここでは<code>src/Shuffle/State.purs</code>に書く。
 天下り的ではあるが、これから使う関数をimportしておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Shuffle.State</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Shuffle.State</span> <span class="kr">where</span>
 
 <span class="kr">import</span> <span class="nn">Prelude</span>
 
@@ -168,13 +168,13 @@ $ spago install transformers
 <span class="kr">import</span> <span class="nn">Data.Traversable</span> <span class="p">(</span><span class="nf">for_</span><span class="p">)</span>
 </code></pre></div><p>方法1ではボトムアップに考えたが、ここではトップダウンに考える。
 <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm">Wikipediaに記載されているアルゴリズム</a>を引用すると次の通り。</p>
-<pre><code>for i from 0 to n−2 do
+<pre tabindex="0"><code>for i from 0 to n−2 do
      j ← random integer such that i ≤ j &lt; n
      exchange a[i] and a[j]
 </code></pre><p>これを真似すると、PureScriptでは次のように書ける．一般に<code>StateT</code>モナドは<code>StateT s m b</code>の形で書けて、<code>s</code>は状態、<code>m</code>は<code>StateT</code>と組み合わせたいモナド、<code>b</code>は計算結果の型である。状態として扱いたいのは配列なので、<code>s</code>には<code>Array a</code>が入る。乱数の処理で副作用を扱いたいので，<code>m</code>には<code>Effect</code>が入る。今回は特に計算結果がないため、<code>b</code>には<code>Unit</code>を指定する。</p>
 <p><code>StateT</code>の<code>do</code>構文の中で<code>Effect</code>を伴う処理を書きたい場合は、以下のように<code>lift</code>関数を噛ませる。</p>
 <p><code>shuffleSt</code>では計算の手順を定義しただけであり、実際に計算を走らせるのは<code>shuffle</code>関数の<code>execStateT</code>である。<code>execStateT</code>は、一連の計算を行った後の状態を返す関数である。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffleSt</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">StateT</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffleSt</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">StateT</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
 <span class="nf">shuffleSt</span> <span class="ow">=</span> <span class="kr">do</span>
   <span class="n">n</span> <span class="ow">&lt;-</span> <span class="n">length</span> <span class="o">&lt;$&gt;</span> <span class="n">get</span>
   <span class="n">for_</span> <span class="p">(</span><span class="n">range</span> <span class="mi">0</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span> <span class="nf">\</span><span class="n">i</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
@@ -185,7 +185,7 @@ $ spago install transformers
 <span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
 <span class="nf">shuffle</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">execStateT</span> <span class="n">shuffleSt</span> <span class="n">xs</span>
 </code></pre></div><p><code>exchange</code>関数は<code>modify_</code>関数が組み合わさっているだけで、やってることは方法1とほとんど変わらない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">exchange</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">StateT</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span> <span class="n">m</span> <span class="kt">Unit</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">exchange</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span> <span class="n">m</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">StateT</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span> <span class="n">m</span> <span class="kt">Unit</span>
 <span class="nf">exchange</span> <span class="n">i</span> <span class="n">j</span> <span class="ow">=</span> <span class="kr">do</span>
   <span class="n">modify_</span> <span class="nf">\</span><span class="n">xs</span> <span class="ow">-&gt;</span>
     <span class="n">maybe</span> <span class="n">xs</span> <span class="n">identity</span> <span class="kr">do</span>
@@ -204,7 +204,7 @@ $ spago install transformers
 <p>余談。実は<code>ST</code>モナドについてあまりよくわかっていない状態である。<code>ST</code>周りを勉強したいなら、PureScriptではなくHaskellの文献を調べてみると良さそう。</p>
 <p>ここでは<code>src/Shuffle/ST.purs</code>に書く。
 天下り的ではあるが、これから使う関数をimportしておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Shuffle.ST</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Shuffle.ST</span> <span class="kr">where</span>
 
 <span class="kr">import</span> <span class="nn">Prelude</span>
 
@@ -216,7 +216,7 @@ $ spago install transformers
 <span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
 <span class="kr">import</span> <span class="nn">Effect.Random</span> <span class="p">(</span><span class="nf">randomInt</span><span class="p">)</span>
 </code></pre></div><p>方法1と同様に、<code>ExchangeIndex</code>と<code>exchangeIndicies</code>を作成。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">ExchangeIndex</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">ExchangeIndex</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">i</span> <span class="ow">::</span> <span class="kt">Int</span>
   <span class="p">,</span> <span class="n">j</span> <span class="ow">::</span> <span class="kt">Int</span>
   <span class="p">}</span>
@@ -228,7 +228,7 @@ $ spago install transformers
      <span class="n">pure</span> <span class="p">{</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="p">}</span>
 </code></pre></div><p>続いて、<code>STArray</code>の要素を交換する関数<code>exchangeST</code>を書く。ここの処理は<code>ST</code>だけでなく<code>Maybe</code>も出てくる。Applicativeスタイルを使うと多少綺麗に書ける。</p>
 <p><code>exchange</code>の<code>Array ExchangeInfo</code>版の関数<code>exchangeMany</code>も作る。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">exchange</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">h</span> <span class="n">a</span><span class="o">.</span> <span class="kt">ExchangeIndex</span> <span class="ow">-&gt;</span> <span class="kt">STArray</span> <span class="n">h</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">ST</span> <span class="n">h</span> <span class="kt">Unit</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">exchange</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">h</span> <span class="n">a</span><span class="o">.</span> <span class="kt">ExchangeIndex</span> <span class="ow">-&gt;</span> <span class="kt">STArray</span> <span class="n">h</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">ST</span> <span class="n">h</span> <span class="kt">Unit</span>
 <span class="nf">exchange</span> <span class="p">{</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">}</span> <span class="n">stArr</span> <span class="ow">=</span> <span class="kr">do</span>
   <span class="n">xiMay</span> <span class="ow">&lt;-</span> <span class="n">peek</span> <span class="n">i</span> <span class="n">stArr</span>
   <span class="n">xjMay</span> <span class="ow">&lt;-</span> <span class="n">peek</span> <span class="n">j</span> <span class="n">stArr</span>
@@ -248,7 +248,7 @@ $ spago install transformers
   <span class="n">foreach</span> <span class="n">indicies</span>
     <span class="nf">\</span><span class="n">idx</span> <span class="ow">-&gt;</span> <span class="n">exchange</span> <span class="n">idx</span> <span class="n">stArr</span>
 </code></pre></div><p>これを元に<code>shuffle</code>を作成する。<code>thaw</code>で<code>Array</code>を<code>STArray</code>に変換し、<code>freeze</code>で逆の変換を行う。実際に<code>ST</code>の計算を走らせるには<code>run</code>関数を用いる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle&#39;</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle&#39;</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
 <span class="nf">shuffle&#39;</span> <span class="n">xs</span> <span class="ow">=</span> <span class="kr">do</span>
   <span class="n">indicies</span> <span class="ow">&lt;-</span> <span class="n">exchangeIndicies</span> <span class="p">(</span><span class="n">length</span> <span class="n">xs</span><span class="p">)</span>
   <span class="n">pure</span> <span class="o">$</span> <span class="n">run</span> <span class="kr">do</span>
@@ -256,7 +256,7 @@ $ spago install transformers
      <span class="n">exchangeMany</span> <span class="n">indicies</span> <span class="n">stArr</span>
      <span class="n">freeze</span> <span class="n">stArr</span>
 </code></pre></div><p><code>withArray</code>関数を用いて次のようにも書ける。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- import Data.Array.ST (withArray)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- import Data.Array.ST (withArray)</span>
 
 <span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
 <span class="nf">shuffle</span> <span class="n">xs</span> <span class="ow">=</span> <span class="kr">do</span>
@@ -264,7 +264,7 @@ $ spago install transformers
   <span class="n">pure</span> <span class="o">$</span> <span class="n">run</span> <span class="p">(</span><span class="n">withArray</span> <span class="p">(</span><span class="n">exchangeMany</span> <span class="n">indicies</span><span class="p">)</span> <span class="n">xs</span><span class="p">)</span>
 </code></pre></div><h3 id="補足">補足</h3>
 <p><code>run (..)</code>のところを<code>run $ ..</code>に変えても同じかと思い、次のように変えてみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
 <span class="nf">shuffle</span> <span class="n">xs</span> <span class="ow">=</span> <span class="kr">do</span>
   <span class="n">indicies</span> <span class="ow">&lt;-</span> <span class="n">exchangeIndicies</span> <span class="p">(</span><span class="n">length</span> <span class="n">xs</span><span class="p">)</span>
   <span class="n">pure</span> <span class="o">$</span> <span class="n">run</span> <span class="o">$</span> <span class="n">withArray</span> <span class="p">(</span><span class="n">exchangeMany</span> <span class="n">indicies</span><span class="p">)</span> <span class="n">xs</span>
@@ -289,19 +289,19 @@ or to contribute content related to this error.
 <p><code>$</code>を使うとまずい、という話は、<a href="https://github.com/purescript/documentation/blob/master/errors/EscapedSkolem.md#notes">EscapedSkolem ErrorのNotesの項目</a>に載っている(ページの内容が古いらしく、2021年1月現時点では<code>run</code>が<code>runST</code>と記載されていることに注意)。エラーがなぜ起こるのかについては、勉強不足のためよく分からない。</p>
 <p><a href="https://gitlab.haskell.org/ghc/ghc/-/wikis/impredicative-polymorphism">こちら</a>で知ったのだが、どうやらGHC(Haskell)では<code>$</code>演算子だけ例外扱いしており、上のようなコードは動くようだ。同じことは<a href="https://github.com/purescript/documentation/blob/master/language/Differences-from-Haskell.md#no-special-treatment-of-">PureScriptのドキュメント</a>でも言及している。</p>
 <p>ちなみに、PureScriptではGHCでいう<a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-BlockArguments">BlockArguments</a>拡張と同じ機能が有効であるため(<a href="https://github.com/purescript/documentation/blob/master/language/Differences-from-Haskell.md#extensions">ドキュメント参照</a>)、<code>do</code>と<code>run</code>の間に<code>$</code>を入れなくても動く。むしろ入れてしまうと、上のエラーを引き起こす。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">run</span> <span class="kr">do</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">run</span> <span class="kr">do</span>
   <span class="o">...</span>  <span class="c1">-- 何かの計算</span>
 </code></pre></div><h2 id="方法4-ffiの利用">方法4: FFIの利用</h2>
 <p>JavaScriptのコードをPureScriptで呼び出す方法。もはやPureScriptではないが、Fisher-Yates Shuffleの書きやすさでは1番だと思われる。</p>
 <p><code>src/Shuffle/FFI.purs</code>の内容は以下の通り。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Shuffle.FFI</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Shuffle.FFI</span> <span class="kr">where</span>
 
 <span class="kr">import</span> <span class="nn">Prelude</span>
 <span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
 
 <span class="nf">foreign</span> <span class="kr">import</span> <span class="nn">shuffle</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">)</span>
 </code></pre></div><p><code>src/Shuffle/FFI.js</code>の内容は以下の通り。<code>Effect e</code>の値は、<code>() =&gt; { .. }</code> のような、引数無しの関数であることに注意(<a href="https://pursuit.purescript.org/packages/purescript-effect/2.0.1">purescript-effect</a>の&quot;Using Effects via the Foreign Function Interface&quot;を参照)。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">exports</span><span class="p">.</span><span class="nx">shuffle</span> <span class="o">=</span> <span class="p">(</span><span class="nx">xs</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="nx">exports</span><span class="p">.</span><span class="nx">shuffle</span> <span class="o">=</span> <span class="p">(</span><span class="nx">xs</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
   <span class="kr">const</span> <span class="nx">n</span> <span class="o">=</span> <span class="nx">xs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
   <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="kr">const</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">i</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="nx">n</span> <span class="o">-</span> <span class="nx">i</span><span class="p">)</span> <span class="p">);</span>
@@ -310,7 +310,7 @@ or to contribute content related to this error.
   <span class="k">return</span> <span class="nx">xs</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div><p>上は<code>Math.random</code>で直接乱数を発生させたが、もし<code>Effect.Random</code>の<code>randomInt</code>関数を使いたいなら次のようにする。<code>randomInt</code>は<code>Effect</code>で包まれた値を返すため、<code>randomInt(a)(b)</code>ではなく<code>randomInt(a)(b)()</code>としないと値が得られないことに注意(<code>Effect e</code>の値は引数無しの関数であるため)。</p>
-<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kr">const</span> <span class="p">{</span> <span class="nx">randomInt</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../Effect.Random&#39;</span><span class="p">);</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kr">const</span> <span class="p">{</span> <span class="nx">randomInt</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../Effect.Random&#39;</span><span class="p">);</span>
 
 <span class="nx">exports</span><span class="p">.</span><span class="nx">shuffle</span> <span class="o">=</span> <span class="p">(</span><span class="nx">xs</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
   <span class="kr">const</span> <span class="nx">n</span> <span class="o">=</span> <span class="nx">xs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
@@ -328,7 +328,7 @@ $ spago install now
 </pre>
 
 <p><code>src/Main.purs</code>に記述していく。必要なものをimportしておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
 <span class="kr">import</span> <span class="nn">Prelude</span>
 
 <span class="kr">import</span> <span class="nn">Effect</span> <span class="p">(</span><span class="kt">Effect</span><span class="p">)</span>
@@ -348,7 +348,7 @@ $ spago install now
 <span class="kr">import</span> <span class="nn">Data.Int</span> <span class="p">(</span><span class="nf">toNumber</span><span class="p">)</span>
 <span class="kr">import</span> <span class="nn">Data.Newtype</span> <span class="p">(</span><span class="nf">wrap</span><span class="p">,</span> <span class="nf">unwrap</span><span class="p">)</span>
 </code></pre></div><p>配列<code>xs</code>のシャッフル時間を計測する関数<code>measure</code>と、n回の平均を出す関数<code>measureN</code>を作成。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">measure</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">))</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Milliseconds</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">measure</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="p">(</span><span class="kt">Array</span> <span class="n">a</span><span class="p">))</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Milliseconds</span>
 <span class="nf">measure</span> <span class="n">xs</span> <span class="n">shuffle</span> <span class="ow">=</span> <span class="kr">do</span>
   <span class="n">ts</span> <span class="ow">&lt;-</span> <span class="n">nowTime</span>
   <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">shuffle</span> <span class="n">xs</span>
@@ -363,11 +363,11 @@ $ spago install now
       <span class="n">ave</span> <span class="ow">=</span> <span class="n">wrap</span> <span class="o">$</span> <span class="n">unwrap</span> <span class="n">total</span> <span class="o">/</span> <span class="n">toNumber</span> <span class="n">n</span>
   <span class="n">pure</span> <span class="n">ave</span>
 </code></pre></div><p>計測結果を綺麗に出力するヘルパーを作成。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">logTime</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Milliseconds</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">logTime</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Milliseconds</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
 <span class="nf">logTime</span> <span class="n">label</span> <span class="p">(</span><span class="kt">Milliseconds</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=</span>
   <span class="n">log</span> <span class="o">$</span> <span class="n">label</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;: &#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">t</span> <span class="o">&lt;&gt;</span> <span class="s">&#34; msec&#34;</span>
 </code></pre></div><p><code>main</code>関数はこんな感じにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
 <span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
   <span class="kr">let</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">range</span> <span class="mi">0</span> <span class="mi">1000</span>
       <span class="n">n</span> <span class="ow">=</span> <span class="mi">100</span>

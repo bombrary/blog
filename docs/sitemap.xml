@@ -3,22 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2021-08-10T17:09:30+09:00</lastmod>
+    <lastmod>2021-12-09T11:09:39+09:00</lastmod>
   </url><url>
-    <loc>https://bombrary.github.io/blog/categories/elm/</loc>
-    <lastmod>2021-08-10T17:09:30+09:00</lastmod>
+    <loc>https://bombrary.github.io/blog/categories/neovim/</loc>
+    <lastmod>2021-12-09T11:09:39+09:00</lastmod>
   </url><url>
-    <loc>https://bombrary.github.io/blog/posts/elm-tetris/</loc>
-    <lastmod>2021-08-10T17:09:30+09:00</lastmod>
+    <loc>https://bombrary.github.io/blog/posts/nvim-note0/</loc>
+    <lastmod>2021-12-09T11:09:39+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2021-08-10T17:09:30+09:00</lastmod>
+    <lastmod>2021-12-09T11:09:39+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/vim/</loc>
+    <lastmod>2021-12-09T11:09:39+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/elm/</loc>
+    <lastmod>2021-08-10T17:10:34+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/posts/elm-tetris/</loc>
+    <lastmod>2021-08-10T17:10:34+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/</loc>
-    <lastmod>2021-08-10T17:09:30+09:00</lastmod>
+    <lastmod>2021-08-10T17:10:34+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9/</loc>
-    <lastmod>2021-08-10T17:09:30+09:00</lastmod>
+    <lastmod>2021-08-10T17:10:34+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/julia/</loc>
     <lastmod>2021-08-07T07:23:54+09:00</lastmod>
@@ -201,9 +210,6 @@
     <lastmod>2020-05-31T22:49:13+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/latexmk/</loc>
-    <lastmod>2020-05-31T22:49:13+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/categories/vim/</loc>
     <lastmod>2020-05-31T22:49:13+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/vimtex/</loc>

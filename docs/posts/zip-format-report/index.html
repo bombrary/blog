@@ -3,7 +3,7 @@
 <head>
   <title>zipファイルの構造を少しだけ理解する | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/zip-format-report/">
@@ -143,7 +143,7 @@ $ od -Ax -tx1z tmp.zip
 <li>end of central directory : zipファイルの終端を表す情報</li>
 </ul>
 <p>これらは次の順番で並んでいる(本当はdata descriptorというのもあるが今回は省略する)。</p>
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">[local file header + file data]
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">[local file header + file data]
 [local file header + file data]
 ...
 [local file header + file data]
@@ -251,7 +251,7 @@ $ od -Ax -tx1z -j0x134 tmp.zip | grep -E "50 4b 05 06|$"
 </pre>
 
 <p>これらは次のような意味を持っている(説明はspecificationからの抜粋)。値はリトルエンディアンであることに注意。</p>
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">50 4b 05 06 : end of central dir signature
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">50 4b 05 06 : end of central dir signature
 00 00 : number of this disk 
 00 00 : start of the central directory
 02 00 :  total number of the disk with the start of the central directory
@@ -279,7 +279,7 @@ $ od -Ax -tx1z -j0x9a -N0x9a tmp.zip | grep -E "50 4b|$"
 
 <p><code>50 4b 01 02</code>の列が2箇所見つかる。これがcentral directory headerのようだ。<code>foo.txt</code>や<code>bar.txt</code>の文字列が見つかることから、どうやらここにファイル名の情報が埋め込まれているらしいとわかる。</p>
 <p>2つ目の<code>50 4b 01 02</code>以降の列に注目する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">50 4b 01 02 : central file header signature
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">50 4b 01 02 : central file header signature
 1e 03 : version made by
 0a 00 : version needed to extract
 00 00 : general purpose bit flug
@@ -326,7 +326,7 @@ $ od -Ax -tx1z -j0x4f tmp.zip | grep -E "50 4b|$"
 </pre>
 
 <p><code>50 4b 03 04</code>で始まる列がlocal file headerである。</p>
-<div class="highlight"><pre class="chroma"><code class="language-txt" data-lang="txt">50 4b 03 04 : local file header signature
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">50 4b 03 04 : local file header signature
 0a 00 : version needed to extract
 00 00 : general purpose bit flag
 00 00 : compression method

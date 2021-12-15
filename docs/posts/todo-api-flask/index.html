@@ -3,7 +3,7 @@
 <head>
   <title>PythonとFlask(&#43;α)で作るToDoリストAPI | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/todo-api-flask/">
@@ -220,7 +220,7 @@
 <p>データはSQLiteで管理する。</p>
 <h2 id="雛形">雛形</h2>
 <p><code>todo_list</code>ディレクトリを作成。<code>todo_list/__init__.py</code>を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
 
 
 <span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
@@ -251,7 +251,7 @@ Hello, World
 <h3 id="雛形---解説">雛形 - 解説</h3>
 <p>まず、<code>Flask(__name__)</code>でWSGIアプリを作ることができる。アプリを<code>app</code>としたとき、<code>@app.route</code>デコレータでURLに対応する関数を登録することができる。
 以下は、URL <code>/</code>に対して関数<code>hello</code>を登録している。よって、URL <code>/</code>にアクセスされたときに、<code>Hello, World</code>というレスポンスが返ってくるようになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python">    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python">    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
         <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
 </code></pre></div><p>HTMLデータやJSONなどの、アプリのユーザーが「見る部分」のことをviewという。
@@ -267,7 +267,7 @@ view関数の書き方については<a href="https://flask.palletsprojects.com/
 環境変数<code>FLASK_ENV</code>に<code>development</code>を設定すると、自動リロードがONになったり、例外発生時にデバッグ用のレスポンスを送ったりしてくれる。</p>
 <h2 id="blueprintの利用">Blueprintの利用</h2>
 <p>まず、Blueprintを作成する。<code>todo_list/todo.py</code>を作成し、ひとまず内容を以下の通りにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span>
 
 <span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;todo&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
 
@@ -298,7 +298,7 @@ view関数の書き方については<a href="https://flask.palletsprojects.com/
 <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;delete: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span>
 </code></pre></div><p>WSGIアプリにBlueprintを登録する。<code>todo_list/__init__.py</code>の内容を以下の通りにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
 
 
 <span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
@@ -337,7 +337,7 @@ WSGIアプリにBlueprintを登録するには、<code>register_blueprint</code>
 <code>url_prefix</code>引数を<code>/todo</code>とすることで、対応するBlueprintのURLのprefixを<code>/todo</code>に統一する。</p>
 <h2 id="peeweeを使ったtodoモデルの作成">peeweeを使ったToDoモデルの作成</h2>
 <p><code>todo_list/models/__init__.py</code>と<code>todo_list/models/todo.py</code>を作成。前者は空のままにし、後者は内容を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 
@@ -402,7 +402,7 @@ Quickstartでは、<code>Todo</code>クラスの<code>Meta</code>内部クラス
 <p>ただし、<code>dict</code>への変換はmarshmallowに任せるので、<code>model_to_dict</code>はこの後使わない。</p>
 <h2 id="marshmallowを使ったデータの変換とvalidation">marshmallowを使ったデータの変換とvalidation</h2>
 <p><code>todo_list/models/todo.py</code>を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span>
 
@@ -466,7 +466,7 @@ marshmallow.exceptions.ValidationError: {'content': ['Not a valid string.']}
 
 <h2 id="flaskとデータベースの連携">Flaskとデータベースの連携</h2>
 <p><code>todo_list/db.py</code>を作成し、内容を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
 <span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
 
@@ -483,7 +483,7 @@ marshmallow.exceptions.ValidationError: {'content': ['Not a valid string.']}
     <span class="k">if</span> <span class="ow">not</span> <span class="n">db</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
         <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </code></pre></div><p><code>todo_list/app.py</code>を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
 <span class="kn">import</span> <span class="nn">os</span> <span class="c1"># 追加</span>
 
 
@@ -514,7 +514,7 @@ marshmallow.exceptions.ValidationError: {'content': ['Not a valid string.']}
 
     <span class="k">return</span> <span class="n">app</span>
 </code></pre></div><p><code>todo_list/todo.py</code>に以下の内容を追記する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">.db</span> <span class="kn">import</span> <span class="n">db</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">.db</span> <span class="kn">import</span> <span class="n">db</span>
 
 <span class="nd">@bp</span><span class="o">.</span><span class="n">before_request</span>
 <span class="k">def</span> <span class="nf">connect_db</span><span class="p">():</span>
@@ -546,7 +546,7 @@ instance folderは自動で作られることはないため、その作成を<c
 こういう機能が提供されていることはありがたい。</p>
 <h2 id="データベースの初期化">データベースの初期化</h2>
 <p><code>todo_list/db.py</code>を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
 <span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
 <span class="c1"># 以下2行を追加</span>
@@ -595,7 +595,7 @@ Initizlized the database.
 同様に、<code>create_tables</code>ではデフォルトで<code>IF NOT EXISTS</code>をつけてくれる。</p>
 <h2 id="todoのレスポンスの実装">ToDoのレスポンスの実装</h2>
 <p><code>todo_list/todo.py</code>を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span>
 <span class="kn">from</span> <span class="nn">.db</span> <span class="kn">import</span> <span class="n">db</span>
 <span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span><span class="p">,</span> <span class="n">dump_todo</span><span class="p">,</span> <span class="n">load_todo_or_400</span>
 
@@ -641,7 +641,7 @@ Initizlized the database.
     <span class="n">todo</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
     <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">204</span>
 </code></pre></div><p><code>todo_list/models/todo.py</code>を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span><span class="p">,</span> <span class="n">DoesNotExist</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span><span class="p">,</span> <span class="n">DoesNotExist</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">NotFound</span><span class="p">,</span> <span class="n">BadRequest</span>
@@ -676,7 +676,7 @@ Initizlized the database.
     <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">BadRequest</span>
 </code></pre></div><p><code>todo_list/__init__.py</code>に1行追加する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;JSON_AS_ASCII&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># 追加</span>
@@ -696,7 +696,7 @@ Initizlized the database.
 <p>Werkzeugと同様、Flaskにもテスト用のクライアントが用意されている。これについて軽く書いておく。</p>
 <h3 id="pytestによるテスト---準備">pytestによるテスト - 準備</h3>
 <p>まず、アプリ側でテスト用の設定を受け付けられるようにする。<code>todo_list/__init__.py</code>の<code>create_app</code>関数を以下のように追記する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">test_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span> <span class="c1"># 追加</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">test_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span> <span class="c1"># 追加</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;JSON_AS_ASCII&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
@@ -709,7 +709,7 @@ Initizlized the database.
 </code></pre></div><p>引数に<code>test_config</code>が設定されていた場合、<code>app.config.from_mapping</code>メソッドでそれを<code>app.config</code>に割り当てる。</p>
 <p><code>tests</code>ディレクトリを作成し、<code>tests/conftest.py</code>を作成。内容を以下のようにする。
 これは<a href="https://flask.palletsprojects.com/en/2.0.x/tutorial/tests/">FlaskのTutorial</a>に書いてある内容とほぼ同じである。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">todo_list</span> <span class="kn">import</span> <span class="n">create_app</span>
 <span class="kn">from</span> <span class="nn">todo_list.db</span> <span class="kn">import</span> <span class="n">init_db</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
@@ -749,7 +749,7 @@ Initizlized the database.
 <h3 id="pytestによるテスト---コマンド">pytestによるテスト - コマンド</h3>
 <p><code>tests/test_db.py</code>を作成し、内容を以下のようにする。
 これは<a href="https://flask.palletsprojects.com/en/2.0.x/tutorial/tests/#database">FlaskのTutorial</a>とほぼ同じ。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_init_db</span><span class="p">(</span><span class="n">runner</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_init_db</span><span class="p">(</span><span class="n">runner</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Recorder</span><span class="p">:</span>
         <span class="n">called</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -768,7 +768,7 @@ Initizlized the database.
 <h3 id="pytestによるテスト---todo">pytestによるテスト - ToDo</h3>
 <p><code>tests/test_todo.py</code>を作成し、内容を以下のようにする。
 本当はいろいろテストしなければならないのだが、ここでは一例のみ示す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_get_all</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_get_all</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]</span>
 

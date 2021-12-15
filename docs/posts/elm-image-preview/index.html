@@ -3,7 +3,7 @@
 <head>
   <title>Elmメモ - 画像のプレビュー機能を作る | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-image-preview/">
@@ -80,7 +80,7 @@
 <h2 id="ファイル読み込みの方法">ファイル読み込みの方法</h2>
 <p><code>Select.file</code>関数を利用する。これはファイル選択用のエクスプローラを開くための<code>Cmd Msg</code>を作成してくれる。選択したファイルは<code>Msg</code>に載せられる。</p>
 <p>適切なMIMEタイプを指定すると、エクスプローラ上にてそのタイプのファイルしか選択できなくなる。例えば、<code>text/plain</code>を選択しておけば、拡張子<code>.txt</code>のファイルしか選択できなくなる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Select</span><span class="nf">.</span><span class="nv">file</span> <span class="s">&#34;MIMEタイプのリスト&#34;</span> <span class="s">&#34;Msg&#34;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kt">Select</span><span class="nf">.</span><span class="nv">file</span> <span class="s">&#34;MIMEタイプのリスト&#34;</span> <span class="s">&#34;Msg&#34;</span></code></pre></div>
 <h2 id="画像ファイルへの変換">画像ファイルへの変換</h2>
 <p>こうして得られたファイルは<code>File</code>と呼ばれる型で保持される。</p>
 <p>もしファイルを文字列として扱いたいなら、<code>File.toString</code>を利用する。</p>
@@ -93,7 +93,7 @@ $ elm init
 $ elm install elm/file
 </pre>
 <p><code>src/Main.elm</code>の雛形を作る。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Main</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">Main</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
 
 <span class="kn">import </span><span class="nc">Browser</span>
 <span class="kn">import </span><span class="nc">Html</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
@@ -145,7 +145,7 @@ $ elm install elm/file
 $ elm make src/Main.elm --output=main.js
 </pre>
 <p><code>index.html</code>を作成し、次のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
 <span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
@@ -162,16 +162,16 @@ $ elm make src/Main.elm --output=main.js
   <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
 <p><code>style.css</code>も作っておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-css" data-lang="css"><span class="p">@</span><span class="k">charset</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="p">@</span><span class="k">charset</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">;</span></code></pre></div>
 <p>これでelm reactorで見ると、真っ白なページが表示されているはず。</p>
 <h3 id="model定義">model定義</h3>
 <p>以降はしばらく<code>src/Main.elm</code>で作業する。</p>
 <p>必要なのは画像のURLだから、それ用のレコードを用意する。画像が読み込まれていない時点では存在しないため、型は<code>Maybe</code>にする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Model</span> <span class="nf">=</span>
   <span class="p">{</span> <span class="nv">url</span> <span class="nf">:</span> <span class="kt">Maybe</span> <span class="kt">String</span>
   <span class="p">}</span></code></pre></div>
 <p>それに応じて<code>init</code>も編集。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">init</span> <span class="nf">:</span> <span class="p">()</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">init</span> <span class="nv">_</span> <span class="nf">=</span>
   <span class="p">(</span> <span class="p">{</span> <span class="nv">url</span> <span class="nf">=</span> <span class="kt">Nothing</span>
     <span class="p">}</span>
@@ -180,7 +180,7 @@ $ elm make src/Main.elm --output=main.js
 <h3 id="view定義">view定義</h3>
 <p>ボタンが押されたら、<code>ImageRequested</code>メッセージを送るようにする。</p>
 <p>もし<code>model.url</code>が存在すれば、<code>src</code>属性にそれを指定して画像を表示する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">view</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">view</span> <span class="nv">model</span> <span class="nf">=</span>
   <span class="nv">div</span> <span class="p">[]</span>
     <span class="p">[</span> <span class="nv">button</span>
@@ -205,7 +205,7 @@ $ elm make src/Main.elm --output=main.js
         <span class="p">[]</span></code></pre></div>
 <h3 id="update定義">update定義</h3>
 <p>先ほど書いた<code>ImageRequested</code>に加え、ファイルが取得できたときに送られるメッセージ<code>ImageSelected</code>とファイルをurlに変換した時に送られるメッセージ<code>ImageLoaded</code>を定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
   <span class="nf">=</span> <span class="kt">ImageRequested</span>
   <span class="nf">|</span> <span class="kt">ImageSelected</span> <span class="kt">File</span>
   <span class="nf">|</span> <span class="kt">ImageLoaded</span> <span class="kt">String</span></code></pre></div>
@@ -214,7 +214,7 @@ $ elm make src/Main.elm --output=main.js
 <li><code>ImageSelected</code>が送られてきたとき: <code>File.toUrl</code>でURLに変換する。これはTask型なので、<code>Task.perform</code>で<code>Cmd Msg</code>を作成する。変換が終わると<code>ImageLoaded</code>メッセージが送られる。</li>
 <li><code>ImageLoaded</code>が送られてきたとき: urlを入れたmodelを返す。</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">update</span> <span class="nf">:</span> <span class="kt">Msg</span> <span class="nf">-&gt;</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span><span class="p">)</span>
 <span class="nv">update</span> <span class="nv">msg</span> <span class="nv">model</span> <span class="nf">=</span>
   <span class="kr">case</span> <span class="nv">msg</span> <span class="kr">of</span>
     <span class="kt">ImageRequested</span> <span class="nf">-&gt;</span>
@@ -238,7 +238,7 @@ $ elm make src/Main.elm --output=main.js
 <h2 id="取り消しボタンの追加">取り消しボタンの追加</h2>
 <p>×ボタンを追加して、それをクリックすると画像の表示が消えるようにする。</p>
 <p>×ボタンはa要素で表現し、記号はCSSで表現することにする。a要素は画像の右上に重なるように配置したいため、CSSで<code>position: absolute</code>を指定することになる。などいろいろ考えた結果、以下のように要素を構成する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewImage</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">viewImage</span> <span class="nf">:</span> <span class="kt">Model</span> <span class="nf">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nv">viewImage</span> <span class="nv">model</span> <span class="nf">=</span>
     <span class="nf">...</span>
     <span class="kt">Just</span> <span class="nv">url</span> <span class="nf">-&gt;</span>
@@ -260,7 +260,7 @@ $ elm make src/Main.elm --output=main.js
             <span class="p">]</span>
         <span class="p">]</span></code></pre></div>
 <p><code>Msg</code>に<code>DeleteClicked</code>を追加し、<code>update</code>関数にも追加をする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Msg</span>
   <span class="nf">=</span> <span class="nf">...</span>
     <span class="nf">...</span>
   <span class="nf">|</span> <span class="kt">DeleteClicked</span>
@@ -279,12 +279,12 @@ $ elm make src/Main.elm --output=main.js
 <h3 id="stylecssの編集">style.cssの編集</h3>
 <p>これでmakeした後にアプリを動かしても、a要素のサイズが0なのでボタンは現れない。これをCSSで調整する。</p>
 <p>まずは画像とa要素をひとまとめにした領域<code>.image-container</code>を<code>inline-block</code>にすることで、画像のサイズぴったりに全体のサイズを調整する。a要素の位置を絶対座標にしたいので、<code>position: relative</code>を指定する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-css" data-lang="css"><span class="p">.</span><span class="nc">image-container</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="p">.</span><span class="nc">image-container</span> <span class="p">{</span>
   <span class="k">display</span><span class="p">:</span> <span class="kc">inline-block</span><span class="p">;</span>
   <span class="k">position</span><span class="p">:</span> <span class="kc">relative</span><span class="p">;</span>
 <span class="p">}</span></code></pre></div>
 <p>a要素の領域は20px × 20pxにする。背景はグレーとし、丸みを帯びさせる。位置は右上にする。色は少し透明にしておく。マウスを乗せた時のカーソルの設定をする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-css" data-lang="css"><span class="p">.</span><span class="nc">del-btn</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="p">.</span><span class="nc">del-btn</span> <span class="p">{</span>
   <span class="k">width</span><span class="p">:</span> <span class="mi">30</span><span class="kt">px</span><span class="p">;</span>
   <span class="k">height</span><span class="p">:</span> <span class="mi">30</span><span class="kt">px</span><span class="p">;</span>
   <span class="k">border-radius</span><span class="p">:</span> <span class="mi">10</span><span class="kt">px</span><span class="p">;</span>
@@ -296,7 +296,7 @@ $ elm make src/Main.elm --output=main.js
   <span class="k">cursor</span><span class="p">:</span> <span class="kc">pointer</span><span class="p">;</span>
 <span class="p">}</span></code></pre></div>
 <p>バツ印は擬似要素の枠線で指定する。枠線が領域中央になるように移動し、45度傾ける。枠の色は白にする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-css" data-lang="css"><span class="p">.</span><span class="nc">del-btn</span><span class="p">::</span><span class="nd">before</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="p">.</span><span class="nc">del-btn</span><span class="p">::</span><span class="nd">before</span> <span class="p">{</span>
   <span class="k">content</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
   <span class="k">width</span><span class="p">:</span> <span class="mi">20</span><span class="kt">px</span><span class="p">;</span>
   <span class="k">height</span><span class="p">:</span> <span class="mi">1</span><span class="kt">px</span><span class="p">;</span>

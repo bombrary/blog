@@ -3,7 +3,7 @@
 <head>
   <title>TikZ 備忘録 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/tikz-note01/">
@@ -146,18 +146,18 @@
 </ul>
 <h2 id="準備-パッケージ読み込みこの記事での記法の注意">(準備) パッケージ読み込み・この記事での記法の注意</h2>
 <p>TikZは<code>tikz</code>パッケージから読み込める。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usepakcage</span><span class="nb">{</span>tikz<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usepakcage</span><span class="nb">{</span>tikz<span class="nb">}</span>
 </code></pre></div><p>以降、コードを記載するときはこの記述を省略する。</p>
 <p>また、TikZには色々な便利なライブラリが用意されている。例えば座標計算に便利なライブラリであるCalcは次のように読み込む。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 </code></pre></div><p>以降、コード中で必要なライブラリがあった場合は、コードの先頭に<code>\usetikzlibrary</code>を記載することにする。
 このコマンドは実際にはプリアンブルに書く必要があることに注意。</p>
 <h2 id="色を定義-tikzの話ではない">色を定義 (TikZの話ではない)</h2>
 <p>TikZではなくxcolorの話だが、大事なのでここで記す。これは<code>tikz</code>パッケージを読み込んだときに自動で読み込まれるようだが、もしxcolor単体で使いたいなら、<code>xcolor</code>パッケージを読み込むこと。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usepakcage</span><span class="nb">{</span>xcolor<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usepakcage</span><span class="nb">{</span>xcolor<span class="nb">}</span>
 </code></pre></div><p>色同士を<code>!</code>で混ぜることができる。例えば<code>red!20!blue!30!white</code>と書くと、赤、青、白がそれぞれ20%、30%、(100-20-30)%混ざった色になる。</p>
 <p>カラーコードやRGB値などから定義したい場合は<code>\definecolor</code>、既存の色を混ぜて使いたい場合は<code>\colorlet</code>を利用。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\definecolor</span><span class="nb">{</span>mycolor1<span class="nb">}{</span>HTML<span class="nb">}{</span>888888<span class="nb">}</span> # 定義する色名 カラーモデル 色の値
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\definecolor</span><span class="nb">{</span>mycolor1<span class="nb">}{</span>HTML<span class="nb">}{</span>888888<span class="nb">}</span> # 定義する色名 カラーモデル 色の値
 <span class="k">\colorlet</span><span class="nb">{</span>mycolor2<span class="nb">}{</span>orange!75!white<span class="nb">}</span> # 定義する色名 色
 </code></pre></div><p>色名に<code>-</code>をつけると補色を表現できる。ただし、ここでの補色はRGBでの補色。例えば<code>-red</code>とすると赤色の補色のシアンとなる。RYBでの補色を使いたい場合は<code>-</code>には頼らず、色を直接<code>\definecolor</code>で指定する必要があると思われる。</p>
 <h2 id="文字にマーカーをつける">文字にマーカーをつける</h2>
@@ -170,7 +170,7 @@
 <li>枠の下に文字を配置したい場合は、<code>remember picture</code>と<code>overlay</code>を利用。
 <code>overlay</code>を使わず直接<code>\tikz</code>の中に書いても良いが、文字が多すぎると左右に余計な余白が空く。</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>positioning<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>positioning<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>align*<span class="nb">}</span>
   f(x) =
@@ -198,7 +198,7 @@
 <li><code>\tikzset</code>を利用</li>
 </ul>
 <p>今回は異なる<code>\tikz</code>の間でスタイルを使いまわしたいので<code>tikzset</code>が適当。以下のように使う。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\tikzset</span><span class="nb">{</span>box/.style=<span class="nb">{</span>inner sep=0pt, outer sep=0, minimum height=4ex<span class="nb">}}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\tikzset</span><span class="nb">{</span>box/.style=<span class="nb">{</span>inner sep=0pt, outer sep=0, minimum height=4ex<span class="nb">}}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>align*<span class="nb">}</span>
   f(x) =
@@ -211,7 +211,7 @@
   <span class="nb">}</span>
 <span class="k">\end</span><span class="nb">{</span>align*<span class="nb">}</span>
 </code></pre></div><p>なお、<code>style</code>には引数が指定できる。<code>#1</code>で引数を参照する。スタイルを適用したい要素のオプション引数にて、<code>名前=引数</code>のように使う。2個以上の引数を指定したい場合は<code>style n args</code>を使えばいいらしい。(<code>style</code>の参考: PGF Manual, Part VII, 87.4.4 Defining Styles)</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\tikzset</span><span class="nb">{</span>box/.style=<span class="nb">{</span>inner sep=1pt, outer sep=0, minimum height=#1<span class="nb">}}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\tikzset</span><span class="nb">{</span>box/.style=<span class="nb">{</span>inner sep=1pt, outer sep=0, minimum height=#1<span class="nb">}}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>align*<span class="nb">}</span>
   f(x) =
@@ -234,7 +234,7 @@
 <li><code>minimum height</code>で長さ調整。</li>
 <li><code>shape border rotate=-90</code>で向きを設定。それに伴い<code>shape border incircle</code>を設定しておく(後述)。</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>shapes.arrows<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>shapes.arrows<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\node</span> at (0, 0) <span class="nb">{</span>命題Pが真<span class="nb">}</span>;
@@ -264,7 +264,7 @@
 <p>要するに、<code>(a + 45) / 90 * 90</code>を計算している。ただし、<code>/</code>は整数の除算を表す。
 この答えは負数の切り捨て方に依存する。Pythonでは<code>-1 // 2 == -1</code>となる。Pythonでは負の方向に丸められるようだ。
 ではTeXではどうなのかというと、割り算の結果は単純に切り捨てになる模様。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\newcount\x</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\newcount\x</span>
 <span class="k">\x</span>=-1
 <span class="k">\divide\x</span>2
 計算結果: <span class="k">\the\x</span>
@@ -275,7 +275,7 @@
 <h2 id="矢印の形を変える">矢印の形を変える</h2>
 <p><strong>参考</strong>: PGF Manual, Part III, 16.4.4 Defining Shorthands</p>
 <p>終端を変えたいなら<code>&gt;</code>を設定する。他にも色々あるのでマニュアル参照。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\draw</span> [-&gt;]                     (0,0) -- (1,0);
   <span class="k">\draw</span> [-&gt;, &gt;=Stealth]          (0,-0.5) -- (1,-0.5);
   <span class="k">\draw</span> [-&gt;, &gt;=<span class="nb">{</span>Stealth[round]<span class="nb">}</span>] (0,-1.0) -- (1,-1.0);
@@ -289,7 +289,7 @@
 <p><strong>参考</strong>: PGF Manual, Part III, 17.10 The Label and Pin Options</p>
 <p><code>coordinate</code>や<code>node</code>に<code>label</code>キーを指定すると、例えば図形の点の上にラベルをつけることができる。
 例えば以下のようなコードがあったとする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>positioning<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>positioning<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
@@ -301,7 +301,7 @@
 
 <p>これが少しだけ簡単になる。
 <code>left:</code>を指定しなかった場合はデフォルトで<code>above:</code>が付く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> [label=left:<span class="s">$</span><span class="nb">A</span><span class="s">$</span>] (a) at (0,0);
   <span class="k">\fill</span> (a) circle [radius=2pt];
 <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
@@ -309,7 +309,7 @@
 <p><strong>参考</strong>: PGF Manual, Part V, 74 To Path Library</p>
 <p>自由に曲線を描きたいなら，<code>\path</code>の<code>controls</code>を使えば良い(参考: PGF Manual, PartIII, 14.3 The Curve-To Operation)。しかしベジェ曲線に慣れていないと、思い通りの曲線を描くのは大変。しかし、シンプルなケースであればTo Path Libraryを使えば簡単に描ける。</p>
 <p>例えば「線分をある方向に曲げたい場合は、<code>bend right</code>や<code>bend left</code>が使える。これはTo Path Library で提供されている。以下のように<code>to</code>の引数に指定する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
   <span class="k">\coordinate</span> (b) at (2,0);
 
@@ -321,7 +321,7 @@
 </figure>
 
 <p><code>bend right/bend left</code>は、グラフ構造を描く際に利用できる．また以下のように、図形の長さを明示したいときに使える。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
   <span class="k">\coordinate</span> (b) at (2,0);
   <span class="k">\coordinate</span> (c) at (2,2);
@@ -334,7 +334,7 @@
 </figure>
 
 <p>代わりに<code>out</code>と<code>in</code>を使うと、出ていくときの角度と入っていくときの角度が指定できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc, angles, quotes<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc, angles, quotes<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
@@ -366,7 +366,7 @@
 <p>座標計算にはCalcライブラリが非常に便利。座標同士の足し算や定数倍が行える他、以下で説明する内分点、回転などの計算が行える。</p>
 <h3 id="2点間の内分点外分点">2点間の内分点、外分点</h3>
 <p><code>($(a)!0.2!(b)$)</code>とすると、ab 上の点pで、ap = 0.2ab を満たすものが計算できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> [label=<span class="s">$</span><span class="nb">A</span><span class="s">$</span>] (a) at (0,0);
@@ -384,7 +384,7 @@
 
 <h3 id="2点間の任意の長さのベクトル">2点間の任意の長さのベクトル</h3>
 <p><code>($(a)!1cm!(b)$)</code>とすると、ab 上の点pで、ap = 1cm を満たすものが計算できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
@@ -399,7 +399,7 @@
 
 <h3 id="ベクトルを任意の角度をずらす">ベクトルを任意の角度をずらす</h3>
 <p><code>($(a)!1cm!30:(b)$)</code>とすると、「abを30度回転させた線分」 上の点pで、ap = 1cm を満たすものが計算できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc, angles, quotes<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc, angles, quotes<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
@@ -419,7 +419,7 @@
 
 <h3 id="垂線">垂線</h3>
 <p><code>($(a)!(c)!(b)$)</code>とすると、c から ab へ下ろした垂線の足を計算できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
@@ -435,7 +435,7 @@
 </figure>
 
 <p>ab 上にある点 c を通る垂線を引きたいなら、線分cbを90度回転させれば良い。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
@@ -449,7 +449,7 @@
 <p>xy軸ごとの移動方向vが決まっているなら、<code>$(a) + (v)$</code>みたいに計算するか、、<code>scope</code>環境でくくって<code>xshift</code>と<code>yshift</code>を使えば良い(<strong>参考</strong>: PGF Manual, Part III, 25.3 Coordinate Transformations)。</p>
 <p>もし「ベクトルabを平行移動したいが、移動の向きはabの法線方向にしたい」という場合は、次のように c、d を計算する。</p>
 <p><code>($(a)!1cm!90:(b)$)</code>については以前説明した通り。<code>($(b)+(c)-(a)$)</code>で、「点bをベクトルacだけ移動した点」を計算している。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);
@@ -469,7 +469,7 @@
 <p><code>name path</code>でパスの名前を指定して、<code>name intersections</code>でパス同士の交点を計算する。
 <code>name intersections</code>について、<code>of</code>に2つのパス名を指定する。
 <code>by</code>には交点の名前を指定する。円と線分には2つの交点があるので、<code>by</code>に2つの名前を指定している。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>intersections<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>intersections<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[&gt;=Stealth]
   <span class="k">\coordinate</span> (e1) at (-1, 0);
@@ -492,7 +492,7 @@
 <h2 id="斜線で領域を塗る">斜線で領域を塗る</h2>
 <p><strong>参考</strong>: PGF Manual, Part V, 62 Pattern Library</p>
 <p>Patternsライブラリを使えば良い。<code>pattern</code>で使いたいパターンを指定し、<code>pattern color</code>で色を設定。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>patterns<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>patterns<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\draw</span> (0,0) -- (3,0);
@@ -514,7 +514,7 @@
 <p>位置の指定には、<code>right=1cm of (a)</code>だったり、<code>($(a)!0.5!(b)$)</code>を利用。</p>
 <p><code>graph</code>を使うと、グラフがより簡潔に書ける。<code>\draw [-&gt;] (x1) -- (x2);</code>みたいに矢印を1つずつ描かず、
 直感的な記述でノード間の関係を記述できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc, positioning, graphs<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc, positioning, graphs<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   [entity-x/.style=<span class="nb">{</span>draw, circle<span class="nb">}</span>,
@@ -553,7 +553,7 @@
 <p><strong>参考</strong>: PGF Manual, Part III, 20 Matrices and Alignment</p>
 <p><code>\matrix</code>を使うと、図形やノードを格子上に並べることができる。
 <code>row sep</code>や<code>column sep</code>の指定に注意 (図の赤文字を参考)。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>graphs<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>graphs<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   [entity-x/.style=<span class="nb">{</span>draw, circle<span class="nb">}</span>,
@@ -590,7 +590,7 @@
 <p><strong>参考</strong>: PGF Manual, Part III, 17.2.3 Common Options: Separations, Margins, Padding and Border Rotation</p>
 <h3 id="サイズ変更">サイズ変更</h3>
 <p><code>minimum width</code>、<code>minimum height</code>を使う。ノード同士のサイズを合わせたいならこれを使うとよい。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>graphs<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>graphs<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   [entity-x/.style=<span class="nb">{</span>draw, circle, minimum height=4ex<span class="nb">}</span>,
@@ -621,7 +621,7 @@
 
 <h3 id="改行できるようにする">改行できるようにする</h3>
 <p><code>node</code>のオプション引数に<code>align</code>を設定する。<code>center</code>、<code>left</code>、<code>right</code>などが指定できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>positioning<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>positioning<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>align*<span class="nb">}</span>
   f(x) =
@@ -651,7 +651,7 @@
 <h2 id="繰り返し文">繰り返し文</h2>
 <p><strong>参考</strong>: PGF Manual, Part VII, 88 Repeating Things: The Foreach Statement</p>
 <p><code>\foreach</code>が用意されている。<code>{0.5,1,...,3}</code>のように、規則性を持つリストは<code>...</code>で省略できる場合がある。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\draw</span> circle [radius=0.25];
   <span class="k">\foreach</span> <span class="k">\r</span> in <span class="nb">{</span>0.5,1,...,3<span class="nb">}</span> <span class="nb">{</span>
     <span class="k">\draw</span> [orange, thick] (80:<span class="k">\r</span>) arc [radius=<span class="k">\r</span>, start angle=80, delta angle=-60];
@@ -662,7 +662,7 @@
 
 <p>C言語の<code>if</code>や<code>for</code>文みたいに、繰り返したい対象が1文の場合はブロック<code>{}</code>で括らなくても良い。</p>
 <p>また、複数のパラメータを<code>/</code>で区切って使用できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\foreach</span> <span class="k">\x</span>/<span class="k">\l</span> in <span class="nb">{</span>1/A, 2/B, 3/C, 4/D<span class="nb">}</span>
     <span class="k">\node</span> [draw, circle] at (<span class="k">\x</span>, 0) <span class="nb">{</span><span class="s">$</span><span class="nv">\l</span><span class="s">$</span><span class="nb">}</span>;
 <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
@@ -673,7 +673,7 @@
 <p><strong>参考</strong>: PGF Manual, Part VIII, 94 Mathematical Expressions</p>
 <p>これはTikZの話というより、TikZが内部で利用しているPGFの話になる。</p>
 <p><code>cos</code>や<code>sin</code>などの基本的な関数が使える。関数を評価したいときは<code>{}</code>で囲む。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\foreach</span> <span class="k">\theta</span> in <span class="nb">{</span>0,5,10,...,359<span class="nb">}</span>
     <span class="k">\fill</span> (<span class="nb">{</span>(1+cos(<span class="k">\theta</span>))*cos(<span class="k">\theta</span>)<span class="nb">}</span>, <span class="nb">{</span>(1+cos(<span class="k">\theta</span>))*sin(<span class="k">\theta</span>)<span class="nb">}</span>)
       circle [radius=1pt];
@@ -685,11 +685,11 @@
 array-likeなデータ構造も用意されているらしい。</p>
 <h3 id="込み入った補足-波括弧curly-bracesについて">(込み入った補足) 波括弧(curly braces)について</h3>
 <p>以下のような、関数を使わない場合は波括弧をつけなくても良いようだ。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\fill</span> (1+2, 3) circle [radius=1pt];
 <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
 </code></pre></div><p>もちろん波括弧をつけても良い。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\fill</span> (<span class="nb">{</span>1+2<span class="nb">}</span>, 3) circle [radius=1pt];
 <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
 </code></pre></div><p>しかし、マニュアルでは波括弧はarray-likeなオブジェクトを表す記号のはず。内部では<code>1+2</code>も<code>{1+2}</code>もともに<code>3</code>と評価されているようだ。この理由が気になる。</p>
@@ -698,17 +698,17 @@ array-likeなデータ構造も用意されているらしい。</p>
 色々探してみたところ、canvas座標系での計算は
 <a href="https://github.com/pgf-tikz/pgf/blob/master/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex#L4996">ここ</a>
 でやっているようだ。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\tikzdeclarecoordinatesystem</span><span class="nb">{</span>canvas<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\tikzdeclarecoordinatesystem</span><span class="nb">{</span>canvas<span class="nb">}</span>
 <span class="nb">{</span><span class="c">%
 </span><span class="c"></span>  <span class="k">\tikzset</span><span class="nb">{</span>cs/.cd,x=0pt,y=0pt,#1<span class="nb">}</span><span class="c">%
 </span><span class="c"></span>  <span class="k">\pgfpoint</span><span class="nb">{</span><span class="k">\tikz</span>@cs@x<span class="nb">}{</span><span class="k">\tikz</span>@cs@y<span class="nb">}</span><span class="c">%
 </span><span class="c"></span><span class="nb">}</span><span class="c">%
 </span></code></pre></div><p>座標の計算はここでは行わず、<code>\pgfpoint</code>に頼っている。そこで<a href="https://github.com/pgf-tikz/pgf/blob/master/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex#L56">pgfpointのソースコード</a>を見に行く。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\def\pgfpoint</span>#1#2<span class="nb">{</span><span class="c">%
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\def\pgfpoint</span>#1#2<span class="nb">{</span><span class="c">%
 </span><span class="c"></span>  <span class="k">\pgfmathsetlength\pgf</span>@x<span class="nb">{</span>#1<span class="nb">}</span><span class="c">%
 </span><span class="c"></span>  <span class="k">\pgfmathsetlength\pgf</span>@y<span class="nb">{</span>#2<span class="nb">}</span><span class="k">\ignorespaces</span><span class="nb">}</span>
 </code></pre></div><p><code>\pgf@x</code>、<code>\pgf@y</code>というのは、xy座標を入れるためのレジスタだと予想できる。続いて、<a href="https://github.com/pgf-tikz/pgf/blob/master/tex/generic/pgf/math/pgfmathcalc.code.tex#L35">pgfmathsetlengthのソースコード</a>を見にいく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\def\pgfmathsetlength</span>#1#2<span class="nb">{</span><span class="c">%
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\def\pgfmathsetlength</span>#1#2<span class="nb">{</span><span class="c">%
 </span><span class="c"></span>  <span class="k">\expandafter\pgfmath</span>@onquick#2<span class="k">\pgfmath</span>@<span class="c">%
 </span><span class="c"></span>  <span class="nb">{</span><span class="c">%
 </span><span class="c"></span>    <span class="c">% ...略
@@ -721,7 +721,7 @@ array-likeなデータ構造も用意されているらしい。</p>
 </span><span class="c"></span><span class="nb">}</span>
 </code></pre></div><p>このタイミングで<code>\pgfmathparse</code>が呼び出されているようだ。<code>\pgfmathparse</code>で式を評価し、<code>\pgfmathresult</code>で評価結果を取得しているようである。</p>
 <p>結局、波括弧をつけるか否かは<code>\pgfmathparse</code>及びその結果である<code>\pgfmathresult</code>に委ねられているようだ。<code>\pgfmathparse</code>のコードを読む気力がなかったので、<code>\show</code>マクロで展開結果を見てみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="c">% 数字のパース
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="c">% 数字のパース
 </span><span class="c"></span><span class="k">\pgfmathparse</span><span class="nb">{</span>1<span class="nb">}</span>
 <span class="k">\show\pgfmathresult</span>
 
@@ -752,12 +752,12 @@ l.286 \show\pgfmathresult
 <p>初めの2つは<code>1</code>と展開され、最後の1つは<code>{1}{2}{3}</code>と展開された。
 どうやら波括弧の要素が1つの場合は結果が波括弧で包まれないらしい。</p>
 <p>ただし、以下の計算はエラーになるので、<code>{1}</code>はarray-likeではあるようだ。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\pgfmathparse</span><span class="nb">{{</span>1<span class="nb">}</span> + 2<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\pgfmathparse</span><span class="nb">{{</span>1<span class="nb">}</span> + 2<span class="nb">}</span>
 </code></pre></div><h2 id="x座標y座標を個別に取得">x座標、y座標を個別に取得</h2>
 <p><strong>参考</strong>: PGF Manual, Part III, 14.15 The Let Operation</p>
 <p><code>let</code>を使う。<code>let</code>を使うと、座標や値を入れるレジスタが作成できる。</p>
 <p>以下は、反射角の計算のために<code>let</code>を使っている。<code>\p&lt;name&gt;</code>、<code>\n&lt;name&gt;</code>は特殊なレジスタ。前者は点の座標を保持し、<code>\x&lt;name&gt;</code>、<code>\y&lt;name&gt;</code>で点の座標にアクセスできる。後者は値を保持し、<code>\n&lt;name&gt;</code>でアクセスできる。<code>&lt;name&gt;</code>の部分には、数字や<code>{文字列}</code>が指定できる例えば<code>\p1</code>、<code>\p{foo}</code>のように使う。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[&gt;=Stealth]
   <span class="k">\coordinate</span> (a) at (0.5, 2);
@@ -780,7 +780,7 @@ l.286 \show\pgfmathresult
 </figure>
 
 <p>座標計算を行いたい多くの場合は、<code>let</code>を使わなくても解決できる気がする。例えば反射の場合は、一旦延長してから垂線を伸ばせば良い。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[&gt;=Stealth]
   <span class="k">\coordinate</span> (a) at (0.5, 2);
@@ -803,7 +803,7 @@ l.286 \show\pgfmathresult
 </figure>
 
 <p>PGF Manualでは「直線に接する円」を描画するために<code>let</code>を使っていた。例えば半径のような、座標以外の計算をしたい場合に<code>let</code>式が有効なのだと思う。</p>
-<div class="highlight"><pre class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="k">\usetikzlibrary</span><span class="nb">{</span>calc<span class="nb">}</span>
 
 <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
   <span class="k">\coordinate</span> (a) at (0,0);

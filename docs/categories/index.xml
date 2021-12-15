@@ -6,7 +6,25 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 10 Aug 2021 17:10:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Oct 2021 09:19:20 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>neovim</title>
+      <link>https://bombrary.github.io/blog/categories/neovim/</link>
+      <pubDate>Fri, 01 Oct 2021 09:19:20 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/neovim/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vim</title>
+      <link>https://bombrary.github.io/blog/categories/vim/</link>
+      <pubDate>Fri, 01 Oct 2021 09:19:20 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/vim/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Elm</title>
       <link>https://bombrary.github.io/blog/categories/elm/</link>
@@ -103,15 +121,6 @@
       <pubDate>Sun, 31 May 2020 19:03:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/latex/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Vim</title>
-      <link>https://bombrary.github.io/blog/categories/vim/</link>
-      <pubDate>Sun, 31 May 2020 19:03:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/vim/</guid>
       <description></description>
     </item>
     

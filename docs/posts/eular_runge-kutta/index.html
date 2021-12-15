@@ -3,7 +3,7 @@
 <head>
   <title>Eular法とRunge-Kutta法をPythonで実装する | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/eular_runge-kutta/">
@@ -169,7 +169,7 @@
 <p>\[
 \frac{dx}{dt} = -x,\ x(0) = 1;
 \]</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
@@ -228,7 +228,7 @@
 \end{aligned}
 \]</p>
 <p>今回は、適当に $\omega^2 = 1, k = 0.2$ とする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
@@ -256,9 +256,9 @@
 </figure>
 
 <h3 id="注意">注意</h3>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">*</span><span class="n">h</span><span class="p">]</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">*</span><span class="n">h</span><span class="p">]</span>
 </code></pre></div><p>と</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">h</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">h</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">v</span><span class="o">*</span><span class="n">h</span>
 </code></pre></div><p>は意味が違うことに注意。</p>
 <p>前者は</p>
@@ -288,7 +288,7 @@
 \end{aligned}
 \]</p>
 <p>$\omega^2 = 1$ とする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="c1"># eular法のコードは略</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="c1"># eular法のコードは略</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span>
 <span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
@@ -391,7 +391,7 @@ x(t + h) &amp;:= x(t) + \frac{l_1 + l_2}{2}h
 \]</p>
 <h3 id="コード-2">コード</h3>
 <p>さて、この手順を導出するために、何回か近似を行っている。本当にEular法よりも精度が良くなっているのだろうか。試しにコードを組んでみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="c1"># eular法のコードは略</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="c1"># eular法のコードは略</span>
 
 <span class="k">def</span> <span class="nf">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
     <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">);</span>
@@ -429,7 +429,7 @@ x(t + h) &amp;:= x(t) + \frac{l_1 + l_2}{2}h
 </figure>
 
 <p>これくらい時間を増やすと、誤差が目に見えてくる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 </code></pre></div><figure><img src="./eular_improved1.png" width="70%"/>
 </figure>
 
@@ -482,7 +482,7 @@ l_4 &amp;:= v(t) + hk_3
 &amp;x(0) = 10
 \end{aligned}
 \]</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="k">def</span> <span class="nf">runge_kutta</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="k">def</span> <span class="nf">runge_kutta</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
     <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">h</span><span class="p">);</span>
     <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">vs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -520,7 +520,7 @@ l_4 &amp;:= v(t) + hk_3
 </figure>
 
 <p>前節の方法と比較してみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
 <span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">eular_improved</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
 <span class="n">ts</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">runge_kutta</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
@@ -533,7 +533,7 @@ l_4 &amp;:= v(t) + hk_3
 <p>以上、頑張って色々書いたが、自分でコードを一から書くとバグを含む可能性があるので、ライブラリを素直に使った方がよい。幸運にも、SciPyに常微分方程式の関数がある。</p>
 <p><code>scipy.integrate.solve_ivp</code>を使う。</p>
 <p>以下、<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html#scipy.integrate.solve_ivp">リファレンス</a>から抜粋。デフォルトだとRunge-Kutta法になるみたい。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">solve_ivp</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">t_span</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">solve_ivp</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">t_span</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span>
 </code></pre></div><p>これは、次の微分方程式の解を計算してくれる。<code>t_span</code>は<code>t</code>の範囲のことで、タプル<code>(t0, t_end)</code>のように指定する。刻み幅は適当に決めてくれる。<code>y0</code>は<code>t = t0</code>のときの初期値。</p>
 <p>\[
 \frac{d\boldsymbol{v}}{dt} = f(t, \boldsymbol{v})
@@ -563,7 +563,7 @@ x(0) \\ v(0)
 \]</p>
 <p>ここでは、$\omega^2 = 1$、$k=0.2$とする。</p>
 <p>$x$を<code>v[0]</code>、$v$を<code>v[1]</code>の気持ちで、次のように書く。<code>solver.t</code>で時刻の列、<code>solver.y</code>でそれに対する値の列を取得できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  
 <span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>  
 
@@ -582,7 +582,7 @@ x(0) \\ v(0)
 </figure>
 
 <p>もっと滑らかなものが欲しい場合、次のようにする。<code>solve_ivp</code>の引数に<code>dense_output=True</code>を追加し、<code>solver.sol</code>で時刻ごとの値を計算する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  
 <span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>  
 

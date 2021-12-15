@@ -3,7 +3,7 @@
 <head>
   <title>Elmでテトリスを作った話 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-tetris/">
@@ -129,7 +129,7 @@
 <p>ボードの落とす場は10x20のブロックで構成されている。
 壁をボードに含めるかどうか、上部にマージンを設けるかどうかで、実際のボードサイズは変わる。</p>
 <p>まず、ボードのブロックをセルと呼ぶことにする。セルを次のように定義する。<code>Color</code>は適当に定義しておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Cell</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Cell</span>
   <span class="ow">=</span> <span class="kt">Block</span> <span class="kt">Color</span>
   <span class="o">|</span> <span class="kt">Empty</span>
 </code></pre></div><p>このセルを使ってボードを定義したいが、悩ましい選択が現れる。</p>
@@ -139,7 +139,7 @@
 <li>キーを座標、値をセルとした<code>Dict</code>。</li>
 </ul>
 <p><code>List</code>を<code>Array</code>にした実装も考えられる。参考までに、3つは以下のように定義できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Board</span> <span class="ow">=</span> <span class="kt">List</span> <span class="kt">Cell</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Board</span> <span class="ow">=</span> <span class="kt">List</span> <span class="kt">Cell</span>
 
 <span class="kr">type</span> <span class="n">alias</span> <span class="kt">Board</span> <span class="ow">=</span> <span class="kt">List</span>
   <span class="p">{</span> <span class="n">pos</span> <span class="kt">:</span> <span class="kt">Vec</span> <span class="kt">Int</span>
@@ -151,7 +151,7 @@
 <p>2つ目と3つ目のデータ構造は<a href="https://github.com/rofrol/elm-games#tetris">elm-gamesのRepository</a>に載っているテトリスのコードから発見した。
 それらのコードを見つけた時にはすでに1番目で作ってしまっていたので、現状の自分の実装は1番目のものである。</p>
 <p>TEAのView関数としての扱いやすさを考えるなら、2番目の実装が一番良いと思う。例えばセルの描画関数を<code>viewCell</code>として、<code>viewBoard</code>は次のように書ける。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Svg</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Svg</span>
 
 
 <span class="nf">viewBoard</span> <span class="kt">:</span> <span class="kt">Board</span> <span class="ow">-&gt;</span> <span class="kt">Svg</span> <span class="kt">Msg</span>
@@ -162,14 +162,14 @@
 <p>座標系については、SVGのものと合わせる。つまり、右向きがx軸正、下向きがy軸正のものとして扱う。</p>
 <h2 id="寄り道-ベクトルの定義">寄り道: ベクトルの定義</h2>
 <p>回転や平行移動などの計算が現れるため、ベクトルを定義しておくと便利。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Vec</span> <span class="n">a</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Vec</span> <span class="n">a</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">x</span> <span class="kt">:</span> <span class="n">a</span>
   <span class="p">,</span> <span class="n">y</span> <span class="kt">:</span> <span class="n">a</span>
   <span class="p">}</span>
 </code></pre></div><p>適当に<code>add</code>や<code>sub</code>、<code>mul</code>などのベクトル演算を定義しておく。</p>
 <h2 id="テトリミノのデータ構造">テトリミノのデータ構造</h2>
 <p>以下のように代数的データ型で定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Mino</span> <span class="ow">=</span> <span class="kt">I</span> <span class="o">|</span> <span class="kt">O</span> <span class="o">|</span> <span class="kt">L</span> <span class="o">|</span> <span class="kt">J</span> <span class="o">|</span> <span class="kt">S</span> <span class="o">|</span> <span class="kt">Z</span> <span class="o">|</span> <span class="kt">T</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Mino</span> <span class="ow">=</span> <span class="kt">I</span> <span class="o">|</span> <span class="kt">O</span> <span class="o">|</span> <span class="kt">L</span> <span class="o">|</span> <span class="kt">J</span> <span class="o">|</span> <span class="kt">S</span> <span class="o">|</span> <span class="kt">Z</span> <span class="o">|</span> <span class="kt">T</span>
 </code></pre></div><p><code>Mino</code>の実際の形を定義する必要があるが、考えられるデータ構造は以下の2つ。</p>
 <ul>
 <li>ブロックそのものの2次元データ</li>
@@ -182,12 +182,12 @@
 <a href="https://tetris.wiki/Super_Rotation_System">Super Rotation System</a>を実装する場合は、O以外のテトリミノの回転数は4にする。</p>
 <p>また、それ以外にも色の情報があるとよいので、
 以下のようなデータ構造を実装することになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">MinoInfo</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">MinoInfo</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">rotMax</span> <span class="kt">:</span> <span class="kt">Int</span> 
   <span class="p">,</span> <span class="n">positions</span> <span class="kt">:</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span>
   <span class="p">,</span> <span class="n">color</span> <span class="kt">:</span> <span class="kt">Color</span>
   <span class="p">}</span>
-</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">info</span> <span class="kt">:</span> <span class="kt">Mino</span> <span class="ow">-&gt;</span> <span class="kt">MinoInfo</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">info</span> <span class="kt">:</span> <span class="kt">Mino</span> <span class="ow">-&gt;</span> <span class="kt">MinoInfo</span>
 <span class="nf">info</span> <span class="n">mino</span> <span class="ow">=</span>
   <span class="kr">case</span> <span class="n">mino</span> <span class="kr">of</span>
     <span class="kt">I</span> <span class="ow">-&gt;</span>
@@ -198,7 +198,7 @@
 </code></pre></div><h2 id="テトリミノ関連の実装">テトリミノ関連の実装</h2>
 <h3 id="テトリミノの位置データ">テトリミノの位置データ</h3>
 <p>落下中のテトリミノの種類、位置、回転数を持つデータ構造を作る。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">MinoState</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">MinoState</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">mino</span> <span class="kt">:</span> <span class="kt">Mino</span>
   <span class="p">,</span> <span class="n">pos</span> <span class="kt">:</span> <span class="kt">Vec</span> <span class="kt">Int</span>
   <span class="p">,</span> <span class="n">rot</span> <span class="kt">:</span> <span class="kt">Int</span>
@@ -208,15 +208,15 @@
 (x, y) の座標変換について考える。半時計周りに90度回転させることを考えると、座標変換後は (y, -x) となる。
 これは複素数平面を考えるなり、回転行列を掛けるなりして導出できる。ただし、下向きがy軸正になるため、
 よくある上向き座標系とは符号が異なることに注意。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">rotate90</span> <span class="kt">:</span> <span class="kt">Vec</span> <span class="n">number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="n">number</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">rotate90</span> <span class="kt">:</span> <span class="kt">Vec</span> <span class="n">number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="n">number</span>
 <span class="nf">rotate90</span> <span class="p">({</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="n">as</span> <span class="n">v</span><span class="p">)</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">v</span> <span class="o">|</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">y</span> <span class="ow">=</span> <span class="o">-</span><span class="n">x</span> <span class="p">}</span>
 </code></pre></div><p>回転を複数回適用するために、<code>applyN</code>関数を定義する。例えば、<code>applyN 3 f</code>を評価すると<code>f &lt;&lt; f &lt;&lt; f</code>が得られる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">applyN</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">applyN</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span>
 <span class="nf">applyN</span> <span class="n">n</span> <span class="n">f</span> <span class="ow">=</span> <span class="kt">List</span><span class="o">.</span><span class="n">foldr</span> <span class="p">(</span><span class="o">&lt;&lt;</span><span class="p">)</span> <span class="n">identity</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">repeat</span> <span class="n">n</span> <span class="n">f</span><span class="p">)</span>
 </code></pre></div><h3 id="テトリミノのボード上への反映">テトリミノのボード上への反映</h3>
 <p>まず絶対座標を計算する関数を作る。<code>MinoState</code>の情報をもとに、回転と平行移動の変換を行うたけ。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">toAbsolute</span> <span class="kt">:</span> <span class="kt">MinoState</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">toAbsolute</span> <span class="kt">:</span> <span class="kt">MinoState</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span>
 <span class="nf">toAbsolute</span> <span class="p">{</span> <span class="n">mino</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">rot</span> <span class="p">}</span> <span class="ow">=</span>
   <span class="kr">let</span>
     <span class="p">{</span> <span class="n">rotMax</span><span class="p">,</span> <span class="n">positions</span> <span class="p">}</span> <span class="ow">=</span> <span class="n">info</span> <span class="n">mino</span>
@@ -224,7 +224,7 @@
   <span class="kr">in</span>
     <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">add</span> <span class="n">pos</span> <span class="o">&lt;&lt;</span> <span class="n">applyN</span> <span class="n">rotMod</span> <span class="n">rotate90</span><span class="p">)</span> <span class="n">positions</span>
 </code></pre></div><p>以下の<code>putBlock</code>を定義しておけば、ボードと落下中のテトリミノを統合できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">putBlock</span> <span class="kt">:</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Cell</span> <span class="ow">-&gt;</span> <span class="kt">Board</span> <span class="ow">-&gt;</span> <span class="kt">Board</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">putBlock</span> <span class="kt">:</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Cell</span> <span class="ow">-&gt;</span> <span class="kt">Board</span> <span class="ow">-&gt;</span> <span class="kt">Board</span>
 <span class="nf">putBlock</span> <span class="n">positions</span> <span class="n">cell</span> <span class="n">board</span> <span class="ow">=</span>
   <span class="c1">-- 実装はBoardのデータ構造による</span>
 </code></pre></div><h3 id="テトリミノの衝突判定">テトリミノの衝突判定</h3>
@@ -235,7 +235,7 @@
 <li>固定: 下に移動させてみたら被った</li>
 <li>回転: 回転させてみたら被った</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">overlapped</span> <span class="kt">:</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Board</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">overlapped</span> <span class="kt">:</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Board</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
 <span class="nf">overlapped</span> <span class="n">ps</span> <span class="n">bord</span> <span class="ow">=</span>
   <span class="c1">-- 実装はBoardのデータ構造による</span>
 </code></pre></div><h3 id="テトリミノの固定">テトリミノの固定</h3>
@@ -248,12 +248,12 @@
 <p>長押ししているときはテトリミノが回転しないように実装する。そのためには、キーが長押しされているかどうかを判定する必要がある。</p>
 <p>キーが押されたか、離されたかは<code>onKeyDown</code>、<code>onKeyUp</code>で判定できる。ところが「キーが長押しされているか否か」を判定するのは少し工夫がいる。</p>
 <p>判定のために、キーの状態を管理するデータ型を定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">KeyState</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">KeyState</span>
   <span class="ow">=</span> <span class="kt">KeyIdle</span>
   <span class="o">|</span> <span class="kt">KeyPressed</span>
   <span class="o">|</span> <span class="kt">KeyPressing</span>
 </code></pre></div><p>これを用いて、キーの状態を変更する関数を定義する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">updateKeyState</span> <span class="kt">:</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">KeyState</span> <span class="ow">-&gt;</span> <span class="kt">KeyState</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">updateKeyState</span> <span class="kt">:</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">KeyState</span> <span class="ow">-&gt;</span> <span class="kt">KeyState</span>
 <span class="nf">updateKeyState</span> <span class="n">keyDowned</span> <span class="n">state</span> <span class="ow">=</span>
   <span class="kr">case</span> <span class="n">state</span> <span class="kr">of</span>
     <span class="kt">KeyIdle</span> <span class="ow">-&gt;</span>
@@ -275,7 +275,7 @@
         <span class="kt">KeyIdle</span>
 </code></pre></div><p>キーが押されたかどうかのフラグとキーの状態は別々に定義しておく必要がある。
 なぜなら、ゲームの1ステップのタイミングと、<code>onKeyUp/onKeyDown</code>に関する<code>Msg</code>が送られてくるタイミングが別だからである。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">KeyPressFlag</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="n">alias</span> <span class="kt">KeyPressFlag</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">left</span> <span class="kt">:</span> <span class="kt">Bool</span>
   <span class="p">,</span> <span class="n">right</span> <span class="kt">:</span> <span class="kt">Bool</span>
   <span class="p">,</span> <span class="n">up</span> <span class="kt">:</span> <span class="kt">Bool</span>
@@ -303,7 +303,7 @@
 </ol>
 <p>もし<code>Random.generate</code>を使いたいなら、<code>Cmd Msg</code>としてTEAのランタイムに依頼することになる。
 例えば擬似的に書くと以下のようになるだろうか。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">update</span> <span class="n">msg</span> <span class="n">model</span> <span class="ow">=</span>
   <span class="kr">case</span> <span class="n">msg</span> <span class="kr">of</span>
     <span class="o">...</span>
@@ -322,7 +322,7 @@
       <span class="p">)</span>
 </code></pre></div><p>そうなると、コード上で2を書く場所が分断されて読みづらくなる。
 それを避けるために、<code>Random.step</code>を使うことにした。すると、以下のように順番を意識して書ける。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">update</span> <span class="n">msg</span> <span class="n">model</span> <span class="ow">=</span>
   <span class="kr">case</span> <span class="n">msg</span> <span class="kr">of</span>
     <span class="o">...</span>
@@ -342,13 +342,13 @@
 これらの情報は<a href="https://tetris.wiki/Super_Rotation_System#Wall_Kicks">Tetris WikiのWall Kicks</a>に載っている。</p>
 <p>Wikiの&quot;J, L, S, T, Z Tetromino Wall Kick Data&quot;、&ldquo;I Tetromino Wall Kick Data&quot;に注目する。
 回転前の状態と回転後の状態に依存していることが分かる。Wiki中の&quot;0, R, L, 2&quot;をそれぞれ次のように表現する。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Direction</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Direction</span>
     <span class="ow">=</span> <span class="kt">Zero</span>
     <span class="o">|</span> <span class="kt">RotRight</span>
     <span class="o">|</span> <span class="kt">RotLight</span>
     <span class="o">|</span> <span class="kt">Two</span>
 </code></pre></div><p><code>Direction</code>の取得を行う関数を作成しておく。O以外のテトリミノの<code>rotMax</code>は4であることに注意。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">direction</span> <span class="kt">:</span> <span class="kt">Mino</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Direction</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">direction</span> <span class="kt">:</span> <span class="kt">Mino</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Direction</span>
 <span class="nf">direction</span> <span class="n">mino</span> <span class="n">rot</span> <span class="ow">=</span>
   <span class="kr">let</span>
     <span class="p">{</span> <span class="n">rotMax</span> <span class="p">}</span> <span class="ow">=</span> <span class="n">info</span> <span class="n">mino</span>
@@ -366,7 +366,7 @@
     <span class="kr">_</span> <span class="ow">-&gt;</span>
       <span class="kt">RotLeft</span>
 </code></pre></div><p>Wikiのテーブルの行を返す関数を返す。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">kickList</span> <span class="kt">:</span> <span class="kt">Mino</span> <span class="ow">-&gt;</span> <span class="kt">Direction</span> <span class="ow">-&gt;</span> <span class="kt">Direction</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">kickList</span> <span class="kt">:</span> <span class="kt">Mino</span> <span class="ow">-&gt;</span> <span class="kt">Direction</span> <span class="ow">-&gt;</span> <span class="kt">Direction</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="p">(</span><span class="kt">Vec</span> <span class="kt">Int</span><span class="p">)</span>
 <span class="nf">kickList</span> <span class="n">before</span> <span class="n">after</span> <span class="ow">=</span>
   <span class="kr">case</span> <span class="n">mino</span> <span class="kr">of</span>
     <span class="kt">O</span> <span class="ow">-&gt;</span>
@@ -391,7 +391,7 @@
     <span class="o">...</span>
 </code></pre></div><p>Wikiのtableに書かれていることをコードに手書きするのは面倒。そこでHTMLパーサーをPythonで実装する。</p>
 <p>まずWikiの<code>table</code>要素2つを、開発者モードやソースコードからコピーしてきて、適当なHTMLファイルに貼り付ける。ここでは<code>sample.html</code>としておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">table</span> <span class="na">border</span><span class="o">=</span><span class="s">&#34;1&#34;</span> <span class="na">cellspacing</span><span class="o">=</span><span class="s">&#34;0&#34;</span><span class="p">&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">table</span> <span class="na">border</span><span class="o">=</span><span class="s">&#34;1&#34;</span> <span class="na">cellspacing</span><span class="o">=</span><span class="s">&#34;0&#34;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">caption</span><span class="p">&gt;&lt;</span><span class="nt">b</span><span class="p">&gt;</span>J, L, S, T, Z Tetromino Wall Kick Data<span class="p">&lt;/</span><span class="nt">b</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">caption</span><span class="p">&gt;</span>
 ...略
@@ -404,7 +404,7 @@
 <span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
 </code></pre></div><p>ここではBeautifulSoup4を使ってパースする(余談: 実はBeautifulSoup4を使うのはこれが初めて)。
 Wikiの表記では座標系がy軸上向きに取られているため、y座標の符号を反転させる処理を施しておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
@@ -505,7 +505,7 @@ Wikiの表記では座標系がy軸上向きに取られているため、y座�
 <h2 id="実装していて気づいたこと">実装していて気づいたこと</h2>
 <h3 id="asパターンマッチ">asパターンマッチ</h3>
 <p>HaskellやPureScriptの<code>@</code>と同じ機能を、<code>as</code>として提供しているようだ。以下のように使う。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">mult</span> <span class="kt">:</span> <span class="n">number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="n">number</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">mult</span> <span class="kt">:</span> <span class="n">number</span> <span class="ow">-&gt;</span> <span class="kt">Vec</span> <span class="n">number</span>
 <span class="nf">mult</span> <span class="n">c</span> <span class="p">({</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="n">as</span> <span class="n">v</span><span class="p">)</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">v</span>
     <span class="o">|</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span>
@@ -514,7 +514,7 @@ Wikiの表記では座標系がy軸上向きに取られているため、y座�
 </code></pre></div><p>この文法について、<a href="https://elm-lang.org/docs">Elmのドキュメント</a>では見つけられなかったが、<a href="https://faq.elm-community.org/#how-can-i-pattern-match-a-record-and-its-values-at-the-same-time">FAQの方で情報があった</a></p>
 <h3 id="内部関数のミス">内部関数のミス</h3>
 <p>例えば以下のようなコードを書いたとする。このコード自体は以前に書いたもので、今は存在しない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">eraseFilledLine</span> <span class="n">field</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">eraseFilledLine</span> <span class="n">field</span> <span class="ow">=</span>
     <span class="kr">let</span>
         <span class="n">go</span> <span class="n">i</span> <span class="n">fld</span> <span class="ow">=</span> <span class="cm">{- ...何か再帰的な処理... -}</span>
     <span class="kr">in</span>
@@ -524,7 +524,7 @@ Wikiの表記では座標系がy軸上向きに取られているため、y座�
 ここでは「ミスを起こさないコードを書くためにはどうすればよいのか」について考える。</p>
 <p>このミスがコンパイルエラーを引き起こさなかったのは、<code>go</code>関数がより外のスコープである<code>field</code>に参照できたからである。
 よって、初めからこのようなミスを起こす余地をなくすためには、以下のように内部関数をやめてしまうのが良い。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">eraseFilledLine</span> <span class="n">field</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">eraseFilledLine</span> <span class="n">field</span> <span class="ow">=</span>
     <span class="n">eraseFilledLineGo</span> <span class="p">(</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="n">field</span>
 
 
@@ -535,7 +535,7 @@ Wikiの表記では座標系がy軸上向きに取られているため、y座�
 <h3 id="ゲームの背後で行われる処理をモジュールに分割する">ゲームの背後で行われる処理をモジュールに分割する</h3>
 <p><code>update</code>関数で行われている処理のうち、テトリスのゲームを進める部分はほんの一部である。
 具体的には、タイマーイベントの<code>Msg</code>である<code>Tick</code>でしかゲームを進める処理を行っていない。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">update</span> <span class="n">msg</span> <span class="n">model</span> <span class="ow">=</span>
     <span class="kr">case</span> <span class="n">msg</span> <span class="kr">of</span>
         <span class="o">...</span>
@@ -558,7 +558,7 @@ Wikiの表記では座標系がy軸上向きに取られているため、y座�
 </ul>
 <p>後者を別モジュールに分割して、前者を<code>Main.elm</code>で書けるようにすると良いのではないのかと思った。</p>
 <p>例えば以下のように関数が定義できると良い。</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">GameState</span> <span class="ow">=</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">GameState</span> <span class="ow">=</span>
   <span class="p">{</span> <span class="n">time</span> <span class="kt">:</span> <span class="kt">Int</span>
   <span class="p">,</span> <span class="n">keys</span> <span class="kt">:</span> <span class="kt">KeyStates</span>
   <span class="p">,</span> <span class="n">seed</span> <span class="kt">:</span> <span class="kt">Seed</span>

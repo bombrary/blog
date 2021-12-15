@@ -3,7 +3,7 @@
 <head>
   <title>Androidアプリ開発勉強(1) - onClick/DataBinding/Fragment | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/android01-helloworld/">
@@ -156,14 +156,14 @@
 </li>
 </ul>
 <p>すると、新たに文字列定数<code>click</code>が追加され、その定数が使われる。<code>res/values/strings.xml</code>は以下のような定義になっている。このように、文字列などの定数はAttributeに直接指定せず、<code>strings.xml</code>に設定してそこから参照するのが普通っぽい。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;resources&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;resources&gt;</span>
     <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;app_name&#34;</span><span class="nt">&gt;</span>TestApplication<span class="nt">&lt;/string&gt;</span>
     <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">&#34;click&#34;</span><span class="nt">&gt;</span>Click<span class="nt">&lt;/string&gt;</span>
 <span class="nt">&lt;/resources&gt;</span></code></pre></div>
 <h3 id="textタブ">Textタブ</h3>
 <p>XMLファイルを直接いじるための画面。部品の属性を覚えてしまえば、こっちでいじった方が早そう。</p>
 <p>Designタブで設定した内容は、次のように反映されている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;androidx.constraintlayout.widget.ConstraintLayout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -200,7 +200,7 @@
 </ul>
 <h2 id="ボタンを押したら反応するようにする">ボタンを押したら反応するようにする</h2>
 <p><code>java/com.example.testapplication/MainActivity</code>を開いて、<code>onCreate</code>関数の内容を以下のようにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?)</span> <span class="p">{</span>
         <span class="k">super</span><span class="p">.</span><span class="n">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
         <span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_main</span><span class="p">)</span>
         <span class="n">findViewById</span><span class="p">&lt;</span><span class="n">Button</span><span class="p">&gt;(</span><span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">button</span><span class="p">)</span>
@@ -219,7 +219,7 @@
 </figure>
 
 <p>さらに、<code>Hello, World</code>という文字列を<code>Good Bye, World</code>という文字列に変える。<code>onClickListener</code>を以下のように変える。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">findViewById</span><span class="p">&lt;</span><span class="n">Button</span><span class="p">&gt;(</span><span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">button</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">findViewById</span><span class="p">&lt;</span><span class="n">Button</span><span class="p">&gt;(</span><span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">button</span><span class="p">)</span>
             <span class="p">.</span><span class="n">setOnClickListener</span> <span class="p">{</span> <span class="n">view</span><span class="p">:</span> <span class="n">View</span> <span class="o">-&gt;</span>
                 <span class="n">Toast</span><span class="p">.</span><span class="n">makeText</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s2">&#34;Clicked&#34;</span><span class="p">,</span> <span class="n">Toast</span><span class="p">.</span><span class="n">LENGTH_SHORT</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
                 <span class="n">findViewById</span><span class="p">&lt;</span><span class="n">TextView</span><span class="p">&gt;(</span><span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">textView</span><span class="p">).</span><span class="n">text</span> <span class="p">=</span> <span class="s2">&#34;Good Bye, World!&#34;</span>
@@ -229,7 +229,7 @@
 <p><code>findViewById</code>でいちいち要素を探すのは効率が悪いので、DataBindingという仕組みを用いる。</p>
 <p>本来DataBindingには、単に効率改善だけが目的ではなく、あるデータとlayoutを結びつける目的がある。その話について今回は省略。</p>
 <p>まずは<code>build.gradle(Module: app)</code>について、<code>android{ ... }</code>の中に以下の記述を追加する。これでDataBindingの機能を有効にするらしい。</p>
-<div class="highlight"><pre class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">android</span> <span class="o">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">android</span> <span class="o">{</span>
     <span class="o">...</span>
     <span class="n">dataBinding</span> <span class="o">{</span>
         <span class="n">enabled</span> <span class="kc">true</span>
@@ -238,7 +238,7 @@
 <p>&ldquo;Sync now&quot;と書かれた青いバーが現れたら、それを押す。</p>
 <p><code>res/layouts/activity_main.xml</code>について、<code>layout</code>タグで全体をくくる。<code>ConstraintLayout</code>タグの属性に指定していた<code>xmlns</code>属性は全て<code>layout</code>タグに移す。</p>
 <p>&ldquo;Code&rdquo; → &ldquo;Reformat Code&quot;でコードの再整形を行える。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span><span class="nt">&gt;</span>
@@ -253,7 +253,7 @@
     <span class="nt">&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;</span>
 <span class="nt">&lt;/layout&gt;</span></code></pre></div>
 <p>続いて<code>MainActivity</code>の方で、<code>onCreate</code>周辺の記述を以下の通りにする。
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">ActivityMainBinding</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">ActivityMainBinding</span>
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?)</span> <span class="p">{</span>
         <span class="k">super</span><span class="p">.</span><span class="n">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
         <span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_main</span><span class="p">)</span>
@@ -279,7 +279,7 @@
 <li>Include interface callbacks?のチェックを外す</li>
 </ul>
 <p><code>layout/fragment_test.xml</code>ができているので、それを開く。<code>layout/activity_main.xml</code>の内容の一部をコピーしてくる。さらに、<code>fragment</code>要素に<code>xmlns:app</code>の属性を追加する。<code>ConstraintLayout</code>に指定してあった<code>tools:context</code>の記述は消す。<code>fragment_test.xml</code>の内容は以下の通りになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;FrameLayout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -316,7 +316,7 @@
 
 <span class="nt">&lt;/FrameLayout&gt;</span></code></pre></div>
 <p><code>layouts/activity_main.xml</code>の内容を以下の通りにする。<code>LinearLayout</code>の内側に<code>fragment</code>を配置している。<code>name</code>属性を<code>TestFragment</code>にしていることに注目。これにより、<code>fragment</code>要素の部分が<code>fragment_test.xml</code>の内容に置き換わる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span><span class="nt">&gt;</span>
@@ -334,14 +334,14 @@
     <span class="nt">&lt;/LinearLayout&gt;</span>
 <span class="nt">&lt;/layout&gt;</span></code></pre></div>
 <p><code>MainActivity.kt</code>の内容の一部を消す。結局<code>MainActivity</code>は以下の通りになる。
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">MainActivity</span> <span class="p">:</span> <span class="n">AppCompatActivity</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">MainActivity</span> <span class="p">:</span> <span class="n">AppCompatActivity</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?)</span> <span class="p">{</span>
         <span class="k">super</span><span class="p">.</span><span class="n">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
         <span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_main</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div></p>
 <p>最後に、<code>TestFragment.kt</code>の内容を以下の通りにする。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">TestFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">TestFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
 
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
         <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
@@ -364,7 +364,7 @@
 </ul>
 <h2 id="databindingに置き換える">DataBindingに置き換える</h2>
 <p>DataBindingを使うので、<code>fragment_test.xml</code>全体を<code>layout</code>要素でくくる必要がある。<code>FrameLayout</code>要素はいらないので<code>layout</code>要素に直接置き換えることにする。以下のようになる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
     <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
     <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
@@ -380,7 +380,7 @@
 
 <span class="nt">&lt;/layout&gt;</span></code></pre></div>
 <p>次に、TestFragment.ktの内容を以下の通りにする。
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">TestFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">TestFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
 
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
         <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>

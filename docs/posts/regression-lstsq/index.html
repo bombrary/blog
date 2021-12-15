@@ -3,7 +3,7 @@
 <head>
   <title>線形回帰メモ 最小二乗法 | Chanomic Blog</title>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.85.0" />
+  <meta name="generator" content="Hugo 0.89.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
   <link rel="canonical" href="https://bombrary.github.io/blog/posts/regression-lstsq/">
@@ -146,8 +146,8 @@ $$</p>
 <p>$$
 \begin{aligned}
 J(\bm{w})
-&amp;= \frac{1}{2} \sum_{i=1}^{N} (\bm{w}^T\bm{x}_i - y^{(i)})^2\\
-&amp;= \frac{1}{2} \sum_{i=1}^{N} (\bm{x}_i^T\bm{w} - y^{(i)})^2\\
+&amp;= \frac{1}{2} \sum_{i=1}^{N} (\bm{w}^T\bm{x}<em>i - y^{(i)})^2\\
+&amp;= \frac{1}{2} \sum</em>{i=1}^{N} (\bm{x}_i^T\bm{w} - y^{(i)})^2\\
 &amp;= \frac{1}{2}
 \begin{pmatrix}
 \bm{x}_1^T\bm{w} - y^{(1)}\\
@@ -341,7 +341,7 @@ scikit-learnの<a href="https://scikit-learn.org/stable/modules/generated/sklear
 を使えば良い。scikit-learnのJulia版に<a href="https://scikitlearnjl.readthedocs.io/en/latest/">ScikitLearn.jl</a>がある(内部でscikit-learnを呼び出している模様)ので、
 Juliaでも同じことができる。</p>
 <p>関連モジュールをインポートし、型のエイリアスを作っておく。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
 <span class="k">using</span> <span class="n">LinearAlgebra</span>
 <span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
 
@@ -357,7 +357,7 @@ $\bm{x} = (1, x_1, x_2, \ldots, x_D)$ の最初の成分以外は一様分布乱
 を計算できる。</p>
 <p>$\bm{w}$ を元に $N$ 点のデータを作成する関数は以下のようになる。
 少ないデータで結果を出したい都合上、正規分布の標準偏差を小さく設定している。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
   <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
   <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
@@ -368,7 +368,7 @@ $\bm{x} = (1, x_1, x_2, \ldots, x_D)$ の最初の成分以外は一様分布乱
   <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
 <span class="k">end</span>
 </code></pre></div><p>作成したデータを試しにプロットしてみたいので、以下のように<code>main</code>関数を作成。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
 
   <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
@@ -397,7 +397,7 @@ julia> include("regression.jl")
 \end{aligned}
 $$</p>
 <p>Juliaでは行列の転置を<code>'</code>、逆行列を<code>inv</code>で計算できる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div><p>…と言いたいところだが、逆行列を計算して左から掛けるよりも、
 以下の $\bm{w}$ についての方程式を解く方が、
 数値計算の効率が良い。</p>
@@ -407,9 +407,9 @@ X^TX\bm{w} = X^T \bm{y}
 \end{aligned}
 $$</p>
 <p>Juliaではこれを<code>\</code>演算子で行える。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div><p>試しに $\bm{w} = (-1, 2, 4, 1)$ でデータを生成して、そのうえで <code>w</code> を計算してみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
 
   <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
@@ -430,7 +430,7 @@ julia> include("regression.jl")
 
 <p>グラフでプロットして確認してみる。$\bm{w} = (1, 2)$ の場合で<code>w</code>を計算し、
 それを係数とした直線を引いてみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
 
   <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
@@ -514,7 +514,7 @@ $$</p>
 <p>$\Phi$ を計算するために、ベクトル値関数 $\bm{\phi}(\bm{x})$ を引数に持たせる。
 $\bm{w}$ の計算にもはや $X$ は必要ないのだが、グラフにデータをプロットする際に必要になるので、
 $X$ も返り値に含めている。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
   <span class="n">dummy</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}(</span><span class="nb">undef</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">)</span>
   <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">phi</span><span class="p">(</span><span class="n">dummy</span><span class="p">))</span>
 
@@ -531,7 +531,7 @@ $X$ も返り値に含めている。</p>
   <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span>
 <span class="k">end</span>
 </code></pre></div><p>試しに関数 $y = 1 + 2x^2$ によるデータをプロットしてみる。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
 
   <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
@@ -544,7 +544,7 @@ $X$ も返り値に含めている。</p>
 
 <h3 id="wの計算-2">wの計算 (2)</h3>
 <p>これに対応する<code>w</code>を求める。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
   <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
 
   <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
@@ -578,7 +578,7 @@ X^TX\bm{w} = X^T \bm{y}
 \end{aligned}
 $$</p>
 <p>Juliaではこれを<code>\</code>演算子で行える。</p>
-<div class="highlight"><pre class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div><p>$X^T\bm{y}$ の計算量は、$D \times N$ 行列と $N \times 1$ 行列の積の計算だから $O(DN)$。</p>
 <p>$X^TX$ の計算量は、$D \times N$ 行列と $N \times D$ 行列の積の計算だから $O(ND^2)$。</p>
 <p><a href="https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/#Base.:%5C-Tuple%7BAbstractMatrix%7BT%7D%20where%20T,%20AbstractVecOrMat%7BT%7D%20where%20T%7D">\ のドキュメント</a>によると、
