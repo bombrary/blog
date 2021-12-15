@@ -2,6 +2,8 @@
 title: "Pythonを使った(静的)ページの画像のURL取得"
 date: 2021-12-09T11:08:15+09:00
 toc: true
+tag: ["CLI", "Flask", "Web"]
+category: ["Python"]
 ---
 
 Webページの画像だけを手っ取り早く取得したい場合にどうすれば良いのかを考えた。
