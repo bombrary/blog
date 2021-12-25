@@ -105,7 +105,7 @@ $$
 尤度関数は $N$ 個のデータ $(\bm{x}_n, y_n),\ n = 1, 2, \ldots, N$ が実現される確率である: 
 
 $$
-L(\bm{w}) = \prod_{n = 1}^{N} p(y_n | \bm{x}_n, \bm{w}) = \prod_{n = 1}^{N} \mu_n^{y_n} (1 - \mu_n)^{1 - y_n}
+L(\bm{w}) = \prod_{n = 1}^{N} p(y_n | \bm{x}_n, \bm{w}) = \prod\_{n = 1}^{N} \mu_n^{y_n} (1 - \mu_n)^{1 - y_n}
 $$
 
 
