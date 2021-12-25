@@ -156,13 +156,13 @@ nav a {
   margin: 0.5em 1em;
 }
 
-/*@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
   html, body, body > header, body > footer {
     background: #212228;
     color: #ffffff;
     box-shadow: 0 0 0 1px #33353e;
   }
-}*/
+}
 
 @media (min-width: 32em) {
   body > header, body > article, body > footer {
