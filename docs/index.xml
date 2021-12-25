@@ -7,6 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Neovimのプラグインを初めて作る - REPLの操作</title>
+      <link>https://bombrary.github.io/blog/posts/nvim-plugin-repl/</link>
+      <pubDate>Sat, 25 Dec 2021 18:35:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/nvim-plugin-repl/</guid>
+      <description>動機 研究で使っているソフトウェアのREPLが少し使いづらい。というのも、制御文字がそのまま表示されてしまうため、十字キーのカーソル移動やCmd + Aの行先頭移動、Cmd + Kの行削除など効かないからだ。 rlwrap を使えばこの問題を解決できるのだが、別の解決案としてNeovimのREPL支援プラグインを作ってみようと思い立った。 Neovim のターミナル機能を使ってREPLを起動し、別バッファー上で入力した文字列をREPLに送るようなプラグインを作りたい。
+GitHubで検索してみると同様の機能を実現するプラグインはいくつもあるようだが、プラグインを作る勉強として、自分で作ってみる。
+提供する機能 使用感をvlimeと似たものにしたい。キーマップは次のようにする。
+ &amp;lt;LocalLeader&amp;gt;ss カーソル下の行をREPLに送る。 &amp;lt;LocalLeader&amp;gt;s 選択範囲内行の文字列をREPLに送る。 &amp;lt;LocalLeader&amp;gt;i 1行入力用のバッファを表示し、そこで書いた文字列をREPLに送る。 &amp;lt;LocalLeader&amp;gt;cd Ctrl + DをREPLに送る。 &amp;lt;LocalLeader&amp;gt;cc Ctrl + CをREPLに送る。  その他、以下のコマンドを定義する。
+ ReplOpen [cmd]: REPLを起動する。例えばReplOpen pythonならpythonのREPLが起動する。 [cmd]には任意のコマンドが入れられるため、REPL支援というよりターミナル支援プラグインという感じがするが、気にしないことにする。 ReplSend [string]: 文字列[string]をREPLに送る。  補足 vlimeとキーマップが被るため、vlimeを入れている人はどうするんだという事になる。 その場合、キーマップが被らないようにしたり、ftplugin下にスクリプトを書くなど色々と方法が考えられる。 ここでは一番無難そうな、「ReplOpenが呼び出された時にキーマップを登録する」という方法を採用する。
+注意 普段使っているのがVimではなくNeovimなので、Neovimを使ってプラグインを書く。Vimには無い関数/機能を使うので注意。
+あとVim scriptをほとんど書いたこと無いため、今回載せるコードには色々改善点があるだろう。
+準備 適切なディレクトリにプラグインのディレクトリを作成。自分の環境では、packpathの1つに~/.config/nvimがあったので、 ~/.config/nvim/pack/plugins/start/に置く。プラグインのディレクトリは愚直にrepl.nvimとする
+そこにautoload、plugin、ftpluginディレクトリを作成する。
+repl.nvim | +-- autoload/ | | | +-- repl.vim | +-- plugin/ | +-- repl.vim REPLの起動 autoload/repl.vimに色々関数を定義する。
+まずはREPLの起動から。ウインドウを分割し、ターミナルを起動し、コマンドcmdを実行する関数は素朴には以下のように書ける。</description>
+    </item>
+    
+    <item>
       <title>Web Audio API 備忘録</title>
       <link>https://bombrary.github.io/blog/posts/web-audio-api-note01/</link>
       <pubDate>Fri, 24 Dec 2021 21:12:00 +0900</pubDate>

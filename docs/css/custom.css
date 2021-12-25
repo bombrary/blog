@@ -147,7 +147,7 @@ body {
   border-radius: 100%;
 }
 
-.categories li a {
+.categories_item a {
   position: relative;
   display: inline-block;
   height: 20px;
@@ -161,16 +161,16 @@ body {
   border-radius: 3px;
 }
 
-.tags li a:hover, .categories li a:hover {
+.tags_item a:hover, .categories_item a:hover {
   opacity: .7;
 }
 
-/*@media (prefers-color-scheme: dark) {
-  .categories li a {
+@media (prefers-color-scheme: dark) {
+  .categories_item a {
     color: #ccc;
     border-color: #ccc;
   }
-}*/
+}
 
 code, pre.cui {
   font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
