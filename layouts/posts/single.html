@@ -31,7 +31,7 @@
         <p>categories: </p>
         {{ with .Params.categories }}
         <ul class="categories_list">
-          {{ range . }} <li class="tags_item"><a href="{{ $baseURL }}/categories/{{ lower . }}/">{{ . }}</a></li>{{ end }}
+          {{ range . }} <li class="categories_item"><a href="{{ $baseURL }}/categories/{{ lower . }}/">{{ . }}</a></li>{{ end }}
         </ul>
         {{ end }}
       </div>
