@@ -2,7 +2,6 @@
 <html lang="{{ .Site.LanguageCode | default "en" }}">
 <title>{{ if .Title }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
 <meta charset="utf-8">
-{{- partial "base/imports.html" . -}}
 {{ hugo.Generator }}
 {{- if or .Description .Site.Params.description }}
 <meta name="description" content="{{ .Description | default .Site.Params.description }}">
@@ -16,6 +15,10 @@
 <script defer src="{{ .Site.BaseURL }}katex/katex.min.js"></script>
 <script defer src="{{ .Site.BaseURL }}katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body)"></script>
 {{- end }}
+{{- partial "base/imports.html" . -}}
+{{ if or .Params.math .Site.Params.math }}
+{{- partial "math.html" . -}}
+{{ end }}
 
 <header>
   {{ if not (gt (len .Site.Menus) 1) }}
