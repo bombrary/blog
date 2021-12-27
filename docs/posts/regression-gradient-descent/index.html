@@ -33,6 +33,12 @@
       {left: "$$", right: "$$", display: true},
       {left: "$", right: "$", display: false}]
     });
+
+    
+    var tex = document.getElementsByClassName("tex");
+    Array.prototype.forEach.call(tex, function(el) {
+      katex.render(el.getAttribute("data-expr"), el);
+    });
   });
 </script>
 
@@ -175,7 +181,8 @@ $$</p>
 \frac{\partial J(\bm{w})}{\partial w_j}
 = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
 $$</p>
-<p>これをよくみると、ベクトル $\bm{a} = (h_{\bm{w}}(\bm{x}<em>i) - y^{(i)})</em>{i=1}^{N}$ として、</p>
+<p>これをよくみると、ベクトル <span class="tex" data-expr="\bm{a} = (h_{\bm{w}}(\bm{x}_i) - y^{(i)})_{i=1}^{N}"></span>
+ として、</p>
 <p>$$
 \begin{aligned}
 \frac{\partial J(\bm{w})}{\partial \bm{w}} &amp;=
@@ -296,12 +303,11 @@ julia> include("main.jl")
 $$</p>
 <p>これは $N$ 個のデータを考慮して勾配を計算しているが、仮に1個のデータ $(\bm{x}_i, y^{(i)})$ を考慮した場合は次のような式になる。
 $J_i$ は $i$番目の予測とデータとの誤差を表すコスト関数である。</p>
-<p>$$
-\begin{aligned}
-J_i &amp;= \frac{1}{2}( h_{\bm{w}}(\bm{w}<em>i) - y^{(i)})^2\\
-\frac{\partial J_i(\bm{w})}{\partial w_j} &amp;= (h</em>{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
-\end{aligned}
-$$</p>
+<div class="tex displaystyle" data-expr="\displaystyle \begin{aligned}
+  J_i &amp;= \frac{1}{2}( h_{\bm{w}}(\bm{w}_i) - y^{(i)})^2\\\\ 
+  \frac{\partial J_i(\bm{w})}{\partial w_j} &amp;= (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
+\end{aligned}"></div>
+
 <p>$\nabla J_i$ はもはや $J$ の勾配ではないのだが、これを $\bm{w}$ の更新に使う。</p>
 <p>$$
 \bm{w} \leftarrow \bm{w} - \alpha \nabla J_i(\bm{w}),\ i = 1, 2, \ldots, N
