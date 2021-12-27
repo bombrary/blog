@@ -6,10 +6,14 @@
       {left: "$", right: "$", display: false}]
     });
 
-    // for shortcode {{< eq >}} and {{< displaymath >}}
+    // for shortcode "eq" and "displaymath".
     var tex = document.getElementsByClassName("tex");
     Array.prototype.forEach.call(tex, function(el) {
-      katex.render(el.getAttribute("data-expr"), el);
+        if (el.classList.contains('displaystyle')) {
+            katex.render(el.getAttribute("data-expr"), el, { displayMode: true });
+        } else {
+          katex.render(el.getAttribute("data-expr"), el);
+        }
     });
   });
 </script>
