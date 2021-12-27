@@ -37,7 +37,11 @@
     
     var tex = document.getElementsByClassName("tex");
     Array.prototype.forEach.call(tex, function(el) {
-      katex.render(el.getAttribute("data-expr"), el);
+        if (el.classList.contains('displaystyle')) {
+            katex.render(el.getAttribute("data-expr"), el, { displayMode: true });
+        } else {
+          katex.render(el.getAttribute("data-expr"), el);
+        }
     });
   });
 </script>
@@ -303,7 +307,7 @@ julia> include("main.jl")
 $$</p>
 <p>これは $N$ 個のデータを考慮して勾配を計算しているが、仮に1個のデータ $(\bm{x}_i, y^{(i)})$ を考慮した場合は次のような式になる。
 $J_i$ は $i$番目の予測とデータとの誤差を表すコスト関数である。</p>
-<div class="tex displaystyle" data-expr="\displaystyle \begin{aligned}
+<div class="tex displaystyle" data-expr="\begin{aligned}
   J_i &amp;= \frac{1}{2}( h_{\bm{w}}(\bm{w}_i) - y^{(i)})^2\\\\ 
   \frac{\partial J_i(\bm{w})}{\partial w_j} &amp;= (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
 \end{aligned}"></div>
