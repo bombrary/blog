@@ -6,7 +6,25 @@
     <description>Recent content in Categories on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 25 Dec 2021 18:35:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Dec 2021 08:45:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Julia</title>
+      <link>https://bombrary.github.io/blog/categories/julia/</link>
+      <pubDate>Tue, 28 Dec 2021 08:45:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/julia/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>統計</title>
+      <link>https://bombrary.github.io/blog/categories/%E7%B5%B1%E8%A8%88/</link>
+      <pubDate>Tue, 28 Dec 2021 08:45:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/%E7%B5%B1%E8%A8%88/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>neovim</title>
       <link>https://bombrary.github.io/blog/categories/neovim/</link>
@@ -49,15 +67,6 @@
       <pubDate>Tue, 10 Aug 2021 17:10:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/elm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Julia</title>
-      <link>https://bombrary.github.io/blog/categories/julia/</link>
-      <pubDate>Sat, 07 Aug 2021 07:17:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/julia/</guid>
       <description></description>
     </item>
     

@@ -6,7 +6,25 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 25 Dec 2021 18:35:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Dec 2021 08:45:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>モンテカルロ法</title>
+      <link>https://bombrary.github.io/blog/tags/%E3%83%A2%E3%83%B3%E3%83%86%E3%82%AB%E3%83%AB%E3%83%AD%E6%B3%95/</link>
+      <pubDate>Tue, 28 Dec 2021 08:45:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E3%83%A2%E3%83%B3%E3%83%86%E3%82%AB%E3%83%AB%E3%83%AD%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>積分</title>
+      <link>https://bombrary.github.io/blog/tags/%E7%A9%8D%E5%88%86/</link>
+      <pubDate>Tue, 28 Dec 2021 08:45:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E7%A9%8D%E5%88%86/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>REPL</title>
       <link>https://bombrary.github.io/blog/tags/repl/</link>

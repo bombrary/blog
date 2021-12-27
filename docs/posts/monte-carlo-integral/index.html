@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>モンテカルロ法による積分 | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.91.2" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/monte-carlo-integral/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/katex/katex.min.css">
+<script defer src="https://bombrary.github.io/blog/katex/katex.min.js"></script>
+<script defer src="https://bombrary.github.io/blog/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body)"></script>
+  <link rel="stylesheet" href="/blog/css/custom.css">
+
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/math.css">
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}]
+    });
+
+    
+    var tex = document.getElementsByClassName("tex");
+    Array.prototype.forEach.call(tex, function(el) {
+        if (el.classList.contains('displaystyle')) {
+            katex.render(el.getAttribute("data-expr"), el, { displayMode: true });
+        } else {
+          katex.render(el.getAttribute("data-expr"), el);
+        }
+    });
+  });
+</script>
+
+
+<header>
+  
+    <a href="https://bombrary.github.io/blog/" class="title">Chanomic Blog</a>
+  
+  
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/monte-carlo-integral/">モンテカルロ法による積分</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2021-12-28T08:45:00&#43;09:00">December 28, 2021</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2021-12-28T08:45:00&#43;09:00">July 20, 2021</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e3%83%a2%e3%83%b3%e3%83%86%e3%82%ab%e3%83%ab%e3%83%ad%e6%b3%95/">モンテカルロ法</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e7%a9%8d%e5%88%86/">積分</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="categories_item"><a href="https://bombrary.github.io/blog//categories/julia/">Julia</a></li> <li class="categories_item"><a href="https://bombrary.github.io/blog//categories/%e7%b5%b1%e8%a8%88/">統計</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一般論">一般論</a>
+      <ul>
+        <li><a href="#定義域を広げる">定義域を広げる</a></li>
+      </ul>
+    </li>
+    <li><a href="#領域上の積分">領域上の積分</a></li>
+    <li><a href="#例-円周率の近似">例: 円周率の近似</a>
+      <ul>
+        <li><a href="#円周率の近似---juliaによる実装">円周率の近似 - Juliaによる実装</a></li>
+      </ul>
+    </li>
+    <li><a href="#確率分布の統計量を計算する">確率分布の統計量を計算する</a>
+      <ul>
+        <li><a href="#正規分布の裾の計算">正規分布の裾の計算</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </aside>
+    
+  <p>今年の7月くらいに書き始め、存在をすっかり忘れていた記事をUP。</p>
+<p>モンテカルロ法でどうやって積分計算をするのか、重点サンプリングとはどのようなものなのかついて勉強したので、そのメモ。</p>
+<h2 id="一般論">一般論</h2>
+<p>$$
+\begin{aligned}
+\int_{\Omega_0} f(x) dx
+&amp;= \int_{\Omega_0} \frac{f(x)}{p(x)}p(x)dx\\
+&amp;= \mathbb{E}\left[\frac{f(x)}{p(x)}\right]
+\end{aligned}
+$$</p>
+<p>ここで、$p$ は確率密度関数。上の $\mathbb{E}$ が期待値であるためには、</p>
+<p>$$
+\int_{\Omega_0} p(x) dx = 1
+$$</p>
+<p>である必要がある。</p>
+<p>大数の法則より、確率分布 $p$ に従う 標本 $x_n\ (n = 1, 2, \ldots, N)$ に対して、$N$ が十分大きければ、</p>
+<p>$$
+\mathbb{E}\left[\frac{f(x)}{p(x)}\right]
+\simeq \frac{1}{N} \sum_{n=1}^{N} \frac{f(x_n)}{p(x_n)}
+$$</p>
+<p>となるから、結局、</p>
+<p>$$
+\begin{aligned}
+\int_{\Omega} f(x) dx \simeq \frac{1}{N} \sum_{n=1}^{N} \frac{f(x_n)}{p(x_n)}
+\end{aligned}
+$$</p>
+<p>と近似できる。
+ちなみに、$p(x_n) = 0$ なる $x_n$ が選ばれることは絶対に無い(確率0だから)。よって分母が0になることを心配する必要はない。</p>
+<h3 id="定義域を広げる">定義域を広げる</h3>
+<p>$p$ の定義域をもう少し広げられる。$\Omega \supset \Omega_0$ であれば、集合$A$に関する指示関数を $\bm{1}_A$ と書くことにして、</p>
+<div class="tex displaystyle" data-expr="\begin{aligned}
+\int_{\Omega_0} f(x) dx
+&amp;= \int_{\Omega} \bm{1}_{\Omega_0}(x)f(x) dx\\\\ 
+&amp;= \int_{\Omega} \bm{1}_{\Omega_0}(x) \frac{f(x)}{p(x)}p(x)dx\\\\ 
+&amp;= \mathbb{E}\left[\bm{1}_{\Omega_0}(x) \frac{f(x)}{p(x)}\right]
+\end{aligned}"></div>
+
+<p>ここで、$p$ は確率密度関数。上の $\mathbb{E}$ が期待値であるためには、</p>
+<p>$$
+\int_{\Omega} p(x) dx = 1
+$$</p>
+<p>である必要がある。$\Omega_0$ より少し広い $\Omega$を使うことができるようになった。そして、</p>
+<p>$$
+\begin{aligned}
+\int_{\Omega} f(x) dx \simeq \frac{1}{N} \sum_{n=1}^{N} \bm{1}_{\Omega_0}(x_n) \frac{f(x_n)}{p(x_n)}
+\end{aligned}
+$$</p>
+<p>と近似できる。</p>
+<h2 id="領域上の積分">領域上の積分</h2>
+<p>領域 $\Omega_0$ の体積を $V$ とする。
+$p$ は $\Omega \supset \Omega_0$ 上の一様分布に従うとする。$\bm{x} \in \Omega$ について $p(\bm{x}) = \frac{1}{V}$ であるから、</p>
+<p>$$
+\begin{aligned}
+\int_{\Omega} f(\bm{x}) d\bm{x} \simeq \frac{V}{N} \sum_{n=1}^{N} \bm{1}_{\Omega_0}(\bm{x}_n) f(\bm{x}_n)
+\end{aligned}
+$$</p>
+<h2 id="例-円周率の近似">例: 円周率の近似</h2>
+<p>よくある円周率の近似の手法をきちんと数式で表してみる。</p>
+<p>$\bm{x} = (x_1, x_2)$、$C = \{ \bm{x} \mid x_1 \ge 0, x_2 \ge 0, x_1^2 + x_2^2 \le 1 \}$ とする。
+$C$ は原点 $(0, 0)$、半径 $1$ の円内部について、その第1象限の部分だけを表す。$C$の面積は以下のように計算できる。</p>
+<p>$$
+\begin{aligned}
+\int_{c} 1 d\bm{x} \simeq \frac{1}{n} \sum_{n=1}^{n} \bm{1}_{c}(\bm{x}_n) \frac{1}{p(\bm{x}_n)}
+\end{aligned}
+$$</p>
+<p>まず、左辺は円の面積の $\frac{1}{4}$ であるから、$\frac{1}{4} \pi \cdot 1^2 = \frac{\pi}{4}$である。</p>
+<p>右辺について考える。$D = \{ \bm{x} \mid 0 \le x_1 \le 1, 0 \le x_2 \le 1 \}$ とする。
+このとき、$D \supset C$ が成り立っていることに注意する。
+$D$上の一様乱数を考えると、確率密度関数は $p(\bm{x}) = 1\ (\bm{x} \in D)$ である。</p>
+<p>以上より、次のように近似できる。</p>
+<p>$$
+\begin{aligned}
+\pi \simeq \frac{4}{n} \sum_{n=1}^{n} \bm{1}_{c}(\bm{x}_n)
+\end{aligned}
+$$</p>
+<h3 id="円周率の近似---juliaによる実装">円周率の近似 - Juliaによる実装</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">monte_carlo_pi</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+  <span class="n">xs</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="kt">Float64</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+  <span class="n">rs</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.^</span><span class="mi">2</span> <span class="o">.+</span> <span class="n">xs</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.^</span><span class="mi">2</span>
+
+  <span class="mi">4</span> <span class="o">*</span> <span class="n">count</span><span class="p">(</span><span class="n">rs</span> <span class="o">.&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">length</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div><p>N=10^7くらいになるとようやく小数以下3桁まで一致する。</p>
+<pre class="cui">
+julia> monte_carlo_pi(10000000)
+3.1417248
+</pre>
+
+<h2 id="確率分布の統計量を計算する">確率分布の統計量を計算する</h2>
+<p>例えば、ある確率分布の密度関数を $p$ とし、その期待値を求めることを考える。モンテカルロ法により、</p>
+<p>$$
+\begin{aligned}
+E[X] &amp;\simeq \frac{1}{N} \sum_{n=1}^{N} x_n
+\end{aligned}
+$$</p>
+<p>と計算できる。ただし、$x_n$は確率密度関数が$p$であるような分布から生成された乱数。</p>
+<p>別の確率分布の乱数を使って期待値を求めたいなら、次のように式変形する。</p>
+<p>$$
+\begin{aligned}
+E[f(X)]
+&amp;= \int f(x)p(x) dx \\
+&amp;= \int \frac{f(x)p(x)}{q(x)}q(x) dx \\
+&amp;= \mathbb{E} \left[ \frac{f(x)p(x)}{q(x)} \right] \\
+&amp;\simeq \frac{1}{N} \sum_{n=1}^{N} \frac{f(x_n)p(x_n)}{q(x_n)}
+\end{aligned}
+$$</p>
+<p>ただし、$x_n$ は確率密度関数が $q$ であるような分布から生成された乱数。
+このように、$p$からではなく$q$からサンプリングして求めることができる。
+これは重点サンプリングとして知られている。</p>
+<h3 id="正規分布の裾の計算">正規分布の裾の計算</h3>
+<p>以下の積分値を計算してみる。ただし、$p(x)$は$\mathcal{N}(0, 1)$に従うものとする。</p>
+<p>$$
+\int_{1.96}^{\infty} p(x) dx
+$$</p>
+<p>有名な事実であるが、この積分は約$0.25$であることが知られている。
+つまり、$x \ge 1.96$ となる確率は$2.5\%$ということである。</p>
+<p>これは次のように期待値に変形できる。ただし、$A = [1.96, \infty)$とする。</p>
+<p>$$
+\begin{aligned}
+\int_{1.96}^{\infty} p(x) dx
+&amp;= \int_{-\infty}^{\infty} 1_A(x) p(x) dx\\
+&amp;= E[1_{A}(X)]
+\end{aligned}
+$$</p>
+<p>先ほど説明した重点サンプリングの手法に沿って、さらに変形する。</p>
+<p>$$
+\begin{aligned}
+E[1_{A}(X)]
+\simeq \frac{1}{N} \sum_{n=1}^{N} \frac{1_{A}(x_n)p(x_n)}{q(x_n)}
+\end{aligned}
+$$</p>
+<p>この$q$をどんな分布にするかだが、なるべく領域$A$をサンプリングしやすいようなものを選ぶ。
+ここでは$q$は$\mathcal{N}(1.96, 1)$に従うものとする。下図のように、領域$A$(オレンジ)の近くに$q$の分布が集まっているから、$1_{A}(x_n)$で$0$になり辛く効率良くサンプリングでき、値の収束も速くなる。</p>
+<figure><img src="img/sc0.png"/>
+</figure>
+
+<p>積分値の計算をJuliaで実装すると以下の通り。サンプル数を増やして値が収束していくところをみたいので、グラフに描画してみる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
+<span class="k">using</span> <span class="n">Plots</span>
+
+
+<span class="k">function</span> <span class="n">monte_carlo</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+  <span class="n">dist_p</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="n">dist_q</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mf">1.96</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="n">xs</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">dist_q</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+  <span class="n">ys</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="n">xs</span> <span class="o">.&gt;=</span> <span class="mf">1.96</span><span class="p">]</span>
+  <span class="n">sum</span><span class="p">(</span><span class="n">pdf</span><span class="o">.</span><span class="p">(</span><span class="n">dist_p</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span> <span class="o">./</span> <span class="n">pdf</span><span class="o">.</span><span class="p">(</span><span class="n">dist_q</span><span class="p">,</span> <span class="n">ys</span><span class="p">))</span> <span class="o">/</span> <span class="n">N</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+  <span class="n">ns</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">:</span><span class="mi">100</span><span class="o">:</span><span class="mi">100000</span>
+  <span class="n">xs</span> <span class="o">=</span> <span class="n">monte_carlo</span><span class="o">.</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span>
+  <span class="n">plot</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div><p>$N$を増やしていくと、積分値は$0.25$に近づくことが分かる。</p>
+<figure><img src="img/sc1.png"/>
+</figure>
+
+
+</article>
+
+
+
+</html>
