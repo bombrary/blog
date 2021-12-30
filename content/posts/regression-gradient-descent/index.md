@@ -90,7 +90,7 @@ $$
 = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
 $$
 
-これをよくみると、ベクトル $\bm{a} = (h_{\bm{w}}(\bm{x}_i) - y^{(i)})_{i=1}^{N}$ として、
+これをよくみると、ベクトル {{<eq "\bm{a} = (h_{\bm{w}}(\bm{x}_i) - y^{(i)})_{i=1}^{N}">}} として、
 
 $$
 \begin{aligned}
@@ -236,12 +236,12 @@ $$
 これは $N$ 個のデータを考慮して勾配を計算しているが、仮に1個のデータ $(\bm{x}_i, y^{(i)})$ を考慮した場合は次のような式になる。
 $J_i$ は $i$番目の予測とデータとの誤差を表すコスト関数である。
 
-$$
+{{< displaymath >}}
 \begin{aligned}
   J_i &= \frac{1}{2}( h_{\bm{w}}(\bm{w}_i) - y^{(i)})^2\\\\ 
   \frac{\partial J_i(\bm{w})}{\partial w_j} &= (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D
 \end{aligned}
-$$
+{{< /displaymath >}}
 
 $\nabla J_i$ はもはや $J$ の勾配ではないのだが、これを $\bm{w}$ の更新に使う。
 
