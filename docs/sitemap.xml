@@ -3,16 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2021-12-28T08:49:29+09:00</lastmod>
+    <lastmod>2021-12-30T09:41:56+09:00</lastmod>
   </url><url>
-    <loc>https://bombrary.github.io/blog/categories/julia/</loc>
-    <lastmod>2021-12-28T08:49:29+09:00</lastmod>
+    <loc>https://bombrary.github.io/blog/tags/parser/</loc>
+    <lastmod>2021-12-30T09:41:25+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2021-12-28T08:49:29+09:00</lastmod>
+    <lastmod>2021-12-30T09:41:56+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/purescript/</loc>
+    <lastmod>2021-12-30T09:41:25+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/posts/purescript-parser-combinator01/</loc>
+    <lastmod>2021-12-30T09:41:25+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/</loc>
-    <lastmod>2021-12-28T08:49:29+09:00</lastmod>
+    <lastmod>2021-12-30T09:41:56+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/%E9%81%85%E5%BB%B6%E8%A9%95%E4%BE%A1/</loc>
+    <lastmod>2021-12-30T09:41:25+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/julia/</loc>
+    <lastmod>2021-12-30T09:41:56+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E3%83%A2%E3%83%B3%E3%83%86%E3%82%AB%E3%83%AB%E3%83%AD%E6%B3%95/</loc>
     <lastmod>2021-12-28T08:49:29+09:00</lastmod>
@@ -25,18 +37,6 @@
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/%E7%B5%B1%E8%A8%88/</loc>
     <lastmod>2021-12-28T08:49:29+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/tags/parser/</loc>
-    <lastmod>2021-12-26T14:55:59+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/categories/purescript/</loc>
-    <lastmod>2021-12-26T14:55:59+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/posts/purescript-parser-combinator01/</loc>
-    <lastmod>2021-12-26T14:55:59+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/tags/%E9%81%85%E5%BB%B6%E8%A9%95%E4%BE%A1/</loc>
-    <lastmod>2021-12-26T14:55:59+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/neovim/</loc>
     <lastmod>2021-12-25T18:38:13+09:00</lastmod>
@@ -96,13 +96,13 @@
     <lastmod>2021-08-10T17:10:34+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92/</loc>
-    <lastmod>2021-12-25T16:02:21+09:00</lastmod>
+    <lastmod>2021-12-30T09:41:56+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E6%AD%A3%E5%89%87%E5%8C%96/</loc>
     <lastmod>2021-08-07T07:23:54+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%BD%A2%E5%9B%9E%E5%B8%B0/</loc>
-    <lastmod>2021-08-07T07:23:54+09:00</lastmod>
+    <lastmod>2021-12-30T09:41:56+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/regression-regularization/</loc>
     <lastmod>2021-08-07T07:23:54+09:00</lastmod>
@@ -126,7 +126,7 @@
     <lastmod>2021-12-25T16:02:21+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95/</loc>
-    <lastmod>2021-12-25T16:02:21+09:00</lastmod>
+    <lastmod>2021-12-30T09:41:56+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/brainfuck/</loc>
     <lastmod>2021-07-09T23:16:10+09:00</lastmod>
@@ -150,7 +150,7 @@
     <lastmod>2021-07-06T17:10:18+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/regression-gradient-descent/</loc>
-    <lastmod>2021-07-13T16:37:40+09:00</lastmod>
+    <lastmod>2021-12-30T09:41:56+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%97%E6%B3%95/</loc>
     <lastmod>2021-07-13T16:37:40+09:00</lastmod>

@@ -1,6 +1,6 @@
 ---
 title: "PureScriptでパーサーコンビネータを触る (1) 四則演算のパース"
-date: 2021-12-26T14:55:59+09:00
+date: 2021-12-30T09:40:00+09:00
 toc: true
 tags: ["parser", "遅延評価"]
 categories: ["PureScript"]
