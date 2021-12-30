@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>PureScriptでパーサーコンビネータを触る (1) 四則演算のパース | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.91.2" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-parser-combinator01/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+  <link rel="stylesheet" href="/blog/css/custom.css">
+
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+
+<header>
+  
+    <a href="https://bombrary.github.io/blog/" class="title">Chanomic Blog</a>
+  
+  
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/purescript-parser-combinator01/">PureScriptでパーサーコンビネータを触る (1) 四則演算のパース</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2021-12-26T14:55:59&#43;09:00">December 26, 2021</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2021-12-26T14:55:59&#43;09:00">December 26, 2021</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/parser/">parser</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/%e9%81%85%e5%bb%b6%e8%a9%95%e4%be%a1/">遅延評価</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="categories_item"><a href="https://bombrary.github.io/blog//categories/purescript/">PureScript</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+    <aside>
+      <h2>目次</h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#パーサーコンビネータの準備">パーサーコンビネータの準備</a></li>
+    <li><a href="#数字のパース">数字のパース</a>
+      <ul>
+        <li><a href="#1文字取得">1文字取得</a></li>
+        <li><a href="#1文字以上取得">1文字以上取得</a></li>
+        <li><a href="#数字を整数値で取得">数字を整数値で取得</a></li>
+        <li><a href="#符号付き整数">符号付き整数</a></li>
+        <li><a href="#すでに用意されているやつを使う">すでに用意されているやつを使う</a></li>
+      </ul>
+    </li>
+    <li><a href="#足し算のパース">足し算のパース</a>
+      <ul>
+        <li><a href="#エラーになる例">エラーになる例</a></li>
+        <li><a href="#寄り道-どんなjavascriptコードが生成されるのか">(寄り道) どんなJavaScriptコードが生成されるのか</a></li>
+        <li><a href="#エラーを抑える方法">エラーを抑える方法</a></li>
+        <li><a href="#bnfの見直し">BNFの見直し</a></li>
+        <li><a href="#chinlの利用">chinlの利用</a></li>
+      </ul>
+    </li>
+    <li><a href="#四則演算のパース">四則演算のパース</a>
+      <ul>
+        <li><a href="#整数以外の計算">整数以外の計算</a></li>
+        <li><a href="#buildexprparserの利用">buildExprParserの利用</a></li>
+      </ul>
+    </li>
+    <li><a href="#まとめ感想">まとめ・感想</a></li>
+  </ul>
+</nav>
+    </aside>
+    
+  <p>PureScriptのパーサーコンビネータに<a href="https://pursuit.purescript.org/packages/purescript-parsing/7.0.1">purescript-parsing</a>がある。これはHaskellの<a href="https://hackage.haskell.org/package/parsec">Parsec</a>が基になっているので、使い方はParsecとほとんど同じだと思われる(とはいえ、Parsecを使ったことはあまりない)。これを用いて四則演算のパーサーを実装してみたが、うまく動かず詰まる点がいくつかあった。その備忘録。</p>
+<h2 id="パーサーコンビネータの準備">パーサーコンビネータの準備</h2>
+<pre class="cui">
+% spago install parsing
+</pre>
+
+<p>後々使うので以下のパッケージもインストール。</p>
+<pre class="cui">
+% spago install either integers maybe strings arrays lists
+</pre>
+
+<p><code>src/Main.purs</code>に以下の記述を追加。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser</span> <span class="p">(</span><span class="kt">Parser</span><span class="p">)</span>
+
+<span class="nf">parser</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+<span class="nf">parser</span> <span class="ow">=</span> <span class="n">pure</span> <span class="s">&#34;Hello&#34;</span>
+</code></pre></div><p>REPLを起動して、動くか確認する。どんな文字列を食わせても<code>&quot;Hello&quot;</code>としか結果を返さないパーサーの完成。</p>
+<pre class="cui">
+> import Main
+> import Text.Parsing.Parser (runParser)
+> runParser "hoge" parser
+(Right "Hello")
+</pre>
+
+<p>REPLで<code>Main.purs</code>をリロードする場合は<code>:r</code>をREPLで実行する。</p>
+<h2 id="数字のパース">数字のパース</h2>
+<h3 id="1文字取得">1文字取得</h3>
+<p>1文字の数字を読み取りたいなら、<code>Text.Parsing.Parser.Token</code>に<code>digit</code>があるのでそれを使う。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Token</span> <span class="p">(</span><span class="nf">digit</span><span class="p">)</span>
+
+
+<span class="nf">parser</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Char</span>
+<span class="nf">parser</span> <span class="ow">=</span> <span class="n">digit</span>
+</code></pre></div><pre class="cui">
+> runParser "12345" parser
+(Right '1')
+</pre>
+
+<h3 id="1文字以上取得">1文字以上取得</h3>
+<p>1文字以上を取得したいなら、<code>Data.Array.Some</code>を使う。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Array</span> <span class="k">as</span> <span class="n">Array</span>
+
+
+<span class="nf">parser</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="p">(</span><span class="kt">Array</span> <span class="kt">Char</span><span class="p">)</span>
+<span class="nf">parser</span> <span class="ow">=</span> <span class="kt">Array</span><span class="o">.</span><span class="n">some</span> <span class="n">digit</span>
+</code></pre></div><pre class="cui">
+> runParser "12345" parser
+(Right ['1','2','3','4','5'])
+</pre>
+
+<p>0文字以上の場合は<code>Data.Array.many</code>を使えば良い。
+ただし、この関数は実装で<code>(:)</code>を使っている。この計算量は O(配列の長さ) のため(<a href="https://pursuit.purescript.org/packages/purescript-arrays/6.0.1/docs/Data.Array#v:(:)">参考</a>)、
+もし効率を重視したいのであれば<code>Data.List.many</code>もしくは<code>Data.List.some</code>を使えば良い。</p>
+<p><code>Char</code>の配列ではなく<code>String</code>が欲しいのであれば、<code>Data.String.CodeUnits.fromCharArray</code>で変換すれば良い。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="k">as</span> <span class="n">CodeUnits</span>
+
+<span class="nf">parser</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+<span class="nf">parser</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">arr</span> <span class="ow">&lt;-</span> <span class="kt">Array</span><span class="o">.</span><span class="n">some</span> <span class="n">digit</span>
+  <span class="n">pure</span> <span class="o">$</span> <span class="kt">CodeUnits</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="n">arr</span>
+</code></pre></div><pre class="cui">
+> runParser "12345" parser
+(Right "12345")
+</pre>
+
+<h3 id="数字を整数値で取得">数字を整数値で取得</h3>
+<p><code>Int.fromString</code>で整数に変換すれば良い。
+文脈的にこれに失敗することなどあり得ないのだが、関数の定義上仕方ないため、<code>Maybe</code>の値で場合分けをしている。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser</span> <span class="p">(</span><span class="nf">fail</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Int</span> <span class="k">as</span> <span class="n">Int</span>
+<span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+
+
+<span class="nf">integer</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">integer</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">arr</span> <span class="ow">&lt;-</span> <span class="kt">Array</span><span class="o">.</span><span class="n">some</span> <span class="n">digit</span>
+  <span class="kr">case</span> <span class="kt">Int</span><span class="o">.</span><span class="n">fromString</span> <span class="p">(</span><span class="kt">CodeUnits</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="n">arr</span><span class="p">)</span> <span class="kr">of</span>
+    <span class="kt">Just</span> <span class="n">i</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="n">i</span>
+
+    <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="n">fail</span> <span class="s">&#34;parse error&#34;</span>
+</code></pre></div><pre class="cui">
+> runParser 12345 integer
+(Right 12345)
+</pre>
+
+<h3 id="符号付き整数">符号付き整数</h3>
+<p>最初に符号の有無、有ったとして<code>+</code>と<code>-</code>のどちらなのかを確認する。</p>
+<p>「+または-」を<code>char '+' &lt;|&gt; char '-'</code>で表すのはなかなか直感的で良い。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Control.Alt</span> <span class="p">((</span><span class="o">&lt;|&gt;</span><span class="p">))</span>
+<span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">char</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Combinators</span> <span class="p">(</span><span class="nf">optionMaybe</span><span class="p">)</span>
+
+
+<span class="nf">signedInteger</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">signedInteger</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">sign</span> <span class="ow">&lt;-</span> <span class="n">optionMaybe</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;+&#39;</span> <span class="o">&lt;|&gt;</span> <span class="n">char</span> <span class="sc">&#39;-&#39;</span><span class="p">)</span>
+  <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+  <span class="kr">case</span> <span class="n">sign</span> <span class="kr">of</span>
+    <span class="kt">Just</span> <span class="sc">&#39;+&#39;</span> <span class="ow">-&gt;</span>
+      <span class="n">pure</span> <span class="n">i</span>
+
+    <span class="kt">Just</span> <span class="sc">&#39;-&#39;</span> <span class="ow">-&gt;</span>
+      <span class="n">pure</span> <span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="kt">Nothing</span> <span class="ow">-&gt;</span>
+      <span class="n">pure</span> <span class="n">i</span>
+
+    <span class="kr">_</span> <span class="ow">-&gt;</span>
+      <span class="n">fail</span> <span class="s">&#34;parse error&#34;</span> <span class="c1">-- ここには来ないはず</span>
+</code></pre></div><pre class="cui">
+> runParser "123" signedInteger
+(Right 123)
+
+> runParser "+123" signedInteger
+(Right 123)
+
+> runParser "-123" signedInteger
+(Right -123)
+</pre>
+
+<p><code>fail</code>があるのが気持ち悪いなら、以下のように書くことも可能。
+「符号<code>+</code>がついている」「符号<code>-</code>がついている」「符号がついていない」の3種類に分離した。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">integer</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span> 
+<span class="nf">integer</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">arr</span> <span class="ow">&lt;-</span> <span class="kt">Array</span><span class="o">.</span><span class="n">some</span> <span class="n">digit</span>
+  <span class="kr">case</span> <span class="kt">Int</span><span class="o">.</span><span class="n">fromString</span> <span class="p">(</span><span class="kt">CodeUnits</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="n">arr</span><span class="p">)</span> <span class="kr">of</span>
+    <span class="kt">Just</span> <span class="n">i</span> <span class="ow">-&gt;</span> <span class="n">pure</span> <span class="n">i</span>
+
+    <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="n">fail</span> <span class="s">&#34;parse error&#34;</span>
+
+
+<span class="nf">plusInteger</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">plusInteger</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+  <span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+  <span class="n">pure</span> <span class="n">x</span>
+
+
+<span class="nf">minusInteger</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">minusInteger</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;-&#39;</span>
+  <span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+  <span class="n">pure</span> <span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+
+
+<span class="nf">signedInteger</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">signedInteger</span> <span class="ow">=</span> <span class="n">integer</span> <span class="o">&lt;|&gt;</span> <span class="n">plusInteger</span> <span class="o">&lt;|&gt;</span> <span class="n">minusInteger</span>
+</code></pre></div><p>ちなみに<code>plusInteger</code>と<code>minusInteger</code>はもっと短く書ける (いわゆる Applicative style と呼ばれるやつ)。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">plusInteger</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">plusInteger</span> <span class="ow">=</span>
+  <span class="n">char</span> <span class="sc">&#39;+&#39;</span> <span class="o">*&gt;</span> <span class="n">integer</span>
+
+
+<span class="nf">minusInteger</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">minusInteger</span> <span class="ow">=</span>
+  <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="o">-</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;-&#39;</span> <span class="o">*&gt;</span> <span class="n">integer</span><span class="p">)</span>
+</code></pre></div><h3 id="すでに用意されているやつを使う">すでに用意されているやつを使う</h3>
+<p>さて、整数値はトークンの一種である。</p>
+<p><code>Text.Parsing.Parser.Token</code>の<a href="https://pursuit.purescript.org/packages/purescript-parsing/7.0.1/docs/Text.Parsing.Parser.Token#v:makeTokenParser">makeTokenParser</a>と使うと、様々なトークンのパーサーが使えるようになる。
+その中に整数値のパーサーがあるため、それを使ってみる。</p>
+<p><code>makeTokenParser</code>は、<code>LanguageDef</code>型の値を引数にとり、トークンパーサーが詰まったレコードを返す。
+<code>LanguageDef</code>は、<code>makeTokenParser</code>を作るに当たっての設定の入ったレコードである。
+<code>LanguageDef</code>という名前から察するに、<code>makeTokenParser</code>はプログラミング言語を字句解析する目的で使われるのだろう。</p>
+<p>今回は特にプログラミング言語のパーサーを作るわけではないので、<code>Text.Parsing.Parser.Language</code>の<code>emptyDef</code>を指定する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Language</span> <span class="p">(</span><span class="nf">emptyDef</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Token</span> <span class="p">(</span><span class="nf">makeTokenParser</span><span class="p">,</span> <span class="kt">GenTokenParser</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Data.Identity</span> <span class="p">(</span><span class="kt">Identity</span><span class="p">)</span>
+
+
+<span class="nf">tokenParser</span> <span class="ow">::</span> <span class="kt">GenTokenParser</span> <span class="kt">String</span> <span class="kt">Identity</span>
+<span class="nf">tokenParser</span> <span class="ow">=</span> <span class="n">makeTokenParser</span> <span class="n">emptyDef</span>
+</code></pre></div><p><a href="https://pursuit.purescript.org/packages/purescript-parsing/7.0.1/docs/Text.Parsing.Parser.Token#t:GenTokenParser">GenTokenParserの定義</a>を見ると、<code>integer</code>フィールドに整数のパーサーがあることがわかる．<a href="https://github.com/purescript-contrib/purescript-parsing/blob/v7.0.1/src/Text/Parsing/Parser/Token.purs#L136-L273">ソースコード</a>まで見にいくと、各パーサーの説明が書かれているので見ると良い。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">integer</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">integer</span> <span class="ow">=</span> <span class="n">tokenParser</span><span class="o">.</span><span class="n">integer</span>
+</code></pre></div><pre class="cui">
+> runParser "-123" integer
+(Right -123)
+
+> runParser "+123" integer
+(Right 123)
+
+> runParser "123" integer
+(Right 123)
+</pre>
+
+<h2 id="足し算のパース">足し算のパース</h2>
+<p>手始めに、次のBNFのパーサーを書いてみる。</p>
+<pre tabindex="0"><code>&lt;expr&gt; = &lt;expr&gt; + &lt;integer&gt; | &lt;integer&gt;
+</code></pre><p>ただし、ここでは<code>+</code>は左結合とし、パース結果を以下の<code>Expr</code>に入れる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Expr</span> <span class="ow">=</span> <span class="kt">Plus</span> <span class="kt">Expr</span> <span class="kt">Int</span> <span class="o">|</span> <span class="kt">First</span> <span class="kt">Int</span>
+
+
+<span class="kr">instance</span> <span class="kt">Show</span> <span class="kt">Expr</span> <span class="kr">where</span>
+  <span class="n">show</span> <span class="p">(</span><span class="kt">Plus</span> <span class="n">e</span> <span class="n">i</span><span class="p">)</span> <span class="ow">=</span> <span class="s">&#34;(&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">e</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;+&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">i</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;)&#34;</span>
+  <span class="n">show</span> <span class="p">(</span><span class="kt">First</span> <span class="n">i</span><span class="p">)</span>  <span class="ow">=</span> <span class="n">show</span> <span class="n">i</span>
+</code></pre></div><h3 id="エラーになる例">エラーになる例</h3>
+<p>BNF通りに素直に実装すると以下のようになる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">plusExpr</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="kt">First</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span>
+  <span class="kr">where</span>
+    <span class="n">plusExpr</span> <span class="ow">=</span> <span class="kr">do</span>
+       <span class="n">e</span> <span class="ow">&lt;-</span> <span class="n">expr</span>
+       <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+       <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+       <span class="n">pure</span> <span class="p">(</span><span class="kt">Plus</span> <span class="n">e</span> <span class="n">i</span><span class="p">)</span>
+</code></pre></div><p>ところが、以下のエラーが出る。</p>
+<pre tabindex="0"><code>The value of expr is undefined here, so this reference is not allowed.
+
+See https://github.com/purescript/documentation/blob/master/errors/CycleInDeclaration.md for more information,
+or to contribute content related to this error.
+</code></pre><p><a href="https://github.com/purescript/documentation/blob/master/errors/CycleInDeclaration.md">エラーのURL先</a>を見れば分かるが、要するにJavaScriptコードへの変換の際、<code>func = func</code>のような、循環した代入が起こったらしい。</p>
+<p>このエラーの原因場所を探るために、エラー場所以外のコードだけに絞る。</p>
+<p>まず<code>plusExpr</code>を無くす。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="n">parser</span> <span class="n">string</span> <span class="n">expr</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="p">(</span><span class="kr">do</span> <span class="n">e</span> <span class="ow">&lt;-</span> <span class="n">expr</span>
+           <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+           <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+           <span class="n">pure</span> <span class="p">(</span><span class="n">plus</span> <span class="n">e</span> <span class="n">i</span><span class="p">))</span>
+       <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">first</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span>
+</code></pre></div><p><code>First &lt;$&gt; integer</code>の部分も関係ないので取り除く。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="n">parser</span> <span class="n">string</span> <span class="n">expr</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="kr">do</span> <span class="n">e</span> <span class="ow">&lt;-</span> <span class="n">expr</span>
+           <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+           <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+           <span class="n">pure</span> <span class="p">(</span><span class="n">plus</span> <span class="n">e</span> <span class="n">i</span><span class="p">)</span>
+</code></pre></div><p><code>do</code>構文を<code>&gt;&gt;=</code>に直し、その後半を切り捨てる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">=</span> <span class="n">expr</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="n">e</span> <span class="ow">-&gt;</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+</code></pre></div><p>さらに<code>&gt;&gt;=</code>は<code>bind</code>関数であったから、以下のように書き換える。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">=</span> <span class="n">bind</span> <span class="n">expr</span> <span class="p">(</span><span class="nf">\</span><span class="n">e</span> <span class="ow">-&gt;</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span><span class="p">)</span>
+</code></pre></div><p>この状態でも同じエラーが出ることが確認できる。</p>
+<p>実は、<code>expr</code>の定義の中に<code>expr</code>が含まれていると、定義が循環してしまうため、このようなコンパイルエラーとなる。ただし、<code>\_ -&gt; expr</code>のようにラムダ式の中に<code>expr</code>が含まれている場合はエラーとはならない。このことについて以下で詳しく見ていくが、細かい話なので面倒な場合は飛ばしても良い。</p>
+<h3 id="寄り道-どんなjavascriptコードが生成されるのか">(寄り道) どんなJavaScriptコードが生成されるのか</h3>
+<p>ここでの環境はPureScript 0.14.5を想定する。バージョンが変わると生成されるコードも変わるかもしれない。</p>
+<p>適当に<code>src/Experiment.purs</code>を作成し、以下のようなコードを書いてみる。<code>func1</code>は<code>inc</code>をそのまま参照し、<code>func2</code>は適当な無名関数で包む。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">inc</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">inc</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="nf">func1</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func1</span> <span class="ow">=</span> <span class="n">inc</span>
+
+<span class="nf">func2</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func2</span> <span class="ow">=</span> <span class="p">(</span><span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">inc</span><span class="p">)</span> <span class="n">unit</span>
+</code></pre></div><p>これを<code>spago build</code>でビルドすると、JavaScriptのコードが<code>output/Experiment/indes.js</code>に生成される。結果は以下のようになっていた。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">Data_Unit</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&#34;../Data.Unit/index.js&#34;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">inc</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="kd">var</span> <span class="nx">func2</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">inc</span><span class="p">;</span>
+<span class="p">})(</span><span class="nx">Data_Unit</span><span class="p">.</span><span class="nx">unit</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">func1</span> <span class="o">=</span> <span class="nx">inc</span><span class="p">;</span>
+</code></pre></div><p><code>func1</code>の方は<code>inc</code>をそのまま代入しているが、後者は<code>inc</code>が含まれた無名関数を呼び出すような形となっている。</p>
+<p>よって、もし次のように書いたとすると、</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">func1</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func1</span> <span class="ow">=</span> <span class="n">func1</span>
+</code></pre></div><p>次のようにコードが生成されることが予想できる。右辺の<code>func1</code>はこの代入文の時点ではまだ定義されていないため、<code>undefined</code>と評価される。実際にはPureScriptコンパイラの方でエラーとなる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">func1</span> <span class="o">=</span> <span class="nx">func1</span><span class="p">;</span>
+</code></pre></div><p>もし次のように書いたとすると、</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">func1</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func1</span> <span class="ow">=</span> <span class="p">(</span><span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">func1</span><span class="p">)</span> <span class="n">unit</span>
+
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">logShow</span> <span class="o">$</span> <span class="n">func1</span> <span class="mi">0</span>
+</code></pre></div><p>次のようなコードとなる。この<code>main</code>関数を実行したいなら、<code>spago run -m Experiment</code>とする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">func1</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">func1</span><span class="p">;</span>
+<span class="p">})(</span><span class="nx">Data_Unit</span><span class="p">.</span><span class="nx">unit</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">main</span> <span class="o">=</span> <span class="nx">Effect_Console</span><span class="p">.</span><span class="nx">logShow</span><span class="p">(</span><span class="nx">Data_Show</span><span class="p">.</span><span class="nx">showInt</span><span class="p">)(</span><span class="nx">func1</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+</code></pre></div><p>こちらはPureScriptコンパイラの方では通る。ラムダ式の場合は細かくチェックせずにそのまま無名関数を生成するようだ。しかしコンパイルに成功しても、以下のランタイムエラーが発生する (！)。</p>
+<pre class="cui">
+TypeError: func1 is not a function
+</pre>
+
+<p>というのも、<code>var func1 = ...</code>の右辺を評価すると<code>undefined</code>が返ってくるからである。<code>func1(0)</code>が<code>undefined(0)</code>と評価され、<code>undefined</code>は関数じゃないと怒られている。</p>
+<p>要するに、<code>func1</code>が定義される前に右辺の<code>func1</code>を評価しないで欲しいのである。そのためには次のようにすればよい。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">func1</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func1</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">func1</span><span class="p">)</span> <span class="n">unit</span> <span class="n">s</span>
+</code></pre></div><p>これは以下のJavaScriptコードに展開される。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">func1</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">func1</span><span class="p">;</span>
+    <span class="p">})(</span><span class="nx">Data_Unit</span><span class="p">.</span><span class="nx">unit</span><span class="p">)(</span><span class="nx">s</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div><p>先ほどと違うのは、関数<code>function (s) { ... }</code>に包まれて返ってきた点である。これは関数オブジェクトとして評価され、その中身の<code>func1</code>までは評価されない。<code>function (s) { ... }</code>の<code>s</code>に具体的な値を入れて初めて<code>func1</code>が評価される。その時点では<code>func1</code>は<code>undefined</code>ではなく、ちゃんと関数への参照が入っている。</p>
+<p>これは、いわゆる評価を遅延させていることに対応する。遅延評価についての関数・型クラスは<a href="https://pursuit.purescript.org/packages/purescript-control/5.0.0/docs/Control.Lazy">Control.Lazy</a>で定義されており、<code>Lazy</code>型クラスを実装している型でれば<code>defer</code>で評価の遅延が行える。関数型<code>a -&gt; b</code>は<code>Lazy</code>型クラスのインスタンスであるため、次のコードで遅延させることができる (実質上のコードと同じである)。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Control.Lazy</span> <span class="p">(</span><span class="nf">defer</span><span class="p">)</span>
+
+<span class="nf">func1</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func1</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">func1</span>
+</code></pre></div><p>とはいえ、<code>func1</code>の中で<code>func1</code>を呼び出しているので、これは無限再帰となる。</p>
+<pre class="cui">
+RangeError: Maximum call stack size exceeded
+</pre>
+
+<p>ちなみに、次のコードはどうだろうか。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">func1</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func1</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">func1</span> <span class="n">x</span>
+</code></pre></div><p>なんとこれはコンパイルが通り、次のようなコードが生成される。再帰の部分が<code>while</code>に置き換えられている (恐らく、末尾再帰最適化が働いた)。実行した際は無限ループとなる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">func1</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$copy_x</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">$tco_result</span><span class="p">;</span>
+    <span class="kd">function</span> <span class="nx">$tco_loop</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">$copy_x</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">$tco_result</span> <span class="o">=</span> <span class="nx">$tco_loop</span><span class="p">(</span><span class="nx">$copy_x</span><span class="p">);</span>
+    <span class="p">};</span>
+    <span class="k">return</span> <span class="nx">$tco_result</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div><p>どうやら<code>func x</code>のように引数付きで定義していれば、PureScriptのコンパイラは<code>func</code>を関数だと認識し、それ専用のコードを生成するらしい。<code>func = func</code>と<code>func x = func x</code>が区別できていないということは、PureScriptコンパイラはコード生成時に型を考慮していないということなのだろうか (PureScriptコードの型チェックを行うが、JSに変換する際には型の情報を捨てている？)。</p>
+<p>遅延評価で<code>\s -&gt; (\_ -&gt; func1) unit s</code>のような記述をしたが、この定義は実際には冗長である。もっと簡潔に次のコード</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">func1</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func1</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="n">func1</span> <span class="n">s</span>
+</code></pre></div><p>で動く。そして以下のJavaScriptコードに展開されるかも、と思うかもしれない。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">func1</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">func1</span><span class="p">(</span><span class="nx">s</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div><p>実際、以下の定義とほぼ同じコードが出力される。ただし、末尾再帰最適化が行われるようで、無限再帰ではなく単なる無限ループとなる (そもそも、これは<code>func x = func x</code>と同義)。</p>
+<p><code>defer</code>を使わず自分で<code>\s -&gt; ...</code>を書いて遅延させる分には、上のような簡潔な書き方で良い。しかし<code>defer</code>を使う際には必ず<code>\_ -&gt; func1</code>の記述が必要になることに注意。実際、</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">func1</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">func1</span> <span class="ow">=</span> <span class="n">defer</span> <span class="n">func1</span>
+</code></pre></div><p>と書いてしまうと、右辺の<code>func1</code>が<code>undefined</code>となってしまいコンパイルエラーになる。</p>
+<h3 id="エラーを抑える方法">エラーを抑える方法</h3>
+<p>前節を踏まえて、コンパイルエラーを抑えるため方法がいくつか考えられる (ただし後述するが、コンパイルエラーが無くなるだけで期待した動作はしない)。</p>
+<p>1つ目は、余分な<code>_ &lt;- pure unit</code>を挟むことである。これだけで、<code>do</code>構文を外したときに
+<code>pure unit &gt;&gt;= \_ -&gt; expr &gt;&gt;= ...</code>のように、<code>expr</code>が後ろのラムダ式の中に入る。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">plusExpr</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="kt">First</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span>
+  <span class="kr">where</span>
+    <span class="n">plusExpr</span> <span class="ow">=</span> <span class="kr">do</span>
+       <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">pure</span> <span class="n">unit</span>
+       <span class="n">e</span> <span class="ow">&lt;-</span> <span class="n">expr</span>
+       <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+       <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+       <span class="n">pure</span> <span class="p">(</span><span class="kt">Plus</span> <span class="n">e</span> <span class="n">i</span><span class="p">)</span>
+</code></pre></div><p>2つ目は、<code>expr</code>に余分な引数を加えることである。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Unit</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+<span class="nf">expr</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">plusExpr</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="kt">First</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span>
+  <span class="kr">where</span>
+    <span class="n">plusExpr</span> <span class="ow">=</span> <span class="kr">do</span>
+       <span class="n">e</span> <span class="ow">&lt;-</span> <span class="n">expr</span> <span class="n">unit</span>
+       <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+       <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+       <span class="n">pure</span> <span class="p">(</span><span class="kt">Plus</span> <span class="n">e</span> <span class="n">i</span><span class="p">)</span>
+</code></pre></div><p>3つ目の方法は、<code>defer</code>関数を利用してパーサーの評価を遅延させることである。
+<code>Parser</code>は<code>Lazy</code>型クラスのインスタンスであるから、<code>defer</code>が使える。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Control.Lazy</span> <span class="p">(</span><span class="nf">defer</span><span class="p">)</span>
+
+
+<span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">plusExpr</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="kt">First</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span>
+  <span class="kr">where</span>
+    <span class="n">plusExpr</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+       <span class="n">e</span> <span class="ow">&lt;-</span> <span class="n">expr</span>
+       <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+       <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+       <span class="n">pure</span> <span class="p">(</span><span class="kt">Plus</span> <span class="n">e</span> <span class="n">i</span><span class="p">)</span>
+</code></pre></div><h3 id="bnfの見直し">BNFの見直し</h3>
+<p>さて、コンパイルエラーはなくなったが、実際に実行してみると無限再帰に陥り、ランタイムエラーが発生する。</p>
+<pre class="cui">
+> runParser "1+2+3+4" expr
+
+RangeError: Maximum call stack size exceeded
+</pre>
+
+<p>これは、コンパイルエラーを抑えたとしても、「<code>expr</code>は<code>expr</code>を呼び、その中でさらに<code>expr</code>を呼び…」という無限ループは排除できていないからである。</p>
+<p>これを解決するには、BNFを見直す必要がある。すなわち、もっと具体的に</p>
+<pre tabindex="0"><code>&lt;expr&gt; = &lt;integer&gt; + &lt;integer&gt; + ... + &lt;integer&gt;
+</code></pre><p>と解釈する必要がある。左結合だから、<code>foldl</code>みたいな関数を実装すればよいことが分かる。</p>
+<p>以下の補助関数<code>expr'</code>は、「<code>+ &lt;integer&gt;</code>をパースしてみて、失敗したら引数の値を返し、成功したら引数の値と結合させる」という処理を行っている。
+これでコードは動作する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+  <span class="n">expr&#39;</span> <span class="p">(</span><span class="kt">First</span> <span class="n">i</span><span class="p">)</span>
+
+
+<span class="nf">expr&#39;</span> <span class="ow">::</span> <span class="kt">Expr</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+<span class="nf">expr&#39;</span> <span class="n">e0</span> <span class="ow">=</span>
+  <span class="n">plusExpr</span> <span class="o">&lt;|&gt;</span> <span class="n">pure</span> <span class="n">e0</span>
+  <span class="kr">where</span>
+    <span class="n">plusExpr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+    <span class="n">plusExpr</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+      <span class="n">i</span> <span class="ow">&lt;-</span> <span class="n">integer</span>
+      <span class="n">expr&#39;</span> <span class="p">(</span><span class="kt">Plus</span> <span class="n">e0</span> <span class="n">i</span><span class="p">)</span>
+</code></pre></div><pre class="cui">
+> runParser "1+2+3+4" expr
+(Right (((1)+2)+3)+4)
+</pre>
+
+<p>ちなみに、<code>plusExpr</code>はApplicative styleで次のように書ける。
+<code>'+' &lt;integer&gt;</code>という文面がここから読み取れるため、慣れると読み易い。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">plusExpr</span> <span class="ow">=</span> <span class="kt">Plus</span> <span class="n">e0</span> <span class="o">&lt;$</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span> <span class="o">&lt;*&gt;</span> <span class="n">integer</span>
+</code></pre></div><h3 id="chinlの利用">chinlの利用</h3>
+<p>再び以下のBNFを考える。</p>
+<pre tabindex="0"><code>&lt;expr&gt; = &lt;integer&gt; + &lt;integer&gt; + ... + &lt;integer&gt;
+</code></pre><p>実は<code>Text.Parsing.Parser.Combinators</code>に<code>chainl</code>という関数があり、左結合の式をパースすることができる。
+今回は少なくとも1つ式が存在しなければならないバージョンの<code>chainl1</code>を使う。</p>
+<p><a href="https://pursuit.purescript.org/packages/purescript-parsing/7.0.1/docs/Text.Parsing.Parser.Combinators#v:chainl">chainl1</a>
+の型は以下の通り。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">chainl1</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">m</span> <span class="n">s</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="kt">ParserT</span> <span class="n">s</span> <span class="n">m</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">ParserT</span> <span class="n">s</span> <span class="n">m</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">ParserT</span> <span class="n">s</span> <span class="n">m</span> <span class="n">a</span>
+</code></pre></div><p>今回の例でいうと、第1引数には<code>integer</code>のパーサー、第2引数には<code>+</code>のパーサーを入れる。
+ただし、第2引数のパーサーの返却値は、<code>foldl</code>と同じような<code>(accumulator, elem)</code>を引数にとる関数である。</p>
+<p>ただし、<code>foldl</code>とは違って関数の型がやや弱い。<code>foldl</code>の場合は<code>b -&gt; a -&gt; b</code>だったが、<code>chainl</code>はaccumulatorの型と要素の型が一致していないといけない。そのため、前節の<code>Expr</code>を<code>chainl</code>で作るのは(おそらく)難しい。</p>
+<p>代わりに次のようにする。データ型の方では式の結合順序の情報を無くしてしまう。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Expr</span> <span class="ow">=</span> <span class="kt">Plus</span> <span class="kt">Expr</span> <span class="kt">Expr</span> <span class="o">|</span> <span class="kt">Elem</span> <span class="kt">Int</span>
+
+<span class="kr">instance</span> <span class="kt">Show</span> <span class="kt">Expr</span> <span class="kr">where</span>
+  <span class="n">show</span> <span class="p">(</span><span class="kt">Plus</span> <span class="n">e1</span> <span class="n">e2</span><span class="p">)</span> <span class="ow">=</span> <span class="s">&#34;(&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">e1</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;+&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">show</span> <span class="n">e2</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;)&#34;</span>
+  <span class="n">show</span> <span class="p">(</span><span class="kt">Elem</span> <span class="n">i</span><span class="p">)</span> <span class="ow">=</span> <span class="n">show</span> <span class="n">i</span>
+</code></pre></div><p>その上で<code>expr</code>は次のように書ける。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Combinators</span> <span class="p">(</span><span class="nf">chainl1</span><span class="p">)</span>
+
+<span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">chainl1</span> <span class="p">(</span><span class="kt">Elem</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span> <span class="kr">do</span>
+  <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span>
+  <span class="n">pure</span> <span class="nf">\</span><span class="n">acc</span> <span class="n">e</span> <span class="ow">-&gt;</span> <span class="kt">Plus</span> <span class="n">acc</span> <span class="n">e</span>
+</code></pre></div><p>ちなみに以下のようにもっと短く書ける。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Expr</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">chainl1</span> <span class="p">(</span><span class="kt">Elem</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span> <span class="p">(</span><span class="kt">Plus</span> <span class="o">&lt;$</span> <span class="n">char</span> <span class="sc">&#39;+&#39;</span><span class="p">)</span>
+</code></pre></div><p>型の定義では結合順序の情報が失われているが、パーサーの方で結合順序が考慮できている。</p>
+<pre class="cui">
+> runParser "1+2+3+4" expr
+(Right (((1+2)+3)+4))
+</pre>
+
+<h2 id="四則演算のパース">四則演算のパース</h2>
+<p>四則演算をパースし、その計算をパース結果とするようなプログラムを書く。BNFは以下の通り。</p>
+<pre tabindex="0"><code>&lt;expr&gt; = &lt;expr&gt; + &lt;term&gt; | &lt;expr&gt; - &lt;term&gt; | &lt;term&gt;
+&lt;term&gt; = &lt;term&gt; * &lt;factor&gt; | &lt;term&gt; / &lt;factor&gt; | &lt;factor&gt;
+&lt;factor&gt; = ( &lt;expr&gt; ) | &lt;integer&gt;
+</code></pre><p>数字は整数値しか受け取らないものとし、数値計算の結果は浮動小数点数とする。</p>
+<p>今までのことを踏まえて、四則演算を計算するパーサーを書く。</p>
+<p>素朴にこれを書くと以下のようになる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">chainl1</span> <span class="n">term</span>
+  <span class="p">((</span><span class="n">char</span> <span class="sc">&#39;+&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">+</span><span class="p">))</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;-&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">-</span><span class="p">)))</span>
+
+
+<span class="nf">term</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">term</span> <span class="ow">=</span> <span class="n">chainl1</span> <span class="n">factor</span>
+  <span class="p">((</span><span class="n">char</span> <span class="sc">&#39;*&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">*</span><span class="p">))</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;/&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">/</span><span class="p">)))</span>
+
+
+<span class="nf">factor</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">factor</span> <span class="ow">=</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;(&#39;</span> <span class="o">*&gt;</span> <span class="n">expr</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;)&#39;</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="n">integer</span>
+</code></pre></div><p>ところが、これは動かない。再び次のエラーにぶつかる。</p>
+<pre tabindex="0"><code>The value of expr is undefined here, so this reference is not allowed.
+
+The value of term is undefined here, so this reference is not allowed.
+
+The value of factor is undefined here, so this reference is not allowed.
+</code></pre><p>ちなみにHaskellのParsecライブラリを使うと、以下のコードが動く(簡単のため割り算は省略)。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span>           <span class="nn">Data.Functor.Identity</span> <span class="p">(</span><span class="kt">Identity</span><span class="p">)</span>
+<span class="kr">import</span>           <span class="nn">Lib</span>
+<span class="kr">import</span>           <span class="nn">Text.Parsec</span>           <span class="p">(</span><span class="kt">Parsec</span><span class="p">,</span> <span class="nf">chainl1</span><span class="p">,</span> <span class="nf">char</span><span class="p">,</span> <span class="p">(</span><span class="o">&lt;|&gt;</span><span class="p">))</span>
+<span class="kr">import</span>           <span class="nn">Text.Parsec.Language</span>  <span class="p">(</span><span class="nf">emptyDef</span><span class="p">)</span>
+<span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Text.Parsec.Token</span>     <span class="k">as</span> <span class="n">P</span>
+
+<span class="kr">type</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="ow">=</span> <span class="kt">Parsec</span> <span class="n">s</span> <span class="nb">()</span>
+
+
+<span class="nf">tokenParser</span> <span class="ow">::</span> <span class="kt">P</span><span class="o">.</span><span class="kt">GenTokenParser</span> <span class="kt">String</span> <span class="nb">()</span> <span class="kt">Identity</span>
+<span class="nf">tokenParser</span> <span class="ow">=</span> <span class="kt">P</span><span class="o">.</span><span class="n">makeTokenParser</span> <span class="n">emptyDef</span>
+
+
+<span class="nf">integer</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Integer</span>
+<span class="nf">integer</span> <span class="ow">=</span> <span class="kt">P</span><span class="o">.</span><span class="n">integer</span> <span class="n">tokenParser</span>
+
+
+<span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Integer</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">chainl1</span> <span class="n">term</span>
+  <span class="p">((</span><span class="n">char</span> <span class="sc">&#39;+&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">+</span><span class="p">))</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;-&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">-</span><span class="p">)))</span>
+
+
+<span class="nf">term</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Integer</span>
+<span class="nf">term</span> <span class="ow">=</span> <span class="n">chainl1</span> <span class="n">factor</span>
+  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;*&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">*</span><span class="p">))</span>
+
+
+<span class="nf">factor</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Integer</span>
+<span class="nf">factor</span> <span class="ow">=</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;(&#39;</span>  <span class="o">*&gt;</span> <span class="n">expr</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;)&#39;</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="n">integer</span>
+</code></pre></div><p>このようにHaskellとPureScriptで同じコードを書いているにも関わらず異なる動作をする理由は、
+評価戦略の違いである。前者は遅延評価だが、後者は正格評価である。</p>
+<p>今回の場合、<code>expr</code>の中で<code>term</code>を参照し、<code>term</code>の中で<code>factor</code>を参照し、<code>factor</code>の中で<code>expr</code>を参照するという定義の循環が起こっている。JavaScriptのコードの気持ちになって考えると、これら3つをどのように定義しても、一番最初の宣言の時点で右辺に<code>undefined</code>が現れる。例えば、</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">expr</span> <span class="o">=</span> <span class="p">...</span>
+<span class="kd">var</span> <span class="nx">term</span> <span class="o">=</span> <span class="p">...</span>
+<span class="kd">var</span> <span class="nx">factor</span> <span class="o">=</span> <span class="p">...</span>
+</code></pre></div><p>の順番で行うと、<code>var expr = ...</code>の右辺の<code>term</code>はまだ宣言されていないから<code>undefined</code>である。また、</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">factor</span> <span class="o">=</span> <span class="p">...</span>
+<span class="kd">var</span> <span class="nx">term</span> <span class="o">=</span> <span class="p">...</span>
+<span class="kd">var</span> <span class="nx">expr</span> <span class="o">=</span> <span class="p">...</span>
+</code></pre></div><p>の順番だったとしても、<code>var factor = ...</code>の右辺の<code>expr</code>がまだ宣言されていないから<code>undefined</code>である。このように、定義が循環していると<code>undefined</code>が現れてしまう。</p>
+<p>これは正格評価だから起こってしまう問題である。もし右辺の値が宣言時に<code>undefined</code>とも何とも評価されておらず、パーサーの実行の時にその値が評価されるのであれば、<code>undefined</code>ではなく確かに値が入っているはずである。</p>
+<p>そこで、以下のように<code>defer</code>を挟んで評価を遅延させれば解決できる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="n">chainl1</span> <span class="n">term</span>
+    <span class="p">((</span><span class="n">char</span> <span class="sc">&#39;+&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">+</span><span class="p">))</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;-&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">-</span><span class="p">)))</span>
+
+
+<span class="nf">term</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">term</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="n">chainl1</span> <span class="n">factor</span>
+    <span class="p">((</span><span class="n">char</span> <span class="sc">&#39;*&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">*</span><span class="p">))</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;/&#39;</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="o">/</span><span class="p">)))</span>
+
+
+<span class="nf">factor</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Int</span>
+<span class="nf">factor</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;(&#39;</span>  <span class="o">*&gt;</span> <span class="n">expr</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;)&#39;</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="n">integer</span>
+</code></pre></div><pre class="cui">
+> runParser "1+2+3" expr
+(Right 6)
+
+> runParser "4*(1+2+3)" expr
+(Right 24)
+</pre>
+
+<h3 id="整数以外の計算">整数以外の計算</h3>
+<p><code>Int.toNumber</code>を使うと<code>Int</code>から<code>Number</code>に変換できる。これで整数以外にも対応できる。
+<code>expr</code>、<code>term</code>、<code>factor</code>の型を変更する必要があることに注意。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Int</span> <span class="k">as</span> <span class="n">Int</span>
+
+<span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+
+<span class="nf">term</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+
+<span class="nf">factor</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+<span class="nf">factor</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;(&#39;</span>  <span class="o">*&gt;</span> <span class="n">expr</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;)&#39;</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="o">.</span><span class="n">toNumber</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span>
+</code></pre></div><h3 id="buildexprparserの利用">buildExprParserの利用</h3>
+<p>なんと<code>Text.Parsing.Parser.Expr</code>にて、式のパーサーを半自動で生成してくれる関数がある。
+手順は以下の通り。</p>
+<ol>
+<li>演算子、その優先順位などをまとめた<code>OperatorTable</code>を定義。</li>
+<li><code>buildExprParser</code>で式のパーサーを生成。</li>
+</ol>
+<p><code>OperatorTable</code>の定義方法について。<a href="https://pursuit.purescript.org/packages/purescript-parsing/7.0.1/docs/Text.Parsing.Parser.Expr#v:buildExprParser">ドキュメント</a>には使用例しか書かれていないが、<a href="https://hackage.haskell.org/package/parsec-3.1.15.0/docs/Text-Parsec-Expr.html">ParsecのOperatorTable</a>と同じだと思われる。
+一番外側の<code>Array</code>が優先順位を決め、内側の<code>Array</code>に演算子の情報を入れる。以下では、次の情報を定義している。</p>
+<ul>
+<li>中値(<code>Infix</code>)演算子<code>*</code>と<code>/</code>は高順位で、左結合(<code>AssocLeft</code>)。</li>
+<li>中値(<code>Infix</code>)演算子<code>+</code>と<code>-</code>は低順位で、左結合(<code>AssocLeft</code>)。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">string</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Expr</span> <span class="p">(</span><span class="kt">OperatorTable</span><span class="p">,</span> <span class="kt">Operator</span><span class="p">(</span><span class="o">..</span><span class="p">),</span> <span class="kt">Assoc</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+
+
+<span class="nf">operatorTable</span> <span class="ow">::</span> <span class="kt">OperatorTable</span>
+<span class="nf">operatorTable</span> <span class="ow">=</span>
+  <span class="p">[</span> <span class="p">[</span> <span class="kt">Infix</span> <span class="p">(</span><span class="n">string</span> <span class="s">&#34;*&#34;</span> <span class="o">$&gt;</span> <span class="p">(</span><span class="o">*</span><span class="p">))</span> <span class="kt">AssocLeft</span>
+    <span class="p">,</span> <span class="kt">Infix</span> <span class="p">(</span><span class="n">string</span> <span class="sc">&#39;/&#39;</span> <span class="o">$&gt;</span> <span class="p">(</span><span class="o">/</span><span class="p">))</span> <span class="kt">AssocLeft</span>
+    <span class="p">]</span>
+  <span class="p">,</span> <span class="p">[</span> <span class="kt">Infix</span> <span class="p">(</span><span class="n">string</span> <span class="s">&#34;+&#34;</span> <span class="o">$&gt;</span> <span class="p">(</span><span class="o">+</span><span class="p">))</span> <span class="kt">AssocLeft</span>
+    <span class="p">,</span> <span class="kt">Infix</span> <span class="p">(</span><span class="n">string</span> <span class="sc">&#39;-&#39;</span> <span class="o">$&gt;</span> <span class="p">(</span><span class="o">-</span><span class="p">))</span> <span class="kt">AssocLeft</span>
+    <span class="p">]</span>
+  <span class="p">]</span>
+</code></pre></div><p>若干先ほどあげたBNFとずれてしまうが、以下のようにしてパーサーを生成する。
+<code>&lt;term&gt; [*/+-] &lt;term&gt; [*/+-] ...</code>の形のパーサーを作成できる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">term</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+<span class="nf">term</span> <span class="ow">=</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;(&#39;</span> <span class="o">*&gt;</span> <span class="n">expr</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;)&#39;</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="n">integer</span>
+
+<span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">buildExprParser</span> <span class="n">operatorTable</span> <span class="n">term</span>
+</code></pre></div><p>…としたいが再び <code>The value of ... is undefined</code>のエラーがでるので、<code>defer</code>を使う。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">term</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+<span class="nf">term</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;(&#39;</span> <span class="o">*&gt;</span> <span class="n">expr</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;)&#39;</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">toNumber</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span>
+
+<span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+  <span class="n">buildExprParser</span> <span class="n">operatorTable</span> <span class="n">term</span>
+</code></pre></div><p>ちなみに、<code>Control.Lazy</code>の<code>fix</code>関数を使うと以下のように書くこともできる。
+<code>fix</code>関数を使うと、<code>expr</code>自身を<code>\e -&gt; ...</code>の引数<code>e</code>として受け取り、自分自身を再帰させるような処理を書くことができる。
+<code>defer</code>が消える代わりに、<code>term</code>が<code>expr</code>に相当する引数を取るようになる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Control.Lazy</span> <span class="p">(</span><span class="nf">fix</span><span class="p">)</span>
+
+
+<span class="nf">term</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+<span class="nf">term</span> <span class="n">e</span> <span class="ow">=</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;(&#39;</span> <span class="o">*&gt;</span> <span class="n">e</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;)&#39;</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">toNumber</span> <span class="o">&lt;$&gt;</span> <span class="n">integer</span><span class="p">)</span>
+
+<span class="nf">expr</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Number</span>
+<span class="nf">expr</span> <span class="ow">=</span> <span class="n">fix</span> <span class="nf">\</span><span class="n">e</span> <span class="ow">-&gt;</span>
+  <span class="n">buildExprParser</span> <span class="n">operatorTable</span> <span class="n">e</span>
+</code></pre></div><h2 id="まとめ感想">まとめ・感想</h2>
+<p><code>makeTokenParser</code>、<code>buildExprParser</code>などの便利な関数があることを知った。</p>
+<p><code>CycleInDeclaration</code>のエラーの原因を探るためにかなり時間を使ったが、その分PureScriptコンパイラの動作を、ほんの少しだが垣間見ることができた。</p>
+<p>評価戦略の違いにより、HaskellのParsecで書いたコードがそのまま動かない場合があることを実感した。</p>
+
+</article>
+
+
+
+</html>

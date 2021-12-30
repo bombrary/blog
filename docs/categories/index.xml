@@ -26,6 +26,15 @@
     </item>
     
     <item>
+      <title>PureScript</title>
+      <link>https://bombrary.github.io/blog/categories/purescript/</link>
+      <pubDate>Sun, 26 Dec 2021 14:55:59 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/purescript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>neovim</title>
       <link>https://bombrary.github.io/blog/categories/neovim/</link>
       <pubDate>Sat, 25 Dec 2021 18:35:00 +0900</pubDate>
@@ -103,15 +112,6 @@
       <pubDate>Fri, 09 Jul 2021 23:15:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/brainfuck/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>PureScript</title>
-      <link>https://bombrary.github.io/blog/categories/purescript/</link>
-      <pubDate>Fri, 09 Jul 2021 23:15:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/purescript/</guid>
       <description></description>
     </item>
     

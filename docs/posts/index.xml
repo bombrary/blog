@@ -28,6 +28,21 @@ $$ \begin{aligned} \int_{\Omega} f(x) dx \simeq \frac{1}{N} \sum_{n=1}^{N} \frac
     </item>
     
     <item>
+      <title>PureScriptでパーサーコンビネータを触る (1) 四則演算のパース</title>
+      <link>https://bombrary.github.io/blog/posts/purescript-parser-combinator01/</link>
+      <pubDate>Sun, 26 Dec 2021 14:55:59 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/purescript-parser-combinator01/</guid>
+      <description>PureScriptのパーサーコンビネータにpurescript-parsingがある。これはHaskellのParsecが基になっているので、使い方はParsecとほとんど同じだと思われる(とはいえ、Parsecを使ったことはあまりない)。これを用いて四則演算のパーサーを実装してみたが、うまく動かず詰まる点がいくつかあった。その備忘録。
+パーサーコンビネータの準備 % spago install parsing  後々使うので以下のパッケージもインストール。
+% spago install either integers maybe strings arrays lists  src/Main.pursに以下の記述を追加。
+import Text.Parsing.Parser (Parser) parser :: Parser String String parser = pure &amp;#34;Hello&amp;#34; REPLを起動して、動くか確認する。どんな文字列を食わせても&amp;quot;Hello&amp;quot;としか結果を返さないパーサーの完成。
+ import Main  import Text.Parsing.Parser (runParser)  runParser &#34;hoge&#34; parser (Right &#34;Hello&#34;)  REPLでMain.pursをリロードする場合は:rをREPLで実行する。
+数字のパース 1文字取得 1文字の数字を読み取りたいなら、Text.Parsing.Parser.Tokenにdigitがあるのでそれを使う。
+import Text.Parsing.Parser.Token (digit) parser :: Parser String Char parser = digit  runParser &#34;12345&#34; parser (Right &#39;1&#39;)  1文字以上取得 1文字以上を取得したいなら、Data.Array.Someを使う。</description>
+    </item>
+    
+    <item>
       <title>Neovimのプラグインを初めて作る - REPLの操作</title>
       <link>https://bombrary.github.io/blog/posts/nvim-plugin-repl/</link>
       <pubDate>Sat, 25 Dec 2021 18:35:00 +0900</pubDate>

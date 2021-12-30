@@ -26,6 +26,24 @@
     </item>
     
     <item>
+      <title>Parser</title>
+      <link>https://bombrary.github.io/blog/tags/parser/</link>
+      <pubDate>Sun, 26 Dec 2021 14:55:59 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/parser/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>遅延評価</title>
+      <link>https://bombrary.github.io/blog/tags/%E9%81%85%E5%BB%B6%E8%A9%95%E4%BE%A1/</link>
+      <pubDate>Sun, 26 Dec 2021 14:55:59 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/%E9%81%85%E5%BB%B6%E8%A9%95%E4%BE%A1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>REPL</title>
       <link>https://bombrary.github.io/blog/tags/repl/</link>
       <pubDate>Sat, 25 Dec 2021 18:35:00 +0900</pubDate>
@@ -553,15 +571,6 @@
       <pubDate>Sun, 05 Jan 2020 14:29:15 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/tags/ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Parser</title>
-      <link>https://bombrary.github.io/blog/tags/parser/</link>
-      <pubDate>Sun, 05 Jan 2020 14:29:15 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/tags/parser/</guid>
       <description></description>
     </item>
     
