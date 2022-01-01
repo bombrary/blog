@@ -11,7 +11,7 @@ categories: ["Neovim"]
 [rlwrap](https://github.com/hanslub42/rlwrap) を使えばこの問題を解決できるのだが、別の解決案としてNeovimのREPL支援プラグインを作ってみようと思い立った。
 Neovim のターミナル機能を使ってREPLを起動し、別バッファー上で入力した文字列をREPLに送るようなプラグインを作りたい。
 
-GitHubで検索してみると同様の機能を実現するプラグインはいくつもあるようだが、プラグインを作る勉強として、自分で作ってみる。
+GitHubで検索してみると同様の機能を実現するプラグインはいくつもあるようだが(例えば、[vim-slime](https://github.com/jpalardy/vim-slime))、プラグインを作る勉強として、自分で作ってみる。
 
 ## 提供する機能
 
