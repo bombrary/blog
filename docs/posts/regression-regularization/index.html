@@ -163,15 +163,24 @@ J_2(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 + \f
 $$</p>
 <h3 id="勾配">勾配</h3>
 <p>L2正則化の場合は単純に微分できる。まず $w_j$ で微分すると、$\| \bm{w} \|_2^2 = \sum_{j=1}^{D}w_j^2$ であることに注意して、</p>
-<p>$$
-\frac{\partial J_2}{\partial w_j}
-= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}<em>i) - y^{(i)})x</em>{ij} + \lambda w_j
-$$</p>
+<div class="math_display">
+$$
+
+\frac{\partial J_2}{\partial w_j} = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_{ij} + \lambda w_j
+
+$$
+</div>
+
 <p>となる。 これより勾配が計算できる。
 $J$ の部分のベクトル表現については、<a href="https://bombrary.github.io/blog/posts/regression-gradient-descent/#勾配の計算">線形回帰の勾配法のときの計算</a>と同様にして、</p>
-<p>$$
+<div class="math_display">
+$$
+
 \frac{\partial J_2}{\partial \bm{w}} = X^T(X\bm{w} - \bm{y}) + \lambda \bm{w}
-$$</p>
+
+$$
+</div>
+
 <p>ただし、</p>
 <p>$$
 X = \begin{pmatrix}
@@ -189,10 +198,15 @@ J_1(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 + \l
 $$</p>
 <h3 id="勾配-1">勾配</h3>
 <p>$w_j$ で微分すると、$\| \bm{w} \|_1 = \sum_{j=1}^{D} |w_j|$ であることに注意して、</p>
-<p>$$
+<div class="math_display">
+$$
+
 \frac{\partial J_1}{\partial w_j}
-= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}<em>i) - y^{(i)})x</em>{ij} + \lambda \frac{\partial |w_j|}{\partial w_j}
-$$</p>
+= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_{ij} + \lambda \frac{\partial |w_j|}{\partial w_j}
+
+$$
+</div>
+
 <p>さて、最後の項が計算できないため、通常の勾配降下法が利用できない。いくつか方法があるらしいが、ここでは座標降下法で解くことを目指す。その準備として、「1変数のみ動かしたときの$J$の最小値」を求めることにする。</p>
 <h3 id="1変数以外は固定した場合の最小値">1変数以外は固定した場合の最小値</h3>
 <p>$J_1(\bm{w})$ について、 $w_d$ だけを動かすことを考え、$J_1$ が最小になる $w_d$ を求める。 &ldquo;$J_1$ の $w_d$ に関する勾配 = 0&rdquo; を解くことを目指す。</p>
@@ -204,16 +218,21 @@ $$</p>
 <li>$X_{:, -d}$ : 行列 $X$ から第 $d$ 列を取り除いた行列。</li>
 <li>$\bm{r}_{-d} = \bm{y} - X_{:, -d}\bm{w}_{-d}$ : データの $d$ 番目の特徴を考慮しない場合の誤差</li>
 </ul>
-<p>$$
+<div class="math_display">
+$$
+
 \begin{aligned}
 \frac{\partial J_1}{\partial w_d}
-&amp;= \sum_{n=1}^{N} (\bm{w}^T\bm{x}<em>n - y^{(n)})x</em>{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
-&amp;= \sum_{n=1}^{N} (\bm{w}<em>{-d}^T\bm{x}</em>{n,-d} + w_dx_{nd} - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
-&amp;= \sum_{n=1}^{N} (\bm{w}<em>{-d}^T\bm{x}</em>{n,-d} - y^{(n)})x_{nd} + w_d\sum_{n=1}^{N} x_{nd}^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
-&amp;= -x_{:, d}^T \bm{r}_{-d} + w_d\| \bm{x}_{:, d} ||_2^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
-&amp;= -c_d + w_da_d + \lambda \frac{\partial |w_d|}{\partial w_d}
+&= \sum_{n=1}^{N} (\bm{w}^T\bm{x}_n - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&= \sum_{n=1}^{N} (\bm{w}_{-d}^T\bm{x}_{n,-d} + w_dx_{nd} - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&= \sum_{n=1}^{N} (\bm{w}_{-d}^T\bm{x}_{n,-d} - y^{(n)})x_{nd} + w_d\sum_{n=1}^{N} x_{nd}^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&= -x_{:, d}^T \bm{r}\_{-d} + w_d \| \bm{x}_{:, d} \||_2^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&= -c_d + w_da_d + \lambda \frac{\partial |w_d|}{\partial w_d}
 \end{aligned}
-$$</p>
+
+$$
+</div>
+
 <p>ここで、再び見やすさのため、$c_d = x_{:, d}^T \bm{r}_{-d},\ a_d = \| \bm{x}_{:, d} ||_2^2$とおいた。</p>
 <p>さて、&ldquo;勾配 = 0&rdquo; を解いて局所最小値を求めたいが、最後の項が $w_d = 0$ で微分不可能。
 そこで、劣勾配の概念を利用する。$|w_d|$ の劣勾配は以下の通り。</p>
@@ -331,15 +350,20 @@ $$</p>
 <li>$\bm{w} \leftarrow S(\frac{c_d}{a_d}, \frac{\lambda}{a_d})$。</li>
 </ol>
 <p>$a_d$ については、単純に<code>X[:, d]</code>のノルムを計算すれば良い。$c_d$については、</p>
-<p>$$
+<div class="math_display">
+$$
+
 \begin{aligned}
-x_{:, d}^T\bm{r}<em>{-d}
-&amp;= \sum</em>{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}<em>{-d}^T\bm{x}</em>{n,-d})\\
-&amp;= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}<em>n + w_dx</em>{nd})\\
-&amp;= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}<em>n) + w_d\sum</em>{n=1}^Nx_{nd}^2\\
-&amp;= x_{:, d}^T(\bm{y} - X\bm{w}) + w_da_d
+   x_{:, d}^T\bm{r}_{-d}
+ &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}_{-d}^T\bm{x}_{n,-d})\\
+ &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}_n + w_dx_{nd})\\
+ &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}_n) + w_d\sum_{n=1}^Nx_{nd}^2\\
+ &= x_{:, d}^T(\bm{y} - X\bm{w}) + w_da_d
 \end{aligned}
-$$</p>
+
+$$
+</div>
+
 <p>と式変形すれば、</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span>
 </code></pre></div><p>と計算できる。</p>

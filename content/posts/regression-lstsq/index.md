@@ -39,43 +39,43 @@ $$
 
 まず $J$ を行列だけで表現してみる。
 
-$$
+{{< math-disp >}}
 \begin{aligned}
 J(\bm{w})
-&= \frac{1}{2} \sum_{i=1}^{N} (\bm{w}^T\bm{x}_i - y^{(i)})^2\\\\ 
-&= \frac{1}{2} \sum_{i=1}^{N} (\bm{x}_i^T\bm{w} - y^{(i)})^2\\\\ 
+&= \frac{1}{2} \sum_{i=1}^{N} (\bm{w}^T\bm{x}_i - y^{(i)})^2\\
+&= \frac{1}{2} \sum_{i=1}^{N} (\bm{x}_i^T\bm{w} - y^{(i)})^2\\
 &= \frac{1}{2}
 \begin{pmatrix}
-  \bm{x}_1^T\bm{w} - y^{(1)}\\\\ 
-  \bm{x}_2^T\bm{w} - y^{(2)}\\\\ 
-  \vdots\\\\ 
-  \bm{x}_N^T\bm{w} - y^{(N)}\\\\ 
+  \bm{x}_1^T\bm{w} - y^{(1)}\\
+  \bm{x}_2^T\bm{w} - y^{(2)}\\
+  \vdots\\
+  \bm{x}_N^T\bm{w} - y^{(N)}\\
 \end{pmatrix}^T
 \begin{pmatrix}
-  \bm{x}_1^T\bm{w} - y^{(1)}\\\\ 
-  \bm{x}_2^T\bm{w} - y^{(2)}\\\\ 
-  \vdots\\\\ 
-  \bm{x}_N^T\bm{w} - y^{(N)}\\\\ 
-\end{pmatrix}\\\\ 
+  \bm{x}_1^T\bm{w} - y^{(1)}\\
+  \bm{x}_2^T\bm{w} - y^{(2)}\\
+  \vdots\\
+  \bm{x}_N^T\bm{w} - y^{(N)}\\
+\end{pmatrix}\\
 &= \frac{1}{2}
 \left(
 \begin{pmatrix}
-  \bm{x}_1^T\bm{w}\\\\ 
-  \bm{x}_2^T\bm{w}\\\\ 
-  \vdots\\\\ 
-  \bm{x}_N^T\bm{w}\\\\ 
+  \bm{x}_1^T\bm{w}\\
+  \bm{x}_2^T\bm{w}\\
+  \vdots\\
+  \bm{x}_N^T\bm{w}\\
 \end{pmatrix} - \bm{y}
 \right)^T
 \left(
 \begin{pmatrix}
-  \bm{x}_1^T\bm{w}\\\\ 
-  \bm{x}_2^T\bm{w}\\\\ 
-  \vdots\\\\ 
-  \bm{x}_N^T\bm{w}\\\\ 
+  \bm{x}_1^T\bm{w}\\
+  \bm{x}_2^T\bm{w}\\
+  \vdots\\
+  \bm{x}_N^T\bm{w}\\
 \end{pmatrix} - \bm{y}
 \right)
 \end{aligned}
-$$
+{{< /math-disp >}}
 
 ここで、
 

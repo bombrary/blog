@@ -69,17 +69,16 @@ $$
 
 L2正則化の場合は単純に微分できる。まず $w_j$ で微分すると、$\\| \bm{w} \\|\_2^2 = \sum_{j=1}^{D}w_j^2$ であることに注意して、
 
-$$
-\frac{\partial J_2}{\partial w_j}
-= \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_{ij} + \lambda w_j
-$$
+{{< math-disp >}}
+\frac{\partial J_2}{\partial w_j} = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_{ij} + \lambda w_j
+{{< /math-disp >}}
 
 となる。 これより勾配が計算できる。
 $J$ の部分のベクトル表現については、[線形回帰の勾配法のときの計算]({{< ref "posts/regression-gradient-descent#勾配の計算" >}})と同様にして、
 
-$$
+{{< math-disp >}}
 \frac{\partial J_2}{\partial \bm{w}} = X^T(X\bm{w} - \bm{y}) + \lambda \bm{w}
-$$
+{{< /math-disp >}}
 
 ただし、
 
@@ -106,10 +105,10 @@ $$
 
 $w_j$ で微分すると、$\\| \bm{w} \\|\_1 = \sum_{j=1}^{D} |w_j|$ であることに注意して、
 
-$$
+{{< math-disp >}}
 \frac{\partial J_1}{\partial w_j}
 = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_{ij} + \lambda \frac{\partial |w_j|}{\partial w_j}
-$$
+{{< /math-disp >}}
 
 さて、最後の項が計算できないため、通常の勾配降下法が利用できない。いくつか方法があるらしいが、ここでは座標降下法で解くことを目指す。その準備として、「1変数のみ動かしたときの$J$の最小値」を求めることにする。
 
@@ -125,16 +124,16 @@ $J_1(\bm{w})$ について、 $w_d$ だけを動かすことを考え、$J_1$ �
 - $X\_{:, -d}$ : 行列 $X$ から第 $d$ 列を取り除いた行列。
 - $\bm{r}\_{-d} = \bm{y} - X\_{:, -d}\bm{w}_{-d}$ : データの $d$ 番目の特徴を考慮しない場合の誤差
 
-$$
+{{< math-disp >}}
 \begin{aligned}
 \frac{\partial J_1}{\partial w_d}
-&= \sum_{n=1}^{N} (\bm{w}^T\bm{x}_n - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\\\ 
-&= \sum_{n=1}^{N} (\bm{w}_{-d}^T\bm{x}_{n,-d} + w_dx_{nd} - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\\\ 
-&= \sum_{n=1}^{N} (\bm{w}_{-d}^T\bm{x}_{n,-d} - y^{(n)})x_{nd} + w_d\sum_{n=1}^{N} x_{nd}^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\\\ 
-&= -x_{:, d}^T \bm{r}\_{-d} + w_d\\| \bm{x}_{:, d} \||_2^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\\\ 
+&= \sum_{n=1}^{N} (\bm{w}^T\bm{x}_n - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&= \sum_{n=1}^{N} (\bm{w}_{-d}^T\bm{x}_{n,-d} + w_dx_{nd} - y^{(n)})x_{nd} + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&= \sum_{n=1}^{N} (\bm{w}_{-d}^T\bm{x}_{n,-d} - y^{(n)})x_{nd} + w_d\sum_{n=1}^{N} x_{nd}^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
+&= -x_{:, d}^T \bm{r}\_{-d} + w_d \| \bm{x}_{:, d} \||_2^2 + \lambda \frac{\partial |w_d|}{\partial w_d}\\
 &= -c_d + w_da_d + \lambda \frac{\partial |w_d|}{\partial w_d}
 \end{aligned}
-$$
+{{< /math-disp >}}
 
 ここで、再び見やすさのため、$c_d = x_{:, d}^T \bm{r}\_{-d},\ a_d = \\| \bm{x}_{:, d} \||_2^2$とおいた。
 
@@ -290,15 +289,15 @@ $d = 1, 2, \ldots, D$ について、
 
 $a_d$ については、単純に`X[:, d]`のノルムを計算すれば良い。$c_d$については、
 
-$$
+{{< math-disp >}}
 \begin{aligned}
    x_{:, d}^T\bm{r}_{-d}
- &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}_{-d}^T\bm{x}_{n,-d})\\\\ 
- &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}_n + w_dx_{nd})\\\\ 
- &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}_n) + w_d\sum_{n=1}^Nx_{nd}^2\\\\ 
+ &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}_{-d}^T\bm{x}_{n,-d})\\
+ &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}_n + w_dx_{nd})\\
+ &= \sum_{n=1}^{N} x_{nd}(y^{(n)} - \bm{w}^T\bm{x}_n) + w_d\sum_{n=1}^Nx_{nd}^2\\
  &= x_{:, d}^T(\bm{y} - X\bm{w}) + w_da_d
 \end{aligned}
-$$
+{{< /math-disp >}}
 
 と式変形すれば、
 
