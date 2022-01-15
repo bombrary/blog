@@ -491,7 +491,7 @@ U^{l}
 &= \begin{pmatrix}
 W^{l}\bm{y}_1^{l-1} & W^{l}\bm{y}_2^{l-1} & \cdots & W^{l}\bm{y}_N^{l-1}
 \end{pmatrix}\\
-&= W^{l}U^{l}
+&= W^{l}Y^{l-1}
 \end{align*}
 {{< /displaymath >}}
 
