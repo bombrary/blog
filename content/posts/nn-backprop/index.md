@@ -205,7 +205,7 @@ $l \neq L$ のときを考える。$E$ は $y_1^{L}, y_2^{L}, \ldots $ の関数
 
 {{< displaymath >}}
 \begin{align*}
-\bm{u}^{l} &= W^{l}\bm{y}^{l-1}\\
+\bm{u}^{l} &= \left( W^{l} \right)^{\top}\bm{y}^{l-1}\\
 \bm{y}^{l} &= f(\bm{u}^{l})
 \end{align*}
 {{< /displaymath >}}
@@ -233,7 +233,7 @@ $l \neq L$ のときを考える。$E$ は $y_1^{L}, y_2^{L}, \ldots $ の関数
 ただし、任意のベクトル$\bm{x}, \bm{y}$ について、$\bm{x} \ast \bm{y}$ は成分ごとの積をとったベクトルを表す。
 
 $l \neq L$ のとき、$W^{l+1} = (w_{ij}^{l+1})_{ij}$ を $P \times Q$ 行列とする(**注意**: この記事では $W^{l}$ の $l$ は累乗ではなく添字を表すものとする)。
-このとき、
+ここでは，$P$ は入力の次元、 $Q$ は出力の次元を表していることに注意。このとき、
 
 {{< displaymath >}}
 \begin{align*}
@@ -274,7 +274,7 @@ $\frac{\partial E}{\partial w_{ij}^{l}}$ については、
 
 {{< displaymath >}}
 \begin{align*}
-\bm{u}^{l} &= W^{l}\bm{y}^{l-1}\\
+\bm{u}^{l} &= \left( W^{l} \right)^{\top} \bm{y}^{l-1}\\
 \bm{y}^{l} &= f(\bm{u}^{l})
 \end{align*}
 {{< /displaymath >}}
@@ -489,9 +489,12 @@ U^{l}
 \bm{u}_1^{l} & \bm{u}_2^{l} & \cdots & \bm{u}_N^{l}
 \end{pmatrix}\\
 &= \begin{pmatrix}
-W^{l}\bm{y}_1^{l-1} & W^{l}\bm{y}_2^{l-1} & \cdots & W^{l}\bm{y}_N^{l-1}
+\left(W^{l}\right)^{\top} \bm{y}_1^{l-1} & 
+\left(W^{l}\right)^{\top}\bm{y}_2^{l-1}&
+\cdots &
+\left(W^{l}\right)^{\top}\bm{y}_N^{l-1}
 \end{pmatrix}\\
-&= W^{l}Y^{l-1}
+&= \left(W^{l}\right)^{\top}Y^{l-1}
 \end{align*}
 {{< /displaymath >}}
 
@@ -570,7 +573,7 @@ W^{l+1}\bm{\delta}_2^{l+1} \ast f_l'(\bm{u}_2^{l}) &
 \cdots &
 W^{l+1}\bm{\delta}_N^{l+1} \ast f_l'(\bm{u}_N^{l})
 \end{pmatrix}\\
-&= W^{l+1} \Delta^{l+1} \ast f_L'(U^{l})
+&= W^{l+1} \Delta^{l+1} \ast f_l'(U^{l})
 \end{align*}
 {{< /displaymath >}}
 
@@ -621,8 +624,12 @@ Y^{l+1}
 \begin{align*}
 Y^{l+1}
 &= \begin{pmatrix} \bm{y}_1^{l+1} & \bm{y}_2^{l+1} & \cdots & \bm{y}_N^{l+1} \end{pmatrix}\\
-&= \begin{pmatrix} W^{l}\bm{y}_1^{l} & W^{l}\bm{y}_2^{l} & \cdots & W^{l}\bm{y}_N^{l} \end{pmatrix}\\
-&= W^{l}Y^{l}
+&= \begin{pmatrix}
+  \left(W^{l}\right)^{\top} \bm{y}_1^{l} &
+  \left(W^{l}\right)^{\top} \bm{y}_2^{l} &
+  \cdots &
+  \left(W^{l}\right)^{\top} \bm{y}_N^{l} \end{pmatrix}\\
+&= \left(W^{l}\right)^{\top}Y^{l}
 \end{align*}
 {{< /displaymath >}}
 
