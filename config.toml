@@ -13,7 +13,7 @@ googleAnalytics="UA-152083322-1"
 enableGitInfo = true
 
 [params]
-	customCSS = ["/css/custom.css", "/css/syntax.css"]
+	customCSS = ["css/custom.css", "css/syntax.css"]
  
 [markup.goldmark.renderer]
 unsafe = true
