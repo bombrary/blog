@@ -16,7 +16,7 @@
       <description>前回の記事 と合わせて1つの記事にする予定だったが、前回があまりに長くなってしまったので分割した。
 ある書式に従ったテキストファイルをパースすることを考える。パースしたデータを整形し、HTML文書として出力するところまでやる。
 前回インポートした関数で今回使うものは、(漏れが無ければ)以下の通り。
-import Control.Alt ((&amp;lt;|&amp;gt;)) import Control.Lazy (defer) import Text.Parsing.Parser (Parser, fail) import Text.Parsing.Parser.String (char) テキストの仕様  テキストファイルは、複数のentryで構成される。 1つのentryはタイトルtitleと中身bodyで構成される。 titleは[と]でくくられる。 titleとbodyの間、bodyと次のentryのtitleの間には、1つの改行と、0個以上の空行があり得る。それらはbodyには含まない。 空行とは、0個以上のスペースだけから構成される行のことである。  BNF風に書くと次のようになるだろう。
+import Control.Alt ((&amp;lt;|&amp;gt;)) import Control.Lazy (defer) import Text.Parsing.Parser (Parser, fail) import Text.Parsing.Parser.String (char) テキストの仕様 テキストファイルは、複数のentryで構成される。 1つのentryはタイトルtitleと中身bodyで構成される。 titleは[と]でくくられる。 titleとbodyの間、bodyと次のentryのtitleの間には、1つの改行と、0個以上の空行があり得る。それらはbodyには含まない。 空行とは、0個以上のスペースだけから構成される行のことである。 BNF風に書くと次のようになるだろう。
 &amp;lt;entries&amp;gt; = (0個以上の&amp;lt;entry&amp;gt;) &amp;lt;entry&amp;gt; = &amp;lt;title&amp;gt; &amp;#34;\n&amp;#34; &amp;lt;empty lines&amp;gt; &amp;lt;body&amp;gt; &amp;#34;\n&amp;#34; &amp;lt;empty lines&amp;gt; &amp;lt;title&amp;gt; = &amp;#34;[&amp;#34; (文字列) &amp;#34;]&amp;#34; &amp;lt;body&amp;gt; = (先頭、末尾が&amp;lt;empty lines&amp;gt;でないような文字列) &amp;lt;empty lines&amp;gt; = (0個以上の&amp;lt;empty line&amp;gt;) &amp;lt;empty line&amp;gt; = (0個以上のスペース) &amp;#34;\n&amp;#34; 例えば、以下のファイルがあったとする。
 [Title1] line1 line2 line3 line4 [Title2] line1 line2 [Title3] line1 line2 line3 これは次のようにパースされる。</description>
     </item>
@@ -28,12 +28,13 @@ import Control.Alt ((&amp;lt;|&amp;gt;)) import Control.Lazy (defer) import Text
       
       <guid>https://bombrary.github.io/blog/posts/purescript-parser-combinator01/</guid>
       <description>PureScriptのパーサーコンビネータにpurescript-parsingがある。これはHaskellのParsecが基になっているので、使い方はParsecとほとんど同じだと思われる(とはいえ、Parsecを使ったことはあまりない)。これを用いて四則演算のパーサーを実装してみたが、うまく動かず詰まる点がいくつかあった。その備忘録。
-パーサーコンビネータの準備 % spago install parsing  後々使うので以下のパッケージもインストール。
-% spago install either integers maybe strings arrays lists  src/Main.pursに以下の記述を追加。
+パーサーコンビネータの準備 % spago install parsing 後々使うので以下のパッケージもインストール。
+% spago install either integers maybe strings arrays lists src/Main.pursに以下の記述を追加。
 import Text.Parsing.Parser (Parser) parser :: Parser String String parser = pure &amp;#34;Hello&amp;#34; REPLを起動して、動くか確認する。どんな文字列を食わせても&amp;quot;Hello&amp;quot;としか結果を返さないパーサーの完成。
- import Main  import Text.Parsing.Parser (runParser)  runParser &#34;hoge&#34; parser (Right &#34;Hello&#34;)  REPLでMain.pursをリロードする場合は:rをREPLで実行する。
+&gt; import Main &gt; import Text.Parsing.Parser (runParser) &gt; runParser &#34;hoge&#34; parser (Right &#34;Hello&#34;) REPLでMain.pursをリロードする場合は:rをREPLで実行する。
 数字のパース 1文字取得 1文字の数字を読み取りたいなら、Text.Parsing.Parser.Tokenにdigitがあるのでそれを使う。
-import Text.Parsing.Parser.Token (digit) parser :: Parser String Char parser = digit  runParser &#34;12345&#34; parser (Right &#39;1&#39;)  1文字以上取得 1文字以上を取得したいなら、Data.Array.Someを使う。</description>
+import Text.Parsing.Parser.Token (digit) parser :: Parser String Char parser = digit &gt; runParser &#34;12345&#34; parser (Right &#39;1&#39;) 1文字以上取得 1文字以上を取得したいなら、Data.Array.Someを使う。
+import Data.Array as Array parser :: Parser String (Array Char) parser = Array.</description>
     </item>
     
     <item>
@@ -43,7 +44,7 @@ import Text.Parsing.Parser.Token (digit) parser :: Parser String Char parser = d
       
       <guid>https://bombrary.github.io/blog/posts/purescript-brainfuck04/</guid>
       <description>Halogenの利用 続いて、GUIでBrainfuckを動かすことをやってみる。 GUIのフレームワークとして、ここではpurescript-halogenを使ってみる。 Halogenについてはまだ勉強中で、この記事は解説記事というより勉強記録である(いままでの記事もそうではあるのだが)。
-% spago install halogen  雛形 src/Main.pursを以下のようにする。 ここのコードはほとんどHalogen Guideと同様。 関数名的におそらく、body要素を取得して、その中でcomponentを走らせるのだと思う。
+% spago install halogen 雛形 src/Main.pursを以下のようにする。 ここのコードはほとんどHalogen Guideと同様。 関数名的におそらく、body要素を取得して、その中でcomponentを走らせるのだと思う。
 module Main where import Prelude import Effect (Effect) import Halogen.Aff (awaitBody, runHalogenAff) as HA import Halogen.VDom.Driver (runUI) import Component (component) main :: Effect Unit main = HA.runHalogenAff do body &amp;lt;- HA.awaitBody runUI component unit body componentはsrc/Component.pursで定義する。とりあえず雛形を作成。
 module Component where import Prelude import Halogen as H import Halogen.HTML as HH data Action = Dummy type State = {} initialState :: forall input.</description>
     </item>
@@ -55,7 +56,7 @@ module Component where import Prelude import Halogen as H import Halogen.HTML as
       
       <guid>https://bombrary.github.io/blog/posts/purescript-brainfuck03/</guid>
       <description>動作の可視化 インタプリタ動作中における内部状態を可視化できると面白い。 そこで、インタプリタ動作中のログを出力できるような仕組みを作る。 ログは以下のタイミングで起こるようにする。
- onStart: インタプリタが動作したときに起こる。 onState state: 各ステップで状態を取得したときに起こる。 onCmd cmd: 各ステップで命令を取得できたときに起こる。 onEnd: インタプリタが終了するときに起こる。  これらはイベントリスナのように、関数の形で指定する。
+onStart: インタプリタが動作したときに起こる。 onState state: 各ステップで状態を取得したときに起こる。 onCmd cmd: 各ステップで命令を取得できたときに起こる。 onEnd: インタプリタが終了するときに起こる。 これらはイベントリスナのように、関数の形で指定する。
 Logの作成 src/Brainfuck/Interp/Log.pursを作成。
 以下のimport文を書く。
 module Brainfuck.Interp.Log where import Prelude import Brainfuck.Interp (Interp) import Brainfuck.State (State) import Brainfuck.Command (Command) import Effect.Class (class MonadEffect, liftEffect) import Effect.Console (log) Logを定義。
@@ -84,12 +85,12 @@ read :: Stream -&amp;gt; Interp Char read (Stream { input }) = input write :: Ch
       <guid>https://bombrary.github.io/blog/posts/purescript-brainfuck01/</guid>
       <description>Brainfuckの記事ではあるが、実はモナド変換子を使ってみたかっただけだったりする。
 以下の3部の記事で構成されている。
- インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 CUIでのインタプリタ可視化 Halogenを用いた入出力処理の実装  この記事でインタプリタの基本的な部分を実装し、 残りの3記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
+インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 CUIでのインタプリタ可視化 Halogenを用いた入出力処理の実装 この記事でインタプリタの基本的な部分を実装し、 残りの3記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
 Brainfuckインタプリタの構造 Brainfuckインタプリタは以下の情報を内部に持っているものとする。
- program: 命令の列。 iptr: インストラクションポインタ。実行する命令の位置を示す。プログラムカウンタみたいなもの。 dptr: データポインタ。メモリ上のある位置を示す。 memory: メモリ。  インタプリタは以下の手順を踏む。
- iptr番目の命令をprogramから読み取る。 読み取れなかったらプログラムを終了する。 命令に応じてmemory、dptrの書き換えだったり、入出力を行う。 iptrを1進め、手順1に戻る。  どんな命令があるのかについてはWikipedia参照。
+program: 命令の列。 iptr: インストラクションポインタ。実行する命令の位置を示す。プログラムカウンタみたいなもの。 dptr: データポインタ。メモリ上のある位置を示す。 memory: メモリ。 インタプリタは以下の手順を踏む。
+iptr番目の命令をprogramから読み取る。 読み取れなかったらプログラムを終了する。 命令に応じてmemory、dptrの書き換えだったり、入出力を行う。 iptrを1進め、手順1に戻る。 どんな命令があるのかについてはWikipedia参照。
 準備 適当なディレクトリを作って、プロジェクトの初期化を行う。
-% spago init  命令列の作成 src/Brainfuck/Command.pursを作成する。
+% spago init 命令列の作成 src/Brainfuck/Command.pursを作成する。
 Commandを定義。Showクラスのインスタンスにして、Charからの変換をする関数を作る。
 module Brainfuck.Command where import Prelude data Command = IncPtr -- &amp;#34;+&amp;#34; | DecPtr -- &amp;#34;-&amp;#34; | IncDat -- &amp;#34;&amp;gt;&amp;#34; | DecDat -- &amp;#34;&amp;lt;&amp;#34; | LBrace -- &amp;#34;[&amp;#34; | RBrace -- &amp;#34;]&amp;#34; | Output -- &amp;#34;.</description>
     </item>
@@ -103,7 +104,7 @@ module Brainfuck.Command where import Prelude data Command = IncPtr -- &amp;#34;
       <description>英語だと &amp;ldquo;bouncing ball programming&amp;rdquo; とか検索すると出てくるやつ。 単にボールが弾むだけなのだが、思ったより勉強になったので書き残す。
 実際のプログラムの動作はGitHub Pagesを参照。
 プロジェクトの初期化 適当なディレクトリを作って、その中でプロジェクトを作成。
-% spago init % spago build  今回は、追加のパッケージは必要なときにspago installコマンドで入れることにする。
+% spago init % spago build 今回は、追加のパッケージは必要なときにspago installコマンドで入れることにする。
 Canvas入門 src/Main.pursを以下のようにする。
 module Main where import Prelude import Data.Maybe (Maybe(..)) import Effect (Effect) import Effect.Console (log) import Graphics.Canvas (CanvasElement, Dimensions) import Graphics.Canvas as Canvas import Math as Math canvasDimen :: Dimensions canvasDimen = { width: 600.0 , height: 600.0 } initCanvas :: CanvasElement -&amp;gt; Effect Unit initCanvas canvas = Canvas.setCanvasDimensions canvas canvasDimen main :: Effect Unit main = Canvas.</description>
     </item>
@@ -117,7 +118,7 @@ module Main where import Prelude import Data.Maybe (Maybe(..)) import Effect (Ef
       <description>PureScriptで配列のシャッフルをしたい。型はこんな感じ。乱数は副作用を伴うため、返り値の型はEffectで包まれる。
 shuffle :: forall a. Array a -&amp;gt; Effect (Array a) アルゴリズムはFisher-Yates ShuffleのModern Algorithmの項の2つ目を利用する。これをさまざまな方法で作成したところ、Functor, Applicative, Monadなどに関連する事項だったり、STモナドの使い方、FFIの使い方だったりが学べたので、備忘のために書く。
 準備 適当なディレクトリでプロジェクトを作成する。今回使うパッケージをインストールする。
-$ spago init $ spago install arrays $ spago install random $ spago install foldable-traversable  方法1: 素直(?)な書き方 ここでは、src/Shuffle.pursに記述する。
+$ spago init $ spago install arrays $ spago install random $ spago install foldable-traversable 方法1: 素直(?)な書き方 ここでは、src/Shuffle.pursに記述する。
 天下り的ではあるが、これから使う関数、型をimportしておく。
 module Shuffle where import Prelude import Effect (Effect) import Data.Array (range, (!!), updateAt, length) import Data.Traversable (for) import Effect.Random (randomInt) import Data.Maybe (maybe) import Data.Foldable (foldr) まずは、「どの添字ととの添字の値を交換するか」という情報をもったデータExchangeIndexと、それを作成する関数exchangeIndiciesを作成する。
 type ExchangeIndex = { i :: Int , j :: Int } exchangeIndicies :: Int -&amp;gt; Effect (Array ExchangeIndex) exchangeIndicies n = for (range 0 (n - 2)) \i -&amp;gt; do j &amp;lt;- randomInt i (n - 1) pure { i, j } 次に、ExchangeIndexの情報を元に配列を交換する関数exchangeを作成。配列の添字が不正だった場合(配列外参照を起こしそうなとき)は!</description>
@@ -131,7 +132,7 @@ type ExchangeIndex = { i :: Int , j :: Int } exchangeIndicies :: Int -&amp;gt; E
       <guid>https://bombrary.github.io/blog/posts/purescript-note-generics/</guid>
       <description>purescript-generics-repパッケージを使ってGenericなSerializer型クラスを作った。以下はそのメモ。
 準備 プロジェクトを作成。
-$ spago init  Arrayを使うので、パッケージをインストールしてsrc/Main.pursにimport文を書き込んでいく。 本記事の本命であるgenerics-rep入れる。 $ spago install arrays $ spago install generics-rep  import Data.Array ((:)) REPLで色々実験するので、あらかじめ起動しておく。 $ spago repl  import Main  以降はsrc/Main.pursに色々書き足していく。REPLで:r(もしくは:reload)とコマンドを打てばモジュールが再読み込みされるので、src/Main.pursを書き換える度にこのコマンドを打つと良い。
+$ spago init Arrayを使うので、パッケージをインストールしてsrc/Main.pursにimport文を書き込んでいく。 本記事の本命であるgenerics-rep入れる。 $ spago install arrays $ spago install generics-rep import Data.Array ((:)) REPLで色々実験するので、あらかじめ起動しておく。 $ spago repl &gt; import Main 以降はsrc/Main.pursに色々書き足していく。REPLで:r(もしくは:reload)とコマンドを打てばモジュールが再読み込みされるので、src/Main.pursを書き換える度にこのコマンドを打つと良い。
 Serializer そもそもSerializerとは何か。ここでは単に「データをビット列に変換するもの」程度の意味で捉えれば良い。 厳密にはJSONなどの階層を持つデータを，文字列などの平坦なデータに変換するという意味合いとしてシリアライズ(直列化)という言葉を使う。実際、本記事では最終的に木構造をシリアライズする。
 まずビットは次のように定義する。
 data Bit = O | I instance showBit :: Show Bit where show O = &amp;#34;O&amp;#34; show I = &amp;#34;I&amp;#34; Serializer型クラスを以下のように定義する。
@@ -146,15 +147,16 @@ data Person = Alice | Bob | Carol instance serializerUser :: Serializer Person w
       
       <guid>https://bombrary.github.io/blog/posts/purescript-janken/</guid>
       <description>プログラミングの初歩で作りそうなじゃんけんゲームを作る。ただし、PureScriptで作る。
-方針  Jankenというモジュールを作る  グー・チョキ・パーをHandとして定義する じゃんけんの勝負の結果をJudgementとして定義する コンピュータが出す手はランダムに出したいので、ランダムな手を出す関数randomを作っておく 入力は文字列にしたいので、文字列から手に変換する関数fromStringを作っておく   入出力はMainに書く。Node.ReadLineモジュールの力で入力を受け付ける。  準備 適当なプロジェクトディレクトリを作っておいて、
-$ spago init  /src/Main.pursと/src/Janken.pursを作っておく。
+方針 Jankenというモジュールを作る グー・チョキ・パーをHandとして定義する じゃんけんの勝負の結果をJudgementとして定義する コンピュータが出す手はランダムに出したいので、ランダムな手を出す関数randomを作っておく 入力は文字列にしたいので、文字列から手に変換する関数fromStringを作っておく 入出力はMainに書く。Node.ReadLineモジュールの力で入力を受け付ける。 準備 適当なプロジェクトディレクトリを作っておいて、
+$ spago init /src/Main.pursと/src/Janken.pursを作っておく。
 /src/Main.pursはとりあえず以下のようにしておく。
 module Main where import Prelude import Effect (Effect) import Effect.Console (log) main :: Effect Unit main = do log &amp;#34;Hello&amp;#34; 次のコマンドでHelloが出力されることを確認する。
-$ spago run  Jankenモジュールの定義 この節では/src/Janken.pursを編集していく。
+$ spago run Jankenモジュールの定義 この節では/src/Janken.pursを編集していく。
 module Janken where import Prelude Handの定義 じゃんけんの手を表す型Handを定義する。
 data Hand = Rock | Scissors | Paper 余談。これは公式ではタグ付き共用体と呼ばれているもの。Haskellでは代数的データ型と呼ばれているが、正直名前はどうでもいい。データをこのように表現すれば、「データはこの値しかとりえない」という制限が得られる。制限があれば、プログラムのバグも減らせる。たとえば、「グーを0、チョキを1、パーを2」として表現すると、万が一それ以外の値が来た場合に困る。上のようなHandの定義では、「それ以外の値」が入る余地すら与えない。…この話は、Elm Guideの受け売り。
 Judgementの定義 同じようにして、じゃんけんの勝敗を表す型Judgementを定義する。
-Judgement = WinLeft | WinRight | Draw なぜWinとかLoseではないのかというと、これはjudge関数の都合である。Judgeは、2つの手を引数にとり、その勝負結果を返す。WinやLoseだと、どっちが勝ちでどっちが負けか分からない。なので、「judgeの左側の引数が勝ったらWinLeft、右側が勝ったらWinRight、引き分けならDraw」と定義している。</description>
+Judgement = WinLeft | WinRight | Draw なぜWinとかLoseではないのかというと、これはjudge関数の都合である。Judgeは、2つの手を引数にとり、その勝負結果を返す。WinやLoseだと、どっちが勝ちでどっちが負けか分からない。なので、「judgeの左側の引数が勝ったらWinLeft、右側が勝ったらWinRight、引き分けならDraw」と定義している。
+judge :: Hand -&amp;gt; Hand -&amp;gt; Judgement judge Rock Rock = Draw judge Scissors Scissors = Draw judge Papser Paper = Draw judge Rock Scissors = WinLeft judge Scissors Paper = WinLeft judge Paper Rock = WinLeft judge _ _ = WinRight REPLで遊ぶ REPLでテストしてみたい。Showクラスのインスタンスにすることで、REPLで値が出力できるようになる。</description>
     </item>
     
   </channel>

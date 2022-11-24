@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>D3.js 01信号の可視化 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/d3js-01signal/">
@@ -74,66 +74,66 @@
 <h2 id="コード">コード</h2>
 <h3 id="indexhtml">index.html</h3>
 <p>個人的テンプレを書く。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
-<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>0-1 Signal<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
-  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>0-1 Signale<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">svg</span><span class="p">&gt;</span>
-    <span class="p">&lt;/</span><span class="nt">svg</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://d3js.org/d3.v5.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;script.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ja&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>0-1 Signal<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>0-1 Signale<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">svg</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">svg</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://d3js.org/d3.v5.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;script.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
 <h3 id="scriptjs">script.js</h3>
 <p>JavaScriptで<code>flatMap</code>使うのはこれが初めてかも。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="kr">const</span> <span class="nx">format</span> <span class="o">=</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">w</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="kr">const</span> <span class="nx">pairs</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">pairs</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-  <span class="kr">const</span> <span class="nx">deltas</span> <span class="o">=</span> <span class="nx">pairs</span><span class="p">.</span><span class="nx">flatMap</span><span class="p">(</span><span class="nx">e</span> <span class="p">=&gt;</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nx">sig</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">sig</span> <span class="o">==</span> <span class="s1">&#39;0,0&#39;</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]];</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">sig</span> <span class="o">==</span> <span class="s1">&#39;0,1&#39;</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]];</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">sig</span> <span class="o">==</span> <span class="s1">&#39;1,0&#39;</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]];</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">sig</span> <span class="o">==</span> <span class="s1">&#39;1,1&#39;</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]];</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;invalid element.&#39;</span><span class="p">);</span>
-    <span class="p">}</span>
-  <span class="p">});</span>
-  <span class="kr">const</span> <span class="nx">points</span> <span class="o">=</span> <span class="nx">deltas</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-    <span class="kr">const</span> <span class="nx">back</span> <span class="o">=</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">acc</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="nx">slice</span><span class="p">();</span>
-    <span class="nx">back</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">w</span> <span class="o">*</span> <span class="nx">e</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-    <span class="nx">back</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">w</span> <span class="o">*</span> <span class="nx">e</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
-    <span class="k">return</span> <span class="nx">acc</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span><span class="nx">back</span><span class="p">])</span>
-  <span class="p">},</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]);</span>
-  <span class="k">return</span> <span class="nx">points</span><span class="p">;</span>
-<span class="p">};</span>
-
-<span class="kr">const</span> <span class="p">[</span><span class="nx">svgWidth</span><span class="p">,</span> <span class="nx">svgHeight</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">];</span>
-<span class="kr">const</span> <span class="nx">svg</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;svg&#39;</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="nx">svgWidth</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="nx">svgHeight</span><span class="p">);</span>
-
-<span class="kr">const</span> <span class="nx">pad</span> <span class="o">=</span> <span class="mi">70</span><span class="p">;</span>
-<span class="kr">const</span> <span class="nx">render</span> <span class="o">=</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="nx">svg</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">).</span><span class="nx">remove</span><span class="p">();</span>
-  <span class="nx">svg</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">datum</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="sb">`translate(</span><span class="si">${</span><span class="nx">pad</span><span class="si">}</span><span class="sb">, </span><span class="si">${</span><span class="nx">pad</span><span class="si">}</span><span class="sb">)`</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;stroke&#39;</span><span class="p">,</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;fill&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">line</span><span class="p">()</span>
-        <span class="p">.</span><span class="nx">x</span><span class="p">(</span><span class="nx">d</span> <span class="p">=&gt;</span> <span class="nx">d</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="p">.</span><span class="nx">y</span><span class="p">(</span><span class="nx">d</span> <span class="p">=&gt;</span> <span class="nx">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]));</span>
-<span class="p">};</span>
-
-<span class="nx">render</span><span class="p">(</span><span class="nx">format</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="mi">50</span><span class="p">));</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">format</span> <span class="o">=</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">w</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">pairs</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">pairs</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">deltas</span> <span class="o">=</span> <span class="nx">pairs</span><span class="p">.</span><span class="nx">flatMap</span><span class="p">(</span><span class="nx">e</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">sig</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">sig</span> <span class="o">==</span> <span class="s1">&#39;0,0&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">sig</span> <span class="o">==</span> <span class="s1">&#39;0,1&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">sig</span> <span class="o">==</span> <span class="s1">&#39;1,0&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">sig</span> <span class="o">==</span> <span class="s1">&#39;1,1&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;invalid element.&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">points</span> <span class="o">=</span> <span class="nx">deltas</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">back</span> <span class="o">=</span> <span class="nx">acc</span><span class="p">[</span><span class="nx">acc</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="nx">slice</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">back</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">w</span> <span class="o">*</span> <span class="nx">e</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">back</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">w</span> <span class="o">*</span> <span class="nx">e</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">acc</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span><span class="nx">back</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">points</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">[</span><span class="nx">svgWidth</span><span class="p">,</span> <span class="nx">svgHeight</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">svg</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;svg&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="nx">svgWidth</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="nx">svgHeight</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">pad</span> <span class="o">=</span> <span class="mi">70</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">render</span> <span class="o">=</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">svg</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">).</span><span class="nx">remove</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">svg</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">datum</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="sb">`translate(</span><span class="si">${</span><span class="nx">pad</span><span class="si">}</span><span class="sb">, </span><span class="si">${</span><span class="nx">pad</span><span class="si">}</span><span class="sb">)`</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;stroke&#39;</span><span class="p">,</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;fill&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">line</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">x</span><span class="p">(</span><span class="nx">d</span> <span class="p">=&gt;</span> <span class="nx">d</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">y</span><span class="p">(</span><span class="nx">d</span> <span class="p">=&gt;</span> <span class="nx">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]));</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">render</span><span class="p">(</span><span class="nx">format</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="mi">50</span><span class="p">));</span></span></span></code></pre></div>
 <h3 id="実行結果">実行結果</h3>
 <figure><img src="./sc01.png"/>
 </figure>

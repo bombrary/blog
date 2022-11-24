@@ -34,11 +34,11 @@ class ViewController: UIViewController { var constraint: NSLayoutConstraint! ove
       
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-view01/</guid>
       <description>前に頑張ってCoreGraphicsを使って棒グラフを描いたが、やはりViewを棒に見立てて扱った方が良さそうだ。考えられる利点は次の3つ。
- タップ時に何かアクションを起こせる。例えば、棒グラフをタップしたら、そのデータに関する詳細ページに飛ぶ、などの処理が実装できる。 アニメーションについてのコードを描きやすい。例えば棒グラフの高さを0から伸ばしていくアニメーションが実現できる。 StackViewで棒を管理すれば、棒のサイズや棒同士の間隔を自動で設定してくれる  これはやるしかない。
+タップ時に何かアクションを起こせる。例えば、棒グラフをタップしたら、そのデータに関する詳細ページに飛ぶ、などの処理が実装できる。 アニメーションについてのコードを描きやすい。例えば棒グラフの高さを0から伸ばしていくアニメーションが実現できる。 StackViewで棒を管理すれば、棒のサイズや棒同士の間隔を自動で設定してくれる これはやるしかない。
 基本的にはこちらを参考にしながら進めていく。
 UIStackViewをコード上で使う基本 とりあえず使い方を確認する。
 Main.storyboard こんな感じにする。
- ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.</description>
+ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.layoutMargins.right = 20 for (color, percentage) in zip(colors, percentages) { addBar(bgColor: color, percentage: percentage) } } private func addBar(bgColor: UIColor, percentage: CGFloat ) { let view = UIView() let height = graphStackView.</description>
     </item>
     
   </channel>

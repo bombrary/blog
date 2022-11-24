@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>ニューラルネットワーク ノート - 誤差逆伝播の計算 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/nn-backprop/">
@@ -67,7 +67,7 @@
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2022-01-15T18:45:40&#43;09:00">January 15, 2022</time>
+        <time datetime="2022-01-15T18:45:40&#43;09:00">November 24, 2022</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -155,7 +155,7 @@
   &amp;= \sum_{j&#39;} \frac{\partial E}{\partial y_{j&#39;}^{L}}\frac{\partial y_{j&#39;}^{L}}{\partial w_{ij}^L}
 \end{align}"></div>
 
-<p>と変形できる。ところが、$y_{j'}^{L} = f_L(u_{j'}^{L})$ は $u_{j'}^{L}$ についての関数より、再び連鎖律から、</p>
+<p>と変形できる。ところが、$y_{j&rsquo;}^{L} = f_L(u_{j&rsquo;}^{L})$ は $u_{j&rsquo;}^{L}$ についての関数より、再び連鎖律から、</p>
 <div class="tex displaystyle" data-expr="\begin{align*}
   \frac{\partial y_{j&#39;}^{L}}{\partial w_{ij}^L}
   &amp;= \frac{\partial y_{j&#39;}^{L}}{\partial u_{j&#39;}^{L}} \frac{\partial u_{j&#39;}^{L}}{\partial w_{ij}^L}\\
@@ -163,15 +163,15 @@
   &amp;= f_L&#39;(u_{j&#39;}^{L}) y_{i}^{L-1} \delta_{j,j&#39;}\\
 \end{align*}"></div>
 
-<p>と書ける。ここで、$f_L'$ は $f_L$ の導関数を表し、$\delta_{j,j'}$ はクロネッカーのデルタを表す。
-結局、式 $(1)$ の$\sum_{j'}$ の部分が消えて、</p>
+<p>と書ける。ここで、$f_L&rsquo;$ は $f_L$ の導関数を表し、$\delta_{j,j&rsquo;}$ はクロネッカーのデルタを表す。
+結局、式 $(1)$ の$\sum_{j&rsquo;}$ の部分が消えて、</p>
 <div class="tex displaystyle" data-expr="\begin{align*}
   \frac{\partial E}{\partial w_{ij}^{L}}
   &amp;= \sum_{j&#39;} \frac{\partial E}{\partial y_{j&#39;}^{L}} f_L&#39;(u_{j&#39;}^{L}) y_{i}^{L-1} \delta_{j,j&#39;}\\
   &amp;= \frac{\partial E}{\partial y_{j}^{L}} f_L&#39;(u_{j}^{L}) y_{i}^{L-1}
 \end{align*}"></div>
 
-<p>が得られる。このように $j' = j$ の項しか残らないのは、$w_{ij}^{L}$ が $E(y_1^L, y_2^L, \ldots )$ の引数のうち $y_j^{L}$ にしか関わってこないからなのだが、一応このことを丁寧に計算で示した。</p>
+<p>が得られる。このように $j&rsquo; = j$ の項しか残らないのは、$w_{ij}^{L}$ が $E(y_1^L, y_2^L, \ldots )$ の引数のうち $y_j^{L}$ にしか関わってこないからなのだが、一応このことを丁寧に計算で示した。</p>
 <p>今後の計算のために、以下の量を定義する。</p>
 <div class="tex displaystyle" data-expr="  \delta_{j}^{l} := \frac{\partial E}{\partial u_{j}^{l}} = \frac{\partial E}{\partial y_{j}^{l}} f_L&#39;(u_{j}^{l})"></div>
 
@@ -252,7 +252,7 @@
 <p>第 $l$ 層についての $\delta_j^{l}$ を並べたベクトルを $\bm{\delta^{l}}$ で表す。同様に、ベクトル $\bm{y}^{l}, \bm{u}^{l}$ を定義する。</p>
 <p>前提として、$\bm{u}^{l}$、$\bm{y}^{l}$ は次のように計算できる。これはいわゆる順伝播である。</p>
 <div class="tex displaystyle" data-expr="\begin{align*}
-\bm{u}^{l} &amp;= W^{l}\bm{y}^{l-1}\\
+\bm{u}^{l} &amp;= \left( W^{l} \right)^{\top}\bm{y}^{l-1}\\
 \bm{y}^{l} &amp;= f(\bm{u}^{l})
 \end{align*}"></div>
 
@@ -274,7 +274,7 @@
 <p>とすればよい。
 ただし、任意のベクトル$\bm{x}, \bm{y}$ について、$\bm{x} \ast \bm{y}$ は成分ごとの積をとったベクトルを表す。</p>
 <p>$l \neq L$ のとき、$W^{l+1} = (w_{ij}^{l+1})_{ij}$ を $P \times Q$ 行列とする(<strong>注意</strong>: この記事では $W^{l}$ の $l$ は累乗ではなく添字を表すものとする)。
-このとき、</p>
+ここでは，$P$ は入力の次元、 $Q$ は出力の次元を表していることに注意。このとき、</p>
 <div class="tex displaystyle" data-expr="\begin{align*}
 \bm{\delta}^{l}
 &amp;= \begin{pmatrix}
@@ -305,7 +305,7 @@
 <h3 id="まとめ">まとめ</h3>
 <p>前提として、以下の順伝播の式で $\bm{y}^{l}$、$\bm{u}^{l}$ が計算できているものとする。</p>
 <div class="tex displaystyle" data-expr="\begin{align*}
-\bm{u}^{l} &amp;= W^{l}\bm{y}^{l-1}\\
+\bm{u}^{l} &amp;= \left( W^{l} \right)^{\top} \bm{y}^{l-1}\\
 \bm{y}^{l} &amp;= f(\bm{u}^{l})
 \end{align*}"></div>
 
@@ -451,9 +451,12 @@ U^{l}
 \bm{u}_1^{l} &amp; \bm{u}_2^{l} &amp; \cdots &amp; \bm{u}_N^{l}
 \end{pmatrix}\\
 &amp;= \begin{pmatrix}
-W^{l}\bm{y}_1^{l-1} &amp; W^{l}\bm{y}_2^{l-1} &amp; \cdots &amp; W^{l}\bm{y}_N^{l-1}
+\left(W^{l}\right)^{\top} \bm{y}_1^{l-1} &amp; 
+\left(W^{l}\right)^{\top}\bm{y}_2^{l-1}&amp;
+\cdots &amp;
+\left(W^{l}\right)^{\top}\bm{y}_N^{l-1}
 \end{pmatrix}\\
-&amp;= W^{l}Y^{l-1}
+&amp;= \left(W^{l}\right)^{\top}Y^{l-1}
 \end{align*}"></div>
 
 <div class="tex displaystyle" data-expr="\begin{align*}
@@ -515,7 +518,7 @@ W^{l&#43;1}\bm{\delta}_2^{l&#43;1} \ast f_l&#39;(\bm{u}_2^{l}) &amp;
 \cdots &amp;
 W^{l&#43;1}\bm{\delta}_N^{l&#43;1} \ast f_l&#39;(\bm{u}_N^{l})
 \end{pmatrix}\\
-&amp;= W^{l&#43;1} \Delta^{l&#43;1} \ast f_L&#39;(U^{l})
+&amp;= W^{l&#43;1} \Delta^{l&#43;1} \ast f_l&#39;(U^{l})
 \end{align*}"></div>
 
 <p>と計算できる。このように、ベクトルだった部分がそのまま行列になったかのような形となる。実際、$N = 1$ としたらベクトルの表現に戻ることが分かるだろう。</p>
@@ -554,8 +557,12 @@ Y^{l&#43;1}
 <div class="tex displaystyle" data-expr="\begin{align*}
 Y^{l&#43;1}
 &amp;= \begin{pmatrix} \bm{y}_1^{l&#43;1} &amp; \bm{y}_2^{l&#43;1} &amp; \cdots &amp; \bm{y}_N^{l&#43;1} \end{pmatrix}\\
-&amp;= \begin{pmatrix} W^{l}\bm{y}_1^{l} &amp; W^{l}\bm{y}_2^{l} &amp; \cdots &amp; W^{l}\bm{y}_N^{l} \end{pmatrix}\\
-&amp;= W^{l}Y^{l}
+&amp;= \begin{pmatrix}
+  \left(W^{l}\right)^{\top} \bm{y}_1^{l} &amp;
+  \left(W^{l}\right)^{\top} \bm{y}_2^{l} &amp;
+  \cdots &amp;
+  \left(W^{l}\right)^{\top} \bm{y}_N^{l} \end{pmatrix}\\
+&amp;= \left(W^{l}\right)^{\top}Y^{l}
 \end{align*}"></div>
 </p>
 <p>で計算できる。</p>

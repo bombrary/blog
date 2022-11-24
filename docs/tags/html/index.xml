@@ -20,7 +20,7 @@ Select.file &amp;#34;MIMEタイプのリスト&amp;#34; &amp;#34;Msg&amp;#34; �
 もしファイルを文字列として扱いたいなら、File.toStringを利用する。
 もし画像として扱いたいなら、File.toUrlを利用する。これは画像をBase64符号化した文字列を作る。これをimgタグのsrc属性に指定すれば、画像が表示される。
 画像を選択し、それを表示するアプリの作成 準備 プロジェクトを作成して、elm/fileをインストール。
-$ elm init $ elm install elm/file  src/Main.elmの雛形を作る。
+$ elm init $ elm install elm/file src/Main.elmの雛形を作る。
 module Main exposing (..) import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (..) import File exposing (File) import File.Select as Select import Task main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type alias Model = { } init : () -&amp;gt; (Model, Cmd Msg) init _ = ( { } , Cmd.</description>
     </item>
     

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - セミモーダルビューからの遷移 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-modal-segue/">
@@ -135,39 +135,39 @@
 <h3 id="menuviewcontrollerswift">MenuViewController.swift</h3>
 <p><code>Menu.storyboard</code>の小ViewのOutletを作成する。名前は<code>menuView</code>とする。</p>
 <p>その上で以下の文を追記する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">MenuViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
-    <span class="p">...</span>
-
-    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewWillAppear</span><span class="p">(</span><span class="kc">_</span> <span class="n">animated</span><span class="p">:</span> <span class="nb">Bool</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kc">super</span><span class="p">.</span><span class="n">viewWillAppear</span><span class="p">(</span><span class="n">animated</span><span class="p">)</span>
-        <span class="kd">let</span> <span class="nv">menuPosY</span> <span class="p">=</span> <span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span>
-        <span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
-        <span class="n">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span>
-            <span class="n">withDuration</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-            <span class="n">delay</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="n">options</span><span class="p">:</span> <span class="p">.</span><span class="n">curveEaseOut</span><span class="p">,</span>
-            <span class="n">animations</span><span class="p">:</span> <span class="p">{</span>
-                <span class="kc">self</span><span class="p">.</span><span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="p">=</span> <span class="n">menuPosY</span>
-        <span class="p">},</span>
-            <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-    <span class="p">}</span>
-    
-    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">touchesEnded</span><span class="p">(</span><span class="kc">_</span> <span class="n">touches</span><span class="p">:</span> <span class="n">Set</span><span class="p">&lt;</span><span class="n">UITouch</span><span class="p">&gt;,</span> <span class="n">with</span> <span class="n">event</span><span class="p">:</span> <span class="n">UIEvent</span><span class="p">?)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="n">touch</span> <span class="k">in</span> <span class="n">touches</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="n">touch</span><span class="p">.</span><span class="n">view</span><span class="p">?.</span><span class="n">tag</span> <span class="p">==</span> <span class="mi">1</span> <span class="p">{</span>
-                <span class="n">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span>
-                    <span class="n">withDuration</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-                    <span class="n">delay</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                    <span class="n">options</span><span class="p">:</span> <span class="p">.</span><span class="n">curveEaseOut</span><span class="p">,</span>
-                    <span class="n">animations</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="kc">self</span><span class="p">.</span><span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+=</span> <span class="kc">self</span><span class="p">.</span><span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
-                <span class="p">})</span> <span class="p">{</span> <span class="n">bool</span> <span class="k">in</span>
-                    <span class="kc">self</span><span class="p">.</span><span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="n">bool</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">MenuViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewWillAppear</span><span class="p">(</span><span class="kc">_</span> <span class="n">animated</span><span class="p">:</span> <span class="nb">Bool</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">super</span><span class="p">.</span><span class="n">viewWillAppear</span><span class="p">(</span><span class="n">animated</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">menuPosY</span> <span class="p">=</span> <span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span>
+</span></span><span class="line"><span class="cl">        <span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
+</span></span><span class="line"><span class="cl">        <span class="n">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">withDuration</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">delay</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">options</span><span class="p">:</span> <span class="p">.</span><span class="n">curveEaseOut</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">animations</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="kc">self</span><span class="p">.</span><span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="p">=</span> <span class="n">menuPosY</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">touchesEnded</span><span class="p">(</span><span class="kc">_</span> <span class="n">touches</span><span class="p">:</span> <span class="n">Set</span><span class="p">&lt;</span><span class="n">UITouch</span><span class="p">&gt;,</span> <span class="n">with</span> <span class="n">event</span><span class="p">:</span> <span class="n">UIEvent</span><span class="p">?)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">touch</span> <span class="k">in</span> <span class="n">touches</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">touch</span><span class="p">.</span><span class="n">view</span><span class="p">?.</span><span class="n">tag</span> <span class="p">==</span> <span class="mi">1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">withDuration</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">delay</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">options</span><span class="p">:</span> <span class="p">.</span><span class="n">curveEaseOut</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">animations</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="kc">self</span><span class="p">.</span><span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span> <span class="o">+=</span> <span class="kc">self</span><span class="p">.</span><span class="n">menuView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
+</span></span><span class="line"><span class="cl">                <span class="p">})</span> <span class="p">{</span> <span class="n">bool</span> <span class="k">in</span>
+</span></span><span class="line"><span class="cl">                    <span class="kc">self</span><span class="p">.</span><span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="n">bool</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p><code>dismiss</code>メソッドを使うと自身のビューを閉じることができる。</p>
 <figure><img src="./mov01.gif" width="25%"/>
 </figure>
@@ -175,28 +175,28 @@
 <h2 id="モーダルビューを閉じてから遷移する処理">モーダルビューを閉じてから遷移する処理</h2>
 <p>モーダルビュー上で直接Segueを作りたいところだが、そうするとモーダルビューの上にDestinationのViewが乗ってしまう。モーダルビューを閉じてから、Mainの方で遷移するように処理を書かなくてはいけない。</p>
 <p><code>MenuViewController.kt</code>にて、<code>Menu.storyboard</code>にあるボタン&quot;To Destination1&quot;と&quot;To Destination2&quot;のActionを設定する。それぞれの関数の実装を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstOneTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
-        <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest1&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
-            <span class="n">guard</span> <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateInitialViewController</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="n">print</span><span class="p">(</span><span class="s2">&#34;View Controller is not found.&#34;</span><span class="p">)</span>
-                <span class="k">return</span>
-            <span class="p">}</span>
-            <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstTwoTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
-        <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest2&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
-            <span class="n">guard</span> <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateInitialViewController</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="n">print</span><span class="p">(</span><span class="s2">&#34;View Controller is not found.&#34;</span><span class="p">)</span>
-                <span class="k">return</span>
-            <span class="p">}</span>
-            <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl">    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstOneTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
+</span></span><span class="line"><span class="cl">        <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest1&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">guard</span> <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateInitialViewController</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">print</span><span class="p">(</span><span class="s2">&#34;View Controller is not found.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstTwoTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
+</span></span><span class="line"><span class="cl">        <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest2&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">guard</span> <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateInitialViewController</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">print</span><span class="p">(</span><span class="s2">&#34;View Controller is not found.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span></span></span></code></pre></div>
 <p><code>MenuViewController</code>を表示しているのは、<code>Main.storyboard</code>で定義されたNavigation Controllerである。これは試しに<code>print(presentingViewController)</code>してみると分かる。従って、<code>presentingViewController</code>は<code>UINavigationController</code>にダウンキャストしている。</p>
 <p>こうして得られた<code>navController</code>について、<code>pushViewController</code>メソッドを利用して遷移する。ビューを閉じた後に遷移したいから、<code>dismiss</code>メソッドの<code>completion</code>引数にこの処理を書いている。ちなみに、<code>dismiss</code>の<code>completion</code>内に<code>navController</code>の宣言を書くと実行時エラーを起こすことに注意。なぜなら<code>completion</code>の中では、<code>presentingViewController</code>は<code>nil</code>を返すから。<code>completion</code>はViewが破棄された後に呼ばれる関数。</p>
 <p><code>instantiateInitialViewController</code>で、Storyboard上のInitial View Controllerを作る(Storyboardで&quot;Is initial view controller&quot;にチェックをつけた理由はこれ)。InitialじゃないView Controllerを作りたいなら、<code>instantiateViewController</code>を利用する。このとき、遷移先のView Controllerにidentifierを設定しておくことを忘れないように。</p>
@@ -213,14 +213,14 @@
 
 <h3 id="menuviewcontrollerswiftの変更">MenuViewController.swiftの変更</h3>
 <p>メソッド<code>dstOneTapped</code>を以下のように変更する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin">    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstOneTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
-        <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest1&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
-            <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s2">&#34;dest1&#34;</span><span class="p">)</span> 
-            <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl">    <span class="nd">@IBAction</span> <span class="n">func</span> <span class="n">dstOneTapped</span><span class="p">(</span><span class="n">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">let</span> <span class="n">navController</span> <span class="p">=</span> <span class="n">presentingViewController</span> <span class="k">as</span><span class="p">!</span> <span class="n">UINavigationController</span>
+</span></span><span class="line"><span class="cl">        <span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">let</span> <span class="n">sb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s2">&#34;Dest1&#34;</span><span class="p">,</span> <span class="n">bundle</span><span class="p">:</span> <span class="n">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">let</span> <span class="n">vc</span> <span class="p">=</span> <span class="n">sb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s2">&#34;dest1&#34;</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">navController</span><span class="p">.</span><span class="n">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span></span></span></code></pre></div>
 <p>ここで、<code>let vc = sb.instantiateViewController(withIdentifier: &quot;navigation controllerのID&quot;)</code>と書いてはいけない。Navigation Controllerの中にNavigation Contollerをpushすることはできないため、<code>pushViewController</code>の呼び出し時にエラーになる。</p>
 <figure><img src="./mov02.gif" width="25%"/>
 </figure>
@@ -229,12 +229,12 @@
 <p>この記事では利用しなかったが、大事そうな知見をここにまとめておく</p>
 <h3 id="segueにおける値渡し">Segueにおける値渡し</h3>
 <p>遷移元のViewControllerにて、<code>prepare(for segue: UIStoryboradSegue, sender: Any?)</code>関数をoverrideする。特定のSegueに対して値を渡したい場合は、<code>segue.identifier</code>でif文を書けば良い。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">prepare</span><span class="p">(</span><span class="k">for</span> <span class="n">segue</span><span class="p">:</span> <span class="n">UIStoryboradSegue</span><span class="p">,</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">?)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="n">segue</span><span class="p">.</span><span class="n">identifier</span> <span class="p">==</span> <span class="s">&#34;Storyboard上で設定したSegueのidentifier&#34;</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nv">vc</span> <span class="p">=</span> <span class="n">segue</span><span class="p">.</span><span class="n">destination</span>
-    <span class="c1">// vcに何か値を渡す処理</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">prepare</span><span class="p">(</span><span class="k">for</span> <span class="n">segue</span><span class="p">:</span> <span class="n">UIStoryboradSegue</span><span class="p">,</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">?)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="n">segue</span><span class="p">.</span><span class="n">identifier</span> <span class="p">==</span> <span class="s">&#34;Storyboard上で設定したSegueのidentifier&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">vc</span> <span class="p">=</span> <span class="n">segue</span><span class="p">.</span><span class="n">destination</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// vcに何か値を渡す処理</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="参考文献">参考文献</h2>
 <p><a href="http://swift.hiros-dot.net/?p=377">ハンバーガーメニューを作成するには？ - Swift Life</a></p>
 

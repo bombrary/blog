@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PureScriptでパーサーコンビネータを触る (2) テキストファイル | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-parser-combinator02/">
@@ -103,11 +103,11 @@
   <p><a href="https://bombrary.github.io/blog/posts/purescript-parser-combinator01/">前回の記事</a> と合わせて1つの記事にする予定だったが、前回があまりに長くなってしまったので分割した。</p>
 <p>ある書式に従ったテキストファイルをパースすることを考える。パースしたデータを整形し、HTML文書として出力するところまでやる。</p>
 <p>前回インポートした関数で今回使うものは、(漏れが無ければ)以下の通り。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Control.Alt</span> <span class="p">((</span><span class="o">&lt;|&gt;</span><span class="p">))</span>
-<span class="kr">import</span> <span class="nn">Control.Lazy</span> <span class="p">(</span><span class="nf">defer</span><span class="p">)</span>
-<span class="kr">import</span> <span class="nn">Text.Parsing.Parser</span> <span class="p">(</span><span class="kt">Parser</span><span class="p">,</span> <span class="nf">fail</span><span class="p">)</span>
-<span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">char</span><span class="p">)</span>
-</code></pre></div><h2 id="テキストの仕様">テキストの仕様</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Control.Alt</span> <span class="p">((</span><span class="o">&lt;|&gt;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Control.Lazy</span> <span class="p">(</span><span class="nf">defer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser</span> <span class="p">(</span><span class="kt">Parser</span><span class="p">,</span> <span class="nf">fail</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">char</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="テキストの仕様">テキストの仕様</h2>
 <ul>
 <li>テキストファイルは、複数の<code>entry</code>で構成される。</li>
 <li>1つの<code>entry</code>はタイトル<code>title</code>と中身<code>body</code>で構成される。</li>
@@ -116,50 +116,50 @@
 <li>空行とは、0個以上のスペースだけから構成される行のことである。</li>
 </ul>
 <p>BNF風に書くと次のようになるだろう。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">    &lt;entries&gt; = (0個以上の&lt;entry&gt;)
-      &lt;entry&gt; = &lt;title&gt; &#34;\n&#34; &lt;empty lines&gt; &lt;body&gt; &#34;\n&#34; &lt;empty lines&gt;
-      &lt;title&gt; = &#34;[&#34;  (文字列)  &#34;]&#34;
-       &lt;body&gt; = (先頭、末尾が&lt;empty lines&gt;でないような文字列)
-&lt;empty lines&gt; = (0個以上の&lt;empty line&gt;)
- &lt;empty line&gt; = (0個以上のスペース) &#34;\n&#34;
-</code></pre></div><p>例えば、以下のファイルがあったとする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">[Title1]
-line1
-line2
-line3
-line4
-
-
-[Title2]
-
-
-line1
-line2
-[Title3]
-
-line1
-
-line2
-
-
-line3
-</code></pre></div><p>これは次のようにパースされる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="p">[</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="s">&#34;Title1&#34;</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;line1</span><span class="se">\n</span><span class="s">line2</span><span class="se">\n</span><span class="s">line3</span><span class="se">\n</span><span class="s">line4&#34;</span> <span class="p">}</span>
-<span class="p">,</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="s">&#34;Title2&#34;</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;line1</span><span class="se">\n</span><span class="s">line2&#34;</span> <span class="p">}</span>
-<span class="p">,</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="s">&#34;Title3&#34;</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;line1</span><span class="se">\n\n</span><span class="s">line2</span><span class="se">\n\n</span><span class="s">line3&#34;</span> <span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div><p>以下では、<code>title</code>、<code>body</code>、<code>entry</code>の順にパーサーを作成していく。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">    &lt;entries&gt; = (0個以上の&lt;entry&gt;)
+</span></span><span class="line"><span class="cl">      &lt;entry&gt; = &lt;title&gt; &#34;\n&#34; &lt;empty lines&gt; &lt;body&gt; &#34;\n&#34; &lt;empty lines&gt;
+</span></span><span class="line"><span class="cl">      &lt;title&gt; = &#34;[&#34;  (文字列)  &#34;]&#34;
+</span></span><span class="line"><span class="cl">       &lt;body&gt; = (先頭、末尾が&lt;empty lines&gt;でないような文字列)
+</span></span><span class="line"><span class="cl">&lt;empty lines&gt; = (0個以上の&lt;empty line&gt;)
+</span></span><span class="line"><span class="cl"> &lt;empty line&gt; = (0個以上のスペース) &#34;\n&#34;
+</span></span></code></pre></div><p>例えば、以下のファイルがあったとする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">[Title1]
+</span></span><span class="line"><span class="cl">line1
+</span></span><span class="line"><span class="cl">line2
+</span></span><span class="line"><span class="cl">line3
+</span></span><span class="line"><span class="cl">line4
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[Title2]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line1
+</span></span><span class="line"><span class="cl">line2
+</span></span><span class="line"><span class="cl">[Title3]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line3
+</span></span></code></pre></div><p>これは次のようにパースされる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="p">[</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="s">&#34;Title1&#34;</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;line1</span><span class="se">\n</span><span class="s">line2</span><span class="se">\n</span><span class="s">line3</span><span class="se">\n</span><span class="s">line4&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">,</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="s">&#34;Title2&#34;</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;line1</span><span class="se">\n</span><span class="s">line2&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">,</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="s">&#34;Title3&#34;</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;line1</span><span class="se">\n\n</span><span class="s">line2</span><span class="se">\n\n</span><span class="s">line3&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span></code></pre></div><p>以下では、<code>title</code>、<code>body</code>、<code>entry</code>の順にパーサーを作成していく。</p>
 <h2 id="titleのパース">titleのパース</h2>
 <p><code>[&lt;text&gt;]</code>の形の文字列をパースし、<code>&lt;text&gt;</code>の部分を取得するパーサーを作成する。
 素朴には以下のように書けそうだ。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.Array</span> <span class="k">as</span> <span class="n">Array</span>
-<span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="k">as</span> <span class="n">String</span>
-<span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">anyChar</span><span class="p">)</span>
-
-<span class="nf">title</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">title</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span>
-  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;[&#39;</span> <span class="o">*&gt;</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="n">anyChar</span><span class="p">)</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;]&#39;</span><span class="p">)</span>
-</code></pre></div><p>ところが、パースは成功しない。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.Array</span> <span class="k">as</span> <span class="n">Array</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="k">as</span> <span class="n">String</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">anyChar</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">title</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">title</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;[&#39;</span> <span class="o">*&gt;</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="n">anyChar</span><span class="p">)</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;]&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>ところが、パースは成功しない。</p>
 <pre class="cui">
 > runParser "[Title]" title
 (Left (ParseError "Expected ']'" (Position { line: 1, column: 8 })))
@@ -167,17 +167,17 @@ line3
 
 <p>というのも、<code>Array.manny anyChar</code>は任意の文字を0回以上受け入れてしまうため、その中で<code>]</code>もパースされてしまうからだ。</p>
 <p>そのため、<code>anyChar</code>の代わりに、「<code>]</code>以外の文字にマッチするパーサー」を定義すればうまくいく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">satisfy</span><span class="p">)</span>
-
-
-<span class="nf">title</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">title</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span>
-  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;[&#39;</span> <span class="o">*&gt;</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="n">titleChar</span><span class="p">)</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;]&#39;</span><span class="p">)</span>
-
-
-<span class="nf">titleChar</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Char</span>
-<span class="nf">titleChar</span> <span class="ow">=</span> <span class="n">satisfy</span> <span class="p">(</span><span class="kr">_</span> <span class="o">/=</span> <span class="sc">&#39;]&#39;</span><span class="p">)</span>
-</code></pre></div><h2 id="bodyのパース">bodyのパース</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">satisfy</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">title</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">title</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;[&#39;</span> <span class="o">*&gt;</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="n">titleChar</span><span class="p">)</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;]&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">titleChar</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Char</span>
+</span></span><span class="line"><span class="cl"><span class="nf">titleChar</span> <span class="ow">=</span> <span class="n">satisfy</span> <span class="p">(</span><span class="kr">_</span> <span class="o">/=</span> <span class="sc">&#39;]&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="bodyのパース">bodyのパース</h2>
 <p>1つの<code>entry</code>に対して、<code>body</code>の終わりを判定するにはどうすればよいのか。
 もし読み取り中に<code>[&lt;text&gt;]</code>の文字列を発見したら、次の<code>entry</code>に入ったことになるので、これが終了点になるだろう。また、ファイルの終端も<code>entry</code>の終了条件となる。
 以上のことから、次の手順で<code>body</code>をパースしていくことを考える。</p>
@@ -194,19 +194,19 @@ line3
 <p>そのために、まずは空行のパーサーを作成する。</p>
 <h3 id="空行のパース">空行のパース</h3>
 <p>準備として改行を読み取るパーサーを作成する。LFとCRLFの2パターンに対応させておく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">newline</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">newline</span> <span class="ow">=</span> <span class="kr">do</span>
-  <span class="n">c</span> <span class="ow">&lt;-</span> <span class="n">anyChar</span>
-  <span class="kr">case</span> <span class="n">c</span> <span class="kr">of</span>
-    <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span> <span class="ow">-&gt;</span>
-      <span class="n">pure</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span>
-
-    <span class="sc">&#39;</span><span class="se">\r</span><span class="sc">&#39;</span> <span class="ow">-&gt;</span>
-      <span class="n">satisfy</span> <span class="p">(</span><span class="kr">_</span> <span class="o">==</span> <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span><span class="p">)</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span>
-
-    <span class="kr">_</span> <span class="ow">-&gt;</span>
-      <span class="n">fail</span> <span class="s">&#34;newline&#34;</span>
-</code></pre></div><p>続いて、空行のパーサーを作成する。今回は、スペースだけが含まれている行も空行とみなす。そこで、空行かどうかを判定するためには、「改行が現れるまでスペースを取り除く」という処理を行えば良い。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">newline</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">newline</span> <span class="ow">=</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">  <span class="n">c</span> <span class="ow">&lt;-</span> <span class="n">anyChar</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">case</span> <span class="n">c</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">    <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">pure</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="sc">&#39;</span><span class="se">\r</span><span class="sc">&#39;</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">satisfy</span> <span class="p">(</span><span class="kr">_</span> <span class="o">==</span> <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span><span class="p">)</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">_</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">fail</span> <span class="s">&#34;newline&#34;</span>
+</span></span></code></pre></div><p>続いて、空行のパーサーを作成する。今回は、スペースだけが含まれている行も空行とみなす。そこで、空行かどうかを判定するためには、「改行が現れるまでスペースを取り除く」という処理を行えば良い。</p>
 <p>これはパーサーの視点に立ってみると、</p>
 <ol>
 <li>まず<code>newline</code>のパースを試みる。成功したらパース終了。</li>
@@ -216,42 +216,42 @@ line3
 <p>コードにすると以下の通り。Applicative styleにすると<code>scan</code>関数に<code>defer</code>をつけなくてはいけないのは少し残念なところ。
 なお、<code>Text.Parsing.Parser.String</code>に<code>whiteSpace</code>という関数があるが、これはスペースだけでなく改行文字もパースしてしまうのでここでは使えない。
 また配列の結合に<code>(:)</code>を使っているが、この計算量に注意 。もし効率を重視したいなら、<code>Array</code>ではなく<code>List</code>を使えば良い。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">sp</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Char</span>
-<span class="nf">sp</span> <span class="ow">=</span> <span class="n">satisfy</span> <span class="p">(</span><span class="kr">_</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="p">)</span>
-
-<span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">emptyLine</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span> <span class="n">scan</span>
-  <span class="kr">where</span>
-    <span class="n">scan</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
-       <span class="p">(</span><span class="kt">[]</span> <span class="o">&lt;$</span> <span class="n">newline</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">((</span><span class="kt">:</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="n">sp</span> <span class="o">&lt;*&gt;</span> <span class="n">scan</span><span class="p">)</span>
-</code></pre></div><p>実はこれは期待通りに動作しない。パースが成功してほしいところでエラーが返ってくる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">sp</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Char</span>
+</span></span><span class="line"><span class="cl"><span class="nf">sp</span> <span class="ow">=</span> <span class="n">satisfy</span> <span class="p">(</span><span class="kr">_</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span> <span class="n">scan</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">where</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scan</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">       <span class="p">(</span><span class="kt">[]</span> <span class="o">&lt;$</span> <span class="n">newline</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">((</span><span class="kt">:</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="n">sp</span> <span class="o">&lt;*&gt;</span> <span class="n">scan</span><span class="p">)</span>
+</span></span></code></pre></div><p>実はこれは期待通りに動作しない。パースが成功してほしいところでエラーが返ってくる。</p>
 <pre class="cui">
 > runParser "      \n" emptyLine
 (Left (ParseError "newline" (Position { line: 1, column: 2 })))
 </pre>
 
 <p>これは、以下のParsecを使ったHaskellのコードでも期待通りに動作しない。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="ow">=</span> <span class="kt">Parsec</span> <span class="n">s</span> <span class="nb">()</span>
-
-<span class="nf">newline</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">newline</span> <span class="ow">=</span> <span class="kr">do</span>
-  <span class="n">c</span> <span class="ow">&lt;-</span> <span class="n">anyChar</span>
-  <span class="kr">case</span> <span class="n">c</span> <span class="kr">of</span>
-    <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span> <span class="ow">-&gt;</span>
-      <span class="n">pure</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span>
-
-    <span class="sc">&#39;</span><span class="se">\r</span><span class="sc">&#39;</span> <span class="ow">-&gt;</span>
-      <span class="n">satisfy</span> <span class="p">(</span><span class="o">==</span> <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span><span class="p">)</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span>
-
-    <span class="kr">_</span> <span class="ow">-&gt;</span>
-      <span class="n">fail</span> <span class="s">&#34;newline&#34;</span>
-
-<span class="nf">sp</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Char</span>
-<span class="nf">sp</span> <span class="ow">=</span> <span class="n">satisfy</span> <span class="p">(</span><span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="p">)</span>
-
-<span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">emptyLine</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">[]</span> <span class="o">&lt;$</span> <span class="n">newline</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">((</span><span class="kt">:</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="n">sp</span> <span class="o">&lt;*&gt;</span> <span class="n">emptyLine</span><span class="p">)</span>
-</code></pre></div><p>これは、<code>newline</code>が文字列を消費してしまうからである。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">type</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="ow">=</span> <span class="kt">Parsec</span> <span class="n">s</span> <span class="nb">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">newline</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">newline</span> <span class="ow">=</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">  <span class="n">c</span> <span class="ow">&lt;-</span> <span class="n">anyChar</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">case</span> <span class="n">c</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">    <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">pure</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="sc">&#39;</span><span class="se">\r</span><span class="sc">&#39;</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">satisfy</span> <span class="p">(</span><span class="o">==</span> <span class="sc">&#39;</span><span class="se">\n</span><span class="sc">&#39;</span><span class="p">)</span> <span class="o">*&gt;</span> <span class="n">pure</span> <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">_</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">fail</span> <span class="s">&#34;newline&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">sp</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Char</span>
+</span></span><span class="line"><span class="cl"><span class="nf">sp</span> <span class="ow">=</span> <span class="n">satisfy</span> <span class="p">(</span><span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">[]</span> <span class="o">&lt;$</span> <span class="n">newline</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">((</span><span class="kt">:</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="n">sp</span> <span class="o">&lt;*&gt;</span> <span class="n">emptyLine</span><span class="p">)</span>
+</span></span></code></pre></div><p>これは、<code>newline</code>が文字列を消費してしまうからである。
 実際、<a href="https://hackage.haskell.org/package/parsec-3.1.15.0/docs/Text-Parsec-Prim.html#v%3a-60--124--62-">Parsecの&lt;|&gt;のドキュメント</a>を読んでみると、</p>
 <blockquote>
 If p fails <i>without consuming any input</i>, parser q is tried. 
@@ -259,58 +259,58 @@ If p fails <i>without consuming any input</i>, parser q is tried.
 <p>と書かれている。これはpurescript-parsingでも同じである (<code>Alt</code>型クラス実装のソースコードを見て分かった。しかしドキュメントの記載は見当たらず)。</p>
 <p>文字列を消費しないようにするためには、<code>try</code>関数を用いれば良い。
 <a href="https://hackage.haskell.org/package/parsec-3.1.15.0/docs/Text-Parsec.html#v:try">try関数のドキュメント</a>にも、<code>&lt;|&gt;</code>との併用について詳しく説明されている。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Combinators</span> <span class="p">(</span><span class="nf">try</span><span class="p">)</span>
-
-
-<span class="nf">newline</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">newline</span> <span class="ow">=</span> <span class="n">try</span> <span class="kr">do</span> <span class="c1">-- tryを追加</span>
-  <span class="c1">-- 略</span>
-
-
-<span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">emptyLine</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span> <span class="n">scan</span>
-  <span class="kr">where</span>
-    <span class="n">scan</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
-       <span class="p">(</span><span class="kt">[]</span> <span class="o">&lt;$</span> <span class="n">newline</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">((</span><span class="kt">:</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="n">sp</span> <span class="o">&lt;*&gt;</span> <span class="n">scan</span><span class="p">)</span>
-</code></pre></div><pre class="cui">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Combinators</span> <span class="p">(</span><span class="nf">try</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">newline</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">newline</span> <span class="ow">=</span> <span class="n">try</span> <span class="kr">do</span> <span class="c1">-- tryを追加</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">-- 略</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span> <span class="n">scan</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">where</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scan</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">       <span class="p">(</span><span class="kt">[]</span> <span class="o">&lt;$</span> <span class="n">newline</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">((</span><span class="kt">:</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="n">sp</span> <span class="o">&lt;*&gt;</span> <span class="n">scan</span><span class="p">)</span>
+</span></span></code></pre></div><pre class="cui">
 > runParser "   \n" emptyLine
 (Right "   ")
 </pre>
 
 <p>ちなみに<code>fix</code>関数を使うと、以下のように無名関数で再帰できる。<code>fix</code>で指定する関数の引数<code>self</code>が、その関数自身を指している。この場合<code>defer</code>をつけなくて済む。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Control.Lazy</span> <span class="p">(</span><span class="nf">fix</span><span class="p">)</span>
-
-<span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">emptyLine</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span> <span class="n">fix</span> <span class="nf">\</span><span class="n">self</span> <span class="ow">-&gt;</span>
-       <span class="p">(</span><span class="kt">[]</span> <span class="o">&lt;$</span> <span class="n">newline</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">((</span><span class="kt">:</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="n">sp</span> <span class="o">&lt;*&gt;</span> <span class="n">self</span><span class="p">)</span>
-</code></pre></div><p>実はこのような、「改行が現れるまでスペースのパースを続ける」という処理は、<code>manyTill</code>というパーサーで実現できる。実装は上の場合とほとんど同じだが、効率面の理由で<code>Array</code>ではなく<code>List</code>を使って実装されている。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Control.Lazy</span> <span class="p">(</span><span class="nf">fix</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span> <span class="n">fix</span> <span class="nf">\</span><span class="n">self</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">       <span class="p">(</span><span class="kt">[]</span> <span class="o">&lt;$</span> <span class="n">newline</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">((</span><span class="kt">:</span><span class="p">)</span> <span class="o">&lt;$&gt;</span> <span class="n">sp</span> <span class="o">&lt;*&gt;</span> <span class="n">self</span><span class="p">)</span>
+</span></span></code></pre></div><p>実はこのような、「改行が現れるまでスペースのパースを続ける」という処理は、<code>manyTill</code>というパーサーで実現できる。実装は上の場合とほとんど同じだが、効率面の理由で<code>Array</code>ではなく<code>List</code>を使って実装されている。</p>
 <p>パース結果は<code>List Char</code>で返ってくるため、<code>Data.Array.toFoldable</code>で配列に変換し、<code>String.fromCharArray</code>で文字列に変換する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">listToString</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
-<span class="nf">listToString</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;&lt;&lt;</span> <span class="kt">Array</span><span class="o">.</span><span class="n">fromFoldable</span>
-
-<span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">emptyLine</span> <span class="ow">=</span> <span class="n">try</span> <span class="o">$</span> <span class="n">listToString</span> <span class="o">&lt;$&gt;</span>
-   <span class="n">manyTill</span> <span class="n">sp</span> <span class="n">newline</span>
-</code></pre></div><h3 id="bodyのパース-1">bodyのパース</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">listToString</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">listToString</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;&lt;&lt;</span> <span class="kt">Array</span><span class="o">.</span><span class="n">fromFoldable</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">emptyLine</span> <span class="ow">=</span> <span class="n">try</span> <span class="o">$</span> <span class="n">listToString</span> <span class="o">&lt;$&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">manyTill</span> <span class="n">sp</span> <span class="n">newline</span>
+</span></span></code></pre></div><h3 id="bodyのパース-1">bodyのパース</h3>
 <p>まず、titleの後には必ず改行が来るものとする。そのために<code>titleLine</code>を定義。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">titleLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">titleLine</span> <span class="ow">=</span> <span class="n">title</span> <span class="o">&lt;*</span> <span class="n">newline</span>
-</code></pre></div><p><code>body</code>の終了はタイトルまたはEOFとしたいから、そのためのパーサーを作成。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">eof</span><span class="p">)</span>
-
-
-<span class="nf">bodyEnd</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Unit</span>
-<span class="nf">bodyEnd</span> <span class="ow">=</span> <span class="n">try</span> <span class="o">$</span> <span class="p">(</span><span class="n">unit</span> <span class="o">&lt;$</span> <span class="n">titleLine</span><span class="p">)</span>  <span class="o">&lt;|&gt;</span> <span class="n">eof</span>
-</code></pre></div><p>以上を踏まえて、<code>body</code>パーサーを作成する。空行を<code>skipMany</code>で読み飛ばし、<code>bodyEnd</code>が来るまで文字列を読み取る。最後に<code>String.trimEnd</code>で末尾の空行を削除している。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Data.String.Utils</span> <span class="p">(</span><span class="nf">trimEnd</span><span class="p">)</span> <span class="n">as</span> <span class="kt">String</span>
-<span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Combinators</span> <span class="p">(</span><span class="nf">skipMany</span><span class="p">)</span>
-
-
-<span class="nf">body</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">body</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">trimEnd</span> <span class="o">&lt;&lt;&lt;</span> <span class="n">listToString</span> <span class="o">&lt;$&gt;</span> <span class="kr">do</span>
-  <span class="n">skipMany</span> <span class="n">emptyLine</span>
-  <span class="n">manyTill</span> <span class="n">anyChar</span> <span class="n">bodyEnd</span>
-</code></pre></div><pre class="cui">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">titleLine</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">titleLine</span> <span class="ow">=</span> <span class="n">title</span> <span class="o">&lt;*</span> <span class="n">newline</span>
+</span></span></code></pre></div><p><code>body</code>の終了はタイトルまたはEOFとしたいから、そのためのパーサーを作成。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">eof</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">bodyEnd</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Unit</span>
+</span></span><span class="line"><span class="cl"><span class="nf">bodyEnd</span> <span class="ow">=</span> <span class="n">try</span> <span class="o">$</span> <span class="p">(</span><span class="n">unit</span> <span class="o">&lt;$</span> <span class="n">titleLine</span><span class="p">)</span>  <span class="o">&lt;|&gt;</span> <span class="n">eof</span>
+</span></span></code></pre></div><p>以上を踏まえて、<code>body</code>パーサーを作成する。空行を<code>skipMany</code>で読み飛ばし、<code>bodyEnd</code>が来るまで文字列を読み取る。最後に<code>String.trimEnd</code>で末尾の空行を削除している。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.String.Utils</span> <span class="p">(</span><span class="nf">trimEnd</span><span class="p">)</span> <span class="n">as</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Combinators</span> <span class="p">(</span><span class="nf">skipMany</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">body</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">body</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">trimEnd</span> <span class="o">&lt;&lt;&lt;</span> <span class="n">listToString</span> <span class="o">&lt;$&gt;</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">  <span class="n">skipMany</span> <span class="n">emptyLine</span>
+</span></span><span class="line"><span class="cl">  <span class="n">manyTill</span> <span class="n">anyChar</span> <span class="n">bodyEnd</span>
+</span></span></code></pre></div><pre class="cui">
 > runParser "\n\n   aaa\n\nbbb\ncc" body
 (Right "aaa\n\nbbb\ncc")
 
@@ -320,18 +320,18 @@ If p fails <i>without consuming any input</i>, parser q is tried.
 
 <h2 id="entryのパース">entryのパース</h2>
 <p>以上の道具立てで、<code>entry</code>をパースする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Entry</span> <span class="ow">=</span>
-  <span class="p">{</span> <span class="n">title</span> <span class="ow">::</span> <span class="kt">String</span>
-  <span class="p">,</span> <span class="n">body</span> <span class="ow">::</span> <span class="kt">String</span>
-  <span class="p">}</span>
-
-
-<span class="nf">entry</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Entry</span>
-<span class="nf">entry</span> <span class="ow">=</span> <span class="kr">do</span>
-  <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">title</span>
-  <span class="n">b</span> <span class="ow">&lt;-</span> <span class="n">body</span>
-  <span class="n">pure</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="n">t</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="n">b</span> <span class="p">}</span>
-</code></pre></div><pre class="cui">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">type</span> <span class="kt">Entry</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="n">title</span> <span class="ow">::</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl">  <span class="p">,</span> <span class="n">body</span> <span class="ow">::</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">entry</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">Entry</span>
+</span></span><span class="line"><span class="cl"><span class="nf">entry</span> <span class="ow">=</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">  <span class="n">t</span> <span class="ow">&lt;-</span> <span class="n">title</span>
+</span></span><span class="line"><span class="cl">  <span class="n">b</span> <span class="ow">&lt;-</span> <span class="n">body</span>
+</span></span><span class="line"><span class="cl">  <span class="n">pure</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="n">t</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="n">b</span> <span class="p">}</span>
+</span></span></code></pre></div><pre class="cui">
 > runParser "[title]\n\nline1\n\nline2\nline3\n\n\n\n" entry
 (Right { body: "line1\n\nline2\nline3\n\n\n\n[title2]", title: "title" })
 
@@ -355,16 +355,16 @@ If p fails <i>without consuming any input</i>, parser q is tried.
 <p>期待通りに動作しない理由は、<code>body</code>パーサーで使っている<code>manyTill</code>にある。
 この問題をみるために、次のパーサーを定義する。これは、パースの結果だけでなく、まだ消費していない文字列も返すパーサーである。
 <code>Parser</code>は<code>StateT</code>を使って実装されているため、<code>Parser</code>の状態を取得するためには<code>get</code>を使えば良い。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Control.Monad.State.Class</span> <span class="p">(</span><span class="nf">get</span><span class="p">)</span>
-<span class="kr">import</span> <span class="nn">Text.Parsing.Parser</span> <span class="p">(</span><span class="kt">ParseState</span><span class="p">)</span>
-
-
-<span class="nf">verbose</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">s</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="p">{</span> <span class="n">result</span> <span class="ow">::</span> <span class="n">a</span><span class="p">,</span> <span class="n">remain</span> <span class="ow">::</span> <span class="n">s</span> <span class="p">}</span>
-<span class="nf">verbose</span> <span class="n">p</span> <span class="ow">=</span> <span class="kr">do</span>
-    <span class="n">result</span> <span class="ow">&lt;-</span> <span class="n">p</span>
-    <span class="kt">ParseState</span> <span class="n">remain</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">get</span>
-    <span class="n">pure</span> <span class="p">{</span> <span class="n">result</span><span class="p">,</span> <span class="n">remain</span> <span class="p">}</span>
-</code></pre></div><p>これを用いて先程の<code>entry</code>をパースしてみると、<code>[title2]</code>が<code>remain</code>に残っていないことが確認できる。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Control.Monad.State.Class</span> <span class="p">(</span><span class="nf">get</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser</span> <span class="p">(</span><span class="kt">ParseState</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">verbose</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">s</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="p">{</span> <span class="n">result</span> <span class="ow">::</span> <span class="n">a</span><span class="p">,</span> <span class="n">remain</span> <span class="ow">::</span> <span class="n">s</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">verbose</span> <span class="n">p</span> <span class="ow">=</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="ow">&lt;-</span> <span class="n">p</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">ParseState</span> <span class="n">remain</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">&lt;-</span> <span class="n">get</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pure</span> <span class="p">{</span> <span class="n">result</span><span class="p">,</span> <span class="n">remain</span> <span class="p">}</span>
+</span></span></code></pre></div><p>これを用いて先程の<code>entry</code>をパースしてみると、<code>[title2]</code>が<code>remain</code>に残っていないことが確認できる。
 つまり、<code>entry</code>によって残って欲しい<code>[title2]</code>が消費されてしまったのだ。</p>
 <pre class="cui">
 > runParser "[title1]\nline1\nline2\n[title2]\nline1\nline2" (verbose entry)
@@ -378,26 +378,26 @@ If p fails <i>without consuming any input</i>, parser q is tried.
 </pre>
 
 <p>そこで、<code>manyTill p end</code>の<code>end</code>が消費されないようなパーサーを作る必要がある。この関数を、今回は<code>manyTill_</code>という名前にする。消費されないようにするためには、<code>lookAhead</code>を使う。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Combinators</span> <span class="p">(</span><span class="nf">lookAhead</span><span class="p">)</span>
-
-
-<span class="nf">manyTill_</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">s</span> <span class="n">a</span> <span class="n">b</span><span class="o">.</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="p">(</span><span class="kt">List</span> <span class="n">a</span><span class="p">)</span>
-<span class="nf">manyTill_</span> <span class="n">p</span> <span class="n">end</span> <span class="ow">=</span> <span class="n">scan</span>
-  <span class="kr">where</span>
-    <span class="n">scan</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
-      <span class="p">(</span><span class="kt">Nil</span> <span class="o">&lt;$</span> <span class="n">lookAhead</span> <span class="n">end</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="kt">Cons</span> <span class="o">&lt;$&gt;</span> <span class="n">p</span> <span class="o">&lt;*&gt;</span> <span class="n">scan</span><span class="p">)</span>
-</code></pre></div><p>これでちゃんと<code>end</code>が消費されなくなる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.Combinators</span> <span class="p">(</span><span class="nf">lookAhead</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">manyTill_</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">s</span> <span class="n">a</span> <span class="n">b</span><span class="o">.</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="n">s</span> <span class="p">(</span><span class="kt">List</span> <span class="n">a</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">manyTill_</span> <span class="n">p</span> <span class="n">end</span> <span class="ow">=</span> <span class="n">scan</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">where</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scan</span> <span class="ow">=</span> <span class="n">defer</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="kt">Nil</span> <span class="o">&lt;$</span> <span class="n">lookAhead</span> <span class="n">end</span><span class="p">)</span> <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="kt">Cons</span> <span class="o">&lt;$&gt;</span> <span class="n">p</span> <span class="o">&lt;*&gt;</span> <span class="n">scan</span><span class="p">)</span>
+</span></span></code></pre></div><p>これでちゃんと<code>end</code>が消費されなくなる。</p>
 <pre class="cui">
 > runParser "aaabbbccc" $ verbose (manyTill_ anyChar (string "bbb"))
 (Right { remain: "bbbccc", result: ('a' : 'a' : 'a' : Nil) })
 </pre>
 
 <p>それでは<code>body</code>パーサーを修正する。<code>manyTill</code>を<code>manyTill_</code>に置き換える。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">body</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">body</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">trimEnd</span> <span class="o">&lt;&lt;&lt;</span> <span class="n">listToString</span> <span class="o">&lt;$&gt;</span> <span class="kr">do</span>
-  <span class="n">skipMany</span> <span class="n">emptyLine</span>
-  <span class="n">manyTill_</span> <span class="n">anyChar</span> <span class="n">bodyEnd</span>
-</code></pre></div><pre class="cui">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">body</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">body</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">trimEnd</span> <span class="o">&lt;&lt;&lt;</span> <span class="n">listToString</span> <span class="o">&lt;$&gt;</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">  <span class="n">skipMany</span> <span class="n">emptyLine</span>
+</span></span><span class="line"><span class="cl">  <span class="n">manyTill_</span> <span class="n">anyChar</span> <span class="n">bodyEnd</span>
+</span></span></code></pre></div><pre class="cui">
 > runParser "[title1]\nline1\nline2\n[title2]\nline1\nline2" (Array.many entry)
 (Right [{ body: "line1\nline2", title: "title1" },{ body: "line1\nline2", title: "title2" }])
 </pre>
@@ -412,47 +412,47 @@ If p fails <i>without consuming any input</i>, parser q is tried.
 <code>onDataString</code>は文字列が送られてきたとき、<code>onEnd</code>は読み取りが終了したときに発生するイベント。
 やってきた文字列を<code>ref</code>に連結していく。</p>
 <p>とりあえずここでは、単に入力した文字列をパースするだけとする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Effect.Ref</span> <span class="k">as</span> <span class="n">Ref</span>
-<span class="kr">import</span> <span class="nn">Node.Stream</span> <span class="k">as</span> <span class="n">NS</span>
-<span class="kr">import</span> <span class="nn">Node.Process</span> <span class="p">(</span><span class="nf">stdin</span><span class="p">)</span>
-<span class="kr">import</span> <span class="nn">Node.Encoding</span> <span class="p">(</span><span class="kt">Encoding</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
-
-
-<span class="nf">onEndInput</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
-<span class="nf">onEndInput</span> <span class="n">input</span> <span class="ow">=</span>
-  <span class="n">log</span> <span class="o">$</span> <span class="n">show</span> <span class="o">$</span> <span class="n">runParser</span> <span class="n">input</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="n">entry</span><span class="p">)</span>
-
-<span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
-<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
-  <span class="n">ref</span> <span class="ow">&lt;-</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">new</span> <span class="s">&#34;&#34;</span>
-  <span class="kt">NS</span><span class="o">.</span><span class="n">onDataString</span> <span class="n">stdin</span> <span class="kt">UTF8</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span>
-    <span class="kt">Ref</span><span class="o">.</span><span class="n">modify_</span> <span class="p">(</span><span class="kr">_</span> <span class="o">&lt;&gt;</span> <span class="n">s</span><span class="p">)</span> <span class="n">ref</span>
-
-  <span class="kt">NS</span><span class="o">.</span><span class="n">onEnd</span> <span class="n">stdin</span> <span class="kr">do</span>
-    <span class="n">s</span> <span class="ow">&lt;-</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">read</span> <span class="n">ref</span>
-    <span class="n">onEndInput</span> <span class="n">s</span>
-</code></pre></div><p>次のようなテキストファイルを作り、<code>sample.txt</code>として保存する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">[Title1]
-line1
-line2
-line3
-line4
-
-
-[Title2]
-
-
-line1
-line2
-[Title3]
-
-line1
-
-line2
-
-
-line3
-</code></pre></div><p>実行してみると、正しくテキストファイルがパースされていることが確認できる (見やすいように改行してある)。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Effect.Ref</span> <span class="k">as</span> <span class="n">Ref</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Node.Stream</span> <span class="k">as</span> <span class="n">NS</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Node.Process</span> <span class="p">(</span><span class="nf">stdin</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Node.Encoding</span> <span class="p">(</span><span class="kt">Encoding</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">onEndInput</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+</span></span><span class="line"><span class="cl"><span class="nf">onEndInput</span> <span class="n">input</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="n">log</span> <span class="o">$</span> <span class="n">show</span> <span class="o">$</span> <span class="n">runParser</span> <span class="n">input</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="n">entry</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">main</span> <span class="ow">::</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+</span></span><span class="line"><span class="cl"><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ref</span> <span class="ow">&lt;-</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">new</span> <span class="s">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">NS</span><span class="o">.</span><span class="n">onDataString</span> <span class="n">stdin</span> <span class="kt">UTF8</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">Ref</span><span class="o">.</span><span class="n">modify_</span> <span class="p">(</span><span class="kr">_</span> <span class="o">&lt;&gt;</span> <span class="n">s</span><span class="p">)</span> <span class="n">ref</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kt">NS</span><span class="o">.</span><span class="n">onEnd</span> <span class="n">stdin</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">    <span class="n">s</span> <span class="ow">&lt;-</span> <span class="kt">Ref</span><span class="o">.</span><span class="n">read</span> <span class="n">ref</span>
+</span></span><span class="line"><span class="cl">    <span class="n">onEndInput</span> <span class="n">s</span>
+</span></span></code></pre></div><p>次のようなテキストファイルを作り、<code>sample.txt</code>として保存する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">[Title1]
+</span></span><span class="line"><span class="cl">line1
+</span></span><span class="line"><span class="cl">line2
+</span></span><span class="line"><span class="cl">line3
+</span></span><span class="line"><span class="cl">line4
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[Title2]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line1
+</span></span><span class="line"><span class="cl">line2
+</span></span><span class="line"><span class="cl">[Title3]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line3
+</span></span></code></pre></div><p>実行してみると、正しくテキストファイルがパースされていることが確認できる (見やすいように改行してある)。</p>
 <pre class="cui">
 % spago run < sample.txt
 
@@ -469,60 +469,60 @@ line3
 <li><code>body</code>は<code>pre</code>タグで括る</li>
 </ul>
 <p>まず簡単にHTML要素のデータ型を作成する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">HTMLElem</span>
-  <span class="ow">=</span> <span class="kt">Div</span> <span class="p">(</span><span class="kt">Array</span> <span class="kt">HTMLElem</span><span class="p">)</span>
-  <span class="o">|</span> <span class="kt">Pre</span> <span class="kt">String</span>
-  <span class="o">|</span> <span class="kt">H1</span> <span class="kt">String</span>
-
-
-<span class="kr">instance</span> <span class="kt">Show</span> <span class="kt">HTMLElem</span> <span class="kr">where</span>
-  <span class="n">show</span> <span class="p">(</span><span class="kt">Div</span> <span class="n">elems</span><span class="p">)</span> <span class="ow">=</span>
-    <span class="s">&#34;&lt;div&gt;</span><span class="se">\n</span><span class="s">&#34;</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">intercalate</span> <span class="s">&#34;&#34;</span> <span class="o">$</span> <span class="n">map</span> <span class="n">show</span> <span class="n">elems</span><span class="p">)</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;&lt;/div&gt;</span><span class="se">\n</span><span class="s">&#34;</span>
-  <span class="n">show</span> <span class="p">(</span><span class="kt">Pre</span> <span class="n">text</span><span class="p">)</span> <span class="ow">=</span>
-    <span class="s">&#34;&lt;pre&gt;&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">text</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;&lt;/pre&gt;</span><span class="se">\n</span><span class="s">&#34;</span>
-  <span class="n">show</span> <span class="p">(</span><span class="kt">H1</span> <span class="n">text</span><span class="p">)</span> <span class="ow">=</span>
-    <span class="s">&#34;&lt;h1&gt;&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">text</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;&lt;/h1&gt;</span><span class="se">\n</span><span class="s">&#34;</span>
-</code></pre></div><p>1つの<code>entry</code>をHTMLに変換する関数を作成。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">entryToHTML</span> <span class="ow">::</span> <span class="kt">Entry</span> <span class="ow">-&gt;</span> <span class="kt">HTMLElem</span>
-<span class="nf">entryToHTML</span> <span class="p">{</span> <span class="n">title</span><span class="p">,</span> <span class="n">body</span> <span class="p">}</span> <span class="ow">=</span>
-  <span class="kt">Div</span>
-    <span class="p">[</span> <span class="kt">H1</span> <span class="n">title</span>
-    <span class="p">,</span> <span class="kt">Pre</span> <span class="n">body</span>
-    <span class="p">]</span>
-</code></pre></div><p>最後に、<code>onEndInput</code>を修正する。<code>entry</code>をHTMLに変換し、それを<code>log</code>で出力。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">onEndInput</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
-<span class="nf">onEndInput</span> <span class="n">input</span> <span class="ow">=</span>
-  <span class="kr">case</span> <span class="n">runParser</span> <span class="n">input</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="n">entry</span><span class="p">)</span> <span class="kr">of</span>
-    <span class="kt">Right</span> <span class="n">entries</span> <span class="ow">-&gt;</span>
-      <span class="n">logShow</span> <span class="o">$</span> <span class="kt">Div</span> <span class="p">(</span><span class="n">map</span> <span class="n">entryToHTML</span> <span class="n">entries</span><span class="p">)</span>
-
-    <span class="kt">Left</span> <span class="n">e</span> <span class="ow">-&gt;</span>
-      <span class="n">logShow</span> <span class="n">e</span>
-</code></pre></div><p>これで<code>spago run &lt; sample.txt</code>を実行すると、以下のHTMLが出力される。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Title1<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span>line1
-line2
-line3
-line4<span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Title2<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span>line1
-line2<span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Title3<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
-<span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span>line1
-
-line2
-
-
-line3<span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-</code></pre></div><h2 id="おまけ-パーサーコンビネータを使わない方法">(おまけ) パーサーコンビネータを使わない方法</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">data</span> <span class="kt">HTMLElem</span>
+</span></span><span class="line"><span class="cl">  <span class="ow">=</span> <span class="kt">Div</span> <span class="p">(</span><span class="kt">Array</span> <span class="kt">HTMLElem</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">|</span> <span class="kt">Pre</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl">  <span class="o">|</span> <span class="kt">H1</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">instance</span> <span class="kt">Show</span> <span class="kt">HTMLElem</span> <span class="kr">where</span>
+</span></span><span class="line"><span class="cl">  <span class="n">show</span> <span class="p">(</span><span class="kt">Div</span> <span class="n">elems</span><span class="p">)</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;&lt;div&gt;</span><span class="se">\n</span><span class="s">&#34;</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">intercalate</span> <span class="s">&#34;&#34;</span> <span class="o">$</span> <span class="n">map</span> <span class="n">show</span> <span class="n">elems</span><span class="p">)</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;&lt;/div&gt;</span><span class="se">\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">show</span> <span class="p">(</span><span class="kt">Pre</span> <span class="n">text</span><span class="p">)</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;&lt;pre&gt;&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">text</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;&lt;/pre&gt;</span><span class="se">\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">show</span> <span class="p">(</span><span class="kt">H1</span> <span class="n">text</span><span class="p">)</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;&lt;h1&gt;&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">text</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;&lt;/h1&gt;</span><span class="se">\n</span><span class="s">&#34;</span>
+</span></span></code></pre></div><p>1つの<code>entry</code>をHTMLに変換する関数を作成。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">entryToHTML</span> <span class="ow">::</span> <span class="kt">Entry</span> <span class="ow">-&gt;</span> <span class="kt">HTMLElem</span>
+</span></span><span class="line"><span class="cl"><span class="nf">entryToHTML</span> <span class="p">{</span> <span class="n">title</span><span class="p">,</span> <span class="n">body</span> <span class="p">}</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">Div</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span> <span class="kt">H1</span> <span class="n">title</span>
+</span></span><span class="line"><span class="cl">    <span class="p">,</span> <span class="kt">Pre</span> <span class="n">body</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span></code></pre></div><p>最後に、<code>onEndInput</code>を修正する。<code>entry</code>をHTMLに変換し、それを<code>log</code>で出力。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">onEndInput</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+</span></span><span class="line"><span class="cl"><span class="nf">onEndInput</span> <span class="n">input</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">case</span> <span class="n">runParser</span> <span class="n">input</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="n">entry</span><span class="p">)</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">Right</span> <span class="n">entries</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">logShow</span> <span class="o">$</span> <span class="kt">Div</span> <span class="p">(</span><span class="n">map</span> <span class="n">entryToHTML</span> <span class="n">entries</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">Left</span> <span class="n">e</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">logShow</span> <span class="n">e</span>
+</span></span></code></pre></div><p>これで<code>spago run &lt; sample.txt</code>を実行すると、以下のHTMLが出力される。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Title1<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span>line1
+</span></span><span class="line"><span class="cl">line2
+</span></span><span class="line"><span class="cl">line3
+</span></span><span class="line"><span class="cl">line4<span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Title2<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span>line1
+</span></span><span class="line"><span class="cl">line2<span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Title3<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span>line1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">line3<span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span></code></pre></div><h2 id="おまけ-パーサーコンビネータを使わない方法">(おまけ) パーサーコンビネータを使わない方法</h2>
 <p>今回みるべきは行ごとである。このような、行に分けられる書式のデータについては、<code>lines</code>関数で切り出して1行ずつ見ていく手法の方が、実は手軽だったりしないのか。
 そこで、パーサーコンビネータを(ほぼ)使わずに、テキストファイルのパーサーを実装してみた。</p>
 <p>結果として、「ここには<code>try</code>を入れなくてはいけない」みたいなハマりポイントは無く実装できたが、再帰関数をどう実装するか、どんな手順でパースしていけばよいのか、どう機能を分割すれば見通しの良いコードが書けるかなどでかなり時間を使った。</p>
@@ -540,104 +540,104 @@ line3<span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;
 </ol>
 <p>別ファイルを作ってコードを書く。ファイルは<code>src/LineParser.purs</code>とでもしておく。</p>
 <p>天下り的だが、以下の文を先頭に書く。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">LineParser</span> <span class="kr">where</span>
-
-<span class="kr">import</span> <span class="nn">Prelude</span>
-
-<span class="kr">import</span> <span class="nn">Text.Parsing.Parser</span> <span class="p">(</span><span class="kt">Parser</span><span class="p">,</span> <span class="nf">runParser</span><span class="p">)</span>
-<span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">char</span><span class="p">,</span> <span class="nf">satisfy</span><span class="p">)</span>
-<span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="p">(</span><span class="nf">fromCharArray</span><span class="p">,</span> <span class="nf">toCharArray</span><span class="p">)</span> <span class="n">as</span> <span class="kt">String</span>
-<span class="kr">import</span> <span class="nn">Data.String.Utils</span> <span class="p">(</span><span class="nf">lines</span><span class="p">,</span> <span class="nf">trimEnd</span><span class="p">)</span> <span class="n">as</span> <span class="kt">String</span>
-<span class="kr">import</span> <span class="nn">Data.Array</span> <span class="k">as</span> <span class="n">Array</span>
-<span class="kr">import</span> <span class="nn">Data.List</span> <span class="k">as</span> <span class="n">List</span>
-<span class="kr">import</span> <span class="nn">Data.List</span> <span class="p">(</span><span class="kt">List</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
-<span class="kr">import</span> <span class="nn">Data.Either</span> <span class="p">(</span><span class="nf">isRight</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Either</span>
-<span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
-</code></pre></div><h3 id="行の種類を判別する関数">行の種類を判別する関数</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">module</span> <span class="nn">LineParser</span> <span class="kr">where</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Prelude</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser</span> <span class="p">(</span><span class="kt">Parser</span><span class="p">,</span> <span class="nf">runParser</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Text.Parsing.Parser.String</span> <span class="p">(</span><span class="nf">char</span><span class="p">,</span> <span class="nf">satisfy</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.String.CodeUnits</span> <span class="p">(</span><span class="nf">fromCharArray</span><span class="p">,</span> <span class="nf">toCharArray</span><span class="p">)</span> <span class="n">as</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.String.Utils</span> <span class="p">(</span><span class="nf">lines</span><span class="p">,</span> <span class="nf">trimEnd</span><span class="p">)</span> <span class="n">as</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.Array</span> <span class="k">as</span> <span class="n">Array</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.List</span> <span class="k">as</span> <span class="n">List</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.List</span> <span class="p">(</span><span class="kt">List</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.Either</span> <span class="p">(</span><span class="nf">isRight</span><span class="p">)</span> <span class="n">as</span> <span class="kt">Either</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">Data.Maybe</span> <span class="p">(</span><span class="kt">Maybe</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+</span></span></code></pre></div><h3 id="行の種類を判別する関数">行の種類を判別する関数</h3>
 <p><code>title</code>か否かを判別する関数を作る。これに関しては<code>Text.Parsing.Parser</code>の<code>Parser</code>を使わせてもらう。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">parserTitle</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
-<span class="nf">parserTitle</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span>
-  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;[&#39;</span> <span class="o">*&gt;</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="o">$</span> <span class="n">satisfy</span> <span class="p">(</span><span class="kr">_</span> <span class="o">/=</span> <span class="sc">&#39;]&#39;</span><span class="p">))</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;]&#39;</span><span class="p">)</span>
-
-<span class="nf">isTitle</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Boolean</span>
-<span class="nf">isTitle</span> <span class="n">text</span> <span class="ow">=</span> <span class="kt">Either</span><span class="o">.</span><span class="n">isRight</span> <span class="o">$</span> <span class="n">runParser</span> <span class="n">text</span> <span class="n">parserTitle</span>
-</code></pre></div><h3 id="空行を取り除く関数">空行を取り除く関数</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">parserTitle</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">String</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">parserTitle</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">fromCharArray</span> <span class="o">&lt;$&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;[&#39;</span> <span class="o">*&gt;</span> <span class="p">(</span><span class="kt">Array</span><span class="o">.</span><span class="n">many</span> <span class="o">$</span> <span class="n">satisfy</span> <span class="p">(</span><span class="kr">_</span> <span class="o">/=</span> <span class="sc">&#39;]&#39;</span><span class="p">))</span> <span class="o">&lt;*</span> <span class="n">char</span> <span class="sc">&#39;]&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">isTitle</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Boolean</span>
+</span></span><span class="line"><span class="cl"><span class="nf">isTitle</span> <span class="n">text</span> <span class="ow">=</span> <span class="kt">Either</span><span class="o">.</span><span class="n">isRight</span> <span class="o">$</span> <span class="n">runParser</span> <span class="n">text</span> <span class="n">parserTitle</span>
+</span></span></code></pre></div><h3 id="空行を取り除く関数">空行を取り除く関数</h3>
 <p>空行を取り除く関数<code>dropEmptyLines</code>を作成。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">allSpaces</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Boolean</span>
-<span class="nf">allSpaces</span> <span class="ow">=</span> <span class="kt">Array</span><span class="o">.</span><span class="n">all</span> <span class="p">(</span><span class="kr">_</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="p">)</span> <span class="o">&lt;&lt;&lt;</span> <span class="kt">String</span><span class="o">.</span><span class="n">toCharArray</span>
-
-
-<span class="nf">dropEmptyLines</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="kt">String</span>
-<span class="nf">dropEmptyLines</span> <span class="ow">=</span> <span class="kt">List</span><span class="o">.</span><span class="n">dropWhile</span> <span class="n">allSpaces</span>
-</code></pre></div><h3 id="entryとそれを操作するユーティリティ関数">Entryとそれを操作するユーティリティ関数</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">allSpaces</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Boolean</span>
+</span></span><span class="line"><span class="cl"><span class="nf">allSpaces</span> <span class="ow">=</span> <span class="kt">Array</span><span class="o">.</span><span class="n">all</span> <span class="p">(</span><span class="kr">_</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="p">)</span> <span class="o">&lt;&lt;&lt;</span> <span class="kt">String</span><span class="o">.</span><span class="n">toCharArray</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">dropEmptyLines</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nf">dropEmptyLines</span> <span class="ow">=</span> <span class="kt">List</span><span class="o">.</span><span class="n">dropWhile</span> <span class="n">allSpaces</span>
+</span></span></code></pre></div><h3 id="entryとそれを操作するユーティリティ関数">Entryとそれを操作するユーティリティ関数</h3>
 <p><code>title</code>だけ入った<code>entry</code>を作成する関数。<code>body</code>に追記する関数、<code>body</code>の末尾の空行を取り除く関数を作成する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Entry</span> <span class="ow">=</span>
-  <span class="p">{</span> <span class="n">title</span> <span class="ow">::</span> <span class="kt">String</span>
-  <span class="p">,</span> <span class="n">body</span> <span class="ow">::</span> <span class="kt">String</span>
-  <span class="p">}</span>
-
-
-<span class="nf">newEntry</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span>  <span class="kt">Entry</span>
-<span class="nf">newEntry</span> <span class="n">newTitle</span> <span class="ow">=</span>
-  <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="n">newTitle</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;&#34;</span> <span class="p">}</span>
-
-
-<span class="nf">appendBody</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Entry</span> <span class="ow">-&gt;</span> <span class="kt">Entry</span>
-<span class="nf">appendBody</span> <span class="n">line</span> <span class="n">entry</span> <span class="ow">=</span> 
-  <span class="kr">case</span> <span class="n">entry</span><span class="o">.</span><span class="n">body</span> <span class="kr">of</span>
-    <span class="s">&#34;&#34;</span> <span class="ow">-&gt;</span>
-        <span class="n">entry</span> <span class="p">{</span> <span class="n">body</span> <span class="ow">=</span> <span class="n">line</span> <span class="p">}</span>
-
-    <span class="kr">_</span> <span class="ow">-&gt;</span>
-        <span class="n">entry</span> <span class="p">{</span> <span class="n">body</span> <span class="ow">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">body</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">line</span> <span class="p">}</span>
-        
-<span class="nf">trimBodyEnd</span> <span class="ow">::</span> <span class="kt">Entry</span> <span class="ow">-&gt;</span> <span class="kt">Entry</span>
-<span class="nf">trimBodyEnd</span> <span class="n">entry</span> <span class="ow">=</span>
-  <span class="n">entry</span> <span class="p">{</span> <span class="n">body</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">trimEnd</span> <span class="n">entry</span><span class="o">.</span><span class="n">body</span> <span class="p">}</span>
-</code></pre></div><h3 id="再帰関数">再帰関数</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">type</span> <span class="kt">Entry</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="n">title</span> <span class="ow">::</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl">  <span class="p">,</span> <span class="n">body</span> <span class="ow">::</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">newEntry</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span>  <span class="kt">Entry</span>
+</span></span><span class="line"><span class="cl"><span class="nf">newEntry</span> <span class="n">newTitle</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="n">newTitle</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">appendBody</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Entry</span> <span class="ow">-&gt;</span> <span class="kt">Entry</span>
+</span></span><span class="line"><span class="cl"><span class="nf">appendBody</span> <span class="n">line</span> <span class="n">entry</span> <span class="ow">=</span> 
+</span></span><span class="line"><span class="cl">  <span class="kr">case</span> <span class="n">entry</span><span class="o">.</span><span class="n">body</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;&#34;</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">entry</span> <span class="p">{</span> <span class="n">body</span> <span class="ow">=</span> <span class="n">line</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">_</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">entry</span> <span class="p">{</span> <span class="n">body</span> <span class="ow">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">body</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span> <span class="o">&lt;&gt;</span> <span class="n">line</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl"><span class="nf">trimBodyEnd</span> <span class="ow">::</span> <span class="kt">Entry</span> <span class="ow">-&gt;</span> <span class="kt">Entry</span>
+</span></span><span class="line"><span class="cl"><span class="nf">trimBodyEnd</span> <span class="n">entry</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="n">entry</span> <span class="p">{</span> <span class="n">body</span> <span class="ow">=</span> <span class="kt">String</span><span class="o">.</span><span class="n">trimEnd</span> <span class="n">entry</span><span class="o">.</span><span class="n">body</span> <span class="p">}</span>
+</span></span></code></pre></div><h3 id="再帰関数">再帰関数</h3>
 <p>テキスト中に初めて現れる<code>title</code>を見つける関数<code>findFirstTitle</code>を作成。
 これを用いて、本命の<code>parseEntries</code>を作成。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">findFirstTitle</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="p">{</span> <span class="n">title</span> <span class="ow">::</span> <span class="kt">String</span><span class="p">,</span> <span class="n">rest</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">String</span> <span class="p">}</span>
-<span class="nf">findFirstTitle</span> <span class="kt">Nil</span> <span class="ow">=</span> <span class="kt">Nothing</span>
-<span class="nf">findFirstTitle</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span>
-  <span class="kr">if</span> <span class="n">isTitle</span> <span class="n">x</span> <span class="kr">then</span>
-    <span class="kt">Just</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="n">x</span><span class="p">,</span> <span class="n">rest</span><span class="kt">:</span> <span class="n">xs</span> <span class="p">}</span>
-  <span class="kr">else</span>
-    <span class="n">findFirstTitle</span> <span class="n">xs</span>
-
-
-<span class="nf">parseEntries</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="kt">Entry</span>
-<span class="nf">parseEntries</span> <span class="n">text</span> <span class="ow">=</span>
-  <span class="kr">case</span> <span class="n">findFirstTitle</span> <span class="n">allLines</span> <span class="kr">of</span>
-    <span class="kt">Nothing</span> <span class="ow">-&gt;</span>
-      <span class="kt">[]</span>
-
-    <span class="kt">Just</span> <span class="p">{</span> <span class="n">title</span><span class="p">,</span> <span class="n">rest</span> <span class="p">}</span> <span class="ow">-&gt;</span>
-      <span class="kt">Array</span><span class="o">.</span><span class="n">fromFoldable</span> <span class="o">$</span> <span class="n">map</span> <span class="n">trimBodyEnd</span> <span class="o">$</span> <span class="n">scan</span> <span class="p">{</span> <span class="n">title</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;&#34;</span> <span class="p">}</span> <span class="n">rest</span>
-  <span class="kr">where</span>
-    <span class="n">allLines</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">String</span>
-    <span class="n">allLines</span> <span class="ow">=</span> <span class="kt">Array</span><span class="o">.</span><span class="n">toUnfoldable</span> <span class="o">$</span> <span class="kt">String</span><span class="o">.</span><span class="n">lines</span> <span class="n">text</span> 
-
-    <span class="n">scan</span> <span class="ow">::</span> <span class="kt">Entry</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="kt">Entry</span>
-    <span class="n">scan</span> <span class="n">entry</span> <span class="kt">Nil</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="n">entry</span> <span class="kt">Nil</span>
-    <span class="n">scan</span> <span class="n">entry</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">line</span> <span class="n">lines</span><span class="p">)</span> <span class="ow">=</span>
-      <span class="kr">if</span> <span class="n">isTitle</span> <span class="n">line</span> <span class="kr">then</span>
-        <span class="kt">Cons</span> <span class="n">entry</span> <span class="o">$</span>
-             <span class="n">scan</span> <span class="p">(</span><span class="n">newEntry</span> <span class="n">line</span><span class="p">)</span>
-                  <span class="p">(</span><span class="n">dropEmptyLines</span> <span class="n">lines</span><span class="p">)</span>
-      <span class="kr">else</span>
-        <span class="n">scan</span> <span class="p">(</span><span class="n">appendBody</span> <span class="n">line</span> <span class="n">entry</span><span class="p">)</span> <span class="n">lines</span>
-</code></pre></div><p><code>parseEntries</code>のコード量がだいぶ大きくなってしまった(自分の力量不足もある)。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="nf">findFirstTitle</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="p">{</span> <span class="n">title</span> <span class="ow">::</span> <span class="kt">String</span><span class="p">,</span> <span class="n">rest</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">String</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">findFirstTitle</span> <span class="kt">Nil</span> <span class="ow">=</span> <span class="kt">Nothing</span>
+</span></span><span class="line"><span class="cl"><span class="nf">findFirstTitle</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="n">isTitle</span> <span class="n">x</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">Just</span> <span class="p">{</span> <span class="n">title</span><span class="kt">:</span> <span class="n">x</span><span class="p">,</span> <span class="n">rest</span><span class="kt">:</span> <span class="n">xs</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">    <span class="n">findFirstTitle</span> <span class="n">xs</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">parseEntries</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Array</span> <span class="kt">Entry</span>
+</span></span><span class="line"><span class="cl"><span class="nf">parseEntries</span> <span class="n">text</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">case</span> <span class="n">findFirstTitle</span> <span class="n">allLines</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">Nothing</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kt">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">Just</span> <span class="p">{</span> <span class="n">title</span><span class="p">,</span> <span class="n">rest</span> <span class="p">}</span> <span class="ow">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kt">Array</span><span class="o">.</span><span class="n">fromFoldable</span> <span class="o">$</span> <span class="n">map</span> <span class="n">trimBodyEnd</span> <span class="o">$</span> <span class="n">scan</span> <span class="p">{</span> <span class="n">title</span><span class="p">,</span> <span class="n">body</span><span class="kt">:</span> <span class="s">&#34;&#34;</span> <span class="p">}</span> <span class="n">rest</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">where</span>
+</span></span><span class="line"><span class="cl">    <span class="n">allLines</span> <span class="ow">::</span> <span class="kt">List</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl">    <span class="n">allLines</span> <span class="ow">=</span> <span class="kt">Array</span><span class="o">.</span><span class="n">toUnfoldable</span> <span class="o">$</span> <span class="kt">String</span><span class="o">.</span><span class="n">lines</span> <span class="n">text</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">scan</span> <span class="ow">::</span> <span class="kt">Entry</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="kt">Entry</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scan</span> <span class="n">entry</span> <span class="kt">Nil</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="n">entry</span> <span class="kt">Nil</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scan</span> <span class="n">entry</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">line</span> <span class="n">lines</span><span class="p">)</span> <span class="ow">=</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">if</span> <span class="n">isTitle</span> <span class="n">line</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">Cons</span> <span class="n">entry</span> <span class="o">$</span>
+</span></span><span class="line"><span class="cl">             <span class="n">scan</span> <span class="p">(</span><span class="n">newEntry</span> <span class="n">line</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                  <span class="p">(</span><span class="n">dropEmptyLines</span> <span class="n">lines</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">        <span class="n">scan</span> <span class="p">(</span><span class="n">appendBody</span> <span class="n">line</span> <span class="n">entry</span><span class="p">)</span> <span class="n">lines</span>
+</span></span></code></pre></div><p><code>parseEntries</code>のコード量がだいぶ大きくなってしまった(自分の力量不足もある)。
 <code>parseEntries</code>が何をやっているのかについて、パッとみて分かるとは言いづらい。</p>
 <h3 id="テキストファイルのパース">テキストファイルのパース</h3>
 <p><code>src/Main.purs</code>に戻り、<code>onEndInput</code>を次のようにすれば、作ったパーサーが動くことが確かめられる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">LineParser</span> <span class="p">(</span><span class="nf">parseEntries</span><span class="p">)</span>
-
-
-<span class="nf">onEndInput</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
-<span class="nf">onEndInput</span> <span class="n">input</span> <span class="ow">=</span> 
-  <span class="n">log</span> <span class="o">$</span> <span class="n">show</span> <span class="o">$</span> <span class="kt">Div</span> <span class="p">(</span><span class="n">map</span> <span class="n">entryToHTML</span> <span class="o">$</span> <span class="n">parseEntries</span> <span class="n">input</span><span class="p">)</span>
-</code></pre></div><h2 id="まとめ感想">まとめ・感想</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nn">LineParser</span> <span class="p">(</span><span class="nf">parseEntries</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">onEndInput</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Effect</span> <span class="kt">Unit</span>
+</span></span><span class="line"><span class="cl"><span class="nf">onEndInput</span> <span class="n">input</span> <span class="ow">=</span> 
+</span></span><span class="line"><span class="cl">  <span class="n">log</span> <span class="o">$</span> <span class="n">show</span> <span class="o">$</span> <span class="kt">Div</span> <span class="p">(</span><span class="n">map</span> <span class="n">entryToHTML</span> <span class="o">$</span> <span class="n">parseEntries</span> <span class="n">input</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="まとめ感想">まとめ・感想</h2>
 <p><code>skipMany</code>、<code>lookAhead</code>、<code>manyTill</code>など、色々なパーサーを使うことができた。また<code>try</code>がどんなところが役に立つのかを知ることができた。</p>
 <p><code>Parser</code>の内部状態を取得するには<code>get</code>を使えば良いという点については、個人的に盲点だった。</p>
 <p>パーサーコンビネータを使う方法と使わない方法で比べてみた。前者はパーサーという小さな関数に分け、それを組み合わせるようなコーディングをすることになるため、

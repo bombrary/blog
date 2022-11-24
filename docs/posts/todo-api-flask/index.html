@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PythonとFlask(&#43;α)で作るToDoリストAPI | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/todo-api-flask/">
@@ -214,18 +214,18 @@
 <p>データはSQLiteで管理する。</p>
 <h2 id="雛形">雛形</h2>
 <p><code>todo_list</code>ディレクトリを作成。<code>todo_list/__init__.py</code>を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-
-
-<span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
-
-    <span class="k">return</span> <span class="n">app</span>
-</code></pre></div><p><code>export</code>コマンドで環境変数を設定する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">app</span>
+</span></span></code></pre></div><p><code>export</code>コマンドで環境変数を設定する。</p>
 <pre class="cui">
 % export FLASK_APP=todo_list
 % export FLASK_ENV=development
@@ -245,10 +245,10 @@ Hello, World
 <h3 id="雛形---解説">雛形 - 解説</h3>
 <p>まず、<code>Flask(__name__)</code>でWSGIアプリを作ることができる。アプリを<code>app</code>としたとき、<code>@app.route</code>デコレータでURLに対応する関数を登録することができる。
 以下は、URL <code>/</code>に対して関数<code>hello</code>を登録している。よって、URL <code>/</code>にアクセスされたときに、<code>Hello, World</code>というレスポンスが返ってくるようになる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python">    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
-</code></pre></div><p>HTMLデータやJSONなどの、アプリのユーザーが「見る部分」のことをviewという。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
+</span></span></code></pre></div><p>HTMLデータやJSONなどの、アプリのユーザーが「見る部分」のことをviewという。
 そして<code>hello</code>のような、<code>@app.route</code>で登録される関数をview関数という。
 上のコードでは<code>'Hello, World'</code>を返すviewをview関数<code>hello</code>として定義していることになる。
 view関数の書き方については<a href="https://flask.palletsprojects.com/en/2.0.x/quickstart/#about-responses">ドキュメントのQuickstart</a>を参照。
@@ -261,53 +261,53 @@ view関数の書き方については<a href="https://flask.palletsprojects.com/
 環境変数<code>FLASK_ENV</code>に<code>development</code>を設定すると、自動リロードがONになったり、例外発生時にデバッグ用のレスポンスを送ったりしてくれる。</p>
 <h2 id="blueprintの利用">Blueprintの利用</h2>
 <p>まず、Blueprintを作成する。<code>todo_list/todo.py</code>を作成し、ひとまず内容を以下の通りにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span>
-
-<span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;todo&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">get_all</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s1">&#39;get_all&#39;</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;POST&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">post</span><span class="p">():</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;post: </span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s1">&#39;</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;get: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;PUT&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;put: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s1">&#39;</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;DELETE&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;delete: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span>
-</code></pre></div><p>WSGIアプリにBlueprintを登録する。<code>todo_list/__init__.py</code>の内容を以下の通りにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-
-
-<span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/todo&#39;</span><span class="p">)</span>
-
-    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
-
-    <span class="c1"># 以下2文を追加</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">todo</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">todo</span><span class="o">.</span><span class="n">bp</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">app</span>
-</code></pre></div><p><code>curl</code>で確認。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;todo&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_all</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;get_all&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;POST&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">post</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">body</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;post: </span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s1">&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;get: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;PUT&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">body</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;put: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s1">&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;DELETE&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;delete: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span>
+</span></span></code></pre></div><p>WSGIアプリにBlueprintを登録する。<code>todo_list/__init__.py</code>の内容を以下の通りにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/todo&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 以下2文を追加</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">todo</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">todo</span><span class="o">.</span><span class="n">bp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">app</span>
+</span></span></code></pre></div><p><code>curl</code>で確認。</p>
 <pre class="cui">
 % curl localhost:5000/todo/
 get_all
@@ -331,19 +331,19 @@ WSGIアプリにBlueprintを登録するには、<code>register_blueprint</code>
 <code>url_prefix</code>引数を<code>/todo</code>とすることで、対応するBlueprintのURLのprefixを<code>/todo</code>に統一する。</p>
 <h2 id="peeweeを使ったtodoモデルの作成">peeweeを使ったToDoモデルの作成</h2>
 <p><code>todo_list/models/__init__.py</code>と<code>todo_list/models/todo.py</code>を作成。前者は空のままにし、後者は内容を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-
-
-<span class="k">class</span> <span class="nc">Todo</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">content</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
-    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
-    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">updated_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Todo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</code></pre></div><h3 id="peeweeを使ったtodoモデルの作成---解説">peeweeを使ったToDoモデルの作成 - 解説</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Todo</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">content</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">updated_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Todo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="peeweeを使ったtodoモデルの作成---解説">peeweeを使ったToDoモデルの作成 - 解説</h3>
 <p>peeweeはORMである。つまり、PythonのオブジェクトとRDBMS(上ではSQLite)のデータを相互に変換するためのライブラリである。
 ORMを使う1つの利点は、SQL文を書かずに済むことである。
 データは<code>Model</code>というクラスとして管理する。<code>Model</code>を介してRDBMSのデータを操作する。</p>
@@ -396,26 +396,26 @@ Quickstartでは、<code>Todo</code>クラスの<code>Meta</code>内部クラス
 <p>ただし、<code>dict</code>への変換はmarshmallowに任せるので、<code>model_to_dict</code>はこの後使わない。</p>
 <h2 id="marshmallowを使ったデータの変換とvalidation">marshmallowを使ったデータの変換とvalidation</h2>
 <p><code>todo_list/models/todo.py</code>を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span>
-
-
-<span class="k">class</span> <span class="nc">Todo</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-  <span class="c1"># ...</span>
-  <span class="c1"># 省略</span>
-  <span class="c1"># ...</span>
-
-
-<span class="k">class</span> <span class="nc">TodoSchema</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Integer</span><span class="p">()</span>
-    <span class="n">content</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">created_at</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">DateTime</span><span class="p">()</span>
-    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">DateTime</span><span class="p">()</span>
-
-
-<span class="n">todo_schema</span> <span class="o">=</span> <span class="n">TodoSchema</span><span class="p">()</span>
-</code></pre></div><h3 id="marshmallowを使ったデータの変換とvalidation---解説">marshmallowを使ったデータの変換とvalidation - 解説</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Todo</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># ...</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># 省略</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># ...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TodoSchema</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">id</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Integer</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">content</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">created_at</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">DateTime</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">DateTime</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">todo_schema</span> <span class="o">=</span> <span class="n">TodoSchema</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="marshmallowを使ったデータの変換とvalidation---解説">marshmallowを使ったデータの変換とvalidation - 解説</h3>
 <p>marshmallowは、JSONデータとPythonオブジェクトを相互に変換する機能を提供する。
 その変換のルールは<code>Schema</code>クラスで定義する。
 上の<code>TodoSchema</code>は、以下の変換のルールを定義する。</p>
@@ -460,60 +460,60 @@ marshmallow.exceptions.ValidationError: {'content': ['Not a valid string.']}
 
 <h2 id="flaskとデータベースの連携">Flaskとデータベースの連携</h2>
 <p><code>todo_list/db.py</code>を作成し、内容を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
-<span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-
-<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">):</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">])</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">bind</span><span class="p">([</span><span class="n">Todo</span><span class="p">])</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">teardown_appcontext</span><span class="p">(</span><span class="n">close_db</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">close_db</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">db</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</code></pre></div><p><code>todo_list/app.py</code>を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="kn">import</span> <span class="nn">os</span> <span class="c1"># 追加</span>
-
-
-<span class="c1"># 追加</span>
-<span class="k">def</span> <span class="nf">make_instance_path</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-
-<span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">)</span> <span class="c1"># 追加</span>
-
-    <span class="n">make_instance_path</span><span class="p">(</span><span class="n">app</span><span class="p">)</span> <span class="c1"># 追加</span>
-
-    <span class="c1"># 以下の2行を追加</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">db</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-
-    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
-
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">todo</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">todo</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s2">&#34;/todo&#34;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">app</span>
-</code></pre></div><p><code>todo_list/todo.py</code>に以下の内容を追記する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">.db</span> <span class="kn">import</span> <span class="n">db</span>
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">before_request</span>
-<span class="k">def</span> <span class="nf">connect_db</span><span class="p">():</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-</code></pre></div><h3 id="flaskとデータベースの連携---解説">Flaskとデータベースの連携 - 解説</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">bind</span><span class="p">([</span><span class="n">Todo</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">teardown_appcontext</span><span class="p">(</span><span class="n">close_db</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">close_db</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">db</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span></code></pre></div><p><code>todo_list/app.py</code>を以下のようにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span> <span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">make_instance_path</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">)</span> <span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">make_instance_path</span><span class="p">(</span><span class="n">app</span><span class="p">)</span> <span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 以下の2行を追加</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">db</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Hello, World&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">todo</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">todo</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s2">&#34;/todo&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">app</span>
+</span></span></code></pre></div><p><code>todo_list/todo.py</code>に以下の内容を追記する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">.db</span> <span class="kn">import</span> <span class="n">db</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">before_request</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">connect_db</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="flaskとデータベースの連携---解説">Flaskとデータベースの連携 - 解説</h3>
 <p>Flaskでは、WSGIアプリの設定情報を管理するために<code>app.config</code>が提供されている。
 <code>app.config</code>の設定方法はいくつかある。
 外部のPythonファイルから読み込んだり(<code>app.config.from_pyfile</code>)、
@@ -540,40 +540,40 @@ instance folderは自動で作られることはないため、その作成を<c
 こういう機能が提供されていることはありがたい。</p>
 <h2 id="データベースの初期化">データベースの初期化</h2>
 <p><code>todo_list/db.py</code>を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
-<span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-<span class="c1"># 以下2行を追加</span>
-<span class="kn">from</span> <span class="nn">flask.cli</span> <span class="kn">import</span> <span class="n">with_appcontext</span>
-<span class="kn">import</span> <span class="nn">click</span>
-
-<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">):</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">])</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">bind</span><span class="p">([</span><span class="n">Todo</span><span class="p">])</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">teardown_appcontext</span><span class="p">(</span><span class="n">close_db</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">init_db_command</span><span class="p">)</span> <span class="c1"># 追加</span>
-
-
-<span class="k">def</span> <span class="nf">close_db</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-<span class="c1"># 追加</span>
-<span class="k">def</span> <span class="nf">init_db</span><span class="p">():</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">drop_tables</span><span class="p">([</span><span class="n">Todo</span><span class="p">])</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">Todo</span><span class="p">])</span>
-
-
-<span class="c1"># 追加</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;init-db&#39;</span><span class="p">)</span>
-<span class="nd">@with_appcontext</span>
-<span class="k">def</span> <span class="nf">init_db_command</span><span class="p">():</span>
-    <span class="n">init_db</span><span class="p">()</span>
-    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="s1">&#39;Initizlized the database.&#39;</span><span class="p">)</span>
-</code></pre></div><p>以下のコマンドを実行すると、データベースが初期化される。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 以下2行を追加</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask.cli</span> <span class="kn">import</span> <span class="n">with_appcontext</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">click</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">bind</span><span class="p">([</span><span class="n">Todo</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">teardown_appcontext</span><span class="p">(</span><span class="n">close_db</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">init_db_command</span><span class="p">)</span> <span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">close_db</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_db</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">drop_tables</span><span class="p">([</span><span class="n">Todo</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">Todo</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;init-db&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@with_appcontext</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">init_db_command</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">init_db</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="s1">&#39;Initizlized the database.&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>以下のコマンドを実行すると、データベースが初期化される。
 <pre class="cui">
 % flask init-db
 Initizlized the database.
@@ -589,93 +589,93 @@ Initizlized the database.
 同様に、<code>create_tables</code>ではデフォルトで<code>IF NOT EXISTS</code>をつけてくれる。</p>
 <h2 id="todoのレスポンスの実装">ToDoのレスポンスの実装</h2>
 <p><code>todo_list/todo.py</code>を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span>
-<span class="kn">from</span> <span class="nn">.db</span> <span class="kn">import</span> <span class="n">db</span>
-<span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span><span class="p">,</span> <span class="n">dump_todo</span><span class="p">,</span> <span class="n">load_todo_or_400</span>
-
-<span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;todo&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">before_request</span>
-<span class="k">def</span> <span class="nf">connect_db</span><span class="p">():</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">get_all</span><span class="p">():</span>
-    <span class="n">todos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">select</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dump_todo</span><span class="p">(</span><span class="n">todos</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;POST&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">post</span><span class="p">():</span>
-    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">load_todo_or_400</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">())</span>
-    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;/todo/</span><span class="si">{</span><span class="n">todo</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">)]</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dump_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">))</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;PUT&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
-    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">load_todo_or_400</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">())</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">204</span>
-
-
-<span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;DELETE&#34;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
-    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">204</span>
-</code></pre></div><p><code>todo_list/models/todo.py</code>を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span><span class="p">,</span> <span class="n">DoesNotExist</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">ValidationError</span>
-<span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">NotFound</span><span class="p">,</span> <span class="n">BadRequest</span>
-
-
-<span class="k">class</span> <span class="nc">Todo</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="c1"># ... 省略 ...</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_or_404</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">todo_id</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotFound</span>
-        <span class="k">return</span> <span class="n">todo</span>
-
-
-<span class="k">class</span> <span class="nc">TodoSchema</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
-  <span class="c1"># ... 省略 ...</span>
-
-
-<span class="n">todo_schema</span> <span class="o">=</span> <span class="n">TodoSchema</span><span class="p">()</span>
-
-
-<span class="k">def</span> <span class="nf">dump_todo</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">todo_schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="n">many</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">load_todo_or_400</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">todo_schema</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">BadRequest</span>
-</code></pre></div><p><code>todo_list/__init__.py</code>に1行追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;JSON_AS_ASCII&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># 追加</span>
-    <span class="c1"># ...省略</span>
-</code></pre></div><h3 id="todoのレスポンスの実装---解説">ToDoのレスポンスの実装 - 解説</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">.db</span> <span class="kn">import</span> <span class="n">db</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">.models.todo</span> <span class="kn">import</span> <span class="n">Todo</span><span class="p">,</span> <span class="n">dump_todo</span><span class="p">,</span> <span class="n">load_todo_or_400</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;todo&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">before_request</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">connect_db</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_all</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">select</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dump_todo</span><span class="p">(</span><span class="n">todos</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;POST&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">post</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">load_todo_or_400</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;/todo/</span><span class="si">{</span><span class="n">todo</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;GET&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">dump_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;PUT&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">load_todo_or_400</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">204</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;DELETE&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_or_404</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">204</span>
+</span></span></code></pre></div><p><code>todo_list/models/todo.py</code>を以下のようにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">TextField</span><span class="p">,</span> <span class="n">DateTimeField</span><span class="p">,</span> <span class="n">DoesNotExist</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">ValidationError</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">NotFound</span><span class="p">,</span> <span class="n">BadRequest</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Todo</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># ... 省略 ...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@classmethod</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">get_or_404</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">todo_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span> <span class="n">NotFound</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">todo</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TodoSchema</span><span class="p">(</span><span class="n">Schema</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># ... 省略 ...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">todo_schema</span> <span class="o">=</span> <span class="n">TodoSchema</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">dump_todo</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">todo_schema</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="n">many</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">load_todo_or_400</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">todo_schema</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">BadRequest</span>
+</span></span></code></pre></div><p><code>todo_list/__init__.py</code>に1行追加する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_app</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;JSON_AS_ASCII&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># ...省略</span>
+</span></span></code></pre></div><h3 id="todoのレスポンスの実装---解説">ToDoのレスポンスの実装 - 解説</h3>
 <p>レスポンスボディを取得したり、<code>Todo</code>を返してデータベースを操作したり、それをJSONに変換して送ったりしているだけ。</p>
 <p><code>get</code>ではToDo、<code>get_all</code>では、ToDoのリストを返す必要がある。そのために、<code>dump_todo</code>関数を定義している。
 <code>many</code>引数で、変換後の値がリストか否かを制御する。</p>
@@ -690,71 +690,71 @@ Initizlized the database.
 <p>Werkzeugと同様、Flaskにもテスト用のクライアントが用意されている。これについて軽く書いておく。</p>
 <h3 id="pytestによるテスト---準備">pytestによるテスト - 準備</h3>
 <p>まず、アプリ側でテスト用の設定を受け付けられるようにする。<code>todo_list/__init__.py</code>の<code>create_app</code>関数を以下のように追記する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">test_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span> <span class="c1"># 追加</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;JSON_AS_ASCII&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="c1"># 以下2行を追加</span>
-    <span class="k">if</span> <span class="n">test_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span>
-
-    <span class="c1"># ... 省略 ...</span>
-</code></pre></div><p>引数に<code>test_config</code>が設定されていた場合、<code>app.config.from_mapping</code>メソッドでそれを<code>app.config</code>に割り当てる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">test_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span> <span class="c1"># 追加</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DB_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">instance_path</span><span class="p">,</span> <span class="s1">&#39;db.sqlite3&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;JSON_AS_ASCII&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 以下2行を追加</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">test_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ... 省略 ...</span>
+</span></span></code></pre></div><p>引数に<code>test_config</code>が設定されていた場合、<code>app.config.from_mapping</code>メソッドでそれを<code>app.config</code>に割り当てる。</p>
 <p><code>tests</code>ディレクトリを作成し、<code>tests/conftest.py</code>を作成。内容を以下のようにする。
 これは<a href="https://flask.palletsprojects.com/en/2.0.x/tutorial/tests/">FlaskのTutorial</a>に書いてある内容とほぼ同じである。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">todo_list</span> <span class="kn">import</span> <span class="n">create_app</span>
-<span class="kn">from</span> <span class="nn">todo_list.db</span> <span class="kn">import</span> <span class="n">init_db</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">os</span>
-
-
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">app</span><span class="p">():</span>
-    <span class="n">db_fd</span><span class="p">,</span> <span class="n">db_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
-
-    <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">({</span>
-        <span class="s1">&#39;TESTING&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s1">&#39;DB_PATH&#39;</span><span class="p">:</span> <span class="n">db_path</span><span class="p">,</span>
-    <span class="p">})</span>
-
-    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
-        <span class="n">init_db</span><span class="p">()</span>
-
-    <span class="k">yield</span> <span class="n">app</span>
-
-    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
-
-
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
-
-
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">runner</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">test_cli_runner</span>
-</code></pre></div><p><code>app</code>のfixtureをまず作成し、それを使って<code>client</code>と<code>runner</code>のfixtureを作成する。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pytest</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">todo_list</span> <span class="kn">import</span> <span class="n">create_app</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">todo_list.db</span> <span class="kn">import</span> <span class="n">init_db</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">tempfile</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">app</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db_fd</span><span class="p">,</span> <span class="n">db_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;TESTING&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;DB_PATH&#39;</span><span class="p">:</span> <span class="n">db_path</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="n">init_db</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">yield</span> <span class="n">app</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">runner</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">test_cli_runner</span>
+</span></span></code></pre></div><p><code>app</code>のfixtureをまず作成し、それを使って<code>client</code>と<code>runner</code>のfixtureを作成する。
 <code>client</code>はテスト用のクライアントを返す。これはもちろんアプリのテストに用いる。
 <code>runner</code>はコマンドのテストを行うために用いる。</p>
 <p>テスト用のアプリでは、データベースを一時ファイルとして作成するため、その初期処理を<code>app</code> fixtureで行っている。</p>
 <h3 id="pytestによるテスト---コマンド">pytestによるテスト - コマンド</h3>
 <p><code>tests/test_db.py</code>を作成し、内容を以下のようにする。
 これは<a href="https://flask.palletsprojects.com/en/2.0.x/tutorial/tests/#database">FlaskのTutorial</a>とほぼ同じ。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_init_db</span><span class="p">(</span><span class="n">runner</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">Recorder</span><span class="p">:</span>
-        <span class="n">called</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="k">def</span> <span class="nf">fake_init_db</span><span class="p">():</span>
-        <span class="n">Recorder</span><span class="o">.</span><span class="n">called</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="s1">&#39;todo_list.db.init_db&#39;</span><span class="p">,</span> <span class="n">fake_init_db</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;init-db&#39;</span><span class="p">])</span>
-    <span class="k">assert</span> <span class="s1">&#39;Initialized&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>
-    <span class="k">assert</span> <span class="n">Recorder</span><span class="o">.</span><span class="n">called</span>
-</code></pre></div><p><code>runner.invoke</code>でコマンドを実行し、その出力結果を<code>result.output</code>で取得できる。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">test_init_db</span><span class="p">(</span><span class="n">runner</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Recorder</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">called</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">fake_init_db</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Recorder</span><span class="o">.</span><span class="n">called</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="s1">&#39;todo_list.db.init_db&#39;</span><span class="p">,</span> <span class="n">fake_init_db</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;init-db&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="s1">&#39;Initialized&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">Recorder</span><span class="o">.</span><span class="n">called</span>
+</span></span></code></pre></div><p><code>runner.invoke</code>でコマンドを実行し、その出力結果を<code>result.output</code>で取得できる。
 ちゃんと<code>Initialized</code>で始まるメッセージが出力されているかをテストしている。</p>
 <p><code>monkeypatch</code>は、pytestで標準で用意されているfixtureである。
 <code>init_db</code>が呼ばれたかどうかをテストするために、<code>monkeypatch</code>を使って<code>todo_init_.db.init_db</code>を<code>fake_init_db</code>にすり替え、
@@ -762,18 +762,18 @@ Initizlized the database.
 <h3 id="pytestによるテスト---todo">pytestによるテスト - ToDo</h3>
 <p><code>tests/test_todo.py</code>を作成し、内容を以下のようにする。
 本当はいろいろテストしなければならないのだが、ここでは一例のみ示す。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_get_all</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]</span>
-
-    <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;aaa&#34;</span><span class="p">,</span> <span class="s2">&#34;bbb&#34;</span><span class="p">,</span> <span class="s2">&#34;ccc&#34;</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="n">content</span><span class="p">})</span>
-
-    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">content</span><span class="p">,</span> <span class="n">todo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()):</span>
-        <span class="k">assert</span> <span class="n">content</span> <span class="o">==</span> <span class="n">todo</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
-</code></pre></div><p><code>client</code>はWerkzeugのものと使い方は同じ。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">test_get_all</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;aaa&#34;</span><span class="p">,</span> <span class="s2">&#34;bbb&#34;</span><span class="p">,</span> <span class="s2">&#34;ccc&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="n">content</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">content</span><span class="p">,</span> <span class="n">todo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="n">content</span> <span class="o">==</span> <span class="n">todo</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
+</span></span></code></pre></div><p><code>client</code>はWerkzeugのものと使い方は同じ。
 例えば<code>client.get</code>や<code>client.post</code>で、それぞれGETメソッド、POSTメソッドを送ることができる。</p>
 <h2 id="ソースコード">ソースコード</h2>
 <p>ソースコードは<a href="https://github.com/bombrary/todo-api-flask">GitHubのRepositry</a>にあげた。</p>

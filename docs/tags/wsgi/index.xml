@@ -18,9 +18,9 @@ WSGIとは WSGIとは、WebサーバーとWebアプリとの間の標準的な�
 WSGIの仕様はPEP3333に書かれている．
 ToDoリストAPIの仕様 簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、{ id: 0, &amp;quot;content&amp;quot;: &amp;quot;やること&amp;quot; }というJSON形式とする。
 APIの仕様は以下の通り。
-   URL Method 説明 返却値     /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト   /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる)   /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ   /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし   /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし    データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
+URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
 雛形 まずはサーバーを作る。この時点ではルーティング処理を書いていない。 どのようなリクエストをしてもHello, Worldをレスポンスとして返す。
-from wsgiref.simple_server import make_server def app(env, start_response): start_response(&amp;#39;200 OK&amp;#39;, [(&amp;#39;Content-type&amp;#39;, &amp;#39;text/plain; charset=utf-8&amp;#39;)]) return [b&amp;#39;Hello, World.</description>
+from wsgiref.simple_server import make_server def app(env, start_response): start_response(&amp;#39;200 OK&amp;#39;, [(&amp;#39;Content-type&amp;#39;, &amp;#39;text/plain; charset=utf-8&amp;#39;)]) return [b&amp;#39;Hello, World.&amp;#39;] if __name__ == &amp;#39;__main__&amp;#39;: httpd = make_server(&amp;#39;&amp;#39;, 5000, app) httpd.</description>
     </item>
     
   </channel>

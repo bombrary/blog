@@ -18,7 +18,9 @@ Werkzeugとは Werkzeugのドキュメントの &amp;ldquo;Werkzeug is a compreh
 ToDoリストAPIの仕様 前回と同じだが、再掲する。
 簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、{ id: 0, &amp;quot;content&amp;quot;: &amp;quot;やること&amp;quot; }というJSON形式とする。
 APIの仕様は以下の通り。
-   URL Method 説明 返却値     /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト   /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる)   /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ   /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし   /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし    データは最終的にはSQLiteで管理する。</description>
+URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データは最終的にはSQLiteで管理する。
+雛形 app.pyを以下のようにする。
+from werkzeug.wrappers import Response def app(env, start_response): response = Response(&amp;#39;Hello, World&amp;#39;) return response(env, start_response) if __name__ == &amp;#39;__main__&amp;#39;: from werkzeug.</description>
     </item>
     
   </channel>

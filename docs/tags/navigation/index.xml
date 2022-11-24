@@ -14,7 +14,7 @@
       
       <guid>https://bombrary.github.io/blog/posts/android02-navigation/</guid>
       <description>Navigationを用いて画面遷移をやってみる。具体的には以下の処理を行う。
- Fragment01とFragment02を用意する Fragment01でボタンが押されたらFragment02に遷移する  Android Kotlin Fundamentals Courseでの03辺りを勉強した記録なので、詳しいことはそちらに載っている。
+Fragment01とFragment02を用意する Fragment01でボタンが押されたらFragment02に遷移する Android Kotlin Fundamentals Courseでの03辺りを勉強した記録なので、詳しいことはそちらに載っている。
 Navigationについて 異なるFragment間の遷移を制御する仕組み。遷移の設定を視覚的に行えるらしい。
 これ以前はIntentという仕組みを用いていたらしい。これについては必要になりそうならいつか調べる。
 プロジェクト作成 Empty Activityを選択し、名前をNavigation Testとする。

@@ -15,10 +15,10 @@
       <guid>https://bombrary.github.io/blog/posts/socket02-python/</guid>
       <description>PythonでのSocket通信 やってることはCでやったときと同じである。サーバーとクライアントの通信手順は同じだし、関数名も同じである。しかしCで書いた場合に比べてシンプルに書ける。エラーは例外として投げられるため、自分で書く必要がない。またsockaddr_inなどの構造体が登場することはなく、Pythonでのbind関数とconnect関数の引数に直接アドレス・ポートを指定する。
 server.py 前回と同じく、以下の手順で通信を行う。
- listen(待ち受け)用のソケット作成 - socket 「どこからの接続を待つのか」「どのポートにて待ち受けするのか」を決める - bind関数の引数 ソケットにその情報を紐つける - bind 実際に待ち受けする - listen 接続要求が来たら受け入れる - accept 4によって通信用のソケットが得られるので、それを用いてデータのやりとりをする- send/recv  import socket s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) s.bind((&amp;#34;&amp;#34;, 8000)) s.listen(5) (sock, addr) = s.accept() print(&amp;#34;Connected by&amp;#34; + str(addr)) sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) sock.close() s.close() 上のコードを見れば各関数がどんな形で引数をとって、どんな値を返すのかがわかると思う。いくつか補足しておく。
+listen(待ち受け)用のソケット作成 - socket 「どこからの接続を待つのか」「どのポートにて待ち受けするのか」を決める - bind関数の引数 ソケットにその情報を紐つける - bind 実際に待ち受けする - listen 接続要求が来たら受け入れる - accept 4によって通信用のソケットが得られるので、それを用いてデータのやりとりをする- send/recv import socket s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) s.bind((&amp;#34;&amp;#34;, 8000)) s.listen(5) (sock, addr) = s.accept() print(&amp;#34;Connected by&amp;#34; + str(addr)) sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) sock.close() s.close() 上のコードを見れば各関数がどんな形で引数をとって、どんな値を返すのかがわかると思う。いくつか補足しておく。
 bind (受け入れアドレス, ポート)というタプルを引数にとる。受け入れアドレスを空文字列にしておけば、どんなアドレスからの接続も受け入れる。つまりCでやったINADDR_ANYと同じ。
 s.bind((&amp;#34;&amp;#34;, 8000)) encode Pythonのstring型をそのまま送ることはできないので、byte型に変換する。これはstring.encodeで行える。
-sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) client.py  サーバーとの通信用のソケット作成 - socket サーバが待ち受けている宛先を設定 - connectの引数 2で設定した宛先に対して接続する - connect 1で作ったソケットを用いてデータのやりとりをする。 - send/recv  import socket sock = socket.</description>
+sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) client.py サーバーとの通信用のソケット作成 - socket サーバが待ち受けている宛先を設定 - connectの引数 2で設定した宛先に対して接続する - connect 1で作ったソケットを用いてデータのやりとりをする。 - send/recv import socket sock = socket.socket(socket.AF_INET, socket.</description>
     </item>
     
     <item>
@@ -28,13 +28,14 @@ sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) client
       
       <guid>https://bombrary.github.io/blog/posts/django-todo-list/</guid>
       <description>更新(2021/06/13): いくつか間違っていたところがあったので修正。
-どんなTodoリストを作るか  Todoの登録  情報は短いテキストだけ   Todoをリスト表示 Todoをクリックすると削除  サイトの作成 適当なディレクトリで次のコマンドを実行すると、mysiteというディレクトリが作られる。
+どんなTodoリストを作るか Todoの登録 情報は短いテキストだけ Todoをリスト表示 Todoをクリックすると削除 サイトの作成 適当なディレクトリで次のコマンドを実行すると、mysiteというディレクトリが作られる。
 $ django-admin startproject mysite 以降はmysiteディレクトリで作業する。
 アプリの作成 mysiteディレクトリにて以下のコマンドを実行すると、todo_listというディレクトリが作られる。ここに実際のアプリの処理を記述していく。
 $ python3 manage.py startapp todo_list 続いてmysite/mysite/settings.pyを開いて、INSTALL_APPSを以下の記述にする。&#39;todo_list.apps.TodoListConfig&#39;を追加しただけ。これはデータベース作成やテンプレート作成のために、djangoがtodo_listのディレクトリを教えているっぽい。Todo_listConfigかと思ったが違うらしい(エラーで「TodoListConfigだよ」と教えてくれた。優しい)。
 INSTALLED_APPS = [ &amp;#39;todo_list.apps.TodoListConfig&amp;#39;, &amp;#39;django.contrib.admin&amp;#39;, &amp;#39;django.contrib.auth&amp;#39;, &amp;#39;django.contrib.contenttypes&amp;#39;, &amp;#39;django.contrib.sessions&amp;#39;, &amp;#39;django.contrib.messages&amp;#39;, &amp;#39;django.contrib.staticfiles&amp;#39;, ] viewの作成 mysite/todo_list/views.pyを編集する。とりあえずviewが動くかどうかだけ確認したいので、レスポンスは適当な文字列にする。
 from django.http import HttpResponse # Create your views here. def index(request): return HttpResponse(&amp;#39;Hello&amp;#39;) urlの設定 まずmysite/mysite/urls.pyの設定をする。urls.pyとは「どんなurlにアクセスされたらどんなviewに処理を任せるか」を記述したものっぽい。ここでは、todo_list/で始まるurlだったらtodo_list/urls.pyに処理を任せるように書いている。
-from django.contrib import admin from django.urls import include, path urlpatterns = [ path(&amp;#39;todo_list/&amp;#39;, include(&amp;#39;todo_list.urls&amp;#39;)), path(&amp;#39;admin/&amp;#39;, admin.</description>
+from django.contrib import admin from django.urls import include, path urlpatterns = [ path(&amp;#39;todo_list/&amp;#39;, include(&amp;#39;todo_list.urls&amp;#39;)), path(&amp;#39;admin/&amp;#39;, admin.site.urls), ] ということでmysite/todo_list/urls.pyの設定をする。恐らく存在しないので新しく作成する。todo_list/以降に何も指定されなかったら表示をviews.pyのindex関数に任せるように書いている。
+from django.urls import path from .</description>
     </item>
     
   </channel>

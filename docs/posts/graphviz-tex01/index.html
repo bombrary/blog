@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>GraphvizでTeXの数式を表示する(1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/graphviz-tex01/">
@@ -94,39 +94,39 @@ $ pip3 install dot2tex
 <h3 id="dot言語でグラフを書く">dot言語でグラフを書く</h3>
 <p>今回は次のようにする。ファイル名は適当に<code>graph.dot</code>とする。</p>
 <pre tabindex="0"><code class="language-dot" data-lang="dot">digraph {
-  graph [ rankdir=&quot;LR&quot; ]
-  node [ shape=&quot;circle&quot;, fixedsize=true, height=0.6 ]
-  Q0 [texlbl=&quot;$q_0$&quot;];
-  Q1 [texlbl=&quot;$q_1$&quot;];
-  Q2 [texlbl=&quot;$q_2$&quot;];
-  Q3 [texlbl=&quot;$q_3$&quot;];
-  Q4 [texlbl=&quot;$q_4$&quot;];
-  Q5 [texlbl=&quot;$q_5$&quot;];
-  Q6 [texlbl=&quot;$q_6$&quot;];
-  Q7 [texlbl=&quot;$q_7$&quot;];
-  Q8 [texlbl=&quot;$q_8$&quot;];
-  Q9 [texlbl=&quot;$q_9$&quot;];
-  Q10 [texlbl=&quot;$q_{10}$&quot;];
-  Q11 [texlbl=&quot;$q_{11}$&quot;];
-  Q12 [texlbl=&quot;$q_{12}$&quot;];
-  Q13 [texlbl=&quot;$q_{13}$&quot;];
-  Q0 -&gt; Q1 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q0 -&gt; Q4 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q0 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q1 -&gt; Q2 [label=&quot; &quot;, texlbl=&quot;$a$&quot;];
-  Q2 -&gt; Q3 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
-  Q3 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q4 -&gt; Q5 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
-  Q5 -&gt; Q6 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
-  Q6 -&gt; Q7 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q7 -&gt; Q8 [label=&quot; &quot;, texlbl=&quot;$a$&quot;];
-  Q7 -&gt; Q0 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q8 -&gt; Q9 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q8 -&gt; Q11 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q9 -&gt; Q10 [label=&quot; &quot;, texlbl=&quot;$b$&quot;];
-  Q10 -&gt; Q13 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
-  Q11 -&gt; Q12 [label=&quot; &quot;, texlbl=&quot;$c$&quot;];
-  Q12 -&gt; Q13 [label=&quot; &quot;, texlbl=&quot;$\varepsilon$&quot;];
+  graph [ rankdir=&#34;LR&#34; ]
+  node [ shape=&#34;circle&#34;, fixedsize=true, height=0.6 ]
+  Q0 [texlbl=&#34;$q_0$&#34;];
+  Q1 [texlbl=&#34;$q_1$&#34;];
+  Q2 [texlbl=&#34;$q_2$&#34;];
+  Q3 [texlbl=&#34;$q_3$&#34;];
+  Q4 [texlbl=&#34;$q_4$&#34;];
+  Q5 [texlbl=&#34;$q_5$&#34;];
+  Q6 [texlbl=&#34;$q_6$&#34;];
+  Q7 [texlbl=&#34;$q_7$&#34;];
+  Q8 [texlbl=&#34;$q_8$&#34;];
+  Q9 [texlbl=&#34;$q_9$&#34;];
+  Q10 [texlbl=&#34;$q_{10}$&#34;];
+  Q11 [texlbl=&#34;$q_{11}$&#34;];
+  Q12 [texlbl=&#34;$q_{12}$&#34;];
+  Q13 [texlbl=&#34;$q_{13}$&#34;];
+  Q0 -&gt; Q1 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q0 -&gt; Q4 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q0 -&gt; Q7 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q1 -&gt; Q2 [label=&#34; &#34;, texlbl=&#34;$a$&#34;];
+  Q2 -&gt; Q3 [label=&#34; &#34;, texlbl=&#34;$b$&#34;];
+  Q3 -&gt; Q7 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q4 -&gt; Q5 [label=&#34; &#34;, texlbl=&#34;$b$&#34;];
+  Q5 -&gt; Q6 [label=&#34; &#34;, texlbl=&#34;$b$&#34;];
+  Q6 -&gt; Q7 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q7 -&gt; Q8 [label=&#34; &#34;, texlbl=&#34;$a$&#34;];
+  Q7 -&gt; Q0 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q8 -&gt; Q9 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q8 -&gt; Q11 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q9 -&gt; Q10 [label=&#34; &#34;, texlbl=&#34;$b$&#34;];
+  Q10 -&gt; Q13 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
+  Q11 -&gt; Q12 [label=&#34; &#34;, texlbl=&#34;$c$&#34;];
+  Q12 -&gt; Q13 [label=&#34; &#34;, texlbl=&#34;$\varepsilon$&#34;];
 }
 </code></pre><p><code>texlbl</code>とはdot2texが読むための属性。おそらくtex labelの略で、これがnodeまたはedgeのラベルとして、texファイルに直接展開される。そのため、数式を描きたいなら<code>$</code>で囲む。もしdotファイル上にlabel属性が定義されていたら、<code>texlbl</code>の内容に上書きされる。</p>
 <p>edgeに対して<code>texlbl</code>を使いたいなら、ダミー用の<code>label</code>属性をつける必要がある。これをやらないとラベルが表示されないので注意(<a href="https://dot2tex.readthedocs.io/en/latest/usage_guide.html#labels">参考</a>)。しかも、<strong>ダミーに指定するlabelの内容は空文字では駄目で、空白でも良いから1文字以上の文字列を指定する必要がある。</strong> これが分からなくて数十分はまっていた。</p>

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PythonとWerkzeugで作るToDoリストAPI | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/todo-api-werkzeug/">
@@ -164,18 +164,18 @@ Webアプリを作るうえで、便利なクラスや関数が用意された�
 <p>データは最終的にはSQLiteで管理する。</p>
 <h2 id="雛形">雛形</h2>
 <p><code>app.py</code>を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Response</span>
-
-
-<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;Hello, World&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">werkzeug.serving</span> <span class="kn">import</span> <span class="n">run_simple</span>
-    <span class="n">run_simple</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">use_debugger</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_reloader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div><p>以降、サーバーを起動する際は<code>python3 app.py</code>を実行する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Response</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;Hello, World&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">from</span> <span class="nn">werkzeug.serving</span> <span class="kn">import</span> <span class="n">run_simple</span>
+</span></span><span class="line"><span class="cl">    <span class="n">run_simple</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">use_debugger</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_reloader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><p>以降、サーバーを起動する際は<code>python3 app.py</code>を実行する。</p>
 <p>試しに、コマンドラインで接続を確認してみると良い。</p>
 <pre class="cui">
 % curl localhost:5000
@@ -184,10 +184,10 @@ Hello, World
 
 <h3 id="雛形---解説">雛形 - 解説</h3>
 <p><code>Response</code>を使わないWSGIアプリは以下のようになる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain; charset=utf-8&#39;</span><span class="p">)])</span>
-    <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;Hello, World.&#39;</span><span class="p">]</span>
-</code></pre></div><p>一方で<code>Response</code>を使えば、レスポンスに関する情報を<code>Response</code>に包むことができるため、コードの意味が分かりやすくなっている。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">start_response</span><span class="p">(</span><span class="s1">&#39;200 OK&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain; charset=utf-8&#39;</span><span class="p">)])</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;Hello, World.&#39;</span><span class="p">]</span>
+</span></span></code></pre></div><p>一方で<code>Response</code>を使えば、レスポンスに関する情報を<code>Response</code>に包むことができるため、コードの意味が分かりやすくなっている。
 <code>Response</code>のインスタンスは<code>__call__(env, start_response)</code>を実装しており、これもまたWSGIアプリとみなせる。
 それゆえ、<code>app</code>関数の最後で<code>return response(env, start_response)</code>のような使い方をしている。</p>
 <p><code>Respons</code>オブジェクトについては<a href="https://werkzeug.palletsprojects.com/en/2.0.x/wrappers/#werkzeug.wrappers.Response">ドキュメント</a>
@@ -199,67 +199,67 @@ Hello, World
 <code>use_reloader</code>引数を<code>True</code>にすると、ファイルの変更を検知しサーバーを自動でリロードしてくれる。</p>
 <h2 id="ルーティング">ルーティング</h2>
 <p><code>app.py</code>を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
-<span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">werkzeug.routing</span> <span class="kn">import</span> <span class="n">Map</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">Submount</span>
-<span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">views</span> <span class="kn">import</span> <span class="n">todo</span>
-
-
-<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;Hello, World&#39;</span><span class="p">)</span>
-
-
-<span class="n">URL_MAP</span> <span class="o">=</span> <span class="n">Map</span><span class="p">([</span>
-    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">hello</span><span class="p">),</span>
-    <span class="n">Submount</span><span class="p">(</span><span class="s1">&#39;/todo&#39;</span><span class="p">,</span> <span class="p">[</span>
-        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">get_all</span><span class="p">),</span>
-        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">post</span><span class="p">),</span>
-        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">get</span><span class="p">),</span>
-        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">put</span><span class="p">),</span>
-        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">delete</span><span class="p">)</span>
-    <span class="p">])</span>
-<span class="p">])</span>
-
-
-<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-    <span class="n">adapter</span> <span class="o">=</span> <span class="n">URL_MAP</span><span class="o">.</span><span class="n">bind_to_environ</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">endpoint</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">HTTPException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">e</span>
-
-
-<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">route</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
-
-<span class="c1"># if __name__ == &#39;__main__&#39;: ... はここでは省略</span>
-</code></pre></div><p><code>views/__init__.py</code>と<code>views/todo.py</code>を作成し、前者は空のまま、後者は以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
-
-
-<span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;todo.get_all&#39;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;todo.post&#39;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;todo.get: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;todo.put: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;todo.delete: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</code></pre></div><p>リクエストを試しに送ってみる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.routing</span> <span class="kn">import</span> <span class="n">Map</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">Submount</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">views</span> <span class="kn">import</span> <span class="n">todo</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;Hello, World&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">URL_MAP</span> <span class="o">=</span> <span class="n">Map</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">hello</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Submount</span><span class="p">(</span><span class="s1">&#39;/todo&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">get_all</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">post</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">get</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">put</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;/&lt;int:todo_id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">todo</span><span class="o">.</span><span class="n">delete</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">adapter</span> <span class="o">=</span> <span class="n">URL_MAP</span><span class="o">.</span><span class="n">bind_to_environ</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">endpoint</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">HTTPException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">e</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">response</span> <span class="o">=</span> <span class="n">route</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># if __name__ == &#39;__main__&#39;: ... はここでは省略</span>
+</span></span></code></pre></div><p><code>views/__init__.py</code>と<code>views/todo.py</code>を作成し、前者は空のまま、後者は以下のようにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;todo.get_all&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;todo.post&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;todo.get: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;todo.put: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;todo.delete: </span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>リクエストを試しに送ってみる。</p>
 <pre class="cui">
 % curl localhost:5000/todo/
 todo.get_all
@@ -277,16 +277,16 @@ todo.delete: 1
 <p>まず<code>app</code>関数に注目する。<code>Request</code>は、<code>env</code>を使いやすいように包んだクラスである。
 詳細は<a href="https://werkzeug.palletsprojects.com/en/2.0.x/wrappers/#werkzeug.wrappers.Request">Requestのドキュメント</a>を参照。</p>
 <p>例えば、<code>Request</code>を使わずに<code>env</code>を使ってjsonデータを取得するには、以下のようにしなければならない。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">json</span>
-
-<span class="n">content_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;CONTENT_LENGTH&#39;</span><span class="p">])</span> <span class="c1"># 中身が空かどうかの処理はここではサボっている</span>
-<span class="n">body_str</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;wsgi.input&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">content_length</span><span class="p">)</span>
-<span class="n">body_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">body_str</span><span class="p">)</span>
-</code></pre></div><p><code>Response</code>を使うと、これが簡潔になる。なお、jsonのデコードに失敗した場合は、デフォルトで<code>BadRequest</code>例外を投げる
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">content_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;CONTENT_LENGTH&#39;</span><span class="p">])</span> <span class="c1"># 中身が空かどうかの処理はここではサボっている</span>
+</span></span><span class="line"><span class="cl"><span class="n">body_str</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;wsgi.input&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">content_length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">body_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">body_str</span><span class="p">)</span>
+</span></span></code></pre></div><p><code>Response</code>を使うと、これが簡潔になる。なお、jsonのデコードに失敗した場合は、デフォルトで<code>BadRequest</code>例外を投げる
 (詳細は<a href="https://werkzeug.palletsprojects.com/en/2.0.x/wrappers/#werkzeug.wrappers.Request.get_json">get_jsonのドキュメント</a>参照)。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="c1"># response = Response(env)とした</span>
-<span class="n">body_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
-</code></pre></div><p><code>app</code>関数では、<code>env</code>を<code>Request</code>で包んだ後、ルーティングの処理を<code>route</code>関数に任せている。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># response = Response(env)とした</span>
+</span></span><span class="line"><span class="cl"><span class="n">body_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+</span></span></code></pre></div><p><code>app</code>関数では、<code>env</code>を<code>Request</code>で包んだ後、ルーティングの処理を<code>route</code>関数に任せている。</p>
 <p>前回は、「どのURLに対してどの関数が呼ばれるか」という対応関係を、listとtupleのみで表現していた。
 <code>werkzeug.routing</code>では、これを<code>Map</code>と<code>Rule</code>で管理する。<code>Submount</code>を使うと、<code>/todo</code>をprefixに持つURLをまとめることができる。</p>
 <p>上の例のように、<code>/&lt;int:todo_id&gt;/</code>とすると、URLに含まれる整数値を<code>todo_id</code>として取得することができる。<code>int</code>の部分はconverterと呼ばれ、
@@ -347,108 +347,107 @@ todo.delete: 1
 </tbody>
 </table>
 <p>上の定義で、実際に<code>views/todo.py</code>で使ってみると以下の通りになる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span><span class="p">,</span> <span class="n">TodoNotFound</span>
-<span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">BadRequest</span><span class="p">,</span> <span class="n">NotFound</span>
-<span class="kn">import</span> <span class="nn">json</span>
-
-
-<span class="k">def</span> <span class="nf">todo_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">content</span><span class="p">}</span>
-
-
-<span class="k">class</span> <span class="nc">ValidationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">def</span> <span class="nf">validate_todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s1">&#39;content&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">todo_dict</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ValidationError</span>
-
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ValidationError</span>
-
-
-<span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-    <span class="n">todos_dict</span> <span class="o">=</span> <span class="p">[</span><span class="n">todo_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span> <span class="k">for</span> <span class="n">todo</span> <span class="ow">in</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_all</span><span class="p">()]</span>
-    <span class="n">todos_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">todos_dict</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">todos_json</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">validate_todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">BadRequest</span><span class="p">(</span><span class="s1">&#39;Todo ValidationError&#39;</span><span class="p">)</span>
-
-    <span class="n">todo_id</span> <span class="o">=</span> <span class="n">Todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;/todo/</span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">)])</span>
-
-
-<span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="s1">&#39;Todo NotFound&#39;</span><span class="p">)</span>
-    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">todo_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
-    <span class="n">todo_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">todo_json</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">validate_todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">)</span>
-        <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">BadRequest</span><span class="p">(</span><span class="s1">&#39;Todo ValidationError&#39;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="s1">&#39;Todo NotFound&#39;</span><span class="p">)</span>
-
-    <span class="n">todo</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="s1">&#39;Todo NotFound&#39;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
-</code></pre></div><p>ひとまずダミーを実装する。<code>models/__init__.py</code>と<code>models/todo.py</code>を作成し、前者は空のままで、後者は以下の通りにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span> <span class="nc">Todo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
-
-    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
-
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[]</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Todo</span><span class="p">(</span><span class="s1">&#39;dummy&#39;</span><span class="p">)</span>
-
-</code></pre></div><h3 id="todoリストのインターフェース作成---解説">ToDoリストのインターフェース作成 - 解説</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span><span class="p">,</span> <span class="n">TodoNotFound</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">BadRequest</span><span class="p">,</span> <span class="n">NotFound</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">todo_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">content</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ValidationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">validate_todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="s1">&#39;content&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">todo_dict</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">ValidationError</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">ValidationError</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todos_dict</span> <span class="o">=</span> <span class="p">[</span><span class="n">todo_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span> <span class="k">for</span> <span class="n">todo</span> <span class="ow">in</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_all</span><span class="p">()]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todos_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">todos_dict</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">todos_json</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">validate_todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">BadRequest</span><span class="p">(</span><span class="s1">&#39;Todo ValidationError&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">todo_id</span> <span class="o">=</span> <span class="n">Todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;/todo/</span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">)])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="s1">&#39;Todo NotFound&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">todo_to_dict</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">todo_json</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo_dict</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">validate_todo</span><span class="p">(</span><span class="n">todo_dict</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">BadRequest</span><span class="p">(</span><span class="s1">&#39;Todo ValidationError&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="s1">&#39;Todo NotFound&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">todo_dict</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">todo</span> <span class="o">=</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">todo_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">TodoNotFound</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="s1">&#39;Todo NotFound&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">204</span><span class="p">)</span>
+</span></span></code></pre></div><p>ひとまずダミーを実装する。<code>models/__init__.py</code>と<code>models/todo.py</code>を作成し、前者は空のままで、後者は以下の通りにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Todo</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@classmethod</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@classmethod</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Todo</span><span class="p">(</span><span class="s1">&#39;dummy&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="todoリストのインターフェース作成---解説">ToDoリストのインターフェース作成 - 解説</h3>
 <p><code>todo_to_dict</code>や<code>validate_todo</code>の処理は前回と全く同じ。</p>
 <p><code>get_all</code>や<code>get</code>などの関数の引数は<code>Request</code>クラスのインスタンスである。
 また、関数の返却値は<code>Response</code>のオブジェクトを返すようにしている。
@@ -469,79 +468,79 @@ todo.delete: 1
 <h2 id="todoリストの実装">ToDoリストの実装</h2>
 <p>ここでは、SQLiteでデータを管理する。内容は<a href="https://bombrary.github.io/blog/posts/todo-api-wsgi/">前回</a>と全く同じ。
 <code>models/todo.py</code>を次のようにする．</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sqlite3</span>
-
-
-<span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span> <span class="nc">Todo</span><span class="p">:</span>
-    <span class="n">TODOS</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">NEXT_ID</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">DB_PATH</span> <span class="o">=</span> <span class="s1">&#39;db.sqlite3&#39;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">todo_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">todo_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
-
-    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
-            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;insert into Todo(content) values (?)&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,))</span>
-            <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from Todo where id=last_insert_rowid()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
-
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">TodoNotFound</span>
-        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
-            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;update Todo set content=? where id=?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">TodoNotFound</span>
-        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
-            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;delete from Todo where id=?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,))</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
-            <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">rows</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from todo&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">Todo</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
-            <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from todo where id=?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">todo_id</span><span class="p">,))</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">row</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">TodoNotFound</span>
-        <span class="k">return</span> <span class="n">Todo</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
-        <span class="n">con</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
-        <span class="k">return</span> <span class="n">con</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">init_table</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
-            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;drop table if exists Todo&#39;</span><span class="p">)</span>
-            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;create table Todo(
-</span><span class="s1">                              id integer primary key autoincrement,
-</span><span class="s1">                              content text not null
-</span><span class="s1">                           )&#39;&#39;&#39;</span><span class="p">)</span>
-            <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</code></pre></div><p>データベースを初期化するためには<code>Todo.init_table()</code>を実行する。そこで、初期化用のスクリプト<code>init_db.py</code>を作成する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
-</code></pre></div><p>データベースを初期化したい時は、コマンドラインで以下のように実行する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sqlite3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TodoNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Todo</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">TODOS</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">NEXT_ID</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">DB_PATH</span> <span class="o">=</span> <span class="s1">&#39;db.sqlite3&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">todo_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">todo_id</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;insert into Todo(content) values (?)&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">row</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from Todo where id=last_insert_rowid()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span> <span class="n">TodoNotFound</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;update Todo set content=? where id=?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span> <span class="n">TodoNotFound</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;delete from Todo where id=?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@classmethod</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rows</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from todo&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">[</span><span class="n">Todo</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@classmethod</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">todo_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">row</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;select * from todo where id=?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">todo_id</span><span class="p">,))</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="n">row</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">raise</span> <span class="n">TodoNotFound</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Todo</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@classmethod</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">con</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">con</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@classmethod</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">init_table</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">Todo</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;drop table if exists Todo&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;create table Todo(
+</span></span></span><span class="line"><span class="cl"><span class="s1">                              id integer primary key autoincrement,
+</span></span></span><span class="line"><span class="cl"><span class="s1">                              content text not null
+</span></span></span><span class="line"><span class="cl"><span class="s1">                           )&#39;&#39;&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span></code></pre></div><p>データベースを初期化するためには<code>Todo.init_table()</code>を実行する。そこで、初期化用のスクリプト<code>init_db.py</code>を作成する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
+</span></span></code></pre></div><p>データベースを初期化したい時は、コマンドラインで以下のように実行する。</p>
 <pre class="cui">
 % python3 init_db.py
 </pre>
@@ -579,28 +578,28 @@ todo.delete: 1
 <p><code>pytest</code>はあまり使った経験がないため、<code>pytest</code>についても備忘のため簡単に解説を書く。</p>
 <h3 id="簡単な使い方">簡単な使い方</h3>
 <p><code>tests/test_todo.py</code>を作成して、ひとまず内容を次のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">werkzeug.test</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span>
-
-
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">client</span><span class="p">():</span>
-    <span class="n">db_fd</span><span class="p">,</span> <span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
-    <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
-    <span class="k">yield</span> <span class="n">Client</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-
-    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">test_hello</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">as_text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Hello, World&#39;</span>
-</code></pre></div><p>テストを実行する場合、以下のコマンドを実行する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pytest</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">tempfile</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.test</span> <span class="kn">import</span> <span class="n">Client</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">client</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db_fd</span><span class="p">,</span> <span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">yield</span> <span class="n">Client</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">test_hello</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">as_text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Hello, World&#39;</span>
+</span></span></code></pre></div><p>テストを実行する場合、以下のコマンドを実行する。</p>
 <pre class="cui">
 % pytest
 </pre>
@@ -627,77 +626,77 @@ todo.delete: 1
 <h3 id="todoのテスト">Todoのテスト</h3>
 <p>大体のことは上で説明したので、後はテストを書くだけ。
 <code>tests/test_todo.py</code>の内容を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">werkzeug.test</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
-
-
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">client</span><span class="p">():</span>
-    <span class="n">db_fd</span><span class="p">,</span> <span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
-    <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
-    <span class="k">yield</span> <span class="n">Client</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-
-    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
-
-
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">todos_req</span><span class="p">():</span>
-    <span class="n">todo1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;部屋の掃除&#39;</span><span class="p">}</span>
-    <span class="n">todo2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;犬の散歩&#39;</span><span class="p">}</span>
-    <span class="n">todo3</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;ご飯の準備&#39;</span><span class="p">}</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">todo1</span><span class="p">,</span> <span class="n">todo2</span><span class="p">,</span> <span class="n">todo3</span><span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">test_empty_db</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]</span>
-
-
-<span class="k">def</span> <span class="nf">test_add_todos</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">todo_req</span> <span class="ow">in</span> <span class="n">todos_req</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
-        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-
-        <span class="n">todo_id</span> <span class="o">=</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
-        <span class="n">loc_path</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">path</span>
-        <span class="k">assert</span> <span class="n">loc_path</span> <span class="o">==</span> <span class="sa">f</span><span class="s1">&#39;/todo/</span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">/&#39;</span>
-
-    <span class="n">todos_res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">todos_req</span> <span class="o">==</span> <span class="n">todos_res</span>
-
-    <span class="n">todo_res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/1/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">todos_req</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">todo_res</span>
-
-
-<span class="k">def</span> <span class="nf">test_put_todo</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">todo_req</span> <span class="ow">in</span> <span class="n">todos_req</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
-
-    <span class="n">todo_new</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;aaa&#39;</span><span class="p">}</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/todo/2/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_new</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
-    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span>
-
-    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">todos_req</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">todo_new</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
-
-
-<span class="k">def</span> <span class="nf">test_delete_todo</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">todo_req</span> <span class="ow">in</span> <span class="n">todos_req</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
-
-    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;/todo/2/&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span>
-
-    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">todos_req</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">todos_req</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
-</code></pre></div><p><code>pytest</code>コマンドを実行すると、<code>4 passed</code>というメッセージが出力される。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pytest</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">models.todo</span> <span class="kn">import</span> <span class="n">Todo</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">tempfile</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">werkzeug.test</span> <span class="kn">import</span> <span class="n">Client</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">client</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db_fd</span><span class="p">,</span> <span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Todo</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">yield</span> <span class="n">Client</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">Todo</span><span class="o">.</span><span class="n">DB_PATH</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">todos_req</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;部屋の掃除&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;犬の散歩&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">todo3</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;ご飯の準備&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">[</span><span class="n">todo1</span><span class="p">,</span> <span class="n">todo2</span><span class="p">,</span> <span class="n">todo3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">test_empty_db</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">test_add_todos</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">todo_req</span> <span class="ow">in</span> <span class="n">todos_req</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">todo_id</span> <span class="o">=</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loc_path</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">path</span>
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="n">loc_path</span> <span class="o">==</span> <span class="sa">f</span><span class="s1">&#39;/todo/</span><span class="si">{</span><span class="n">todo_id</span><span class="si">}</span><span class="s1">/&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">todos_res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">todos_req</span> <span class="o">==</span> <span class="n">todos_res</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">todo_res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/1/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">todos_req</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">todo_res</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">test_put_todo</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">todo_req</span> <span class="ow">in</span> <span class="n">todos_req</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">todo_new</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;aaa&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/todo/2/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_new</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">todos_req</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">todo_new</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">test_delete_todo</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">todos_req</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">todo_req</span> <span class="ow">in</span> <span class="n">todos_req</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">todo_req</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]}))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;/todo/2/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/todo/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="n">todos_req</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">todos_req</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+</span></span></code></pre></div><p><code>pytest</code>コマンドを実行すると、<code>4 passed</code>というメッセージが出力される。</p>
 <h2 id="ソースコード">ソースコード</h2>
 <p>ソースコードは<a href="https://github.com/bombrary/todo-api-werkzeug">GitHubのRepository</a>にあげた。</p>
 

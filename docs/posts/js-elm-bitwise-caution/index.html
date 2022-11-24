@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>JavaScript/Elm ビット演算のときにはまったこと | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/">
@@ -96,19 +96,19 @@
 $ elm init
 </pre>
 <p><code>src/MyBitwise.elm</code>を作成し、内容を以下のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kn">module </span><span class="nc">MyBitwise</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
-
-<span class="kn">import </span><span class="nc">Bitwise</span>
-
-<span class="nv">toBinaryString</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
-<span class="nv">toBinaryString</span> <span class="nv">x</span> <span class="nf">=</span>
-  <span class="kr">let</span> <span class="nv">bit</span> <span class="nf">=</span> <span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">and</span> <span class="nv">x</span> <span class="mi">1</span>
-      <span class="nv">rem</span> <span class="nf">=</span> <span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">shiftRightZfBy</span> <span class="mi">1</span> <span class="nv">x</span>
-  <span class="kr">in</span>
-  <span class="kr">if</span> <span class="nv">rem</span> <span class="nf">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
-    <span class="p">(</span><span class="nv">toBinaryString</span> <span class="nv">rem</span><span class="p">)</span> <span class="nf">++</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span><span class="p">)</span>
-  <span class="kr">else</span>
-    <span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="line"><span class="cl"><span class="kn">module </span><span class="nc">MyBitwise</span> <span class="nv">exposing</span> <span class="nf">(..)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import </span><span class="nc">Bitwise</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">toBinaryString</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nv">toBinaryString</span> <span class="nv">x</span> <span class="nf">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">let</span> <span class="nv">bit</span> <span class="nf">=</span> <span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">and</span> <span class="nv">x</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">      <span class="nv">rem</span> <span class="nf">=</span> <span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">shiftRightZfBy</span> <span class="mi">1</span> <span class="nv">x</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">in</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="nv">rem</span> <span class="nf">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nv">toBinaryString</span> <span class="nv">rem</span><span class="p">)</span> <span class="nf">++</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span></span></span></code></pre></div>
 <p>elm replを起動し、試す。まず必要なモジュールをimportする。</p>
 <pre class="cui">
 $ elm repl
@@ -128,15 +128,15 @@ $ elm repl
 <span class="magenta">-1</span> <span class="dgray">: Int</span>
 </pre>
 <p>ここで、<code>MyBitwise.elm</code>にて次の関数を定義する。ビットシフトの部分を2でのmodと割り算に置き換えただけ。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">toBinaryStringWrong</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
-<span class="nv">toBinaryStringWrong</span> <span class="nv">x</span> <span class="nf">=</span>
-  <span class="kr">let</span> <span class="nv">bit</span> <span class="nf">=</span> <span class="nv">modBy</span> <span class="mi">2</span> <span class="nv">x</span>
-      <span class="nv">rem</span> <span class="nf">=</span> <span class="nv">x</span> <span class="nf">//</span> <span class="mi">2</span>
-  <span class="kr">in</span>
-  <span class="kr">if</span> <span class="nv">rem</span> <span class="nf">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
-    <span class="p">(</span><span class="nv">toBinaryString</span> <span class="nv">rem</span><span class="p">)</span> <span class="nf">++</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span><span class="p">)</span>
-  <span class="kr">else</span>
-    <span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="line"><span class="cl"><span class="nv">toBinaryStringWrong</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">String</span>
+</span></span><span class="line"><span class="cl"><span class="nv">toBinaryStringWrong</span> <span class="nv">x</span> <span class="nf">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">let</span> <span class="nv">bit</span> <span class="nf">=</span> <span class="nv">modBy</span> <span class="mi">2</span> <span class="nv">x</span>
+</span></span><span class="line"><span class="cl">      <span class="nv">rem</span> <span class="nf">=</span> <span class="nv">x</span> <span class="nf">//</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">in</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="nv">rem</span> <span class="nf">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nv">toBinaryString</span> <span class="nv">rem</span><span class="p">)</span> <span class="nf">++</span> <span class="p">(</span><span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">String</span><span class="nf">.</span><span class="nv">fromInt</span> <span class="nv">bit</span></span></span></code></pre></div>
 <p>2つの関数の計算結果を比べてみると、<code>toBinaryStringWrong</code>の結果が1になってしまい、これはおかしい。</p>
 <pre class="cui">
 > toBinaryString (Bitwise.and 4294967295 4294967295)
@@ -145,9 +145,9 @@ $ elm repl
 <span class="yellow">"1"</span> <span class="dgray">: String</span>
 </pre>
 <p>ちなみに符号なし整数に変換するには、次のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">showAsUnsigned</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">Int</span>
-<span class="nv">showAsUnsigned</span> <span class="nv">x</span> <span class="nf">=</span>
-  <span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">shiftRightZfBy</span> <span class="mi">0</span> <span class="nv">x</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="line"><span class="cl"><span class="nv">showAsUnsigned</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="kt">Int</span>
+</span></span><span class="line"><span class="cl"><span class="nv">showAsUnsigned</span> <span class="nv">x</span> <span class="nf">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">shiftRightZfBy</span> <span class="mi">0</span> <span class="nv">x</span></span></span></code></pre></div>
 <pre class="cui">
 > showAsUnsigned -1
 <span class="magenta">4294967295</span> <span class="dgray">: Int</span>
@@ -155,40 +155,40 @@ $ elm repl
 <h2 id="考えるに至った背景">考えるに至った背景</h2>
 <p>IPアドレスとサブネットマスクからネットワーク部を算出するプログラムを書いていたら、この状況に出くわした。</p>
 <p>IPアドレスは次のように持っているものとする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">IPAddr</span> <span class="nf">=</span> <span class="kt">IPAddr</span> <span class="kt">Int</span>
-<span class="kr">type</span> <span class="kt">DotDecimalNotation</span> <span class="nf">=</span> <span class="kt">DDN</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span>
-
-<span class="nv">fromDDN</span> <span class="nf">:</span> <span class="kt">DotDecimalNotation</span> <span class="nf">-&gt;</span> <span class="kt">IPAddr</span>
-<span class="nv">fromDDN</span> <span class="nv">ddn</span> <span class="nf">=</span>
-  <span class="kr">case</span> <span class="nv">ddn</span> <span class="kr">of</span>
-    <span class="kt">DDN</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> <span class="nv">d</span> <span class="nf">-&gt;</span>
-      <span class="kt">IPAddr</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">24</span><span class="nf">*</span><span class="nv">a</span> <span class="nf">+</span> <span class="mi">2</span><span class="nf">^</span><span class="mi">16</span><span class="nf">*</span><span class="nv">b</span> <span class="nf">+</span> <span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="nf">*</span><span class="nv">c</span> <span class="nf">+</span> <span class="nv">d</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="line"><span class="cl"><span class="kr">type</span> <span class="kt">IPAddr</span> <span class="nf">=</span> <span class="kt">IPAddr</span> <span class="kt">Int</span>
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="kt">DotDecimalNotation</span> <span class="nf">=</span> <span class="kt">DDN</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span> <span class="kt">Int</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">fromDDN</span> <span class="nf">:</span> <span class="kt">DotDecimalNotation</span> <span class="nf">-&gt;</span> <span class="kt">IPAddr</span>
+</span></span><span class="line"><span class="cl"><span class="nv">fromDDN</span> <span class="nv">ddn</span> <span class="nf">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">case</span> <span class="nv">ddn</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">DDN</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> <span class="nv">d</span> <span class="nf">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kt">IPAddr</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">24</span><span class="nf">*</span><span class="nv">a</span> <span class="nf">+</span> <span class="mi">2</span><span class="nf">^</span><span class="mi">16</span><span class="nf">*</span><span class="nv">b</span> <span class="nf">+</span> <span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="nf">*</span><span class="nv">c</span> <span class="nf">+</span> <span class="nv">d</span><span class="p">)</span></span></span></code></pre></div>
 <p>サブネットマスクからネットワーク部を算出する関数を定義する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">networkAddrBy</span> <span class="nf">:</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">IPAddr</span>
-<span class="nv">networkAddrBy</span> <span class="nv">subnet</span> <span class="nv">addr</span> <span class="nf">=</span>
-  <span class="kr">case</span> <span class="nv">subnet</span> <span class="kr">of</span>
-    <span class="kt">IPAddr</span> <span class="nv">s</span> <span class="nf">-&gt;</span>
-      <span class="kr">case</span> <span class="nv">addr</span> <span class="kr">of</span>
-        <span class="kt">IPAddr</span> <span class="nv">a</span> <span class="nf">-&gt;</span>
-          <span class="kt">IPAddr</span> <span class="p">(</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">and</span> <span class="nv">s</span> <span class="nv">a</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="line"><span class="cl"><span class="nv">networkAddrBy</span> <span class="nf">:</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">IPAddr</span>
+</span></span><span class="line"><span class="cl"><span class="nv">networkAddrBy</span> <span class="nv">subnet</span> <span class="nv">addr</span> <span class="nf">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">case</span> <span class="nv">subnet</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">IPAddr</span> <span class="nv">s</span> <span class="nf">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">case</span> <span class="nv">addr</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">IPAddr</span> <span class="nv">a</span> <span class="nf">-&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="kt">IPAddr</span> <span class="p">(</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">and</span> <span class="nv">s</span> <span class="nv">a</span><span class="p">)</span></span></span></code></pre></div>
 <p>ここまではいいのだが、次のようにしてDDNに変換する関数を定義したところ、バグらせた。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">toDDNHelp</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span>
-<span class="nv">toDDNHelp</span> <span class="nv">n</span> <span class="nf">=</span>
-  <span class="p">(</span><span class="nv">modBy</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">)</span> <span class="nv">n</span><span class="p">,</span> <span class="nv">n</span> <span class="nf">//</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">))</span>
-
-<span class="nv">toDDN</span> <span class="nf">:</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">DotDecimalNotation</span>
-<span class="nv">toDDN</span> <span class="nv">addr</span> <span class="nf">=</span>
-  <span class="kr">case</span> <span class="nv">addr</span> <span class="kr">of</span>
-    <span class="kt">IPAddr</span> <span class="nv">n</span><span class="mi">0</span> <span class="nf">-&gt;</span>
-      <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">0</span> <span class="kr">of</span>
-        <span class="p">(</span><span class="nv">d</span><span class="p">,</span> <span class="nv">n</span><span class="mi">1</span><span class="p">)</span> <span class="nf">-&gt;</span> 
-          <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">1</span> <span class="kr">of</span>
-            <span class="p">(</span><span class="nv">c</span><span class="p">,</span> <span class="nv">n</span><span class="mi">2</span><span class="p">)</span> <span class="nf">-&gt;</span> 
-              <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">2</span> <span class="kr">of</span>
-                <span class="p">(</span><span class="nv">b</span><span class="p">,</span> <span class="nv">n</span><span class="mi">3</span><span class="p">)</span> <span class="nf">-&gt;</span> 
-                  <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">3</span> <span class="kr">of</span>
-                    <span class="p">(</span><span class="nv">a</span><span class="p">,</span> <span class="nv">_</span><span class="p">)</span> <span class="nf">-&gt;</span> 
-                      <span class="kt">DDN</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> <span class="nv">d</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="line"><span class="cl"><span class="nv">toDDNHelp</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">toDDNHelp</span> <span class="nv">n</span> <span class="nf">=</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">modBy</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">)</span> <span class="nv">n</span><span class="p">,</span> <span class="nv">n</span> <span class="nf">//</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">toDDN</span> <span class="nf">:</span> <span class="kt">IPAddr</span> <span class="nf">-&gt;</span> <span class="kt">DotDecimalNotation</span>
+</span></span><span class="line"><span class="cl"><span class="nv">toDDN</span> <span class="nv">addr</span> <span class="nf">=</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">case</span> <span class="nv">addr</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">IPAddr</span> <span class="nv">n</span><span class="mi">0</span> <span class="nf">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">0</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="nv">d</span><span class="p">,</span> <span class="nv">n</span><span class="mi">1</span><span class="p">)</span> <span class="nf">-&gt;</span> 
+</span></span><span class="line"><span class="cl">          <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">1</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="nv">c</span><span class="p">,</span> <span class="nv">n</span><span class="mi">2</span><span class="p">)</span> <span class="nf">-&gt;</span> 
+</span></span><span class="line"><span class="cl">              <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">2</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="nv">b</span><span class="p">,</span> <span class="nv">n</span><span class="mi">3</span><span class="p">)</span> <span class="nf">-&gt;</span> 
+</span></span><span class="line"><span class="cl">                  <span class="kr">case</span> <span class="nv">toDDNHelp</span> <span class="nv">n</span><span class="mi">3</span> <span class="kr">of</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">(</span><span class="nv">a</span><span class="p">,</span> <span class="nv">_</span><span class="p">)</span> <span class="nf">-&gt;</span> 
+</span></span><span class="line"><span class="cl">                      <span class="kt">DDN</span> <span class="nv">a</span> <span class="nv">b</span> <span class="nv">c</span> <span class="nv">d</span></span></span></code></pre></div>
 <p>以下で、<code>192.168.1.1</code>と<code>255.255.255.0</code>の論理和をとって<code>193.169.1.0</code>となるわけがないのでおかしい。</p>
 <pre class="cui">
 > networkAddrBy (fromDDN (DDN 192 168 1 1)) (fromDDN (DDN 255 255 255 0))
@@ -198,11 +198,11 @@ $ elm repl
     <span class="dgray">: DotDecimalNotation</span>
 </pre>
 <p>これは<code>toDDNHelp</code>に問題があり、次のようにシフトを使って書き直すとうまくいく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">toDDNHelp</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span>
-<span class="nv">toDDNHelp</span> <span class="nv">n</span> <span class="nf">=</span>
-  <span class="p">(</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">and</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="nf">-</span><span class="mi">1</span><span class="p">)</span> <span class="nv">n</span>
-  <span class="p">,</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">shiftRightZfBy</span> <span class="mi">8</span> <span class="nv">n</span>
-  <span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-elm" data-lang="elm"><span class="line"><span class="cl"><span class="nv">toDDNHelp</span> <span class="nf">:</span> <span class="kt">Int</span> <span class="nf">-&gt;</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">toDDNHelp</span> <span class="nv">n</span> <span class="nf">=</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">and</span> <span class="p">(</span><span class="mi">2</span><span class="nf">^</span><span class="mi">8</span><span class="nf">-</span><span class="mi">1</span><span class="p">)</span> <span class="nv">n</span>
+</span></span><span class="line"><span class="cl">  <span class="p">,</span><span class="kt">Bitwise</span><span class="nf">.</span><span class="nv">shiftRightZfBy</span> <span class="mi">8</span> <span class="nv">n</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span></span></span></code></pre></div>
 <pre class="cui">
 > networkAddrBy (fromDDN (DDN 192 168 1 1)) (fromDDN (DDN 255 255 255 0)) |> toDDN
 <span class="cyan">DDN</span> <span class="magenta">192 168 1 0</span>

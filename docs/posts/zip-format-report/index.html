@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>zipファイルの構造を少しだけ理解する | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/zip-format-report/">
@@ -137,16 +137,16 @@ $ od -Ax -tx1z tmp.zip
 <li>end of central directory : zipファイルの終端を表す情報</li>
 </ul>
 <p>これらは次の順番で並んでいる(本当はdata descriptorというのもあるが今回は省略する)。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">[local file header + file data]
-[local file header + file data]
-...
-[local file header + file data]
-[central directory header]
-[central directory header]
-...
-[central directory header]
-[end of central directory]
-</code></pre></div><p>各ヘッダおよびend of central directoryは、固有の4バイト列(シグネチャ)から始める。zip解凍ソフトは、シグネチャから各要素を認識する。シグネチャは以下の通り。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">[local file header + file data]
+</span></span><span class="line"><span class="cl">[local file header + file data]
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">[local file header + file data]
+</span></span><span class="line"><span class="cl">[central directory header]
+</span></span><span class="line"><span class="cl">[central directory header]
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">[central directory header]
+</span></span><span class="line"><span class="cl">[end of central directory]
+</span></span></code></pre></div><p>各ヘッダおよびend of central directoryは、固有の4バイト列(シグネチャ)から始める。zip解凍ソフトは、シグネチャから各要素を認識する。シグネチャは以下の通り。</p>
 <ul>
 <li>local file header: <code>0x504B0304</code></li>
 <li>central directory header: <code>0x504B0102</code></li>
@@ -245,15 +245,15 @@ $ od -Ax -tx1z -j0x134 tmp.zip | grep -E "50 4b 05 06|$"
 </pre>
 
 <p>これらは次のような意味を持っている(説明はspecificationからの抜粋)。値はリトルエンディアンであることに注意。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">50 4b 05 06 : end of central dir signature
-00 00 : number of this disk 
-00 00 : start of the central directory
-02 00 :  total number of the disk with the start of the central directory
-02 00 : total number of entries in the central directory
-9a 00 00 00 : size of the central directory
-9a 00 00 00 : offset of start of central directory with respect to the starting disk number 
-00 00 : .ZIP file comment length 
-</code></pre></div><p>ディスクって何のこと？調べてみたところ、恐らくzipファイルを分割するときに扱われる情報(<a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">specification</a>の「8.0  Splitting and Spanning ZIP files」参照)。zipファイルを分割して複数のフロッピーに保存する、みたいに使っていた名残りみたい。現代ではあまり使われない？ディスクというと円盤をイメージしてしまうが、物理的な円盤のことを指している分けではなさそう。ディスク=分割されたファイル、という理解で良いのだろうか。ちなみに、<code>zip</code>コマンドでファイル分割を行う場合は<code>-s</code>オプションを利用する。詳しくは<code>man  zip</code>を参照。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">50 4b 05 06 : end of central dir signature
+</span></span><span class="line"><span class="cl">00 00 : number of this disk 
+</span></span><span class="line"><span class="cl">00 00 : start of the central directory
+</span></span><span class="line"><span class="cl">02 00 :  total number of the disk with the start of the central directory
+</span></span><span class="line"><span class="cl">02 00 : total number of entries in the central directory
+</span></span><span class="line"><span class="cl">9a 00 00 00 : size of the central directory
+</span></span><span class="line"><span class="cl">9a 00 00 00 : offset of start of central directory with respect to the starting disk number 
+</span></span><span class="line"><span class="cl">00 00 : .ZIP file comment length 
+</span></span></code></pre></div><p>ディスクって何のこと？調べてみたところ、恐らくzipファイルを分割するときに扱われる情報(<a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">specification</a>の「8.0  Splitting and Spanning ZIP files」参照)。zipファイルを分割して複数のフロッピーに保存する、みたいに使っていた名残りみたい。現代ではあまり使われない？ディスクというと円盤をイメージしてしまうが、物理的な円盤のことを指している分けではなさそう。ディスク=分割されたファイル、という理解で良いのだろうか。ちなみに、<code>zip</code>コマンドでファイル分割を行う場合は<code>-s</code>オプションを利用する。詳しくは<code>man  zip</code>を参照。</p>
 <h2 id="central-directoryの確認">central directoryの確認</h2>
 <p>end of central directoryによると、central directoryは<code>0x0000009a</code>バイト目から始まって<code>0x0000009a</code>バイト分あるらしい。試しに確認してみる。</p>
 <pre class="cui">
@@ -273,26 +273,26 @@ $ od -Ax -tx1z -j0x9a -N0x9a tmp.zip | grep -E "50 4b|$"
 
 <p><code>50 4b 01 02</code>の列が2箇所見つかる。これがcentral directory headerのようだ。<code>foo.txt</code>や<code>bar.txt</code>の文字列が見つかることから、どうやらここにファイル名の情報が埋め込まれているらしいとわかる。</p>
 <p>2つ目の<code>50 4b 01 02</code>以降の列に注目する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">50 4b 01 02 : central file header signature
-1e 03 : version made by
-0a 00 : version needed to extract
-00 00 : general purpose bit flug
-00 00 : compression method
-2b 70 : last mod file time
-64 50 : last mod file date 
-cb e8 62 fc : crc32
-0a 00 00 00 : compressed size
-0a 00 00 00 : uncompressed size
-07 00 : file name length
-18 00 : extra field length
-00 00 : file comment length
-00 00 : disk number start
-01 00 : internal file attribute
-00 00 a4 81 : external file attribute
-4f 00 00 00 : relative offset of local header
-62 61 72 2e 74 78 74 : file name
-55 54 05 00 03 21 36 5f 5e 75 78 0b 00 01 04 e8 03 00 00 04 e8 03 00 00 : extra field
-</code></pre></div><p>要素数が多い上にまだ理解しきれていない部分もあるので、一部だけ確認する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">50 4b 01 02 : central file header signature
+</span></span><span class="line"><span class="cl">1e 03 : version made by
+</span></span><span class="line"><span class="cl">0a 00 : version needed to extract
+</span></span><span class="line"><span class="cl">00 00 : general purpose bit flug
+</span></span><span class="line"><span class="cl">00 00 : compression method
+</span></span><span class="line"><span class="cl">2b 70 : last mod file time
+</span></span><span class="line"><span class="cl">64 50 : last mod file date 
+</span></span><span class="line"><span class="cl">cb e8 62 fc : crc32
+</span></span><span class="line"><span class="cl">0a 00 00 00 : compressed size
+</span></span><span class="line"><span class="cl">0a 00 00 00 : uncompressed size
+</span></span><span class="line"><span class="cl">07 00 : file name length
+</span></span><span class="line"><span class="cl">18 00 : extra field length
+</span></span><span class="line"><span class="cl">00 00 : file comment length
+</span></span><span class="line"><span class="cl">00 00 : disk number start
+</span></span><span class="line"><span class="cl">01 00 : internal file attribute
+</span></span><span class="line"><span class="cl">00 00 a4 81 : external file attribute
+</span></span><span class="line"><span class="cl">4f 00 00 00 : relative offset of local header
+</span></span><span class="line"><span class="cl">62 61 72 2e 74 78 74 : file name
+</span></span><span class="line"><span class="cl">55 54 05 00 03 21 36 5f 5e 75 78 0b 00 01 04 e8 03 00 00 04 e8 03 00 00 : extra field
+</span></span></code></pre></div><p>要素数が多い上にまだ理解しきれていない部分もあるので、一部だけ確認する。</p>
 <p><code>62 61 72 2e 74 78 74</code>はASCIIコードで<code>bar.txt</code>だから、ちゃんとファイル名になっていることが分かる。ファイル名の長さも<code>0x0007</code>バイトである。</p>
 <p><code>version needed to extract</code>とは圧縮方式を指定するところで、これはspecificationの「4.4.3 version needed to extract」に詳細が載っている。<code>0x000a = 10</code>とはVersion1.0のことのようで、これは無圧縮を意味する。実際、<code>compressed size</code>と<code>uncompressed size</code>が一致していることから、圧縮が行われていないことが分かる。</p>
 <p><code>crc32</code>とは、CRC符号のための冗長ビットをここに付加する。CRC符号は誤りの検出によく用いられる。何に対してCRCを計算するのかについてはspecificationにはっきり記載されている箇所が見つからなかったが、おそらくファイル本体に対して計算する。</p>
@@ -320,21 +320,21 @@ $ od -Ax -tx1z -j0x4f tmp.zip | grep -E "50 4b|$"
 </pre>
 
 <p><code>50 4b 03 04</code>で始まる列がlocal file headerである。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">50 4b 03 04 : local file header signature
-0a 00 : version needed to extract
-00 00 : general purpose bit flag
-00 00 : compression method
-2b 70 : last mod file time
-64 50 : last mod file date
-cb e8 62 fc : crc-32
-0a 00 00 00 : compressed size
-0a 00 00 00 : uncompressed size
-07 00 : file name length
-1c 00 : extra field length
-62 61 72 2e 74 78 74 : filename
-55 54 09 00 03 21 36 5f 5e 21 36 5f 5e 75 78 0b 00 01 04 e8 03 00 00 04 e8 03 00 00 : extra field
-47 6f 6f 64 20 42 79 65 2e 0a : file data
-</code></pre></div><p>central directoryのものと共通する要素があることが確認できる。このようにあえて冗長性を持たせることで、ヘッダの誤り訂正に利用するのだろうか。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">50 4b 03 04 : local file header signature
+</span></span><span class="line"><span class="cl">0a 00 : version needed to extract
+</span></span><span class="line"><span class="cl">00 00 : general purpose bit flag
+</span></span><span class="line"><span class="cl">00 00 : compression method
+</span></span><span class="line"><span class="cl">2b 70 : last mod file time
+</span></span><span class="line"><span class="cl">64 50 : last mod file date
+</span></span><span class="line"><span class="cl">cb e8 62 fc : crc-32
+</span></span><span class="line"><span class="cl">0a 00 00 00 : compressed size
+</span></span><span class="line"><span class="cl">0a 00 00 00 : uncompressed size
+</span></span><span class="line"><span class="cl">07 00 : file name length
+</span></span><span class="line"><span class="cl">1c 00 : extra field length
+</span></span><span class="line"><span class="cl">62 61 72 2e 74 78 74 : filename
+</span></span><span class="line"><span class="cl">55 54 09 00 03 21 36 5f 5e 21 36 5f 5e 75 78 0b 00 01 04 e8 03 00 00 04 e8 03 00 00 : extra field
+</span></span><span class="line"><span class="cl">47 6f 6f 64 20 42 79 65 2e 0a : file data
+</span></span></code></pre></div><p>central directoryのものと共通する要素があることが確認できる。このようにあえて冗長性を持たせることで、ヘッダの誤り訂正に利用するのだろうか。</p>
 <p><code>47 6f 6f 64 20 42 79 65 2e 0a</code>という列はASCIIコードで<code>Good Bye.\n</code>である。ファイルデータが埋め込まれていることが分かる。</p>
 <h2 id="おまけディレクトリの取り扱い">(おまけ)ディレクトリの取り扱い</h2>
 <p>圧縮したい対象にディレクトリを含む場合、zipファイルの中身はどうなるのだろうか。</p>

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>モンテカルロ法による積分 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/monte-carlo-integral/">
@@ -192,13 +192,13 @@ $D$上の一様乱数を考えると、確率密度関数は $p(\bm{x}) = 1\ (\b
 \end{aligned}
 $$</p>
 <h3 id="円周率の近似---juliaによる実装">円周率の近似 - Juliaによる実装</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">monte_carlo_pi</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
-  <span class="n">xs</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="kt">Float64</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-  <span class="n">rs</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.^</span><span class="mi">2</span> <span class="o">.+</span> <span class="n">xs</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.^</span><span class="mi">2</span>
-
-  <span class="mi">4</span> <span class="o">*</span> <span class="n">count</span><span class="p">(</span><span class="n">rs</span> <span class="o">.&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">length</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><p>N=10^7くらいになるとようやく小数以下3桁まで一致する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">monte_carlo_pi</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">xs</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="kt">Float64</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="n">rs</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.^</span><span class="mi">2</span> <span class="o">.+</span> <span class="n">xs</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.^</span><span class="mi">2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="mi">4</span> <span class="o">*</span> <span class="n">count</span><span class="p">(</span><span class="n">rs</span> <span class="o">.&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">length</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>N=10^7くらいになるとようやく小数以下3桁まで一致する。</p>
 <pre class="cui">
 julia> monte_carlo_pi(10000000)
 3.1417248
@@ -253,25 +253,25 @@ $$</p>
 </figure>
 
 <p>積分値の計算をJuliaで実装すると以下の通り。サンプル数を増やして値が収束していくところをみたいので、グラフに描画してみる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
-<span class="k">using</span> <span class="n">Plots</span>
-
-
-<span class="k">function</span> <span class="n">monte_carlo</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
-  <span class="n">dist_p</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-  <span class="n">dist_q</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mf">1.96</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-  <span class="n">xs</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">dist_q</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-
-  <span class="n">ys</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="n">xs</span> <span class="o">.&gt;=</span> <span class="mf">1.96</span><span class="p">]</span>
-  <span class="n">sum</span><span class="p">(</span><span class="n">pdf</span><span class="o">.</span><span class="p">(</span><span class="n">dist_p</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span> <span class="o">./</span> <span class="n">pdf</span><span class="o">.</span><span class="p">(</span><span class="n">dist_q</span><span class="p">,</span> <span class="n">ys</span><span class="p">))</span> <span class="o">/</span> <span class="n">N</span>
-<span class="k">end</span>
-
-<span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">ns</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">:</span><span class="mi">100</span><span class="o">:</span><span class="mi">100000</span>
-  <span class="n">xs</span> <span class="o">=</span> <span class="n">monte_carlo</span><span class="o">.</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span>
-  <span class="n">plot</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><p>$N$を増やしていくと、積分値は$0.25$に近づくことが分かる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Plots</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="n">monte_carlo</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dist_p</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dist_q</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mf">1.96</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">xs</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">dist_q</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">ys</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="n">xs</span> <span class="o">.&gt;=</span> <span class="mf">1.96</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sum</span><span class="p">(</span><span class="n">pdf</span><span class="o">.</span><span class="p">(</span><span class="n">dist_p</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span> <span class="o">./</span> <span class="n">pdf</span><span class="o">.</span><span class="p">(</span><span class="n">dist_q</span><span class="p">,</span> <span class="n">ys</span><span class="p">))</span> <span class="o">/</span> <span class="n">N</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ns</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">:</span><span class="mi">100</span><span class="o">:</span><span class="mi">100000</span>
+</span></span><span class="line"><span class="cl">  <span class="n">xs</span> <span class="o">=</span> <span class="n">monte_carlo</span><span class="o">.</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>$N$を増やしていくと、積分値は$0.25$に近づくことが分かる。</p>
 <figure><img src="img/sc1.png"/>
 </figure>
 

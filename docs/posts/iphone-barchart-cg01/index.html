@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-cg01/">
@@ -134,110 +134,110 @@ $$</p>
 
 <h2 id="graphviewswiftを作る">GraphView.swiftを作る</h2>
 <p>以下が雛形。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">GraphView</span><span class="p">:</span> <span class="n">UIView</span> <span class="p">{</span>
-    
-    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
-    <span class="p">}</span>
-    
-    <span class="kd">let</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[(</span><span class="nb">String</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">)]</span> <span class="p">=</span> <span class="p">[(</span><span class="mi">7</span><span class="p">,</span> <span class="s">&#34;太郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;次郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;三郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;四郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;五郎&#34;</span><span class="p">)]</span>
-    
-    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">GraphView</span><span class="p">:</span> <span class="n">UIView</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[(</span><span class="nb">String</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">)]</span> <span class="p">=</span> <span class="p">[(</span><span class="mi">7</span><span class="p">,</span> <span class="s">&#34;太郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;次郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;三郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;四郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;五郎&#34;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="viewの枠線">Viewの枠線</h2>
 <p><code>layer.borderWidth</code>と<code>layer.borderColor</code>で枠線を設定できる。これはCoreGraphicsとは関係ない。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">layer</span><span class="p">.</span><span class="n">borderWidth</span> <span class="p">=</span> <span class="mf">1.0</span>
-    <span class="n">layer</span><span class="p">.</span><span class="n">borderColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">.</span><span class="n">black</span><span class="p">.</span><span class="n">cgColor</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">layer</span><span class="p">.</span><span class="n">borderWidth</span> <span class="p">=</span> <span class="mf">1.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">layer</span><span class="p">.</span><span class="n">borderColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">.</span><span class="n">black</span><span class="p">.</span><span class="n">cgColor</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="各種定数の設定">各種定数の設定</h2>
 <p>作ったレイアウトを元に定数を定義しておく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nv">barWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="p">{</span>
-        <span class="kd">let</span> <span class="nv">numer</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">rect</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span>
-        <span class="kd">let</span> <span class="nv">denom</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">numer</span> <span class="o">/</span> <span class="n">denom</span>
-    <span class="p">}()</span>
-    <span class="kd">let</span> <span class="nv">padX</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="n">barWidth</span><span class="o">/</span><span class="mi">2</span>
-    <span class="kd">let</span> <span class="nv">padY</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="n">rect</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">4</span>
-    <span class="kd">let</span> <span class="nv">textAreaHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">70</span>
-    <span class="k">guard</span> <span class="kd">let</span> <span class="nv">dataMax</span> <span class="p">=</span> <span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">map</span><span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="mi">0</span> <span class="p">}.</span><span class="bp">max</span><span class="p">())</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="bp">print</span><span class="p">(</span><span class="s">&#34;Failed to get data.max()&#34;</span><span class="p">)</span>
-        <span class="k">return</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">barWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">numer</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">rect</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">denom</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">numer</span> <span class="o">/</span> <span class="n">denom</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">padX</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="n">barWidth</span><span class="o">/</span><span class="mi">2</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">padY</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="n">rect</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">textAreaHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">70</span>
+</span></span><span class="line"><span class="cl">    <span class="k">guard</span> <span class="kd">let</span> <span class="nv">dataMax</span> <span class="p">=</span> <span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">map</span><span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="mi">0</span> <span class="p">}.</span><span class="bp">max</span><span class="p">())</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">print</span><span class="p">(</span><span class="s">&#34;Failed to get data.max()&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="棒グラフ描画">棒グラフ描画</h2>
 <h3 id="graphiccontext取得">GraphicContext取得</h3>
 <p>strokeとかfillとかの、描画に関する諸々の設定を行うためには、<code>GraphicContext</code>を取得する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
-    <span class="p">...</span>
-    <span class="k">guard</span> <span class="kd">let</span> <span class="nv">context</span> <span class="p">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="bp">print</span><span class="p">(</span><span class="s">&#34;Failed to get context&#34;</span><span class="p">)</span>
-        <span class="k">return</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="k">guard</span> <span class="kd">let</span> <span class="nv">context</span> <span class="p">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">print</span><span class="p">(</span><span class="s">&#34;Failed to get context&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h3 id="適切な座標を取得する関数">適切な座標を取得する関数</h3>
 <p>描画の座標系は左上から右下が正の方向。しかし、左下から右上に向かって伸びる棒グラフにしたいので、何番目の棒グラフがどの位置で、どんな長さなのかを計算する必要がある。これをできるだけ簡単に行うための関数を定義する。</p>
 <h4 id="scalelinear">scaleLinear</h4>
 <p>D3.jsでお馴染み。ある定義域からある値域への一次関数を作る関数。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="c1">//         ran[1] - ran[0]</span>
-<span class="c1">// f(x) = ----------------- * (x - dom[0]) + ran[0]</span>
-<span class="c1">//         dom[1] - dom[0]</span>
-<span class="kd">func</span> <span class="nf">scaleLinear</span><span class="p">(</span><span class="n">domain</span> <span class="n">dom</span> <span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">),</span> <span class="n">range</span> <span class="n">ran</span><span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">))</span> <span class="p">-&gt;</span> <span class="p">((</span><span class="n">CGFloat</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="p">{</span> <span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">CGFloat</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span> <span class="k">in</span>
-        <span class="p">(</span><span class="n">ran</span><span class="p">.</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ran</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">dom</span><span class="p">.</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dom</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">dom</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span><span class="o">+</span><span class="n">ran</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="c1">//         ran[1] - ran[0]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// f(x) = ----------------- * (x - dom[0]) + ran[0]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//         dom[1] - dom[0]</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">scaleLinear</span><span class="p">(</span><span class="n">domain</span> <span class="n">dom</span> <span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">),</span> <span class="n">range</span> <span class="n">ran</span><span class="p">:</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">))</span> <span class="p">-&gt;</span> <span class="p">((</span><span class="n">CGFloat</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">CGFloat</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span> <span class="k">in</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="n">ran</span><span class="p">.</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ran</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">dom</span><span class="p">.</span><span class="mi">1</span> <span class="o">-</span> <span class="n">dom</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">dom</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span><span class="o">+</span><span class="n">ran</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>これを利用して<code>xScale</code>、<code>yScale</code>、<code>hScale</code>を定義する。</p>
 <ul>
 <li><code>xScale</code>: 配列のindexから、棒グラフのx座標を算出してくれる関数</li>
 <li><code>yScale</code>: 配列の値から、棒グラフのy座標を算出してくれる関数</li>
 <li><code>hScale</code>: 配列の値から、棒グラフの高さを算出してくれる関数</li>
 </ul>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
-    <span class="p">...</span>
-    <span class="kd">let</span> <span class="nv">xScale</span> <span class="p">=</span> <span class="n">scaleLinear</span><span class="p">(</span><span class="n">domain</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">)),</span> <span class="n">range</span><span class="p">:</span> <span class="p">(</span><span class="n">padX</span><span class="p">,</span> <span class="n">rect</span><span class="p">.</span><span class="n">width</span><span class="p">))</span>
-    <span class="kd">let</span> <span class="nv">yScale</span> <span class="p">=</span> <span class="n">scaleLinear</span><span class="p">(</span><span class="n">domain</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">valueMax</span><span class="p">),</span> <span class="n">range</span><span class="p">:</span> <span class="p">(</span><span class="n">rect</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">textAreaHeight</span><span class="p">,</span> <span class="n">padY</span><span class="p">))</span>
-    <span class="kd">let</span> <span class="nv">hScale</span> <span class="p">=</span> <span class="n">scaleLinear</span><span class="p">(</span><span class="n">domain</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">valueMax</span><span class="p">),</span> <span class="n">range</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">rect</span><span class="p">.</span><span class="n">height</span><span class="o">-</span><span class="n">padY</span><span class="o">-</span><span class="n">textAreaHeight</span><span class="p">))</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">xScale</span> <span class="p">=</span> <span class="n">scaleLinear</span><span class="p">(</span><span class="n">domain</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">)),</span> <span class="n">range</span><span class="p">:</span> <span class="p">(</span><span class="n">padX</span><span class="p">,</span> <span class="n">rect</span><span class="p">.</span><span class="n">width</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">yScale</span> <span class="p">=</span> <span class="n">scaleLinear</span><span class="p">(</span><span class="n">domain</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">valueMax</span><span class="p">),</span> <span class="n">range</span><span class="p">:</span> <span class="p">(</span><span class="n">rect</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">textAreaHeight</span><span class="p">,</span> <span class="n">padY</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">hScale</span> <span class="p">=</span> <span class="n">scaleLinear</span><span class="p">(</span><span class="n">domain</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">valueMax</span><span class="p">),</span> <span class="n">range</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">rect</span><span class="p">.</span><span class="n">height</span><span class="o">-</span><span class="n">padY</span><span class="o">-</span><span class="n">textAreaHeight</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h3 id="棒グラフ描画-1">棒グラフ描画</h3>
 <p>ここからはfor文を使って各要素ごとに処理する。もしvalが最大値だったらfillをオレンジに、そうでなければ青に設定する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
-  <span class="p">...</span>
-  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
-      <span class="kd">let</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="p">=</span> <span class="n">datum</span>
-      <span class="k">if</span> <span class="n">val</span> <span class="p">==</span> <span class="n">valueMax</span> <span class="p">{</span>
-          <span class="n">context</span><span class="p">.</span><span class="n">setFillColor</span><span class="p">(</span><span class="n">UIColor</span><span class="p">.</span><span class="n">systemOrange</span><span class="p">.</span><span class="n">cgColor</span><span class="p">)</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-          <span class="n">context</span><span class="p">.</span><span class="n">setFillColor</span><span class="p">(</span><span class="n">UIColor</span><span class="p">.</span><span class="n">systemBlue</span><span class="p">.</span><span class="n">cgColor</span><span class="p">)</span>
-      <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="p">=</span> <span class="n">datum</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="n">val</span> <span class="p">==</span> <span class="n">valueMax</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">context</span><span class="p">.</span><span class="n">setFillColor</span><span class="p">(</span><span class="n">UIColor</span><span class="p">.</span><span class="n">systemOrange</span><span class="p">.</span><span class="n">cgColor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">context</span><span class="p">.</span><span class="n">setFillColor</span><span class="p">(</span><span class="n">UIColor</span><span class="p">.</span><span class="n">systemBlue</span><span class="p">.</span><span class="n">cgColor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>実際の棒グラフの描画には<code>UIBezierPath.fill()</code>を使う。この<code>UIBezierPath</code>は、矩形を描いたりベジェ曲線を描いたり、円弧を描いたりなど、様々な使い方ができる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
-  <span class="p">...</span>
-  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
-    <span class="p">...</span>
-    <span class="kd">let</span> <span class="nv">drawRect</span> <span class="p">=</span> <span class="n">UIBezierPath</span><span class="p">(</span><span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">(</span>
-                                     <span class="n">x</span><span class="p">:</span> <span class="n">xScale</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
-                                     <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="n">val</span><span class="p">),</span>
-                                     <span class="n">width</span><span class="p">:</span> <span class="n">barWidth</span><span class="p">,</span>
-                                     <span class="n">height</span><span class="p">:</span> <span class="n">hScale</span><span class="p">(</span><span class="n">val</span><span class="p">)))</span>
-    <span class="n">drawRect</span><span class="p">.</span><span class="n">fill</span><span class="p">()</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">drawRect</span> <span class="p">=</span> <span class="n">UIBezierPath</span><span class="p">(</span><span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">x</span><span class="p">:</span> <span class="n">xScale</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="n">val</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">width</span><span class="p">:</span> <span class="n">barWidth</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">height</span><span class="p">:</span> <span class="n">hScale</span><span class="p">(</span><span class="n">val</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">drawRect</span><span class="p">.</span><span class="n">fill</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>for文の直後に、横軸を描画するコードを書く。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
-  <span class="p">...</span>
-  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
-    <span class="p">...</span>
-  <span class="p">}</span>
-  <span class="n">context</span><span class="p">.</span><span class="n">setStrokeColor</span><span class="p">(</span><span class="n">UIColor</span><span class="p">.</span><span class="n">black</span><span class="p">.</span><span class="n">cgColor</span><span class="p">)</span>
-  <span class="kd">let</span> <span class="nv">drawAxisBottom</span> <span class="p">=</span> <span class="n">UIBezierPath</span><span class="p">()</span>
-  <span class="n">drawAxisBottom</span><span class="p">.</span><span class="n">move</span><span class="p">(</span><span class="n">to</span><span class="p">:</span> <span class="n">CGPoint</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
-  <span class="n">drawAxisBottom</span><span class="p">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">to</span><span class="p">:</span> <span class="n">CGPoint</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">rect</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
-  <span class="n">drawAxisBottom</span><span class="p">.</span><span class="n">stroke</span><span class="p">()</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">context</span><span class="p">.</span><span class="n">setStrokeColor</span><span class="p">(</span><span class="n">UIColor</span><span class="p">.</span><span class="n">black</span><span class="p">.</span><span class="n">cgColor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nv">drawAxisBottom</span> <span class="p">=</span> <span class="n">UIBezierPath</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">drawAxisBottom</span><span class="p">.</span><span class="n">move</span><span class="p">(</span><span class="n">to</span><span class="p">:</span> <span class="n">CGPoint</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">  <span class="n">drawAxisBottom</span><span class="p">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">to</span><span class="p">:</span> <span class="n">CGPoint</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">rect</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">  <span class="n">drawAxisBottom</span><span class="p">.</span><span class="n">stroke</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>この時点で、次のように描画される。</p>
 <figure><img src="./iphone-progress01.png" width="30%"/>
 </figure>
@@ -252,49 +252,49 @@ $$</p>
 <li>テキストの枠は90pt×30pt</li>
 </ul>
 <p>これらはtext描画の際の引数に指定する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
-  <span class="p">...</span>
-  <span class="kd">let</span> <span class="nv">font</span> <span class="p">=</span> <span class="n">UIFont</span><span class="p">.</span><span class="n">systemFont</span><span class="p">(</span><span class="n">ofSize</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span>
-  <span class="kd">let</span> <span class="nv">textStyle</span> <span class="p">=</span> <span class="n">NSMutableParagraphStyle</span><span class="p">()</span>
-  <span class="n">textStyle</span><span class="p">.</span><span class="n">alignment</span> <span class="p">=</span> <span class="p">.</span><span class="n">center</span>
-  <span class="kd">let</span> <span class="nv">textFontAttributes</span> <span class="p">=</span> <span class="p">[</span><span class="n">NSAttributedString</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">font</span><span class="p">:</span> <span class="n">font</span><span class="p">,</span>
-                            <span class="n">NSAttributedString</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">paragraphStyle</span><span class="p">:</span> <span class="n">textStyle</span><span class="p">,</span>
-                            <span class="n">NSAttributedString</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">foregroundColor</span><span class="p">:</span> <span class="n">UIColor</span><span class="p">.</span><span class="n">gray</span><span class="p">]</span>
-  <span class="kd">let</span> <span class="nv">textWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">90</span>
-  <span class="kd">let</span> <span class="nv">textHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">30</span>
-
-  <span class="k">guard</span> <span class="kd">let</span> <span class="nv">context</span> <span class="p">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="p">...</span>
-  <span class="p">}</span>
-  <span class="p">...</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">draw</span><span class="p">(</span><span class="kc">_</span> <span class="n">rect</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nv">font</span> <span class="p">=</span> <span class="n">UIFont</span><span class="p">.</span><span class="n">systemFont</span><span class="p">(</span><span class="n">ofSize</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nv">textStyle</span> <span class="p">=</span> <span class="n">NSMutableParagraphStyle</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">textStyle</span><span class="p">.</span><span class="n">alignment</span> <span class="p">=</span> <span class="p">.</span><span class="n">center</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nv">textFontAttributes</span> <span class="p">=</span> <span class="p">[</span><span class="n">NSAttributedString</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">font</span><span class="p">:</span> <span class="n">font</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">NSAttributedString</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">paragraphStyle</span><span class="p">:</span> <span class="n">textStyle</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">NSAttributedString</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">foregroundColor</span><span class="p">:</span> <span class="n">UIColor</span><span class="p">.</span><span class="n">gray</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nv">textWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">90</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nv">textHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">30</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">guard</span> <span class="kd">let</span> <span class="nv">context</span> <span class="p">=</span> <span class="n">UIGraphicsGetCurrentContext</span><span class="p">()</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h3 id="名前の描画">名前の描画</h3>
 <p>テキストの位置、サイズを<code>CGRect</code>として用意し、表示するテキストと、前で定義した<code>textFontAttributes</code>を用意する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span> <span class="p">{</span>
-      <span class="p">...</span>
-      <span class="kd">let</span> <span class="nv">titleTextRect</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
-          <span class="n">x</span><span class="p">:</span> <span class="n">xScale</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="o">+</span> <span class="n">barWidth</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">textWidth</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
-          <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">textHeight</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
-          <span class="n">width</span><span class="p">:</span> <span class="n">textWidth</span><span class="p">,</span>
-          <span class="n">height</span><span class="p">:</span> <span class="n">textHeight</span>
-      <span class="p">)</span>
-      <span class="kd">let</span> <span class="nv">titleText</span> <span class="p">=</span> <span class="n">name</span>
-      <span class="n">titleText</span><span class="p">.</span><span class="n">draw</span><span class="p">(</span><span class="k">in</span><span class="p">:</span> <span class="n">titleTextRect</span><span class="p">,</span> <span class="n">withAttributes</span><span class="p">:</span> <span class="n">textFontAttributes</span><span class="p">)</span>
-  <span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="nv">titleTextRect</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="n">x</span><span class="p">:</span> <span class="n">xScale</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="o">+</span> <span class="n">barWidth</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">textWidth</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">textHeight</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="n">width</span><span class="p">:</span> <span class="n">textWidth</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="n">height</span><span class="p">:</span> <span class="n">textHeight</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="nv">titleText</span> <span class="p">=</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">      <span class="n">titleText</span><span class="p">.</span><span class="n">draw</span><span class="p">(</span><span class="k">in</span><span class="p">:</span> <span class="n">titleTextRect</span><span class="p">,</span> <span class="n">withAttributes</span><span class="p">:</span> <span class="n">textFontAttributes</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span></span></span></code></pre></div>
 <h3 id="数値の描画">数値の描画</h3>
 <p>やってることは上とまったく同じ。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span> <span class="p">{</span>
-      <span class="p">...</span>
-      <span class="kd">let</span> <span class="nv">valueTextRect</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
-          <span class="n">x</span><span class="p">:</span> <span class="n">xScale</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="o">+</span> <span class="n">barWidth</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">textWidth</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
-          <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="n">textHeight</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
-          <span class="n">width</span><span class="p">:</span> <span class="n">textWidth</span><span class="p">,</span>
-          <span class="n">height</span><span class="p">:</span> <span class="n">textHeight</span>
-      <span class="p">)</span>
-      <span class="kd">let</span> <span class="nv">dataInt</span> <span class="p">=</span> <span class="nb">Int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-      <span class="kd">let</span> <span class="nv">valueText</span> <span class="p">=</span> <span class="s">&#34;</span><span class="si">\(</span><span class="n">dataInt</span><span class="si">)</span><span class="s">&#34;</span>
-      <span class="n">valueText</span><span class="p">.</span><span class="n">draw</span><span class="p">(</span><span class="k">in</span><span class="p">:</span> <span class="n">valueTextRect</span><span class="p">,</span> <span class="n">withAttributes</span><span class="p">:</span> <span class="n">textFontAttributes</span><span class="p">)</span>
-  <span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="nv">valueTextRect</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="n">x</span><span class="p">:</span> <span class="n">xScale</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="o">+</span> <span class="n">barWidth</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">textWidth</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="n">y</span><span class="p">:</span> <span class="n">yScale</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="n">textHeight</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="n">width</span><span class="p">:</span> <span class="n">textWidth</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="n">height</span><span class="p">:</span> <span class="n">textHeight</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="nv">dataInt</span> <span class="p">=</span> <span class="nb">Int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="nv">valueText</span> <span class="p">=</span> <span class="s">&#34;</span><span class="si">\(</span><span class="n">dataInt</span><span class="si">)</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">valueText</span><span class="p">.</span><span class="n">draw</span><span class="p">(</span><span class="k">in</span><span class="p">:</span> <span class="n">valueTextRect</span><span class="p">,</span> <span class="n">withAttributes</span><span class="p">:</span> <span class="n">textFontAttributes</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span></span></span></code></pre></div>
 <p>ということで、目的のものができた。</p>
 <h2 id="次回-横スクロールできるようにする">(次回) 横スクロールできるようにする</h2>
 <p>画像サイズの大きさに応じて棒グラフが自動伸縮するのはありがたいが、データ数が多くなってくるとやはり見辛い。

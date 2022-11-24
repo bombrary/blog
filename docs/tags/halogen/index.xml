@@ -14,7 +14,7 @@
       
       <guid>https://bombrary.github.io/blog/posts/purescript-brainfuck04/</guid>
       <description>Halogenの利用 続いて、GUIでBrainfuckを動かすことをやってみる。 GUIのフレームワークとして、ここではpurescript-halogenを使ってみる。 Halogenについてはまだ勉強中で、この記事は解説記事というより勉強記録である(いままでの記事もそうではあるのだが)。
-% spago install halogen  雛形 src/Main.pursを以下のようにする。 ここのコードはほとんどHalogen Guideと同様。 関数名的におそらく、body要素を取得して、その中でcomponentを走らせるのだと思う。
+% spago install halogen 雛形 src/Main.pursを以下のようにする。 ここのコードはほとんどHalogen Guideと同様。 関数名的におそらく、body要素を取得して、その中でcomponentを走らせるのだと思う。
 module Main where import Prelude import Effect (Effect) import Halogen.Aff (awaitBody, runHalogenAff) as HA import Halogen.VDom.Driver (runUI) import Component (component) main :: Effect Unit main = HA.runHalogenAff do body &amp;lt;- HA.awaitBody runUI component unit body componentはsrc/Component.pursで定義する。とりあえず雛形を作成。
 module Component where import Prelude import Halogen as H import Halogen.HTML as HH data Action = Dummy type State = {} initialState :: forall input.</description>
     </item>

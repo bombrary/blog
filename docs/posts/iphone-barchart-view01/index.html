@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-view01/">
@@ -86,32 +86,32 @@
 </figure>
 
 <h3 id="viewcontrollerswift">ViewController.swift</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nv">colors</span><span class="p">:</span> <span class="p">[</span><span class="n">UIColor</span><span class="p">]</span> <span class="p">=</span> <span class="p">[.</span><span class="n">systemRed</span><span class="p">,</span> <span class="p">.</span><span class="n">systemBlue</span><span class="p">,</span> <span class="p">.</span><span class="n">systemPink</span><span class="p">,</span> <span class="p">.</span><span class="n">systemGreen</span><span class="p">,</span> <span class="p">.</span><span class="n">systemIndigo</span><span class="p">]</span>
-    <span class="kd">let</span> <span class="nv">percentages</span><span class="p">:</span> <span class="p">[</span><span class="n">CGFloat</span><span class="p">]</span> <span class="p">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
-    <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">graphStackView</span><span class="p">:</span> <span class="n">UIStackView</span><span class="p">!</span>
-    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
-        <span class="c1">// Do any additional setup after loading the view.</span>
-        <span class="n">graphStackView</span><span class="p">.</span><span class="n">distribution</span> <span class="p">=</span> <span class="p">.</span><span class="n">fillEqually</span>
-        <span class="n">graphStackView</span><span class="p">.</span><span class="n">alignment</span> <span class="p">=</span> <span class="p">.</span><span class="n">bottom</span>
-        <span class="n">graphStackView</span><span class="p">.</span><span class="n">spacing</span> <span class="p">=</span> <span class="mi">20</span>
-        <span class="n">graphStackView</span><span class="p">.</span><span class="n">isLayoutMarginsRelativeArrangement</span> <span class="p">=</span> <span class="kc">true</span>
-        <span class="n">graphStackView</span><span class="p">.</span><span class="n">layoutMargins</span><span class="p">.</span><span class="kr">left</span> <span class="p">=</span> <span class="mi">20</span>
-        <span class="n">graphStackView</span><span class="p">.</span><span class="n">layoutMargins</span><span class="p">.</span><span class="kr">right</span> <span class="p">=</span> <span class="mi">20</span>
-        
-        <span class="k">for</span> <span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">percentage</span><span class="p">)</span> <span class="k">in</span> <span class="n">zip</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">percentages</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">addBar</span><span class="p">(</span><span class="n">bgColor</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="n">percentage</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">addBar</span><span class="p">(</span><span class="n">bgColor</span><span class="p">:</span> <span class="n">UIColor</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">)</span> <span class="p">{</span>
-        <span class="kd">let</span> <span class="nv">view</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">()</span>
-        <span class="kd">let</span> <span class="nv">height</span> <span class="p">=</span> <span class="n">graphStackView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">percentage</span>
-        <span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">bgColor</span>
-        <span class="n">view</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="n">height</span><span class="p">).</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span>
-        <span class="n">graphStackView</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">colors</span><span class="p">:</span> <span class="p">[</span><span class="n">UIColor</span><span class="p">]</span> <span class="p">=</span> <span class="p">[.</span><span class="n">systemRed</span><span class="p">,</span> <span class="p">.</span><span class="n">systemBlue</span><span class="p">,</span> <span class="p">.</span><span class="n">systemPink</span><span class="p">,</span> <span class="p">.</span><span class="n">systemGreen</span><span class="p">,</span> <span class="p">.</span><span class="n">systemIndigo</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">percentages</span><span class="p">:</span> <span class="p">[</span><span class="n">CGFloat</span><span class="p">]</span> <span class="p">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">@IBOutlet</span> <span class="kr">weak</span> <span class="kd">var</span> <span class="nv">graphStackView</span><span class="p">:</span> <span class="n">UIStackView</span><span class="p">!</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Do any additional setup after loading the view.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">graphStackView</span><span class="p">.</span><span class="n">distribution</span> <span class="p">=</span> <span class="p">.</span><span class="n">fillEqually</span>
+</span></span><span class="line"><span class="cl">        <span class="n">graphStackView</span><span class="p">.</span><span class="n">alignment</span> <span class="p">=</span> <span class="p">.</span><span class="n">bottom</span>
+</span></span><span class="line"><span class="cl">        <span class="n">graphStackView</span><span class="p">.</span><span class="n">spacing</span> <span class="p">=</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl">        <span class="n">graphStackView</span><span class="p">.</span><span class="n">isLayoutMarginsRelativeArrangement</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">        <span class="n">graphStackView</span><span class="p">.</span><span class="n">layoutMargins</span><span class="p">.</span><span class="kr">left</span> <span class="p">=</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl">        <span class="n">graphStackView</span><span class="p">.</span><span class="n">layoutMargins</span><span class="p">.</span><span class="kr">right</span> <span class="p">=</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">percentage</span><span class="p">)</span> <span class="k">in</span> <span class="n">zip</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">percentages</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">addBar</span><span class="p">(</span><span class="n">bgColor</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="n">percentage</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">addBar</span><span class="p">(</span><span class="n">bgColor</span><span class="p">:</span> <span class="n">UIColor</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">view</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">height</span> <span class="p">=</span> <span class="n">graphStackView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">percentage</span>
+</span></span><span class="line"><span class="cl">        <span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">bgColor</span>
+</span></span><span class="line"><span class="cl">        <span class="n">view</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="n">height</span><span class="p">).</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">        <span class="n">graphStackView</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>こんなに短いコードで次のような棒グラフが表現できる。</p>
 <figure><img src="./iphone01.png" width="30%"/>
 </figure>
@@ -142,126 +142,126 @@
 
 <h3 id="viewcontrollerswift-1">ViewController.swift</h3>
 <p><code>ScrollView</code>からのOutlet接続を作る。<code>viewDidLoad</code>に以下の記述を追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>
-    <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
-<span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span></span></span></code></pre></div>
 <h2 id="modelの準備">Modelの準備</h2>
 <p>棒グラフ用のモデルを作成する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="nc">BarChartModel</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nv">percentage</span><span class="p">:</span> <span class="n">CGFloat</span>
-    <span class="kd">var</span> <span class="nv">value</span><span class="p">:</span> <span class="nb">Int</span>
-    <span class="kd">var</span> <span class="nv">name</span><span class="p">:</span> <span class="nb">String</span>
-    <span class="kd">var</span> <span class="nv">color</span><span class="p">:</span> <span class="n">UIColor</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">struct</span> <span class="nc">BarChartModel</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nv">percentage</span><span class="p">:</span> <span class="n">CGFloat</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nv">value</span><span class="p">:</span> <span class="nb">Int</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nv">name</span><span class="p">:</span> <span class="nb">String</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nv">color</span><span class="p">:</span> <span class="n">UIColor</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>前回のユーティリティ関数を今回も使う。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">extension</span> <span class="nc">Array</span> <span class="p">{</span>
-    <span class="kd">func</span> <span class="nf">chunked</span><span class="p">(</span><span class="n">into</span> <span class="n">size</span><span class="p">:</span> <span class="nb">Int</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="p">[[</span><span class="n">Element</span><span class="p">]]</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="bp">stride</span><span class="p">(</span><span class="n">from</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="bp">count</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="n">size</span><span class="p">).</span><span class="bp">map</span> <span class="p">{</span>
-            <span class="nb">Array</span><span class="p">(</span><span class="kc">self</span><span class="p">[</span><span class="nv">$0</span> <span class="p">..</span><span class="o">&lt;</span> <span class="n">Swift</span><span class="p">.</span><span class="bp">min</span><span class="p">(</span><span class="nv">$0</span> <span class="o">+</span> <span class="n">size</span><span class="p">,</span> <span class="bp">count</span><span class="p">)])</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">extension</span> <span class="nc">Array</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">chunked</span><span class="p">(</span><span class="n">into</span> <span class="n">size</span><span class="p">:</span> <span class="nb">Int</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="p">[[</span><span class="n">Element</span><span class="p">]]</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">stride</span><span class="p">(</span><span class="n">from</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="bp">count</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="n">size</span><span class="p">).</span><span class="bp">map</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">Array</span><span class="p">(</span><span class="kc">self</span><span class="p">[</span><span class="nv">$0</span> <span class="p">..</span><span class="o">&lt;</span> <span class="n">Swift</span><span class="p">.</span><span class="bp">min</span><span class="p">(</span><span class="nv">$0</span> <span class="o">+</span> <span class="n">size</span><span class="p">,</span> <span class="bp">count</span><span class="p">)])</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p><code>ViewController</code>内にデータとそのformatterを用意する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">var</span> <span class="nv">dataSource</span> <span class="p">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s">&#34;太郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;次郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;三郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;四郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;五郎&#34;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s">&#34;六郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;七郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;八郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;九郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s">&#34;十郎&#34;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;十一郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;十二郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;十三郎&#34;</span><span class="p">)</span>
-<span class="p">]</span>
-<span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[[</span><span class="n">BarChartModel</span><span class="p">]]</span> <span class="p">=</span> <span class="n">format</span><span class="p">(</span><span class="n">dataSource</span><span class="p">)</span>
-<span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">maxVal</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="n">dataSource</span><span class="p">.</span><span class="bp">map</span><span class="p">({</span> <span class="nv">$0</span><span class="p">.</span><span class="mi">0</span> <span class="p">}).</span><span class="bp">max</span><span class="p">()</span> <span class="p">??</span> <span class="o">-</span><span class="mi">1</span>
-
-
-<span class="kd">private</span> <span class="kd">func</span> <span class="nf">format</span><span class="p">(</span><span class="kc">_</span> <span class="n">data</span><span class="p">:</span> <span class="p">[(</span><span class="nb">Int</span><span class="p">,</span> <span class="nb">String</span><span class="p">)])</span> <span class="p">-&gt;</span> <span class="p">[[</span><span class="n">BarChartModel</span><span class="p">]]</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">data</span><span class="p">.</span><span class="bp">map</span><span class="p">({</span> <span class="n">datum</span> <span class="k">in</span>
-        <span class="kd">let</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="p">=</span> <span class="n">datum</span>
-        <span class="kd">let</span> <span class="nv">percentage</span> <span class="p">=</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">/</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">maxVal</span><span class="p">)</span>
-        <span class="kd">let</span> <span class="nv">color</span><span class="p">:</span> <span class="n">UIColor</span> <span class="p">=</span> <span class="n">val</span> <span class="p">==</span> <span class="n">maxVal</span> <span class="p">?</span> <span class="p">.</span><span class="n">systemOrange</span> <span class="p">:</span> <span class="p">.</span><span class="n">systemBlue</span>
-        <span class="k">return</span> <span class="n">BarChartModel</span><span class="p">(</span><span class="n">percentage</span><span class="p">:</span> <span class="n">percentage</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">color</span><span class="p">)</span>
-    <span class="p">}).</span><span class="n">chunked</span><span class="p">(</span><span class="n">into</span><span class="p">:</span> <span class="mi">5</span><span class="p">)</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nv">dataSource</span> <span class="p">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s">&#34;太郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;次郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;三郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;四郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;五郎&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s">&#34;六郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#34;七郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#34;八郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;九郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s">&#34;十郎&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;十一郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#34;十二郎&#34;</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s">&#34;十三郎&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[[</span><span class="n">BarChartModel</span><span class="p">]]</span> <span class="p">=</span> <span class="n">format</span><span class="p">(</span><span class="n">dataSource</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">lazy</span> <span class="kd">var</span> <span class="nv">maxVal</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="n">dataSource</span><span class="p">.</span><span class="bp">map</span><span class="p">({</span> <span class="nv">$0</span><span class="p">.</span><span class="mi">0</span> <span class="p">}).</span><span class="bp">max</span><span class="p">()</span> <span class="p">??</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">format</span><span class="p">(</span><span class="kc">_</span> <span class="n">data</span><span class="p">:</span> <span class="p">[(</span><span class="nb">Int</span><span class="p">,</span> <span class="nb">String</span><span class="p">)])</span> <span class="p">-&gt;</span> <span class="p">[[</span><span class="n">BarChartModel</span><span class="p">]]</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">data</span><span class="p">.</span><span class="bp">map</span><span class="p">({</span> <span class="n">datum</span> <span class="k">in</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="p">=</span> <span class="n">datum</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">percentage</span> <span class="p">=</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">/</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">maxVal</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">color</span><span class="p">:</span> <span class="n">UIColor</span> <span class="p">=</span> <span class="n">val</span> <span class="p">==</span> <span class="n">maxVal</span> <span class="p">?</span> <span class="p">.</span><span class="n">systemOrange</span> <span class="p">:</span> <span class="p">.</span><span class="n">systemBlue</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">BarChartModel</span><span class="p">(</span><span class="n">percentage</span><span class="p">:</span> <span class="n">percentage</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">color</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}).</span><span class="n">chunked</span><span class="p">(</span><span class="n">into</span><span class="p">:</span> <span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="barchartviewの準備">BarChartViewの準備</h2>
 <p><code>BarChartView.swift</code>を作成する。<code>ViewController</code>に書かれていたStackViewの内容を、<code>BarChartView</code>としてまとめる。<code>axis</code>はデフォルトで<code>.horizontal</code>っぽいが、念のため明示しておく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">BarChartView</span><span class="p">:</span> <span class="n">UIStackView</span> <span class="p">{</span>
-
-    <span class="kd">init</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">])</span> <span class="p">{</span>
-        <span class="kc">super</span><span class="p">.</span><span class="kd">init</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
-        <span class="n">axis</span> <span class="p">=</span> <span class="p">.</span><span class="n">horizontal</span>
-        <span class="n">distribution</span> <span class="p">=</span> <span class="p">.</span><span class="n">fillEqually</span>
-        <span class="n">alignment</span> <span class="p">=</span> <span class="p">.</span><span class="n">bottom</span>
-        <span class="n">spacing</span> <span class="p">=</span> <span class="mi">20</span>
-        <span class="n">isLayoutMarginsRelativeArrangement</span> <span class="p">=</span> <span class="kc">true</span>
-        <span class="n">layoutMargins</span><span class="p">.</span><span class="kr">left</span> <span class="p">=</span> <span class="mi">20</span>
-        <span class="n">layoutMargins</span><span class="p">.</span><span class="kr">right</span> <span class="p">=</span> <span class="mi">20</span>
-        
-        <span class="k">for</span> <span class="n">item</span> <span class="k">in</span> <span class="n">barChartItems</span> <span class="p">{</span>
-            <span class="n">addBar</span><span class="p">(</span><span class="n">bgColor</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">color</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">percentage</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    
-    <span class="kr">required</span> <span class="kd">init</span><span class="p">(</span><span class="n">coder</span><span class="p">:</span> <span class="n">NSCoder</span><span class="p">)</span> <span class="p">{</span>
-        <span class="bp">fatalError</span><span class="p">(</span><span class="s">&#34;init(coder:) has not been implemented&#34;</span><span class="p">)</span>
-    <span class="p">}</span>
-    
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">addBar</span><span class="p">(</span><span class="n">bgColor</span><span class="p">:</span> <span class="n">UIColor</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">)</span> <span class="p">{</span>
-        <span class="kd">let</span> <span class="nv">view</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">()</span>
-        <span class="kd">let</span> <span class="nv">height</span> <span class="p">=</span> <span class="n">frame</span><span class="p">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">percentage</span>
-        <span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">bgColor</span>
-        <span class="n">view</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="n">height</span><span class="p">).</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span>
-        <span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">BarChartView</span><span class="p">:</span> <span class="n">UIStackView</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">init</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">:</span> <span class="p">[</span><span class="n">BarChartModel</span><span class="p">])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">super</span><span class="p">.</span><span class="kd">init</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">axis</span> <span class="p">=</span> <span class="p">.</span><span class="n">horizontal</span>
+</span></span><span class="line"><span class="cl">        <span class="n">distribution</span> <span class="p">=</span> <span class="p">.</span><span class="n">fillEqually</span>
+</span></span><span class="line"><span class="cl">        <span class="n">alignment</span> <span class="p">=</span> <span class="p">.</span><span class="n">bottom</span>
+</span></span><span class="line"><span class="cl">        <span class="n">spacing</span> <span class="p">=</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl">        <span class="n">isLayoutMarginsRelativeArrangement</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">        <span class="n">layoutMargins</span><span class="p">.</span><span class="kr">left</span> <span class="p">=</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl">        <span class="n">layoutMargins</span><span class="p">.</span><span class="kr">right</span> <span class="p">=</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">item</span> <span class="k">in</span> <span class="n">barChartItems</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">addBar</span><span class="p">(</span><span class="n">bgColor</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">color</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">percentage</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">required</span> <span class="kd">init</span><span class="p">(</span><span class="n">coder</span><span class="p">:</span> <span class="n">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">fatalError</span><span class="p">(</span><span class="s">&#34;init(coder:) has not been implemented&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">addBar</span><span class="p">(</span><span class="n">bgColor</span><span class="p">:</span> <span class="n">UIColor</span><span class="p">,</span> <span class="n">percentage</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">view</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">height</span> <span class="p">=</span> <span class="n">frame</span><span class="p">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">percentage</span>
+</span></span><span class="line"><span class="cl">        <span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">bgColor</span>
+</span></span><span class="line"><span class="cl">        <span class="n">view</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="n">height</span><span class="p">).</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="ページ追加">ページ追加</h2>
 <p>メソッド<code>configureScrollView</code>を追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
-        <span class="c1">// Do any additional setup after loading the view.</span>
-        <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
-            <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>
-            <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
-        <span class="p">)</span>
-        
-        <span class="n">configureScrollView</span><span class="p">()</span>
-    <span class="p">}</span>
-
-<span class="kd">private</span> <span class="kd">func</span> <span class="nf">configureScrollView</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">scrollView</span><span class="p">.</span><span class="n">isPagingEnabled</span> <span class="p">=</span> <span class="kc">true</span>
-    <span class="kd">let</span> <span class="nv">contentsView</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">(</span>
-        <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">),</span>
-        <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
-    <span class="p">))</span>
-    <span class="n">scrollView</span><span class="p">.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">contentsView</span><span class="p">)</span>
-    <span class="n">scrollView</span><span class="p">.</span><span class="n">contentSize</span> <span class="p">=</span> <span class="n">contentsView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
-        <span class="kd">let</span> <span class="nv">widthPercentage</span> <span class="p">=</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">barChartItems</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span> <span class="o">/</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="bp">count</span><span class="p">)</span>
-        <span class="kd">let</span> <span class="nv">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
-            <span class="n">x</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
-            <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">widthPercentage</span><span class="p">,</span>
-            <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
-        <span class="p">)</span>
-        <span class="kd">let</span> <span class="nv">view</span> <span class="p">=</span> <span class="n">BarChartView</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">:</span> <span class="n">barChartItems</span><span class="p">)</span>
-        <span class="n">contentsView</span><span class="p">.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Do any additional setup after loading the view.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">superview</span><span class="p">!.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">configureScrollView</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">configureScrollView</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scrollView</span><span class="p">.</span><span class="n">isPagingEnabled</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">contentsView</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
+</span></span><span class="line"><span class="cl">    <span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scrollView</span><span class="p">.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">contentsView</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scrollView</span><span class="p">.</span><span class="n">contentSize</span> <span class="p">=</span> <span class="n">contentsView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">)</span> <span class="k">in</span> <span class="n">data</span><span class="p">.</span><span class="n">enumerated</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">widthPercentage</span> <span class="p">=</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">barChartItems</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span> <span class="o">/</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="bp">count</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">x</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">widthPercentage</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">view</span> <span class="p">=</span> <span class="n">BarChartView</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">,</span> <span class="n">barChartItems</span><span class="p">:</span> <span class="n">barChartItems</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">contentsView</span><span class="p">.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>前回の相違点は次の2つ。</p>
 <ul>
 <li>ページViewの<code>frame</code>を<code>ViewController</code>側でやっている</li>
 <li>棒の本数が5本未満だと棒が太くなってしまうため、<code>widthPercentage</code>で<code>BarChartView</code>の横幅を調整している:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">widthPercentage</span> <span class="p">=</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">barChartItems</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span> <span class="o">/</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="bp">count</span><span class="p">)</span>
-<span class="kd">let</span> <span class="nv">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
-    <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">widthPercentage</span><span class="p">,</span>
-    <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
-<span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">widthPercentage</span> <span class="p">=</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">barChartItems</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span> <span class="o">/</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="bp">count</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">CGFloat</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">width</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">widthPercentage</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">height</span><span class="p">:</span> <span class="n">scrollView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span></span></span></code></pre></div>
 <p>この時点でアプリを起動すると、次のようになる。</p>
 <figure><img src="./mov01.gif" width="30%"/>
 </figure>
@@ -278,37 +278,37 @@
 <p><code>varLabelHeight</code>と<code>nameLabelHeight</code>は固定である。これと親ビューの高さから、<code>barHeight</code>が計算できる。これを念頭に置きながら<code>Constraint</code>を設定していく。</p>
 <h3 id="barchartviewswift">BarChartView.swift</h3>
 <p>クラス先頭に定数を定義する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">fontSize</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">20</span>
-<span class="kd">let</span> <span class="nv">textPad</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">10</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">fontSize</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">textPad</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">10</span></span></span></code></pre></div>
 <p><code>addBarContainer</code>を定義する。上の通りに実装する。</p>
 <p><code>barHeight</code>の計算方法に注目。おかしなことをすると<code>Constraint</code>でエラーを吐くので注意。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">addBarContainer</span><span class="p">(</span><span class="n">of</span> <span class="n">item</span><span class="p">:</span> <span class="n">BarChartModel</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nv">valueTextHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="n">fontSize</span> <span class="o">+</span> <span class="n">textPad</span>
-    <span class="kd">let</span> <span class="nv">nameTextHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="n">fontSize</span> <span class="o">+</span> <span class="n">textPad</span>
-    <span class="kd">let</span> <span class="nv">barHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="p">(</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">valueTextHeight</span> <span class="o">-</span> <span class="n">nameTextHeight</span><span class="p">)</span> <span class="o">*</span> <span class="n">item</span><span class="p">.</span><span class="n">percentage</span>
-    
-    <span class="kd">let</span> <span class="nv">barContainer</span> <span class="p">=</span> <span class="n">UIStackView</span><span class="p">()</span>
-    <span class="n">barContainer</span><span class="p">.</span><span class="n">axis</span> <span class="p">=</span> <span class="p">.</span><span class="n">vertical</span>
-    <span class="n">barContainer</span><span class="p">.</span><span class="n">alignment</span> <span class="p">=</span> <span class="p">.</span><span class="n">fill</span>
-    <span class="n">barContainer</span><span class="p">.</span><span class="n">distribution</span> <span class="p">=</span> <span class="p">.</span><span class="n">fill</span>
-    
-    <span class="kd">let</span> <span class="nv">valueLabel</span> <span class="p">=</span> <span class="n">makeBarLabel</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="s">&#34;</span><span class="si">\(</span><span class="n">item</span><span class="p">.</span><span class="n">value</span><span class="si">)</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">:</span> <span class="n">fontSize</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="n">valueTextHeight</span><span class="p">)</span>
-    <span class="n">barContainer</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">valueLabel</span><span class="p">)</span>
-    
-    <span class="kd">let</span> <span class="nv">barView</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">()</span>
-    <span class="n">barView</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">item</span><span class="p">.</span><span class="n">color</span>
-    <span class="n">barView</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="n">barHeight</span><span class="p">).</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span>
-    <span class="n">barContainer</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">barView</span><span class="p">)</span>
-    
-    <span class="kd">let</span> <span class="nv">nameLabel</span> <span class="p">=</span> <span class="n">makeBarLabel</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">:</span> <span class="n">fontSize</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="n">nameTextHeight</span><span class="p">)</span>
-    <span class="n">barContainer</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">nameLabel</span><span class="p">)</span>
-    
-    <span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">barContainer</span><span class="p">)</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">private</span> <span class="kd">func</span> <span class="nf">addBarContainer</span><span class="p">(</span><span class="n">of</span> <span class="n">item</span><span class="p">:</span> <span class="n">BarChartModel</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">valueTextHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="n">fontSize</span> <span class="o">+</span> <span class="n">textPad</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">nameTextHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="n">fontSize</span> <span class="o">+</span> <span class="n">textPad</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">barHeight</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="p">(</span><span class="n">frame</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">valueTextHeight</span> <span class="o">-</span> <span class="n">nameTextHeight</span><span class="p">)</span> <span class="o">*</span> <span class="n">item</span><span class="p">.</span><span class="n">percentage</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">barContainer</span> <span class="p">=</span> <span class="n">UIStackView</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">barContainer</span><span class="p">.</span><span class="n">axis</span> <span class="p">=</span> <span class="p">.</span><span class="n">vertical</span>
+</span></span><span class="line"><span class="cl">    <span class="n">barContainer</span><span class="p">.</span><span class="n">alignment</span> <span class="p">=</span> <span class="p">.</span><span class="n">fill</span>
+</span></span><span class="line"><span class="cl">    <span class="n">barContainer</span><span class="p">.</span><span class="n">distribution</span> <span class="p">=</span> <span class="p">.</span><span class="n">fill</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">valueLabel</span> <span class="p">=</span> <span class="n">makeBarLabel</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="s">&#34;</span><span class="si">\(</span><span class="n">item</span><span class="p">.</span><span class="n">value</span><span class="si">)</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">:</span> <span class="n">fontSize</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="n">valueTextHeight</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">barContainer</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">valueLabel</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">barView</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">barView</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">item</span><span class="p">.</span><span class="n">color</span>
+</span></span><span class="line"><span class="cl">    <span class="n">barView</span><span class="p">.</span><span class="n">heightAnchor</span><span class="p">.</span><span class="n">constraint</span><span class="p">(</span><span class="n">equalToConstant</span><span class="p">:</span> <span class="n">barHeight</span><span class="p">).</span><span class="n">isActive</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">    <span class="n">barContainer</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">barView</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">nameLabel</span> <span class="p">=</span> <span class="n">makeBarLabel</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="n">item</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">:</span> <span class="n">fontSize</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="n">nameTextHeight</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">barContainer</span><span class="p">.</span><span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">nameLabel</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">addArrangedSubview</span><span class="p">(</span><span class="n">barContainer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p><code>addBar</code>だったものを<code>addBarContainer</code>に変更する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="k">for</span> <span class="n">item</span> <span class="k">in</span> <span class="n">barChartItems</span> <span class="p">{</span>
-    <span class="n">addBarContainer</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">item</span><span class="p">)</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="k">for</span> <span class="n">item</span> <span class="k">in</span> <span class="n">barChartItems</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">addBarContainer</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">item</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>こんな感じになる。</p>
 <figure><img src="./iphone02.png" width="30%"/>
 </figure>
@@ -317,16 +317,16 @@
 <p>棒グラフの下に水平線を描きたい。</p>
 <p><a href="https://qiita.com/kojimetal666/items/d3c674244e5312ce8cfe">こちら</a>を参考にする。ものすごく細い長方形を<code>layer</code>として用意して、それを棒の下に配置すれば良い。</p>
 <p><code>BarChartView</code>の<code>init</code>関数の末尾に以下の記述を追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">border</span> <span class="p">=</span> <span class="n">CALayer</span><span class="p">()</span>
-<span class="kd">let</span> <span class="nv">borderWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">1</span>
-<span class="n">border</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">.</span><span class="n">darkGray</span><span class="p">.</span><span class="n">cgColor</span>
-<span class="n">border</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">y</span><span class="p">:</span> <span class="n">frame</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="p">(</span><span class="n">borderWidth</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">fontSize</span> <span class="o">+</span> <span class="n">textPad</span><span class="p">),</span>
-    <span class="n">width</span><span class="p">:</span> <span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>
-    <span class="n">height</span><span class="p">:</span> <span class="n">borderWidth</span>
-<span class="p">)</span>
-<span class="n">layer</span><span class="p">.</span><span class="n">addSublayer</span><span class="p">(</span><span class="n">border</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">border</span> <span class="p">=</span> <span class="n">CALayer</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">borderWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">border</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">.</span><span class="n">darkGray</span><span class="p">.</span><span class="n">cgColor</span>
+</span></span><span class="line"><span class="cl"><span class="n">border</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span><span class="p">:</span> <span class="n">frame</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="p">(</span><span class="n">borderWidth</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">fontSize</span> <span class="o">+</span> <span class="n">textPad</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">width</span><span class="p">:</span> <span class="n">frame</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">height</span><span class="p">:</span> <span class="n">borderWidth</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">layer</span><span class="p">.</span><span class="n">addSublayer</span><span class="p">(</span><span class="n">border</span><span class="p">)</span></span></span></code></pre></div>
 <figure><img src="./iphone03.png" width="50%"/>
 </figure>
 

@@ -20,7 +20,7 @@ Land of Lispの13章でソケット通信が出てきた。 Land of Lispで扱�
 調べた結果、どうやらSafariがたまに「何も送らない通信(?)」を行うことが原因だった。 何も送ってくれないと、リクエストをrecvで受け取るときに、ブロッキングが働いてサーバー側が固まってしまう。 ただし普通のリクエストも送ってくるので、マルチスレッドなどの多重化を行なっておけば 問題なくSafariでもページが読み込まれる。なのでFlaskの開発用サーバーでは大した問題にならなかった。 Safariがなぜこんな通信をするのかはよく分からない。HTTPの仕様をちゃんと読んでいないので、何か見落としがあるのだろうか。もしくはバグか何かなのか。
 何はともあれ、色々ソースコードを読んでいくうちに、リクエストヘッダの取得のやり方など参考になった。 せっかくなのて得た知見を元に再びHTTPサーバを作ってみようと思い立った。
 作るもの 以下の条件を満たすHTTPサーバのようなものを作る(そもそも、どこまで実装できたらHTTPサーバと呼べるのだろうか)。
- マルチスレッドにする。 HTTPリクエストのリクエストライン、ヘッダ情報をパースする。 リクエストボディは今回は考慮しない。  前回に比べてPythonについての知見が広がったため、 コードにおいてf-stringsやtype-annotation、dataclassなどの機能を使ってみている。 また処理を細かく関数に分ける。
+マルチスレッドにする。 HTTPリクエストのリクエストライン、ヘッダ情報をパースする。 リクエストボディは今回は考慮しない。 前回に比べてPythonについての知見が広がったため、 コードにおいてf-stringsやtype-annotation、dataclassなどの機能を使ってみている。 また処理を細かく関数に分ける。
 listen用のソケットの作成 待ち受け用のソケットを作成し、それを返す関数を作成する。 bindやlistenは前回説明した通り。 動作確認を何度も行う都合上、TIME_WAIT状態のポートを待つのは面倒なので、setsockopt(...)の記述でそれを解決している。 (この辺りの詳細は&amp;quot;TIME_WAIT&amp;quot;とか&amp;quot;REUSEADDR&amp;quot;あたりのキーワードで検索すれば出てくる)
 import socket def server_socket(port: int): soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM) soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True) soc.bind((&amp;#39;&amp;#39;, port)) soc.listen(5) return soc 動作確認 以下のようにrun_serverを作る。
 def run_server(port: int): with server_socket(port) as soc: while True: conn, addr = soc.accept() print(f&amp;#39;Connected: {addr}&amp;#39;) with conn: conn.</description>
@@ -34,10 +34,10 @@ def run_server(port: int): with server_socket(port) as soc: while True: conn, ad
       <guid>https://bombrary.github.io/blog/posts/socket02-python/</guid>
       <description>PythonでのSocket通信 やってることはCでやったときと同じである。サーバーとクライアントの通信手順は同じだし、関数名も同じである。しかしCで書いた場合に比べてシンプルに書ける。エラーは例外として投げられるため、自分で書く必要がない。またsockaddr_inなどの構造体が登場することはなく、Pythonでのbind関数とconnect関数の引数に直接アドレス・ポートを指定する。
 server.py 前回と同じく、以下の手順で通信を行う。
- listen(待ち受け)用のソケット作成 - socket 「どこからの接続を待つのか」「どのポートにて待ち受けするのか」を決める - bind関数の引数 ソケットにその情報を紐つける - bind 実際に待ち受けする - listen 接続要求が来たら受け入れる - accept 4によって通信用のソケットが得られるので、それを用いてデータのやりとりをする- send/recv  import socket s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) s.bind((&amp;#34;&amp;#34;, 8000)) s.listen(5) (sock, addr) = s.accept() print(&amp;#34;Connected by&amp;#34; + str(addr)) sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) sock.close() s.close() 上のコードを見れば各関数がどんな形で引数をとって、どんな値を返すのかがわかると思う。いくつか補足しておく。
+listen(待ち受け)用のソケット作成 - socket 「どこからの接続を待つのか」「どのポートにて待ち受けするのか」を決める - bind関数の引数 ソケットにその情報を紐つける - bind 実際に待ち受けする - listen 接続要求が来たら受け入れる - accept 4によって通信用のソケットが得られるので、それを用いてデータのやりとりをする- send/recv import socket s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) s.bind((&amp;#34;&amp;#34;, 8000)) s.listen(5) (sock, addr) = s.accept() print(&amp;#34;Connected by&amp;#34; + str(addr)) sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) sock.close() s.close() 上のコードを見れば各関数がどんな形で引数をとって、どんな値を返すのかがわかると思う。いくつか補足しておく。
 bind (受け入れアドレス, ポート)というタプルを引数にとる。受け入れアドレスを空文字列にしておけば、どんなアドレスからの接続も受け入れる。つまりCでやったINADDR_ANYと同じ。
 s.bind((&amp;#34;&amp;#34;, 8000)) encode Pythonのstring型をそのまま送ることはできないので、byte型に変換する。これはstring.encodeで行える。
-sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) client.py  サーバーとの通信用のソケット作成 - socket サーバが待ち受けている宛先を設定 - connectの引数 2で設定した宛先に対して接続する - connect 1で作ったソケットを用いてデータのやりとりをする。 - send/recv  import socket sock = socket.</description>
+sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) client.py サーバーとの通信用のソケット作成 - socket サーバが待ち受けている宛先を設定 - connectの引数 2で設定した宛先に対して接続する - connect 1で作ったソケットを用いてデータのやりとりをする。 - send/recv import socket sock = socket.socket(socket.AF_INET, socket.</description>
     </item>
     
     <item>
@@ -47,12 +47,12 @@ sock.send(&amp;#34;Hello, World&amp;#34;.encode(&amp;#39;utf-8&amp;#39;)) client
       
       <guid>https://bombrary.github.io/blog/posts/socket01-file-tcp/</guid>
       <description>Socket通信を勉強する。
-前提  プログラムはMac(Mojave)で動かす。 ネットワークに関する知識はほんの少しある。 使うプログラミング言語はC++だが、ここではbetter Cの意味でしか用いない。  (寄り道) ファイル入出力 Socket通信を学んでいると、ファイルディスクリプタが出てきたので、まずはそこから勉強する。
+前提 プログラムはMac(Mojave)で動かす。 ネットワークに関する知識はほんの少しある。 使うプログラミング言語はC++だが、ここではbetter Cの意味でしか用いない。 (寄り道) ファイル入出力 Socket通信を学んでいると、ファイルディスクリプタが出てきたので、まずはそこから勉強する。
 関数定義についてはJM Projectから引用したものを用いる。これはLinuxマニュアルと同じらしいので、恐らくmanコマンドで出力されるものと同じである(ただし英語であるが)。
 ファイルディスクリプタとは ファイルディスクリプタとは、ファイルと結びつけられた単なる整数値である。データの読み書きを行う場合は、この整数値を指定してアクセスする。例えばファイルtest.txtのファイルディスクリプタが4だった場合、読み書きをする関数read/writeには引数4を指定する。
 個人的には、ファイルとプロセスのやりとりはあるケーブルを介して行なっているイメージがある。例えば番号4の端子にはすでにtest.txtが繋がっているとしよう。このとき、プロセスがtext.txtにアクセスしたいなら、番号4の端子にアクセスすれば良い。
- ファイルの読み込み ファイルディスクリプタを用いてファイルを読み込む例を以下に示す。以下は、test.txtを読み込んで、そのファイルディスクリプタとファイルの内容を出力するプログラムである。
-#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;#include &amp;lt;fcntl.h&amp;gt; int main() { int fd = open(&amp;#34;test.txt&amp;#34;, O_RDONLY); char buf[64]; read(fd, buf, sizeof(buf)); printf(&amp;#34;fd: %d\n&amp;#34;, fd); printf(&amp;#34;%s\n&amp;#34;, buf); close(fd); return 0; } test.txtの内容は以下のようにする。
+ファイルの読み込み ファイルディスクリプタを用いてファイルを読み込む例を以下に示す。以下は、test.txtを読み込んで、そのファイルディスクリプタとファイルの内容を出力するプログラムである。
+#include &amp;lt;stdio.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; #include &amp;lt;fcntl.h&amp;gt; int main() { int fd = open(&amp;#34;test.txt&amp;#34;, O_RDONLY); char buf[64]; read(fd, buf, sizeof(buf)); printf(&amp;#34;fd: %d\n&amp;#34;, fd); printf(&amp;#34;%s\n&amp;#34;, buf); close(fd); return 0; } test.txtの内容は以下のようにする。
 Hello, World 実行すると、以下のように出力される。fdの値は実行環境によって異なる。
 fd: 3 Hello, World 以下説明するopen/read/closeは関数ではなく、全てシステムコールである。
 openでファイルを開く 開きたいファイルのパスと、読み書きの方法を引数に指定する。成功するとファイルディスクリプタを返す。

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>線形回帰メモ 正則化 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/regression-regularization/">
@@ -299,49 +299,49 @@ $$</p>
 <p>と読み替えられる。</p>
 <h2 id="juliaによる実装">Juliaによる実装</h2>
 <p>雛形を用意．</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
-<span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
-<span class="k">using</span> <span class="n">LinearAlgebra</span>
-<span class="n">gr</span><span class="p">()</span>
-
-<span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="c"># ここに色々書く</span>
-<span class="k">end</span>
-
-<span class="n">main</span><span class="p">()</span>
-</code></pre></div><h3 id="データの生成">データの生成</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Plots</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="n">LinearAlgebra</span>
+</span></span><span class="line"><span class="cl"><span class="n">gr</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># ここに色々書く</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="データの生成">データの生成</h3>
 <p>以下のモデルを満たすデータ$(x, y)$を生成する。
 $$
 y = w_0 + w_1x + \cdots + w_dx^d + \varepsilon
 $$
 ただし，$\varepsilon \sim \mathcal{N}(0, \sigma^2)$．</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">;</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
-  <span class="n">dist</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
-  <span class="n">x</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
-  <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">evalpoly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-  <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-  <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="ridge回帰-1">Ridge回帰</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">;</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dist</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">x</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">evalpoly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="ridge回帰-1">Ridge回帰</h3>
 <p>以下の勾配を使った勾配降下法を適用すればよい。</p>
 <p>$$
 \frac{\partial J_2}{\partial \bm{w}} = X^T(X\bm{w} - \bm{y}) + \lambda \bm{w}
 $$</p>
 <p>勾配はJuliaだと以下のように書ける。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">lambda</span><span class="o">*</span><span class="n">w</span>
-</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">fit_by_ridge</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lambda</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
-  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
-  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_iter</span>
-    <span class="n">dw</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">lambda</span><span class="o">*</span><span class="n">w</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dw</span>
-    <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-  <span class="k">end</span>
-  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span><span class="o">&#39;</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="lasso回帰-1">Lasso回帰</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="n">X</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">lambda</span><span class="o">*</span><span class="n">w</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">fit_by_ridge</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lambda</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_iter</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dw</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">lambda</span><span class="o">*</span><span class="n">w</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dw</span>
+</span></span><span class="line"><span class="cl">    <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span><span class="o">&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="lasso回帰-1">Lasso回帰</h3>
 <p>座標降下法による手順を再掲する。</p>
 <p>$d = 1, 2, \ldots, D$ について、</p>
 <ol>
@@ -365,71 +365,71 @@ $$
 </div>
 
 <p>と式変形すれば、</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span>
-</code></pre></div><p>と計算できる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span>
+</span></span></code></pre></div><p>と計算できる。</p>
 <p>ソフト閾値作用素 $S$ は次のように定義できる．</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">soft_thresholding</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">lambda</span><span class="p">)</span>
-  <span class="k">if</span> <span class="n">theta</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">lambda</span>
-    <span class="n">theta</span> <span class="o">+</span> <span class="n">lambda</span>
-  <span class="k">elseif</span> <span class="n">theta</span> <span class="o">&gt;</span> <span class="n">lambda</span>
-    <span class="n">theta</span> <span class="o">-</span> <span class="n">lambda</span>
-  <span class="k">else</span>
-    <span class="mi">0</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div><p>これを用いてLasso回帰のアルゴリズムを定義．</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">fit_by_lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lambda</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w0</span><span class="p">)</span>
-  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
-  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
-  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_iter</span>
-    <span class="k">for</span> <span class="n">d</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">D</span>
-      <span class="n">a_d</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
-      <span class="n">c_d</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">a_d</span>
-      <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">soft_thresholding</span><span class="p">(</span><span class="n">c_d</span><span class="o">/</span><span class="n">a_d</span><span class="p">,</span> <span class="n">lambda</span><span class="o">/</span><span class="n">a_d</span><span class="p">)</span>
-      <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">copy</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span><span class="o">&#39;</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="グラフのプロット">グラフのプロット</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">soft_thresholding</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">lambda</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="n">theta</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">lambda</span>
+</span></span><span class="line"><span class="cl">    <span class="n">theta</span> <span class="o">+</span> <span class="n">lambda</span>
+</span></span><span class="line"><span class="cl">  <span class="k">elseif</span> <span class="n">theta</span> <span class="o">&gt;</span> <span class="n">lambda</span>
+</span></span><span class="line"><span class="cl">    <span class="n">theta</span> <span class="o">-</span> <span class="n">lambda</span>
+</span></span><span class="line"><span class="cl">  <span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>これを用いてLasso回帰のアルゴリズムを定義．</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">fit_by_lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">lambda</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_iter</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">d</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">D</span>
+</span></span><span class="line"><span class="cl">      <span class="n">a_d</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="n">c_d</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">a_d</span>
+</span></span><span class="line"><span class="cl">      <span class="n">w</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">soft_thresholding</span><span class="p">(</span><span class="n">c_d</span><span class="o">/</span><span class="n">a_d</span><span class="p">,</span> <span class="n">lambda</span><span class="o">/</span><span class="n">a_d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">copy</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span><span class="o">&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="グラフのプロット">グラフのプロット</h3>
 <p>予測関数を描画する関数を定義．</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
-  <span class="n">d</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">extrema</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">...</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">plot!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">poly_vec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="main関数">main関数</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">d</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">extrema</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">...</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">poly_vec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="main関数">main関数</h3>
 <p>まずはRidge回帰、Lasso回帰の結果をグラフで図示してみる．
 ついでに普通の最小二乗法で解いた$w$もプロットしてみる．</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">poly_vec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-  <span class="p">[</span><span class="n">x</span><span class="o">^</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">:</span><span class="n">d</span><span class="p">]</span>
-<span class="k">end</span>
-
-<span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
-
-  <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="o">-</span><span class="mf">3.0</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
-
-  <span class="n">d</span> <span class="o">=</span> <span class="mi">5</span>
-  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">poly_vec</span><span class="o">.</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span><span class="o">...</span><span class="p">)</span><span class="o">&#39;</span>
-
-  <span class="n">ws_ridge</span> <span class="o">=</span> <span class="n">fit_by_ridge</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-  <span class="n">display</span><span class="p">(</span><span class="n">ws_ridge</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">])</span>
-
-  <span class="n">ws_lasso</span> <span class="o">=</span> <span class="n">fit_by_lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-  <span class="n">display</span><span class="p">(</span><span class="n">ws_lasso</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">])</span>
-
-  <span class="n">w_overfitting</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-
-  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
-  <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-  <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ws_ridge</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">x</span><span class="p">,</span> <span class="s">&#34;ridge&#34;</span><span class="p">)</span>
-  <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ws_lasso</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">x</span><span class="p">,</span> <span class="s">&#34;lasso&#34;</span><span class="p">)</span>
-  <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w_overfitting</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s">&#34;overfitting&#34;</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><p>最小二乗法の方は過学習を起こしているが、
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">poly_vec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="n">x</span><span class="o">^</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">:</span><span class="n">d</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="o">-</span><span class="mf">3.0</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">d</span> <span class="o">=</span> <span class="mi">5</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">poly_vec</span><span class="o">.</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span><span class="o">...</span><span class="p">)</span><span class="o">&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">ws_ridge</span> <span class="o">=</span> <span class="n">fit_by_ridge</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">ws_ridge</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">ws_lasso</span> <span class="o">=</span> <span class="n">fit_by_lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">ws_lasso</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">w_overfitting</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ws_ridge</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">x</span><span class="p">,</span> <span class="s">&#34;ridge&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ws_lasso</span><span class="p">[</span><span class="k">end</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">x</span><span class="p">,</span> <span class="s">&#34;lasso&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot_w!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w_overfitting</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s">&#34;overfitting&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>最小二乗法の方は過学習を起こしているが、
 Ridge回帰とLasso回帰は自然な曲線を描いていることが読み取れる。</p>
 <figure><img src="img0.png"/>
 </figure>

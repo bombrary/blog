@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - UIPageViewControllerの利用 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-pageview/">
@@ -103,64 +103,64 @@
 
 <h2 id="pageviewcontrollerswift">PageViewController.swift</h2>
 <p>次のように書く。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">PageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span> <span class="p">{</span>
-
-    <span class="kd">var</span> <span class="nv">controllers</span><span class="p">:</span> <span class="p">[</span><span class="n">UIViewController</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
-    
-    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
-
-        <span class="c1">// Do any additional setup after loading the view.</span>
-        
-        <span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="p">.</span><span class="n">black</span>
-        
-        <span class="kd">let</span> <span class="nv">stb</span> <span class="p">=</span> <span class="n">storyboard</span><span class="p">!</span>
-        <span class="kd">let</span> <span class="nv">page1</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page1&#34;</span><span class="p">)</span>
-        <span class="kd">let</span> <span class="nv">page2</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page2&#34;</span><span class="p">)</span>
-        <span class="kd">let</span> <span class="nv">page3</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page3&#34;</span><span class="p">)</span>
-        <span class="n">controllers</span> <span class="p">=</span> <span class="p">[</span><span class="n">page1</span><span class="p">,</span> <span class="n">page2</span><span class="p">,</span> <span class="n">page3</span><span class="p">]</span>
-        
-        <span class="n">setViewControllers</span><span class="p">([</span><span class="n">controllers</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">direction</span><span class="p">:</span> <span class="p">.</span><span class="n">forward</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-        <span class="n">dataSource</span> <span class="p">=</span> <span class="kc">self</span>
-    <span class="p">}</span>
-    
-
-    <span class="cm">/*
-</span><span class="cm">    // </span><span class="cs">MARK:</span><span class="cm"> - Navigation
-</span><span class="cm">
-</span><span class="cm">    // In a storyboard-based application, you will often want to do a little preparation before navigation
-</span><span class="cm">    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-</span><span class="cm">        // Get the new view controller using segue.destination.
-</span><span class="cm">        // Pass the selected object to the new view controller.
-</span><span class="cm">    }
-</span><span class="cm">    */</span>
-
-<span class="p">}</span>
-
-<span class="kd">extension</span> <span class="nc">PageViewController</span><span class="p">:</span> <span class="n">UIPageViewControllerDataSource</span> <span class="p">{</span>
-    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="kc">_</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerBefore</span> <span class="n">viewController</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewController</span><span class="p">?</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="kd">let</span> <span class="nv">index</span> <span class="p">=</span> <span class="n">controllers</span><span class="p">.</span><span class="n">firstIndex</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span><span class="o">-</span><span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="n">controllers</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="kc">nil</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="kc">_</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerAfter</span> <span class="n">viewController</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewController</span><span class="p">?</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="kd">let</span> <span class="nv">index</span> <span class="p">=</span> <span class="n">controllers</span><span class="p">.</span><span class="n">firstIndex</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">controllers</span><span class="p">.</span><span class="bp">count</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="n">controllers</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="kc">nil</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="kd">func</span> <span class="nf">presentationCount</span><span class="p">(</span><span class="k">for</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="nb">Int</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">controllers</span><span class="p">.</span><span class="bp">count</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">presentationIndex</span><span class="p">(</span><span class="k">for</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="nb">Int</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="mi">0</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">PageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nv">controllers</span><span class="p">:</span> <span class="p">[</span><span class="n">UIViewController</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Do any additional setup after loading the view.</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="p">.</span><span class="n">black</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">stb</span> <span class="p">=</span> <span class="n">storyboard</span><span class="p">!</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">page1</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page1&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">page2</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page2&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">page3</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;page3&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">controllers</span> <span class="p">=</span> <span class="p">[</span><span class="n">page1</span><span class="p">,</span> <span class="n">page2</span><span class="p">,</span> <span class="n">page3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">setViewControllers</span><span class="p">([</span><span class="n">controllers</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">direction</span><span class="p">:</span> <span class="p">.</span><span class="n">forward</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">dataSource</span> <span class="p">=</span> <span class="kc">self</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">    // </span><span class="cs">MARK:</span><span class="cm"> - Navigation
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">    // In a storyboard-based application, you will often want to do a little preparation before navigation
+</span></span></span><span class="line"><span class="cl"><span class="cm">    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+</span></span></span><span class="line"><span class="cl"><span class="cm">        // Get the new view controller using segue.destination.
+</span></span></span><span class="line"><span class="cl"><span class="cm">        // Pass the selected object to the new view controller.
+</span></span></span><span class="line"><span class="cl"><span class="cm">    }
+</span></span></span><span class="line"><span class="cl"><span class="cm">    */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">extension</span> <span class="nc">PageViewController</span><span class="p">:</span> <span class="n">UIPageViewControllerDataSource</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="kc">_</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerBefore</span> <span class="n">viewController</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewController</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="kd">let</span> <span class="nv">index</span> <span class="p">=</span> <span class="n">controllers</span><span class="p">.</span><span class="n">firstIndex</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span><span class="o">-</span><span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">controllers</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="kc">_</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerAfter</span> <span class="n">viewController</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewController</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="kd">let</span> <span class="nv">index</span> <span class="p">=</span> <span class="n">controllers</span><span class="p">.</span><span class="n">firstIndex</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">controllers</span><span class="p">.</span><span class="bp">count</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">controllers</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">presentationCount</span><span class="p">(</span><span class="k">for</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="nb">Int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">controllers</span><span class="p">.</span><span class="bp">count</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">presentationIndex</span><span class="p">(</span><span class="k">for</span> <span class="n">pageViewController</span><span class="p">:</span> <span class="n">UIPageViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="nb">Int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h3 id="説明">説明</h3>
 <p><code>UIPageViewController</code>は次のように利用する。</p>
 <ul>
@@ -170,21 +170,21 @@
 </ul>
 <h2 id="viewcontrollerswift">ViewController.swift</h2>
 <p>次のように書く。Segueを利用しないで遷移する場合は、以下のように<code>present</code>メソッドを利用する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
-
-    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
-        <span class="c1">// Do any additional setup after loading the view.</span>
-    <span class="p">}</span>
-
-    <span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">buttonTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">let</span> <span class="nv">stb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s">&#34;Walkthrough&#34;</span><span class="p">,</span> <span class="n">bundle</span> <span class="p">:</span><span class="kc">nil</span><span class="p">)</span>
-        <span class="kd">let</span> <span class="nv">pageVC</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;walk&#34;</span><span class="p">)</span>
-        <span class="n">pageVC</span><span class="p">.</span><span class="n">modalPresentationStyle</span> <span class="p">=</span> <span class="p">.</span><span class="n">currentContext</span>
-        <span class="n">present</span><span class="p">(</span><span class="n">pageVC</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-    <span class="p">}</span>
-    
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Do any additional setup after loading the view.</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">buttonTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">stb</span> <span class="p">=</span> <span class="n">UIStoryboard</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="s">&#34;Walkthrough&#34;</span><span class="p">,</span> <span class="n">bundle</span> <span class="p">:</span><span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">pageVC</span> <span class="p">=</span> <span class="n">stb</span><span class="p">.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&#34;walk&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pageVC</span><span class="p">.</span><span class="n">modalPresentationStyle</span> <span class="p">=</span> <span class="p">.</span><span class="n">currentContext</span>
+</span></span><span class="line"><span class="cl">        <span class="n">present</span><span class="p">(</span><span class="n">pageVC</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p><code>pageVC.modalPresentationStyle = .currentContext</code>とすると、遷移元のViewを覆う形でViewが配置される。</p>
 <p>以下はその設定の比較。左は未設定の場合で、右は<code>.currentContext</code>を設定した場合。未設定の場合は、<code>.automatic</code>が設定されている。<code>.automatic</code>は多くの場合<code>.pageSheet</code>というスタイルになっているらしい。</p>
 <figure>

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - UIPresentationControllerの利用 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-uipresentation/">
@@ -100,31 +100,31 @@ Modality is a design technique that presents content in a temporary mode that’
 
 <h3 id="viewcontrollerswift">ViewController.swift</h3>
 <p>ボタンのAction接続を作る。ボタンがタップされたら遷移するようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
-    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
-        <span class="c1">// Do any additional setup after loading the view.</span>
-    <span class="p">}</span>
-
-    <span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">buttonTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">let</span> <span class="nv">vc</span> <span class="p">=</span> <span class="p">(</span><span class="n">storyboard</span><span class="p">?.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="s">&#34;dest&#34;</span><span class="p">))</span><span class="o">!</span>
-        <span class="n">present</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewController</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">super</span><span class="p">.</span><span class="n">viewDidLoad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Do any additional setup after loading the view.</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">buttonTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">let</span> <span class="nv">vc</span> <span class="p">=</span> <span class="p">(</span><span class="n">storyboard</span><span class="p">?.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="s">&#34;dest&#34;</span><span class="p">))</span><span class="o">!</span>
+</span></span><span class="line"><span class="cl">        <span class="n">present</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="遷移前の設定">遷移前の設定</h2>
 <p><code>buttonTapped</code>に追記して次のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">buttonTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nv">vc</span> <span class="p">=</span> <span class="p">(</span><span class="n">storyboard</span><span class="p">?.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="s">&#34;dest&#34;</span><span class="p">))</span><span class="o">!</span>
-    <span class="n">vc</span><span class="p">.</span><span class="n">modalPresentationStyle</span> <span class="p">=</span> <span class="p">.</span><span class="n">custom</span>
-    <span class="n">vc</span><span class="p">.</span><span class="n">transitioningDelegate</span> <span class="p">=</span> <span class="kc">self</span>
-    <span class="n">present</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">@IBAction</span> <span class="kd">func</span> <span class="nf">buttonTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="nb">Any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">vc</span> <span class="p">=</span> <span class="p">(</span><span class="n">storyboard</span><span class="p">?.</span><span class="n">instantiateViewController</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="s">&#34;dest&#34;</span><span class="p">))</span><span class="o">!</span>
+</span></span><span class="line"><span class="cl">    <span class="n">vc</span><span class="p">.</span><span class="n">modalPresentationStyle</span> <span class="p">=</span> <span class="p">.</span><span class="n">custom</span>
+</span></span><span class="line"><span class="cl">    <span class="n">vc</span><span class="p">.</span><span class="n">transitioningDelegate</span> <span class="p">=</span> <span class="kc">self</span>
+</span></span><span class="line"><span class="cl">    <span class="n">present</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>さらに次のextensionを追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">extension</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewControllerTransitioningDelegate</span> <span class="p">{</span>
-    <span class="kd">func</span> <span class="nf">presentationController</span><span class="p">(</span><span class="n">forPresented</span> <span class="n">presented</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">,</span> <span class="n">presenting</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">?,</span> <span class="n">source</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIPresentationController</span><span class="p">?</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">CustomPresentationController</span><span class="p">(</span><span class="n">presentedViewController</span><span class="p">:</span> <span class="n">presented</span><span class="p">,</span> <span class="n">presenting</span><span class="p">:</span> <span class="n">presenting</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">extension</span> <span class="nc">ViewController</span><span class="p">:</span> <span class="n">UIViewControllerTransitioningDelegate</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">presentationController</span><span class="p">(</span><span class="n">forPresented</span> <span class="n">presented</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">,</span> <span class="n">presenting</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">?,</span> <span class="n">source</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIPresentationController</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">CustomPresentationController</span><span class="p">(</span><span class="n">presentedViewController</span><span class="p">:</span> <span class="n">presented</span><span class="p">,</span> <span class="n">presenting</span><span class="p">:</span> <span class="n">presenting</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h3 id="modalpresentationstyle">modalPresentationStyle</h3>
 <p>モーダル表示のスタイルを設定する。<code>.custom</code>を設定すると、そのスタイルは<code>UIPresentationController</code>によって設定されるようになる(<a href="https://developer.apple.com/documentation/uikit/uiviewcontrollertransitioningdelegate">ソース</a>)。<code>UIPresentationController</code>は<code>UIViewControllerTransitioningDelegate</code>のプロトコルで定義されたメソッド<code>presentationController</code>で設定する。</p>
 <p>今回は<code>ViewController</code>にこのDelegateを設定するが、例えば表示先のViewControllerのswiftファイルにDelegateを設定する、という書き方もあり。</p>
@@ -133,9 +133,9 @@ Modality is a design technique that presents content in a temporary mode that’
 <h2 id="custompresentationcontroller">CustomPresentationController</h2>
 <p>遷移時の表示アニメーションとか、遷移後の表示方法を制御するController。overrideできるメソッドは<a href="https://developer.apple.com/documentation/uikit/uipresentationcontroller">ドキュメント</a>に全て書かれているので、必要なものを実装する。</p>
 <p>次のような内容を持つ<code>CustomPresentationController.swift</code>を作成する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">CustomPresentationController</span><span class="p">:</span> <span class="n">UIPresentationController</span> <span class="p">{</span>
-  <span class="c1">// いろいろ書く</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">CustomPresentationController</span><span class="p">:</span> <span class="n">UIPresentationController</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// いろいろ書く</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h3 id="主要そうなプロパティ">主要そうなプロパティ</h3>
 <ul>
 <li><code>presentingViewController</code>: 表示元のViewController</li>
@@ -159,92 +159,92 @@ Modality is a design technique that presents content in a temporary mode that’
 <h2 id="サイズを変更する">サイズを変更する</h2>
 <p><code>CustomPresentationController</code>に以下の定義を追加する。</p>
 <p>単に<code>size</code>メソッド内で<code>margin</code>込みのViewサイズを設定し、それを利用して<code>frameOfPresentedViewInContainerView</code>を設定している。コンテナの存在を確認するため、<code>containerView</code>の背景色を分かりやすくする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">presentationTransitionWillBegin</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">containerView</span><span class="p">?.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="p">.</span><span class="n">systemGreen</span>
-<span class="p">}</span>
-
-<span class="kd">let</span> <span class="nv">margin</span> <span class="p">=</span> <span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">CGFloat</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span> <span class="n">y</span><span class="p">:</span> <span class="n">CGFloat</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
-<span class="kr">override</span> <span class="kd">func</span> <span class="nf">size</span><span class="p">(</span><span class="n">forChildContentContainer</span> <span class="n">container</span><span class="p">:</span> <span class="n">UIContentContainer</span><span class="p">,</span> <span class="n">withParentContainerSize</span> <span class="n">parentSize</span><span class="p">:</span> <span class="n">CGSize</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGSize</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">CGSize</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="n">parentSize</span><span class="p">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="n">parentSize</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
-<span class="p">}</span>
-<span class="kr">override</span> <span class="kd">var</span> <span class="nv">frameOfPresentedViewInContainerView</span><span class="p">:</span> <span class="n">CGRect</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nv">presentedViewFrame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">()</span>
-    <span class="kd">let</span> <span class="nv">containerBounds</span> <span class="p">=</span> <span class="n">containerView</span><span class="p">!.</span><span class="n">bounds</span>
-    <span class="kd">let</span> <span class="nv">childContentSize</span> <span class="p">=</span> <span class="n">size</span><span class="p">(</span><span class="n">forChildContentContainer</span><span class="p">:</span> <span class="n">presentedViewController</span><span class="p">,</span> <span class="n">withParentContainerSize</span><span class="p">:</span> <span class="n">containerBounds</span><span class="p">.</span><span class="n">size</span><span class="p">)</span>
-    <span class="n">presentedViewFrame</span><span class="p">.</span><span class="n">size</span> <span class="p">=</span> <span class="n">childContentSize</span>
-
-    <span class="k">return</span> <span class="n">presentedViewFrame</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">presentationTransitionWillBegin</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">containerView</span><span class="p">?.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="p">.</span><span class="n">systemGreen</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">margin</span> <span class="p">=</span> <span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">CGFloat</span><span class="p">(</span><span class="mi">40</span><span class="p">),</span> <span class="n">y</span><span class="p">:</span> <span class="n">CGFloat</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">size</span><span class="p">(</span><span class="n">forChildContentContainer</span> <span class="n">container</span><span class="p">:</span> <span class="n">UIContentContainer</span><span class="p">,</span> <span class="n">withParentContainerSize</span> <span class="n">parentSize</span><span class="p">:</span> <span class="n">CGSize</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">CGSize</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">CGSize</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="n">parentSize</span><span class="p">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="n">parentSize</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">var</span> <span class="nv">frameOfPresentedViewInContainerView</span><span class="p">:</span> <span class="n">CGRect</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nv">presentedViewFrame</span> <span class="p">=</span> <span class="n">CGRect</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">containerBounds</span> <span class="p">=</span> <span class="n">containerView</span><span class="p">!.</span><span class="n">bounds</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">childContentSize</span> <span class="p">=</span> <span class="n">size</span><span class="p">(</span><span class="n">forChildContentContainer</span><span class="p">:</span> <span class="n">presentedViewController</span><span class="p">,</span> <span class="n">withParentContainerSize</span><span class="p">:</span> <span class="n">containerBounds</span><span class="p">.</span><span class="n">size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">presentedViewFrame</span><span class="p">.</span><span class="n">size</span> <span class="p">=</span> <span class="n">childContentSize</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">presentedViewFrame</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p><code>presentedView</code>にこの情報を教えておく必要があるので、<code>containerViewWillLayoutSubviews</code>にそれを書く。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">containerViewWillLayoutSubviews</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">presentedView</span><span class="p">?.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">frameOfPresentedViewInContainerView</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">containerViewWillLayoutSubviews</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">presentedView</span><span class="p">?.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">frameOfPresentedViewInContainerView</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>ラベルが青Viewの中央に並んでいる。このことから、<code>size</code>や<code>frameOfPresentedViewInContainerView</code>で定義されたサイズは、単にトリミングしているわけでなく、Constraintを保ったままViewそのものを縮小したサイズだと分かる。</p>
 <figure><img src="./iphone02.png" width="30%"/>
 </figure>
 
 <h3 id="捕捉">捕捉</h3>
 <p>実は、上の<code>containerViewWillLayoutSubviews</code>内のコードを書かなくても一見正常に動作しているように見える。しかし試しに次のようにprintデバッグしてみる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">var</span> <span class="nv">frameOfPresentedViewInContainerView</span><span class="p">:</span> <span class="n">CGRect</span> <span class="p">{</span>
-  <span class="p">...</span>
-  <span class="bp">print</span><span class="p">(</span><span class="s">&#34;presentedViewInContainerView:</span><span class="si">\(</span><span class="n">presentedViewFrame</span><span class="si">)</span><span class="s">&#34;</span><span class="p">)</span>
-  <span class="bp">print</span><span class="p">(</span><span class="s">&#34;presentedView?.frame:</span><span class="si">\(</span><span class="n">presentedView</span><span class="p">?.</span><span class="n">frame</span><span class="si">)</span><span class="s">&#34;</span><span class="p">)</span>
-  <span class="p">...</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">var</span> <span class="nv">frameOfPresentedViewInContainerView</span><span class="p">:</span> <span class="n">CGRect</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="bp">print</span><span class="p">(</span><span class="s">&#34;presentedViewInContainerView:</span><span class="si">\(</span><span class="n">presentedViewFrame</span><span class="si">)</span><span class="s">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="bp">print</span><span class="p">(</span><span class="s">&#34;presentedView?.frame:</span><span class="si">\(</span><span class="n">presentedView</span><span class="p">?.</span><span class="n">frame</span><span class="si">)</span><span class="s">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>すると、画面遷移のときに次のログが出力される。</p>
 <pre tabindex="0"><code>presentedViewInContainerView:(0.0, 0.0, 334.0, 696.0)
 presentedView?.frame:Optional((0.0, 0.0, 414.0, 896.0))
 </code></pre><p>このログだけでは画面遷移開始前なのか後なのかはわからないが、少なくとも<code>presentedView</code>の位置、サイズが<code>frameOfPresentedViewInContainerView</code>と異なる瞬間がある。具体例は思いつかないが、何か表示に関するバグを生みそう。なので<code>containerViewWillLayoutSubviews</code>に書いたコードは必要。</p>
 <h2 id="位置を変更">位置を変更</h2>
 <p><code>presentedViewFrame</code>の原点位置を変更すれば良い。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">var</span> <span class="nv">frameOfPresentedViewInContainerView</span><span class="p">:</span> <span class="n">CGRect</span> <span class="p">{</span>
-    <span class="p">...</span>
-    <span class="n">presentedViewFrame</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">margin</span><span class="p">.</span><span class="n">x</span>
-    <span class="n">presentedViewFrame</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">margin</span><span class="p">.</span><span class="n">y</span>
-
-    <span class="k">return</span> <span class="n">presentedViewFrame</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">var</span> <span class="nv">frameOfPresentedViewInContainerView</span><span class="p">:</span> <span class="n">CGRect</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="n">presentedViewFrame</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">margin</span><span class="p">.</span><span class="n">x</span>
+</span></span><span class="line"><span class="cl">    <span class="n">presentedViewFrame</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">margin</span><span class="p">.</span><span class="n">y</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">presentedViewFrame</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <figure><img src="./iphone03.png" width="30%"/>
 </figure>
 
 <h2 id="背景を暗くするアニメーション">背景を暗くするアニメーション</h2>
 <p>一応こうすることで背景色を半透明の黒にできる。遷移に関するアニメーションは<code>transitionCoordinator?.animate</code>を利用する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">presentationTransitionWillBegin</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">containerView</span><span class="p">!.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">(</span><span class="n">white</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">)</span>
-    <span class="n">presentedViewController</span><span class="p">.</span><span class="n">transitionCoordinator</span><span class="p">?.</span><span class="n">animate</span><span class="p">(</span><span class="n">alongsideTransition</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="kr">unowned</span> <span class="kc">self</span><span class="p">]</span> <span class="kc">_</span> <span class="k">in</span>
-        <span class="kc">self</span><span class="p">.</span><span class="n">containerView</span><span class="p">?.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">(</span><span class="n">white</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">)</span>
-    <span class="p">})</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">presentationTransitionWillBegin</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">containerView</span><span class="p">!.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">(</span><span class="n">white</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">presentedViewController</span><span class="p">.</span><span class="n">transitionCoordinator</span><span class="p">?.</span><span class="n">animate</span><span class="p">(</span><span class="n">alongsideTransition</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="kr">unowned</span> <span class="kc">self</span><span class="p">]</span> <span class="kc">_</span> <span class="k">in</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">self</span><span class="p">.</span><span class="n">containerView</span><span class="p">?.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="n">UIColor</span><span class="p">(</span><span class="n">white</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>これでうまくいくのだが、いろいろ調べてみると、<code>containerView</code>の背景色を直接いじっている例が見当たらない。もしかしたら<code>containerView</code>はあくまでコンテナなので、レイアウトのためにこれをいじるのはあまり良くない？</p>
 <p>次のように<code>overlay</code>という名のViewを作って、これを半透明の黒にする例しかなかった。この場合は色を変更するのではなく、Viewそのものの透明度をアニメーションさせる。こっちのほうが良いのかな？</p>
 <p><code>overlay</code>の<code>frame</code>は<code>containerViewWillLayoutSubviews</code>に記述しておく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">overlay</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">()</span>
-<span class="kr">override</span> <span class="kd">func</span> <span class="nf">presentationTransitionWillBegin</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">overlay</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="p">.</span><span class="n">black</span>
-    <span class="n">overlay</span><span class="p">.</span><span class="n">alpha</span> <span class="p">=</span> <span class="mf">0.0</span>
-    <span class="n">containerView</span><span class="p">?.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">overlay</span><span class="p">)</span>
-    <span class="n">presentedViewController</span><span class="p">.</span><span class="n">transitionCoordinator</span><span class="p">?.</span><span class="n">animate</span><span class="p">(</span><span class="n">alongsideTransition</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="kr">unowned</span> <span class="kc">self</span><span class="p">]</span> <span class="kc">_</span> <span class="k">in</span>
-        <span class="kc">self</span><span class="p">.</span><span class="n">overlay</span><span class="p">.</span><span class="n">alpha</span> <span class="p">=</span> <span class="mf">0.5</span>
-    <span class="p">})</span>
-<span class="p">}</span>
-<span class="kr">override</span> <span class="kd">func</span> <span class="nf">containerViewWillLayoutSubviews</span><span class="p">()</span> <span class="p">{</span>
-    <span class="p">...</span>
-    <span class="n">overlay</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">containerView</span><span class="p">!.</span><span class="n">bounds</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">overlay</span> <span class="p">=</span> <span class="n">UIView</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">presentationTransitionWillBegin</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">overlay</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="p">=</span> <span class="p">.</span><span class="n">black</span>
+</span></span><span class="line"><span class="cl">    <span class="n">overlay</span><span class="p">.</span><span class="n">alpha</span> <span class="p">=</span> <span class="mf">0.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">containerView</span><span class="p">?.</span><span class="n">addSubview</span><span class="p">(</span><span class="n">overlay</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">presentedViewController</span><span class="p">.</span><span class="n">transitionCoordinator</span><span class="p">?.</span><span class="n">animate</span><span class="p">(</span><span class="n">alongsideTransition</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="kr">unowned</span> <span class="kc">self</span><span class="p">]</span> <span class="kc">_</span> <span class="k">in</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">self</span><span class="p">.</span><span class="n">overlay</span><span class="p">.</span><span class="n">alpha</span> <span class="p">=</span> <span class="mf">0.5</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">containerViewWillLayoutSubviews</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="n">overlay</span><span class="p">.</span><span class="n">frame</span> <span class="p">=</span> <span class="n">containerView</span><span class="p">!.</span><span class="n">bounds</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="タップされたら画面を閉じる">タップされたら画面を閉じる</h2>
 <p>次のように、<code>overlay</code>に<code>UITapGestureRecognizer</code>を設定しておく。これは<code>presentationTransitionWillBegin</code>の中に定義する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">recognizer</span> <span class="p">=</span> <span class="n">UITapGestureRecognizer</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="kc">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">overlayTapped</span><span class="p">(</span><span class="kc">_</span><span class="p">:)))</span>
-<span class="n">overlay</span><span class="p">.</span><span class="n">addGestureRecognizer</span><span class="p">(</span><span class="n">recognizer</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">recognizer</span> <span class="p">=</span> <span class="n">UITapGestureRecognizer</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="kc">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">overlayTapped</span><span class="p">(</span><span class="kc">_</span><span class="p">:)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">overlay</span><span class="p">.</span><span class="n">addGestureRecognizer</span><span class="p">(</span><span class="n">recognizer</span><span class="p">)</span></span></span></code></pre></div>
 <p><code>selector</code>に<code>overlayTapped</code>関数を指定したから、これを定義する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">@objc</span> <span class="kd">func</span> <span class="nf">overlayTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">UITapGestureRecognizer</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">presentedViewController</span><span class="p">.</span><span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">@objc</span> <span class="kd">func</span> <span class="nf">overlayTapped</span><span class="p">(</span><span class="kc">_</span> <span class="n">sender</span><span class="p">:</span> <span class="n">UITapGestureRecognizer</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">presentedViewController</span><span class="p">.</span><span class="n">dismiss</span><span class="p">(</span><span class="n">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>画面の破棄が終了すると<code>dismissalTransitionDidEnd</code>が呼ばれるので、その処理を書く。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">dismissalTransitionDidEnd</span><span class="p">(</span><span class="kc">_</span> <span class="n">completed</span><span class="p">:</span> <span class="nb">Bool</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="n">completed</span> <span class="p">{</span>
-        <span class="n">overlay</span><span class="p">.</span><span class="n">removeFromSuperview</span><span class="p">()</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">dismissalTransitionDidEnd</span><span class="p">(</span><span class="kc">_</span> <span class="n">completed</span><span class="p">:</span> <span class="nb">Bool</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">completed</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">overlay</span><span class="p">.</span><span class="n">removeFromSuperview</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h3 id="捕捉-1">捕捉</h3>
 <p><code>dismissalTransitionDidEnd</code>に処理を書かなくても一見動作は同じである。これを書かなかったからと言って<code>overlay</code>が破棄されないわけでもないようだ(これは<code>overlay</code>をカスタムビューにして、<code>deinit</code>内でprintを書いてみると分かる)。しかし、少なくとも僕が調べたサイトでは、すべて<code>overlay.removeFromSuperview()</code>を呼び出している。</p>
 <p>現時点で考えられる理由は次の2点である。</p>
@@ -254,70 +254,70 @@ presentedView?.frame:Optional((0.0, 0.0, 414.0, 896.0))
 </ul>
 <h3 id="overlayのアニメーション">overlayのアニメーション</h3>
 <p>overlayがゆっくりと透明になるようにする。<code>presentedView</code>が閉じられるときに行いたいので、<code>dismissalTransitionBegin</code>に記述する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">dismissalTransitionWillBegin</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">presentedViewController</span><span class="p">.</span><span class="n">transitionCoordinator</span><span class="p">?.</span><span class="n">animate</span><span class="p">(</span><span class="n">alongsideTransition</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="kr">unowned</span> <span class="kc">self</span><span class="p">]</span> <span class="kc">_</span> <span class="k">in</span>
-        <span class="kc">self</span><span class="p">.</span><span class="n">overlay</span><span class="p">.</span><span class="n">alpha</span> <span class="p">=</span> <span class="mf">0.0</span>
-    <span class="p">})</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kr">override</span> <span class="kd">func</span> <span class="nf">dismissalTransitionWillBegin</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">presentedViewController</span><span class="p">.</span><span class="n">transitionCoordinator</span><span class="p">?.</span><span class="n">animate</span><span class="p">(</span><span class="n">alongsideTransition</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="kr">unowned</span> <span class="kc">self</span><span class="p">]</span> <span class="kc">_</span> <span class="k">in</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">self</span><span class="p">.</span><span class="n">overlay</span><span class="p">.</span><span class="n">alpha</span> <span class="p">=</span> <span class="mf">0.0</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <figure><img src="./mov.gif" width="30%"/>
 </figure>
 
 <h2 id="捕捉-遷移のアニメーションの向きを制御したいとき">捕捉: 遷移のアニメーションの向きを制御したいとき</h2>
 <p>例えば、「Viewを横からスライドして出現させたい」などの要求があるかもしれない。</p>
 <p>まずは、次の2つのメソッドを<code>ViewController.swift</code>の<code>extension</code>部分に書く。<code>CustomAnimationController</code>はアニメーションを制御するためのオブジェクトで、後で定義する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">animationController</span><span class="p">(</span><span class="n">forDismissed</span> <span class="n">dismissed</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewControllerAnimatedTransitioning</span><span class="p">?</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">CustomAnimationController</span><span class="p">(</span><span class="n">isPresentation</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
-<span class="p">}</span>
-<span class="kd">func</span> <span class="nf">animationController</span><span class="p">(</span><span class="n">forPresented</span> <span class="n">presented</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewControllerAnimatedTransitioning</span><span class="p">?</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">CustomAnimationController</span><span class="p">(</span><span class="n">isPresentation</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">animationController</span><span class="p">(</span><span class="n">forDismissed</span> <span class="n">dismissed</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewControllerAnimatedTransitioning</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">CustomAnimationController</span><span class="p">(</span><span class="n">isPresentation</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">animationController</span><span class="p">(</span><span class="n">forPresented</span> <span class="n">presented</span><span class="p">:</span> <span class="n">UIViewController</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">UIViewControllerAnimatedTransitioning</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">CustomAnimationController</span><span class="p">(</span><span class="n">isPresentation</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p><code>UIViewControllerAnimatedTransitioning</code>プロトコルに準拠した<code>NSObject</code>を作っておく。<a href="https://dev.classmethod.jp/smartphone/ios-custom-dialog-with-uipresentationcontroller/">こちら</a>では、次のように、<code>isPresented</code>で表示時と削除時でアニメーションを分けていた。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">class</span> <span class="nc">CustomAnimationController</span><span class="p">:</span> <span class="n">NSObject</span><span class="p">,</span> <span class="n">UIViewControllerAnimatedTransitioning</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nv">isPresented</span><span class="p">:</span> <span class="nb">Bool</span>
-    <span class="kd">init</span><span class="p">(</span><span class="n">isPresented</span><span class="p">:</span> <span class="nb">Bool</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kc">self</span><span class="p">.</span><span class="n">isPresented</span> <span class="p">=</span> <span class="n">isPresented</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">transitionDuration</span><span class="p">(</span><span class="n">using</span> <span class="n">transitionContext</span><span class="p">:</span> <span class="n">UIViewControllerContextTransitioning</span><span class="p">?)</span> <span class="p">-&gt;</span> <span class="n">TimeInterval</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="mf">0.2</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">animateTransition</span><span class="p">(</span><span class="n">using</span> <span class="n">transitionContext</span><span class="p">:</span> <span class="n">UIViewControllerContextTransitioning</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="n">isPresented</span> <span class="p">{</span>
-            <span class="n">animatePresentation</span><span class="p">(</span><span class="n">using</span><span class="p">:</span> <span class="n">transitionContext</span><span class="p">)</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="n">animateDismissal</span><span class="p">(</span><span class="n">using</span><span class="p">:</span> <span class="n">transitionContext</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">animatePresentation</span><span class="p">(</span><span class="n">using</span> <span class="n">transitionContext</span><span class="p">:</span> <span class="n">UIViewControllerContextTransitioning</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// 表示時のアニメーションを書く</span>
-    <span class="p">}</span>
-    <span class="kd">func</span> <span class="nf">animateDismissal</span><span class="p">(</span><span class="n">using</span> <span class="n">transitionContext</span><span class="p">:</span> <span class="n">UIViewControllerContextTransitioning</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// 削除時のアニメーションを書く</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">CustomAnimationController</span><span class="p">:</span> <span class="n">NSObject</span><span class="p">,</span> <span class="n">UIViewControllerAnimatedTransitioning</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nv">isPresented</span><span class="p">:</span> <span class="nb">Bool</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">init</span><span class="p">(</span><span class="n">isPresented</span><span class="p">:</span> <span class="nb">Bool</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kc">self</span><span class="p">.</span><span class="n">isPresented</span> <span class="p">=</span> <span class="n">isPresented</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">transitionDuration</span><span class="p">(</span><span class="n">using</span> <span class="n">transitionContext</span><span class="p">:</span> <span class="n">UIViewControllerContextTransitioning</span><span class="p">?)</span> <span class="p">-&gt;</span> <span class="n">TimeInterval</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mf">0.2</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">animateTransition</span><span class="p">(</span><span class="n">using</span> <span class="n">transitionContext</span><span class="p">:</span> <span class="n">UIViewControllerContextTransitioning</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">isPresented</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">animatePresentation</span><span class="p">(</span><span class="n">using</span><span class="p">:</span> <span class="n">transitionContext</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">animateDismissal</span><span class="p">(</span><span class="n">using</span><span class="p">:</span> <span class="n">transitionContext</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">animatePresentation</span><span class="p">(</span><span class="n">using</span> <span class="n">transitionContext</span><span class="p">:</span> <span class="n">UIViewControllerContextTransitioning</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 表示時のアニメーションを書く</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">func</span> <span class="nf">animateDismissal</span><span class="p">(</span><span class="n">using</span> <span class="n">transitionContext</span><span class="p">:</span> <span class="n">UIViewControllerContextTransitioning</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 削除時のアニメーションを書く</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>これについては興味があればまた勉強する。</p>
 <h2 id="その他の知見">その他の知見</h2>
 <h3 id="computed-property">Computed Property</h3>
 <p>変数xは例えばこんな感じで初期化できる。つまり初期化時に何かしらの処理を行いたい時にそれを<code>{}</code>でまとめて書ける。これは<code>frameOfPresentedViewInContainerView</code>のoverride時に使った。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">y</span> <span class="p">=</span> <span class="mi">10</span>
-<span class="kd">var</span> <span class="nv">x</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nv">t</span> <span class="p">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mf">1.</span><span class="p">..</span><span class="n">y</span> <span class="p">{</span>
-        <span class="n">t</span> <span class="o">+=</span> <span class="n">i</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="n">t</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">y</span> <span class="p">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nv">x</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nv">t</span> <span class="p">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mf">1.</span><span class="p">..</span><span class="n">y</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span> <span class="o">+=</span> <span class="n">i</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">t</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>xにアクセスするたびに毎回計算が行われることに注意(中にprintを入れてみると分かる)。一回のみで良い場合は次のように、Computed Propertyではなくクロージャを使う。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="kd">let</span> <span class="nv">y</span> <span class="p">=</span> <span class="mi">10</span>
-<span class="kd">var</span> <span class="nv">x</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nv">t</span> <span class="p">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mf">1.</span><span class="p">..</span><span class="n">y</span> <span class="p">{</span>
-        <span class="n">t</span> <span class="o">+=</span> <span class="n">i</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="n">t</span>
-<span class="p">}()</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">y</span> <span class="p">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nv">x</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nv">t</span> <span class="p">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mf">1.</span><span class="p">..</span><span class="n">y</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span> <span class="o">+=</span> <span class="n">i</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">t</span>
+</span></span><span class="line"><span class="cl"><span class="p">}()</span></span></span></code></pre></div>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/modality/">Modality - Human Interface Guideline - Apple Developper</a></li>

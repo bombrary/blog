@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>線形回帰メモ 勾配降下法 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/regression-gradient-descent/">
@@ -164,22 +164,22 @@ $$</p>
 $$</p>
 <h2 id="勾配降下法---juliaによる実装">勾配降下法 - Juliaによる実装</h2>
 <p>関連モジュールをインポートし、型のエイリアスを作っておく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
-<span class="k">using</span> <span class="n">LinearAlgebra</span>
-<span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
-</code></pre></div><h3 id="サンプルデータの生成">サンプルデータの生成</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Plots</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="n">LinearAlgebra</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
+</span></span></code></pre></div><h3 id="サンプルデータの生成">サンプルデータの生成</h3>
 <p>前回同様データを生成する関数を作る。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
-
-  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-  <span class="n">y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-
-  <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="勾配の計算">勾配の計算</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="n">y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="勾配の計算">勾配の計算</h3>
 <p>以下の計算をJuliaに翻訳したい。</p>
 <p>$$
 \frac{\partial J(\bm{w})}{\partial w_j}
@@ -218,77 +218,77 @@ X = \begin{pmatrix}
 \end{pmatrix}
 $$</p>
 <p>である。$\bm{a}$ については $\bm{a} = X\bm{w} - \bm{y}$ と書ける。結局、勾配 <code>dJ</code> は次のように計算できる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">dJ</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
-</code></pre></div><h3 id="勾配降下法の実装">勾配降下法の実装</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="n">dJ</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="勾配降下法の実装">勾配降下法の実装</h3>
 <p>勾配法は次のように作る。終了条件は、勾配のノルムが十分小さくなったときとする。</p>
 <p><code>w</code>がステップを経るごとにどう動くのかを見たいため、各ステップにおける<code>w</code>すべてを返却値とする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">1e5</span><span class="p">)</span>
-  <span class="nd">@assert</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-  <span class="n">D</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
-  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
-  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
-  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_step</span>
-
-    <span class="n">dJ</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">norm</span><span class="p">(</span><span class="n">dJ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="k">break</span>
-
-    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dJ</span>
-    <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-  <span class="k">end</span>
-  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="勾配降下法の出力">勾配降下法の出力</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">1e5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@assert</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">D</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_step</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">dJ</span> <span class="o">=</span> <span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">norm</span><span class="p">(</span><span class="n">dJ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="k">break</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dJ</span>
+</span></span><span class="line"><span class="cl">    <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="勾配降下法の出力">勾配降下法の出力</h3>
 <p>実際に使ってみる。コスト関数の地形図も描画してみる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="c"># データの作成とプロット</span>
-  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
-  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
-
-
-  <span class="c"># wの推定</span>
-  <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
-  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
-  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-
-
-  <span class="c"># wを元に直線を描画</span>
-  <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">=</span> <span class="n">extrema</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">plot_y</span> <span class="o">=</span> <span class="n">map</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">)</span>
-  <span class="n">plot!</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">plot_y</span><span class="p">)</span>
-
-  
-  <span class="c"># コスト関数の地形を描画</span>
-  <span class="n">J</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">]</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span>
-    <span class="n">a</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="mf">2.0</span>
-  <span class="k">end</span>
-
-  <span class="n">w0</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">w1</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">p2</span> <span class="o">=</span> <span class="n">contour</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
-
-
-  <span class="c"># 色々なwについてデータを生成し、勾配法のステップごとのwの動きをみる</span>
-  <span class="k">for</span> <span class="p">(</span><span class="n">w_init</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span> <span class="k">in</span> <span class="p">[([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="s">&#34;red&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;green&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;blue&#34;</span><span class="p">)]</span>
-    <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_init</span><span class="p">)</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
-    <span class="n">scatter!</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
-    <span class="n">plot!</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="c"># 2つのグラフを並べて表示</span>
-  <span class="n">plot</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
-<span class="k">end</span>
-
-<span class="c"># main関数を実行</span>
-<span class="n">main</span><span class="p">()</span>
-</code></pre></div><p>REPLで実行。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># データの作成とプロット</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># wの推定</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># wを元に直線を描画</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">=</span> <span class="n">extrema</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot_y</span> <span class="o">=</span> <span class="n">map</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot!</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">plot_y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c"># コスト関数の地形を描画</span>
+</span></span><span class="line"><span class="cl">  <span class="n">J</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">a</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl">    <span class="n">a</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="mf">2.0</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">w0</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w1</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p2</span> <span class="o">=</span> <span class="n">contour</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># 色々なwについてデータを生成し、勾配法のステップごとのwの動きをみる</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">w_init</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span> <span class="k">in</span> <span class="p">[([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="s">&#34;red&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;green&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;blue&#34;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ws</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_init</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scatter!</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">plot!</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># 2つのグラフを並べて表示</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># main関数を実行</span>
+</span></span><span class="line"><span class="cl"><span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div><p>REPLで実行。</p>
 <pre class="cui">
 julia> include("main.jl")
 </pre>
@@ -344,86 +344,86 @@ X &amp;= \begin{pmatrix}
 $$</p>
 <p>と読み替えれば良い。$I_k$ を<code>idcs</code>を書くことにすると、<code>idcs</code>の要素だけ抜き出した<code>X</code>と<code>y</code>は
 それぞれ以下の<code>X1, y1</code>のように書ける。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idcs</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
-<span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">idcs</span><span class="p">]</span>
-</code></pre></div><h3 id="添字をm等分する関数">添字をM等分する関数</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idcs</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">idcs</span><span class="p">]</span>
+</span></span></code></pre></div><h3 id="添字をm等分する関数">添字をM等分する関数</h3>
 <p>$I_k$ ないし <code>idcs</code> の作り方だが、<code>1, 2, ..., N</code>をシャッフルして、$M$ 個ずつ分割すれば良い。
 $M$ 個に分割する関数は以下のように書ける。ただし<code>N</code>が<code>M</code>で割り切れない場合があるため、最後の配列は<code>M</code>個とは限らない。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
-  <span class="n">res</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">}}()</span>
-  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">m</span><span class="o">:</span><span class="n">N</span>
-    <span class="n">push!</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">:</span><span class="n">min</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)])</span>
-  <span class="k">end</span>
-  <span class="n">res</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="ミニバッチ勾配法の実装">ミニバッチ勾配法の実装</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">res</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">}}()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">m</span><span class="o">:</span><span class="n">N</span>
+</span></span><span class="line"><span class="cl">    <span class="n">push!</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">:</span><span class="n">min</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)])</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="n">res</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="ミニバッチ勾配法の実装">ミニバッチ勾配法の実装</h3>
 <p><code>idcs</code>を作る処理と<code>X1, y1</code>を作る処理を追加しただけで、他は勾配法とほとんど変わらない。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">M</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">1e4</span><span class="p">)</span>
-  <span class="nd">@assert</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-  <span class="n">D</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
-  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
-  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
-  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_step</span>
-    <span class="k">for</span> <span class="n">idcs</span> <span class="k">in</span> <span class="n">split</span><span class="p">(</span><span class="n">shuffle</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="p">),</span> <span class="n">M</span><span class="p">)</span>
-      <span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idcs</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
-      <span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">idcs</span><span class="p">]</span>
-      <span class="n">dJ</span> <span class="o">=</span> <span class="n">X1</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X1</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
-      <span class="n">norm</span><span class="p">(</span><span class="n">dJ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="k">break</span>
-      <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dJ</span>
-      <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="ミニバッチ勾配法の出力">ミニバッチ勾配法の出力</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w0</span><span class="p">;</span> <span class="n">M</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="n">max_step</span><span class="o">=</span><span class="mf">1e4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@assert</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">N</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">D</span> <span class="o">=</span> <span class="n">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span> <span class="n">w0</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">max_step</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">idcs</span> <span class="k">in</span> <span class="n">split</span><span class="p">(</span><span class="n">shuffle</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="p">),</span> <span class="n">M</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="n">X1</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idcs</span><span class="p">,</span> <span class="o">:</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">idcs</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="n">dJ</span> <span class="o">=</span> <span class="n">X1</span><span class="o">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">X1</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="n">norm</span><span class="p">(</span><span class="n">dJ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="k">break</span>
+</span></span><span class="line"><span class="cl">      <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">dJ</span>
+</span></span><span class="line"><span class="cl">      <span class="n">push!</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="n">hcat</span><span class="p">(</span><span class="n">ws</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="ミニバッチ勾配法の出力">ミニバッチ勾配法の出力</h3>
 <p>色々な $M$ で試したいので、その部分を関数に分ける。</p>
 <p><strong>(補足)</strong> PlotsのバックエンドがGRのままだとグラフの描画が重かったのでPyPlotに切り替えた。
 しかしPyPlotにするとカラーバーに妙な余白が生まれたため、<code>contour</code>の引数に<code>right_margin=-20mm</code>を指定している。
 もっと良い対処法があるかもしれない。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span><span class="o">.</span><span class="n">PlotMeasures</span>
-<span class="n">pyplot</span><span class="p">()</span>
-
-<span class="k">function</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
-  <span class="c"># コスト関数の地形を描画</span>
-  <span class="n">J</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">]</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span>
-    <span class="n">a</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="mf">2.0</span>
-  <span class="k">end</span>
-  <span class="n">w0</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">w1</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
-  <span class="n">contour!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">right_margin</span><span class="o">=-</span><span class="mi">20</span><span class="n">mm</span><span class="p">)</span>
-
-  <span class="c"># 色々なwについてデータを生成し、勾配法のステップごとのwの動きをみる</span>
-  <span class="k">for</span> <span class="p">(</span><span class="n">w_init</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span> <span class="k">in</span> <span class="p">[([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="s">&#34;red&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;green&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;blue&#34;</span><span class="p">)]</span>
-    <span class="n">ws</span> <span class="o">=</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_init</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">)</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
-    <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
-    <span class="n">plot!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="n">p</span>
-<span class="k">end</span>
-</code></pre></div><p>$M = 1, 10, 50$ の3パターンでバッチ勾配降下法を行い、$\bm{w}$ の軌道を描画する。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Plots</span><span class="o">.</span><span class="n">PlotMeasures</span>
+</span></span><span class="line"><span class="cl"><span class="n">pyplot</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c"># コスト関数の地形を描画</span>
+</span></span><span class="line"><span class="cl">  <span class="n">J</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">)</span> <span class="o">=</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">a</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">-</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl">    <span class="n">a</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="mf">2.0</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w0</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w1</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">contour!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">right_margin</span><span class="o">=-</span><span class="mi">20</span><span class="n">mm</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># 色々なwについてデータを生成し、勾配法のステップごとのwの動きをみる</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">w_init</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span> <span class="k">in</span> <span class="p">[([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="s">&#34;red&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;green&#34;</span><span class="p">),</span> <span class="p">([</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="s">&#34;blue&#34;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ws</span> <span class="o">=</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_init</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scatter!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">plot!</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">ws</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">ws</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">:</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">p</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>$M = 1, 10, 50$ の3パターンでバッチ勾配降下法を行い、$\bm{w}$ の軌道を描画する。
 $M = 1$ の場合は確率的勾配降下法に一致する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="c"># データの作成</span>
-  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
-
-  <span class="n">p1</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-  <span class="n">p2</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-  <span class="n">p3</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-
-  <span class="n">plot</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1800</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
-<span class="k">end</span>
-</code></pre></div><p>$M$ の値が大きくなればなるほど、$\bm{w}$ の軌道が滑らかになっているのが分かる。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># データの作成</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">p1</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p2</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p3</span> <span class="o">=</span> <span class="n">plot_minibatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">plot</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1800</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>$M$ の値が大きくなればなるほど、$\bm{w}$ の軌道が滑らかになっているのが分かる。
 しかし、いずれの場合にも $\bm{w} = (1, 2)$ へ収束していることが分かる。</p>
 <figure><img src="img01.png" width="100%"/>
 </figure>
@@ -475,40 +475,40 @@ $$</p>
 <h2 id="ミニバッチ勾配降下法-juliaによる実装-2">ミニバッチ勾配降下法 Juliaによる実装 (2)</h2>
 <h3 id="サンプルデータの生成-2">サンプルデータの生成 (2)</h3>
 <p>これは前回と同じ。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
-  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
-
-  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-  <span class="n">Phi</span> <span class="o">=</span> <span class="n">similar</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
-    <span class="n">Phi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="n">Phi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
-  <span class="k">end</span>
-  <span class="n">y</span> <span class="o">=</span> <span class="n">Phi</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-
-  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span>
-<span class="k">end</span>
-</code></pre></div><h3 id="勾配法の実行と出力-2">勾配法の実行と出力 (2)</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Phi</span> <span class="o">=</span> <span class="n">similar</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Phi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Phi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="n">y</span> <span class="o">=</span> <span class="n">Phi</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><h3 id="勾配法の実行と出力-2">勾配法の実行と出力 (2)</h3>
 <p>ここでは2次関数 $y = 1 + 2x^2$ からデータを生成し、
 ミニバッチ勾配降下法で $\bm{w}$ を推定してみる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="c"># データの作成</span>
-  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
-  <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
-
-  <span class="n">ws</span> <span class="o">=</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="n">M</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
-  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-  
-  <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">=</span> <span class="n">extrema</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">plot!</span><span class="p">(</span><span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><pre class="cui">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># データの作成</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">ws</span> <span class="o">=</span> <span class="n">minibatch_descent</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="n">M</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span> <span class="n">ws</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="k">end</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">=</span> <span class="n">extrema</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot!</span><span class="p">(</span><span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><pre class="cui">
 julia> include("gradient_descent.jl")
 2-element Vector{Float64}:
  0.9944138112009525

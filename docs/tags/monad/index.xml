@@ -16,7 +16,7 @@
       <description>英語だと &amp;ldquo;bouncing ball programming&amp;rdquo; とか検索すると出てくるやつ。 単にボールが弾むだけなのだが、思ったより勉強になったので書き残す。
 実際のプログラムの動作はGitHub Pagesを参照。
 プロジェクトの初期化 適当なディレクトリを作って、その中でプロジェクトを作成。
-% spago init % spago build  今回は、追加のパッケージは必要なときにspago installコマンドで入れることにする。
+% spago init % spago build 今回は、追加のパッケージは必要なときにspago installコマンドで入れることにする。
 Canvas入門 src/Main.pursを以下のようにする。
 module Main where import Prelude import Data.Maybe (Maybe(..)) import Effect (Effect) import Effect.Console (log) import Graphics.Canvas (CanvasElement, Dimensions) import Graphics.Canvas as Canvas import Math as Math canvasDimen :: Dimensions canvasDimen = { width: 600.0 , height: 600.0 } initCanvas :: CanvasElement -&amp;gt; Effect Unit initCanvas canvas = Canvas.setCanvasDimensions canvas canvasDimen main :: Effect Unit main = Canvas.</description>
     </item>
@@ -30,7 +30,7 @@ module Main where import Prelude import Data.Maybe (Maybe(..)) import Effect (Ef
       <description>PureScriptで配列のシャッフルをしたい。型はこんな感じ。乱数は副作用を伴うため、返り値の型はEffectで包まれる。
 shuffle :: forall a. Array a -&amp;gt; Effect (Array a) アルゴリズムはFisher-Yates ShuffleのModern Algorithmの項の2つ目を利用する。これをさまざまな方法で作成したところ、Functor, Applicative, Monadなどに関連する事項だったり、STモナドの使い方、FFIの使い方だったりが学べたので、備忘のために書く。
 準備 適当なディレクトリでプロジェクトを作成する。今回使うパッケージをインストールする。
-$ spago init $ spago install arrays $ spago install random $ spago install foldable-traversable  方法1: 素直(?)な書き方 ここでは、src/Shuffle.pursに記述する。
+$ spago init $ spago install arrays $ spago install random $ spago install foldable-traversable 方法1: 素直(?)な書き方 ここでは、src/Shuffle.pursに記述する。
 天下り的ではあるが、これから使う関数、型をimportしておく。
 module Shuffle where import Prelude import Effect (Effect) import Data.Array (range, (!!), updateAt, length) import Data.Traversable (for) import Effect.Random (randomInt) import Data.Maybe (maybe) import Data.Foldable (foldr) まずは、「どの添字ととの添字の値を交換するか」という情報をもったデータExchangeIndexと、それを作成する関数exchangeIndiciesを作成する。
 type ExchangeIndex = { i :: Int , j :: Int } exchangeIndicies :: Int -&amp;gt; Effect (Array ExchangeIndex) exchangeIndicies n = for (range 0 (n - 2)) \i -&amp;gt; do j &amp;lt;- randomInt i (n - 1) pure { i, j } 次に、ExchangeIndexの情報を元に配列を交換する関数exchangeを作成。配列の添字が不正だった場合(配列外参照を起こしそうなとき)は!</description>
@@ -45,11 +45,11 @@ type ExchangeIndex = { i :: Int , j :: Int } exchangeIndicies :: Int -&amp;gt; E
       <description>Stateモナドがわからない状態から、ギリギリ分かる状態になった。
 Stateモナドを学習した流れ 結局、具体例を通して学習した。個人的には、いきなりモナドの定義から学習するよりも、たくさんの例を見たり、実際に例を作ってみたりした方が覚えられた。抽象的な概念を理解するためには具体的な概念に触れるべきだ、ということを改めて認識した。
 以下は、自分が行った学習の流れ。Haskell IOモナド 超入門は学習のうえで参考になった。とくに、&amp;gt;&amp;gt;=を漏斗の形に見立てる比喩のおかげで、モナドと関数の組み合わせのイメージがクリアになった。
- Maybeモナド、Listモナドの使い方を理解する。 IOモナドの使い方を理解する。 いくつかのモナドについて、do構文を&amp;gt;&amp;gt;=に書き換えてみる。 Stateモナドの使い方を理解する。 Stateモナドを自作する。  この記事ではStateモナドを自作することをテーマとしているため、ある程度Stateモナドに慣れた人でないとわかりづらいかもしれない。
+Maybeモナド、Listモナドの使い方を理解する。 IOモナドの使い方を理解する。 いくつかのモナドについて、do構文を&amp;gt;&amp;gt;=に書き換えてみる。 Stateモナドの使い方を理解する。 Stateモナドを自作する。 この記事ではStateモナドを自作することをテーマとしているため、ある程度Stateモナドに慣れた人でないとわかりづらいかもしれない。
 Stateの定義 まずはStateを自作する。Stateは、状態 -&amp;gt; (計算結果,次の状態)という関数を内部に持っている。この関数のことを、この記事では「内部関数」「状態付き計算」などと表現する。
 newtype State s a = State (s -&amp;gt; (a, s)) これは本来のStateの定義とは異なることに注意。本来は、StateはStateTを使って実装されている。上のように定義してしまうと、モナド変換子としての機能が利用できない。ただ、そこまで考えると面倒なので、今回はStateを単なる関数のラッパーとして定義した。
 型引数の順番と内部関数が返すタプルの順番が逆なのが微妙に気持ち悪い。これはあくまで推測でしかないが、
- あくまで状態付きの計算なので、重要なのは計算の結果。なので返り値は(a, s)と計算結果を先に書いている。 型引数の順番がs aなのは、Monadにするときに不都合を生じないため。  なのだと思う。
+あくまで状態付きの計算なので、重要なのは計算の結果。なので返り値は(a, s)と計算結果を先に書いている。 型引数の順番がs aなのは、Monadにするときに不都合を生じないため。 なのだと思う。
 余談 Stateモナドがよくわかっていない時は、Stateのことを「状態を持つ型」と勘違いしていた。正しくは、「状態付き計算を持つ型」。Stateは状態を持っているわけでなく、あくまで、「状態を引数にとり、計算結果と次の状態を返す関数」を持っている。なので、初期状態は内部関数の引数として、自分で投入する。
 runStateの定義 レコード構文を使って、runStateを定義する。runStateは、Stateから中身の関数を取り出す関数。
 newtype State s a = State { runState :: s -&amp;gt; (a, s) } 試す 上の定義を踏まえて、次のようにプログラムを書いてみる。以下は、状態を[Int]とする状態付き計算。

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Androidアプリ開発勉強(3) - データの受け渡し | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/android03-dataholding/">
@@ -92,122 +92,122 @@
 </p>
 <h2 id="mainfragmentの設定">MainFragmentの設定</h2>
 <p><code>fragment_main.xml</code>を次のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
-<span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
-    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
-    <span class="na">tools:context=</span><span class="s">&#34;.main.MainFragment&#34;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;data&gt;</span>
-        <span class="nt">&lt;variable</span>
-            <span class="na">name=</span><span class="s">&#34;myMsg&#34;</span>
-            <span class="na">type=</span><span class="s">&#34;com.example.datatest.main.MainFragment.MyMsg&#34;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/data&gt;</span>
-    <span class="nt">&lt;LinearLayout</span>
-        <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
-        <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
-        <span class="na">android:orientation=</span><span class="s">&#34;vertical&#34;</span>
-        <span class="na">android:layout_gravity=</span><span class="s">&#34;center_vertical&#34;</span> <span class="nt">&gt;</span>
-        <span class="nt">&lt;EditText</span>
-            <span class="na">android:id=</span><span class="s">&#34;@+id/edit_text&#34;</span>
-            <span class="na">android:layout_width=</span><span class="s">&#34;wrap_content&#34;</span>
-            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
-            <span class="na">android:hint=</span><span class="s">&#34;@string/hello_blank_fragment&#34;</span>
-            <span class="na">android:layout_gravity=</span><span class="s">&#34;center_horizontal&#34;</span>
-            <span class="na">android:textAlignment=</span><span class="s">&#34;center&#34;</span> <span class="nt">/&gt;</span>
-        <span class="nt">&lt;TextView</span>
-            <span class="na">android:id=</span><span class="s">&#34;@+id/text_view&#34;</span>
-            <span class="na">android:layout_width=</span><span class="s">&#34;wrap_content&#34;</span>
-            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
-            <span class="na">android:text=</span><span class="s">&#34;@={myMsg.text}&#34;</span>
-            <span class="na">android:layout_gravity=</span><span class="s">&#34;center_horizontal&#34;</span>
-            <span class="na">android:textAlignment=</span><span class="s">&#34;center&#34;</span> <span class="nt">/&gt;</span>
-
-        <span class="nt">&lt;Button</span>
-            <span class="na">android:id=</span><span class="s">&#34;@+id/button&#34;</span>
-            <span class="na">android:layout_width=</span><span class="s">&#34;wrap_content&#34;</span>
-            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
-            <span class="na">android:layout_gravity=</span><span class="s">&#34;center_horizontal&#34;</span>
-            <span class="na">android:text=</span><span class="s">&#34;@string/to_reverse_fragment&#34;</span>
-            <span class="na">android:textAllCaps=</span><span class="s">&#34;false&#34;</span> <span class="nt">/&gt;</span>
-
-    <span class="nt">&lt;/LinearLayout&gt;</span>
-
-<span class="nt">&lt;/layout&gt;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">tools:context=</span><span class="s">&#34;.main.MainFragment&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;data&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;variable</span>
+</span></span><span class="line"><span class="cl">            <span class="na">name=</span><span class="s">&#34;myMsg&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">type=</span><span class="s">&#34;com.example.datatest.main.MainFragment.MyMsg&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/data&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;LinearLayout</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:orientation=</span><span class="s">&#34;vertical&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:layout_gravity=</span><span class="s">&#34;center_vertical&#34;</span> <span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;EditText</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:id=</span><span class="s">&#34;@+id/edit_text&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_width=</span><span class="s">&#34;wrap_content&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:hint=</span><span class="s">&#34;@string/hello_blank_fragment&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_gravity=</span><span class="s">&#34;center_horizontal&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:textAlignment=</span><span class="s">&#34;center&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;TextView</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:id=</span><span class="s">&#34;@+id/text_view&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_width=</span><span class="s">&#34;wrap_content&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:text=</span><span class="s">&#34;@={myMsg.text}&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_gravity=</span><span class="s">&#34;center_horizontal&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:textAlignment=</span><span class="s">&#34;center&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;Button</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:id=</span><span class="s">&#34;@+id/button&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_width=</span><span class="s">&#34;wrap_content&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_gravity=</span><span class="s">&#34;center_horizontal&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:text=</span><span class="s">&#34;@string/to_reverse_fragment&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:textAllCaps=</span><span class="s">&#34;false&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/LinearLayout&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/layout&gt;</span></span></span></code></pre></div>
 <p>重要なのは以下の部分で、これは<code>MainFragment.kt</code>で定義された<code>MyMsg</code>というクラスのインスタンスをこのファイルでは<code>myMsg</code>として扱う、という意味。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">    <span class="nt">&lt;data&gt;</span>
-        <span class="nt">&lt;variable</span>
-            <span class="na">name=</span><span class="s">&#34;myMsg&#34;</span>
-            <span class="na">type=</span><span class="s">&#34;com.example.datatest.main.MainFragment.MyMsg&#34;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/data&gt;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl">    <span class="nt">&lt;data&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;variable</span>
+</span></span><span class="line"><span class="cl">            <span class="na">name=</span><span class="s">&#34;myMsg&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">type=</span><span class="s">&#34;com.example.datatest.main.MainFragment.MyMsg&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/data&gt;</span></span></span></code></pre></div>
 <p>実際には、<code>@={variableで定義したname.メンバ}</code>という形でアクセスする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">        <span class="nt">&lt;TextView</span>
-            <span class="err">...</span>
-            <span class="na">android:text=</span><span class="s">&#34;@={myMsg.text}&#34;</span>
-            <span class="err">...</span> <span class="nt">/&gt;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl">        <span class="nt">&lt;TextView</span>
+</span></span><span class="line"><span class="cl">            <span class="err">...</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:text=</span><span class="s">&#34;@={myMsg.text}&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="err">...</span> <span class="nt">/&gt;</span></span></span></code></pre></div>
 <p>さて<code>MyMsg</code>というクラスを作っていないので、それも兼ねて<code>MainFragment.kt</code>の編集をする。以下のようにする。</p>
 <p><code>addTextChangedListener</code>を用いると、<code>EditText</code>の変化を捕捉できる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">MainFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">data</span> <span class="k">class</span> <span class="nc">MyMsg</span><span class="p">(</span><span class="k">var</span> <span class="py">text</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentMainBinding</span>
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
-        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
-        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
-    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
-        <span class="c1">// Inflate the layout for this fragment
-</span><span class="c1"></span>        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_main</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
-        <span class="n">binding</span><span class="p">.</span><span class="n">myMsg</span> <span class="p">=</span> <span class="n">MyMsg</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">)</span>
-        <span class="n">binding</span><span class="p">.</span><span class="n">editText</span><span class="p">.</span><span class="n">addTextChangedListener</span> <span class="p">{</span>
-            <span class="n">binding</span><span class="p">.</span><span class="n">myMsg</span><span class="o">?.</span><span class="n">text</span> <span class="p">=</span> <span class="s2">&#34;String: &#34;</span> <span class="p">+</span> <span class="k">it</span><span class="p">.</span><span class="n">toString</span><span class="p">()</span>
-            <span class="n">binding</span><span class="p">.</span><span class="n">invalidateAll</span><span class="p">()</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MainFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">data</span> <span class="k">class</span> <span class="nc">MyMsg</span><span class="p">(</span><span class="k">var</span> <span class="py">text</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentMainBinding</span>
+</span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
+</span></span><span class="line"><span class="cl">    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Inflate the layout for this fragment
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_main</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span><span class="p">.</span><span class="n">myMsg</span> <span class="p">=</span> <span class="n">MyMsg</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span><span class="p">.</span><span class="n">editText</span><span class="p">.</span><span class="n">addTextChangedListener</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">binding</span><span class="p">.</span><span class="n">myMsg</span><span class="o">?.</span><span class="n">text</span> <span class="p">=</span> <span class="s2">&#34;String: &#34;</span> <span class="p">+</span> <span class="k">it</span><span class="p">.</span><span class="n">toString</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">binding</span><span class="p">.</span><span class="n">invalidateAll</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>Kotlinでは、メンバ変数のみで作られたクラスを次のように簡潔に書ける。C言語におけるstructみたいなもの。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">data</span> <span class="k">class</span> <span class="nc">MyMsg</span><span class="p">(</span><span class="k">var</span> <span class="py">text</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">data</span> <span class="k">class</span> <span class="nc">MyMsg</span><span class="p">(</span><span class="k">var</span> <span class="py">text</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span></span></span></code></pre></div>
 <p><code>main_fragment.xml</code>で定義した<code>variable</code>要素は以下の部分に対応している。<code>name</code>属性が<code>myMsg</code>だったので<code>binding.myMsg</code>でアクセスする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">binding</span><span class="p">.</span><span class="n">myMsg</span> <span class="p">=</span> <span class="n">MyMsg</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="n">binding</span><span class="p">.</span><span class="n">myMsg</span> <span class="p">=</span> <span class="n">MyMsg</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">)</span></span></span></code></pre></div>
 <h3 id="寄り道-apply関数の利用">(寄り道) apply関数の利用</h3>
 <p><code>apply</code>を利用すると、<code>binding.[メンバ]</code>という書式が単に<code>[メンバ]</code>だけで記述できるようになる。このような関数を「スコープ関数」と呼ぶ。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">MainFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">data</span> <span class="k">class</span> <span class="nc">MyMsg</span><span class="p">(</span><span class="k">var</span> <span class="py">text</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentMainBinding</span>
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
-        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
-        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
-    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
-        <span class="c1">// Inflate the layout for this fragment
-</span><span class="c1"></span>        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_main</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
-        <span class="n">binding</span><span class="p">.</span><span class="n">apply</span> <span class="p">{</span>
-            <span class="n">myMsg</span> <span class="p">=</span> <span class="n">MyMsg</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">)</span>
-            <span class="n">editText</span><span class="p">.</span><span class="n">addTextChangedListener</span> <span class="p">{</span>
-                <span class="n">myMsg</span><span class="o">?.</span><span class="n">text</span> <span class="p">=</span> <span class="s2">&#34;String: &#34;</span> <span class="p">+</span> <span class="k">it</span><span class="p">.</span><span class="n">toString</span><span class="p">()</span>
-                <span class="n">invalidateAll</span><span class="p">()</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MainFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">data</span> <span class="k">class</span> <span class="nc">MyMsg</span><span class="p">(</span><span class="k">var</span> <span class="py">text</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentMainBinding</span>
+</span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
+</span></span><span class="line"><span class="cl">    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Inflate the layout for this fragment
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_main</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span><span class="p">.</span><span class="n">apply</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">myMsg</span> <span class="p">=</span> <span class="n">MyMsg</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">editText</span><span class="p">.</span><span class="n">addTextChangedListener</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">myMsg</span><span class="o">?.</span><span class="n">text</span> <span class="p">=</span> <span class="s2">&#34;String: &#34;</span> <span class="p">+</span> <span class="k">it</span><span class="p">.</span><span class="n">toString</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                <span class="n">invalidateAll</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h3 id="とりあえずのactivity_mainxml">とりあえずのactivity_main.xml</h3>
 <p><code>MainFragment</code>が正しく機能しているかどうか確認したいので、<code>activity_main.xml</code>を編集する。Navigationと連携させるときに書き直す。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
-<span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
-    <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
-    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
-    <span class="na">tools:context=</span><span class="s">&#34;.MainActivity&#34;</span><span class="nt">&gt;</span>
-
-    <span class="nt">&lt;LinearLayout</span>
-        <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
-        <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
-        <span class="na">android:layout_gravity=</span><span class="s">&#34;center_vertical&#34;</span>
-        <span class="na">android:orientation=</span><span class="s">&#34;vertical&#34;</span><span class="nt">&gt;</span>
-
-        <span class="nt">&lt;fragment</span>
-            <span class="na">android:id=</span><span class="s">&#34;@+id/myNavHostFragment&#34;</span>
-            <span class="na">android:name=</span><span class="s">&#34;com.example.datatest.main.MainFragment&#34;</span>
-            <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
-            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/LinearLayout&gt;</span>
-<span class="nt">&lt;/layout&gt;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;layout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">tools:context=</span><span class="s">&#34;.MainActivity&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;LinearLayout</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:layout_gravity=</span><span class="s">&#34;center_vertical&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:orientation=</span><span class="s">&#34;vertical&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;fragment</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:id=</span><span class="s">&#34;@+id/myNavHostFragment&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:name=</span><span class="s">&#34;com.example.datatest.main.MainFragment&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:layout_height=</span><span class="s">&#34;wrap_content&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/LinearLayout&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/layout&gt;</span></span></span></code></pre></div>
 <p>この時点でアプリを起動してみると、以下のようになる。EditTextに<code>abcd</code>を入力すると、その下に<code>String: abcd</code>と出力される 。</p>
 <figure><img src="./sc02.png" width="40%"/>
 </figure>
@@ -215,110 +215,110 @@
 <h2 id="navigationの作成">Navigationの作成</h2>
 <p>とりあえず遷移できるところまで作る。</p>
 <p><code>fragment_reverse.xml</code>の内容を以下の通りにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
-<span class="nt">&lt;FrameLayout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
-    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
-    <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
-    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
-    <span class="na">tools:context=</span><span class="s">&#34;.reverse.ReverseFragment&#34;</span><span class="nt">&gt;</span>
-
-    <span class="nt">&lt;TextView</span>
-        <span class="na">android:id=</span><span class="s">&#34;@+id/reverse_text_view&#34;</span>
-        <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
-        <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
-        <span class="na">android:text=</span><span class="s">&#34;@string/hello_blank_fragment&#34;</span> <span class="nt">/&gt;</span>
-
-<span class="nt">&lt;/FrameLayout&gt;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;FrameLayout</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">tools:context=</span><span class="s">&#34;.reverse.ReverseFragment&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;TextView</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:id=</span><span class="s">&#34;@+id/reverse_text_view&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:layout_width=</span><span class="s">&#34;match_parent&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:layout_height=</span><span class="s">&#34;match_parent&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:text=</span><span class="s">&#34;@string/hello_blank_fragment&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/FrameLayout&gt;</span></span></span></code></pre></div>
 <p><code>ReverseFragment.kt</code>については、とりあえず次のようにしておく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">ReverseFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentReverseBinding</span>
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
-        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
-        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
-    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
-        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_reverse</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ReverseFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentReverseBinding</span>
+</span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
+</span></span><span class="line"><span class="cl">    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_reverse</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>NavigationのResource Fileを作成する(詳しいことは(2)の記事で話した通り)。次に、<code>res/navigation/navigation.xml</code>の内容を以下の通りにする。<code>MainFragment</code>から<code>ReverseFragment</code>へ接続する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
-<span class="nt">&lt;navigation</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
-    <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
-    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
-    <span class="na">android:id=</span><span class="s">&#34;@+id/navigation.xml&#34;</span>
-    <span class="na">app:startDestination=</span><span class="s">&#34;@id/mainFragment&#34;</span><span class="nt">&gt;</span>
-
-    <span class="nt">&lt;fragment</span>
-        <span class="na">android:id=</span><span class="s">&#34;@+id/mainFragment&#34;</span>
-        <span class="na">android:name=</span><span class="s">&#34;com.example.datatest.main.MainFragment&#34;</span>
-        <span class="na">android:label=</span><span class="s">&#34;fragment_main&#34;</span>
-        <span class="na">tools:layout=</span><span class="s">&#34;@layout/fragment_main&#34;</span> <span class="nt">&gt;</span>
-        <span class="nt">&lt;action</span>
-            <span class="na">android:id=</span><span class="s">&#34;@+id/action_mainFragment_to_reverseFragment&#34;</span>
-            <span class="na">app:destination=</span><span class="s">&#34;@id/reverseFragment&#34;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/fragment&gt;</span>
-    <span class="nt">&lt;fragment</span>
-        <span class="na">android:id=</span><span class="s">&#34;@+id/reverseFragment&#34;</span>
-        <span class="na">android:name=</span><span class="s">&#34;com.example.datatest.reverse.ReverseFragment&#34;</span>
-        <span class="na">android:label=</span><span class="s">&#34;fragment_reverse&#34;</span>
-        <span class="na">tools:layout=</span><span class="s">&#34;@layout/fragment_reverse&#34;</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/navigation&gt;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;navigation</span> <span class="na">xmlns:android=</span><span class="s">&#34;http://schemas.android.com/apk/res/android&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">xmlns:app=</span><span class="s">&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">xmlns:tools=</span><span class="s">&#34;http://schemas.android.com/tools&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">android:id=</span><span class="s">&#34;@+id/navigation.xml&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">app:startDestination=</span><span class="s">&#34;@id/mainFragment&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;fragment</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:id=</span><span class="s">&#34;@+id/mainFragment&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:name=</span><span class="s">&#34;com.example.datatest.main.MainFragment&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:label=</span><span class="s">&#34;fragment_main&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">tools:layout=</span><span class="s">&#34;@layout/fragment_main&#34;</span> <span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;action</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:id=</span><span class="s">&#34;@+id/action_mainFragment_to_reverseFragment&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">app:destination=</span><span class="s">&#34;@id/reverseFragment&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/fragment&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;fragment</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:id=</span><span class="s">&#34;@+id/reverseFragment&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:name=</span><span class="s">&#34;com.example.datatest.reverse.ReverseFragment&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:label=</span><span class="s">&#34;fragment_reverse&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">tools:layout=</span><span class="s">&#34;@layout/fragment_reverse&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/navigation&gt;</span></span></span></code></pre></div>
 <p><code>MainFragment.kt</code>の<code>binding.apply { ... }</code>の部分を以下のように修正する。Buttonを押した時に遷移する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">binding</span><span class="p">.</span><span class="n">apply</span> <span class="p">{</span>
-    <span class="n">myMsg</span> <span class="p">=</span> <span class="n">MyMsg</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">)</span>
-    <span class="n">editText</span><span class="p">.</span><span class="n">addTextChangedListener</span> <span class="p">{</span>
-        <span class="n">myMsg</span><span class="o">?.</span><span class="n">text</span> <span class="p">=</span> <span class="s2">&#34;String: &#34;</span> <span class="p">+</span> <span class="k">it</span><span class="p">.</span><span class="n">toString</span><span class="p">()</span>
-        <span class="n">invalidateAll</span><span class="p">()</span>
-    <span class="p">}</span>
-    <span class="n">button</span><span class="p">.</span><span class="n">setOnClickListener</span> <span class="p">{</span>
-        <span class="k">it</span><span class="p">.</span><span class="n">findNavController</span><span class="p">().</span><span class="n">navigate</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">action_mainFragment_to_reverseFragment</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="n">binding</span><span class="p">.</span><span class="n">apply</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">myMsg</span> <span class="p">=</span> <span class="n">MyMsg</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">editText</span><span class="p">.</span><span class="n">addTextChangedListener</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myMsg</span><span class="o">?.</span><span class="n">text</span> <span class="p">=</span> <span class="s2">&#34;String: &#34;</span> <span class="p">+</span> <span class="k">it</span><span class="p">.</span><span class="n">toString</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">invalidateAll</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">button</span><span class="p">.</span><span class="n">setOnClickListener</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">it</span><span class="p">.</span><span class="n">findNavController</span><span class="p">().</span><span class="n">navigate</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">action_mainFragment_to_reverseFragment</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="gradleの設定">Gradleの設定</h2>
 <h3 id="safe-argsの有効化">Safe Argsの有効化</h3>
 <p>異なるFragment間でデータのやり取りをする際、以前はBundleという形式で行っていたらしい。現在は、型安全な状態でデータを受け渡すことができるSafe Argsという仕組みがあるので、そちらを利用する。</p>
 <p><code>build.gradle(Project: ...)</code>の<code>buildscript-dependencies</code>に以下の<code>classpath</code>を追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">buildscript</span> <span class="o">{</span>
-    <span class="o">...</span>
-    <span class="n">dependencies</span> <span class="o">{</span>
-        <span class="o">...</span>
-        <span class="n">classpath</span> <span class="s2">&#34;androidx.navigation:navigation-safe-args-gradle-plugin:2.1.0&#34;</span>
-        <span class="o">...</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="line"><span class="cl"><span class="n">buildscript</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="o">...</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dependencies</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="o">...</span>
+</span></span><span class="line"><span class="cl">        <span class="n">classpath</span> <span class="s2">&#34;androidx.navigation:navigation-safe-args-gradle-plugin:2.1.0&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">...</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
 <p><code>build.gradle(Module: app)</code>の先頭の<code>apply ...</code>の行に、さらに追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="o">...</span>
-<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s2">&#34;androidx.navigation.safeargs&#34;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="line"><span class="cl"><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s2">&#34;androidx.navigation.safeargs&#34;</span></span></span></code></pre></div>
 <p>これを追加すると、例えば<code>navigation.xml</code>で指定していた<code>MainFragment</code>の<code>action</code>要素は、<code>MainFragmentDirections</code>のメンバ変数としてアクセスできるようになる。例えば、<code>action_mainFragment_to_reverseFragment</code>というidの<code>action</code>は<code>MainFragmentDirections.actionMainFragmentToReverseFragment()</code>としてアクセスできる。これは、Fragment遷移時にデータを渡したい時に必要になる。</p>
 <h3 id="lifecycle-extentionの有効化">lifecycle extentionの有効化</h3>
 <p><code>build.gradle(Module: app)</code>の先頭の<code>dependencies { ... }</code>の行に、さらに追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">dependencies</span> <span class="o">{</span>
-  <span class="o">...</span>
-  <span class="n">implementation</span> <span class="s2">&#34;androidx.lifecycle:lifecycle-extensions:2.1.0&#34;</span>
-<span class="o">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="line"><span class="cl"><span class="n">dependencies</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="o">...</span>
+</span></span><span class="line"><span class="cl">  <span class="n">implementation</span> <span class="s2">&#34;androidx.lifecycle:lifecycle-extensions:2.1.0&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
 <p>これは<code>ViewModelProviders</code>を利用するために必要になる。</p>
 <h2 id="データを渡す">データを渡す</h2>
 <h3 id="受け渡すデータの設定">受け渡すデータの設定</h3>
 <p><code>navigation.xml</code>の、<code>ReverseFragment</code>の部分を以下のように編集する。</p>
 <p>ここでは、<code>MainFragment</code>から<code>ReverseFragment</code>へ、値<code>str</code>を渡すことを考える。このとき、受け取り手に<code>argument</code>要素を追加する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml">    <span class="nt">&lt;fragment</span>
-        <span class="na">android:id=</span><span class="s">&#34;@+id/reverseFragment&#34;</span>
-        <span class="na">android:name=</span><span class="s">&#34;com.example.datatest.reverse.ReverseFragment&#34;</span>
-        <span class="na">android:label=</span><span class="s">&#34;fragment_reverse&#34;</span>
-        <span class="na">tools:layout=</span><span class="s">&#34;@layout/fragment_reverse&#34;</span> <span class="nt">&gt;</span>
-        <span class="nt">&lt;argument</span>
-            <span class="na">android:name=</span><span class="s">&#34;str&#34;</span>
-            <span class="na">android:defaultValue=</span><span class="s">&#34;0&#34;</span>
-            <span class="na">app:argType=</span><span class="s">&#34;string&#34;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/fragment&gt;</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl">    <span class="nt">&lt;fragment</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:id=</span><span class="s">&#34;@+id/reverseFragment&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:name=</span><span class="s">&#34;com.example.datatest.reverse.ReverseFragment&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">android:label=</span><span class="s">&#34;fragment_reverse&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">tools:layout=</span><span class="s">&#34;@layout/fragment_reverse&#34;</span> <span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;argument</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:name=</span><span class="s">&#34;str&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">android:defaultValue=</span><span class="s">&#34;0&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="na">app:argType=</span><span class="s">&#34;string&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/fragment&gt;</span></span></span></code></pre></div>
 <p><strong>編集し終えたら、Rebuildを行う</strong>。僕の環境の場合、これをやらないとあとで説明する<code>action.str</code>が解決されなかった。</p>
 <h3 id="データを渡す処理">データを渡す処理</h3>
 <p><code>MainFragment.kt</code>の<code>button.setOnClickListener</code>の部分を以下のように編集する。<code>MainFragmentDirections.actionMainFragmentToReverseFragment()</code>で<code>action</code>を取得し、<code>action.str = 値</code>で値を渡している。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">button</span><span class="p">.</span><span class="n">setOnClickListener</span> <span class="p">{</span>
-    <span class="k">val</span> <span class="py">action</span> <span class="p">=</span> <span class="n">MainFragmentDirections</span><span class="p">.</span><span class="n">actionMainFragmentToReverseFragment</span><span class="p">()</span>
-    <span class="n">action</span><span class="p">.</span><span class="n">str</span> <span class="p">=</span> <span class="n">editText</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="n">toString</span><span class="p">()</span>
-    <span class="k">it</span><span class="p">.</span><span class="n">findNavController</span><span class="p">().</span><span class="n">navigate</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="n">button</span><span class="p">.</span><span class="n">setOnClickListener</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">val</span> <span class="py">action</span> <span class="p">=</span> <span class="n">MainFragmentDirections</span><span class="p">.</span><span class="n">actionMainFragmentToReverseFragment</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">action</span><span class="p">.</span><span class="n">str</span> <span class="p">=</span> <span class="n">editText</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="n">toString</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">it</span><span class="p">.</span><span class="n">findNavController</span><span class="p">().</span><span class="n">navigate</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <h2 id="寄り道viewmodelの基礎">(寄り道)ViewModelの基礎</h2>
 <p>Android Kotlin Fundamentals Course05-1では、<code>ViewModel</code>と<code>ViewModelFactory</code>を作り、それを利用してデータを受け取っていた。今回のような小規模なアプリだと、この方法はやや大げさな気がするが、とりあえずこのチュートリアル通りの方法で作ることにする。</p>
 <h3 id="そもそもviewmodelとは">そもそもViewModelとは</h3>
@@ -327,25 +327,25 @@
 <h3 id="viewmodelを試しに作ってみる">ViewModelを試しに作ってみる</h3>
 <p><code>ReverseFragment.kt</code>の内容を以下のようにする。</p>
 <p><code>TestViewModel</code>は<code>ViewModel</code>を継承している。<code>TestViewModel</code>のインスタンスを取得するために、<code>ViewModelProviders</code>を利用する。<code>ViewModelProviders</code>を介せず直接<code>TestViewModel</code>をインスタンス化すれば良いのでは？と思ったが、それだと恐らくアプリがViewModelの存在を検知してくれないのだと思う(つまりViewの再生成のときにデータを保持してくれない)。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">TestViewModel</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="py">name</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s2">&#34;Taro&#34;</span>
-    <span class="k">var</span> <span class="py">age</span><span class="p">:</span> <span class="n">Int</span> <span class="p">=</span> <span class="m">123</span>
-<span class="p">}</span>
-
-<span class="k">class</span> <span class="nc">ReverseFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModel</span><span class="p">:</span> <span class="n">TestViewModel</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentReverseBinding</span>
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
-        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
-        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
-    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
-        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_reverse</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
-        <span class="n">viewModel</span> <span class="p">=</span> <span class="n">ViewModelProviders</span><span class="p">.</span><span class="n">of</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
-            <span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">TestViewModel</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">)</span>
-        <span class="n">binding</span><span class="p">.</span><span class="n">reverseTextView</span><span class="p">.</span><span class="n">text</span> <span class="p">=</span> <span class="n">viewModel</span><span class="p">.</span><span class="n">name</span>
-        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TestViewModel</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">var</span> <span class="py">name</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s2">&#34;Taro&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">var</span> <span class="py">age</span><span class="p">:</span> <span class="n">Int</span> <span class="p">=</span> <span class="m">123</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ReverseFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModel</span><span class="p">:</span> <span class="n">TestViewModel</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentReverseBinding</span>
+</span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
+</span></span><span class="line"><span class="cl">    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_reverse</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">viewModel</span> <span class="p">=</span> <span class="n">ViewModelProviders</span><span class="p">.</span><span class="n">of</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">TestViewModel</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span><span class="p">.</span><span class="n">reverseTextView</span><span class="p">.</span><span class="n">text</span> <span class="p">=</span> <span class="n">viewModel</span><span class="p">.</span><span class="n">name</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>これでアプリを起動すると、&ldquo;To ReverseFragment&quot;ボタンを押すと&quot;Taro&quot;と書かれたFragmentに遷移する。</p>
 <figure><img src="./sc03.png" width="40%"/>
 </figure>
@@ -356,44 +356,44 @@
 <p><code>ReverseFragmentArgs.fromBundle(arguments!!).str</code>で、<code>ReverseFragment</code>で設定した<code>argument</code>(<code>android:name:str</code>)にアクセスできる。この値を<code>ReverseViewModel</code>のコンストラクタの初期値として設定しよう。</p>
 <h3 id="reverseviewmodelの作成">ReverseViewModelの作成</h3>
 <p><code>reverse/ReverseViewModel.kt</code>を作成して、内容は次のようにする。受け取る予定の<code>str</code>をコンストラクタ引数として設定する。<code>reverseStr</code>は反転後の文字列とする</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">com.example.datatest.reverse</span>
-
-<span class="k">import</span> <span class="nn">androidx.lifecycle.ViewModel</span>
-
-<span class="k">class</span> <span class="nc">ReverseViewModel</span><span class="p">(</span><span class="k">private</span> <span class="k">val</span> <span class="py">str</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="py">reverseStr</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="n">str</span><span class="p">.</span><span class="n">reversed</span><span class="p">()</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">package</span> <span class="nn">com.example.datatest.reverse</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">import</span> <span class="nn">androidx.lifecycle.ViewModel</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ReverseViewModel</span><span class="p">(</span><span class="k">private</span> <span class="k">val</span> <span class="py">str</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">ViewModel</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">var</span> <span class="py">reverseStr</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="n">str</span><span class="p">.</span><span class="n">reversed</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>ViewModelを初期化するときはViewModelFactoryを経由しなければならない。<code>reverse/ReverseViewModelFactory.kt</code>を作成して、内容は次のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">com.example.datatest.reverse</span>
-
-<span class="k">import</span> <span class="nn">androidx.lifecycle.ViewModel</span>
-<span class="k">import</span> <span class="nn">androidx.lifecycle.ViewModelProvider</span>
-
-<span class="k">class</span> <span class="nc">ReverseViewModelFactory</span><span class="p">(</span><span class="k">private</span> <span class="k">val</span> <span class="py">str</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">ViewModelProvider</span><span class="p">.</span><span class="n">Factory</span> <span class="p">{</span>
-    <span class="k">override</span> <span class="k">fun</span> <span class="p">&lt;</span><span class="nc">T</span> <span class="p">:</span> <span class="nc">ViewModel</span><span class="p">?&gt;</span> <span class="nf">create</span><span class="p">(</span><span class="n">modelClass</span><span class="p">:</span> <span class="n">Class</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;):</span> <span class="n">T</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">modelClass</span><span class="p">.</span><span class="n">isAssignableFrom</span><span class="p">(</span><span class="n">ReverseViewModel</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="n">ReverseViewModel</span><span class="p">(</span><span class="n">str</span><span class="p">)</span> <span class="k">as</span> <span class="n">T</span>
-        <span class="p">}</span>
-        <span class="k">throw</span> <span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s2">&#34;Unknown ViewModel class&#34;</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">package</span> <span class="nn">com.example.datatest.reverse</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">import</span> <span class="nn">androidx.lifecycle.ViewModel</span>
+</span></span><span class="line"><span class="cl"><span class="k">import</span> <span class="nn">androidx.lifecycle.ViewModelProvider</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ReverseViewModelFactory</span><span class="p">(</span><span class="k">private</span> <span class="k">val</span> <span class="py">str</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">ViewModelProvider</span><span class="p">.</span><span class="n">Factory</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">fun</span> <span class="p">&lt;</span><span class="nc">T</span> <span class="p">:</span> <span class="nc">ViewModel</span><span class="p">?&gt;</span> <span class="nf">create</span><span class="p">(</span><span class="n">modelClass</span><span class="p">:</span> <span class="n">Class</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;):</span> <span class="n">T</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">modelClass</span><span class="p">.</span><span class="n">isAssignableFrom</span><span class="p">(</span><span class="n">ReverseViewModel</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">ReverseViewModel</span><span class="p">(</span><span class="n">str</span><span class="p">)</span> <span class="k">as</span> <span class="n">T</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">throw</span> <span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s2">&#34;Unknown ViewModel class&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p><code>reverse/ReverseFragment.kt</code>を以下のように編集する。<code>ViewModelProviders.of</code>の第2引数に<code>ViewModelFactory</code>を指定する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">class</span> <span class="nc">ReverseFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModel</span><span class="p">:</span> <span class="n">ReverseViewModel</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModelFactory</span><span class="p">:</span> <span class="n">ReverseViewModelFactory</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentReverseBinding</span>
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
-        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
-        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
-    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
-        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_reverse</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
-        <span class="n">viewModelFactory</span> <span class="p">=</span> <span class="n">ReverseViewModelFactory</span><span class="p">(</span><span class="n">ReverseFragmentArgs</span><span class="p">.</span><span class="n">fromBundle</span><span class="p">(</span><span class="n">arguments</span><span class="o">!!</span><span class="p">).</span><span class="n">str</span><span class="p">)</span>
-        <span class="n">viewModel</span> <span class="p">=</span> <span class="n">ViewModelProviders</span><span class="p">.</span><span class="n">of</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">viewModelFactory</span><span class="p">)</span>
-            <span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">ReverseViewModel</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">)</span>
-        <span class="n">binding</span><span class="p">.</span><span class="n">reverseTextView</span><span class="p">.</span><span class="n">text</span> <span class="p">=</span> <span class="n">viewModel</span><span class="p">.</span><span class="n">reverseStr</span>
-        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ReverseFragment</span> <span class="p">:</span> <span class="n">Fragment</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModel</span><span class="p">:</span> <span class="n">ReverseViewModel</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">viewModelFactory</span><span class="p">:</span> <span class="n">ReverseViewModelFactory</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">FragmentReverseBinding</span>
+</span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateView</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
+</span></span><span class="line"><span class="cl">    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_reverse</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">viewModelFactory</span> <span class="p">=</span> <span class="n">ReverseViewModelFactory</span><span class="p">(</span><span class="n">ReverseFragmentArgs</span><span class="p">.</span><span class="n">fromBundle</span><span class="p">(</span><span class="n">arguments</span><span class="o">!!</span><span class="p">).</span><span class="n">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">viewModel</span> <span class="p">=</span> <span class="n">ViewModelProviders</span><span class="p">.</span><span class="n">of</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">viewModelFactory</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">ReverseViewModel</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span><span class="p">.</span><span class="n">reverseTextView</span><span class="p">.</span><span class="n">text</span> <span class="p">=</span> <span class="n">viewModel</span><span class="p">.</span><span class="n">reverseStr</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p>アプリを起動する。EditTextに文字列を入力して&quot;To ReverseFragment&quot;ボタンを押すと、遷移後のFragmentではその逆順のものが出力される。</p>
 <figure style="display:flex;">
   <img src="./sc04.png" style="width: 40%; height: 100%; margin: 0 10px;">

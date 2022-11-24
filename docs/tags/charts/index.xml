@@ -14,8 +14,8 @@
       
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/</guid>
       <description>今度は外部ライブラリChartsを利用して、棒グラフを作成してみる。
-目標  値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる  1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
- ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。  その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。
+目標 値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる 1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
+ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。 その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。
 Chartsのインストール まず、CocoaPodsがインストールされていることが前提。
 プロジェクトフォルダで以下のコマンドを実行。
 $ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。

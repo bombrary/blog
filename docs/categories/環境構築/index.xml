@@ -22,9 +22,9 @@ homebrewの公式サイトのインストールを参照。
 TeXLive(MacTeX)のインストール TeXLiveの説明についてはWikiを参照。TeX関連のあらゆるパッケージやソフトの詰め合わせ。そのMac版がMacTeX。
 MacTeXやそのインストール方法については、Wikiを参照。homebrewをインストールしたので、次のコマンドでインストールできる。以下はmactex-no-guiとしているが、もしguiアプリも入れたい場合はmactexとする。どんなguiアプリが入るのかについてはWikiを参照。
 かなり巨大なファイル群のため、インストールにかなり時間がかかった気がする。
-$ brew cask install mactex-no-gui $ sudo tlmgr update --self --all $ sudo tlmgr paper a4  念のため、Terminalを再起動しておく。
+$ brew cask install mactex-no-gui $ sudo tlmgr update --self --all $ sudo tlmgr paper a4 念のため、Terminalを再起動しておく。
 Skimのインストール SkimとはPDFビュワーの一種で、PDFの自動リロードを行ってくれる。こちらもhomebrewでインストールできる。
-$ brew cask install Skim  起動して、環境設定を開く。「同期」タブに移動して、「ファイルの変更をチェック」と「自動的にリロードする」にチェックを入れておく。
+$ brew cask install Skim 起動して、環境設定を開く。「同期」タブに移動して、「ファイルの変更をチェック」と「自動的にリロードする」にチェックを入れておく。
 latexmkの設定 後でインストールするVimのプラグイン(vimtex)がlatexmkを利用するので、設定しておく。
 こちらのページは、latexmkについて分かりやすく説明してくれているので見ておくと良い。
 ~/.latexmkrcを作成し、内容を以下のようにする。これは上の参考サイトの引用。

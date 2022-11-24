@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>線形回帰メモ 最小二乗法 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/regression-lstsq/">
@@ -348,11 +348,10 @@ scikit-learnの<a href="https://scikit-learn.org/stable/modules/generated/sklear
 を使えば良い。scikit-learnのJulia版に<a href="https://scikitlearnjl.readthedocs.io/en/latest/">ScikitLearn.jl</a>がある(内部でscikit-learnを呼び出している模様)ので、
 Juliaでも同じことができる。</p>
 <p>関連モジュールをインポートし、型のエイリアスを作っておく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">using</span> <span class="n">Plots</span>
-<span class="k">using</span> <span class="n">LinearAlgebra</span>
-<span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
-
-</code></pre></div><h3 id="サンプルデータの作成">サンプルデータの作成</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Plots</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="n">LinearAlgebra</span>
+</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Distributions</span>
+</span></span></code></pre></div><h3 id="サンプルデータの作成">サンプルデータの作成</h3>
 <p>ここではデータセットは使わず、データは自前で作る。
 ある $\bm{w}$ で作ったデータを元に $\bm{w}_0$ を計算して、これが $\bm{w}$ と近い値なのかどうかを確認する。</p>
 <p>まず、適当なデータを作成する関数を作る。 $\bm{w}$ が与えられたとすると、作るデータ $(\bm{x}, y)$ は</p>
@@ -364,29 +363,29 @@ $\bm{x} = (1, x_1, x_2, \ldots, x_D)$ の最初の成分以外は一様分布乱
 を計算できる。</p>
 <p>$\bm{w}$ を元に $N$ 点のデータを作成する関数は以下のようになる。
 少ないデータで結果を出したい都合上、正規分布の標準偏差を小さく設定している。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
-
-  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-  <span class="n">y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-
-  <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
-<span class="k">end</span>
-</code></pre></div><p>作成したデータを試しにプロットしてみたいので、以下のように<code>main</code>関数を作成。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
-  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
-
-  <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="c"># main関数を実行</span>
-<span class="n">main</span><span class="p">()</span>
-</code></pre></div><p>ためしにJuliaのREPLで確かめてみる。コードのファイル名は<code>regression.jl</code>とした。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@assert</span> <span class="n">D</span> <span class="o">&gt;</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="n">y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>作成したデータを試しにプロットしてみたいので、以下のように<code>main</code>関数を作成。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># main関数を実行</span>
+</span></span><span class="line"><span class="cl"><span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div><p>ためしにJuliaのREPLで確かめてみる。コードのファイル名は<code>regression.jl</code>とした。</p>
 <pre class="cui">
 % julia
 julia> include("regression.jl")
@@ -404,8 +403,8 @@ julia> include("regression.jl")
 \end{aligned}
 $$</p>
 <p>Juliaでは行列の転置を<code>'</code>、逆行列を<code>inv</code>で計算できる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-</code></pre></div><p>…と言いたいところだが、逆行列を計算して左から掛けるよりも、
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="n">w</span> <span class="o">=</span>  <span class="n">inv</span><span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+</span></span></code></pre></div><p>…と言いたいところだが、逆行列を計算して左から掛けるよりも、
 以下の $\bm{w}$ についての方程式を解く方が、
 数値計算の効率が良い。</p>
 <p>$$
@@ -414,18 +413,18 @@ X^TX\bm{w} = X^T \bm{y}
 \end{aligned}
 $$</p>
 <p>Juliaではこれを<code>\</code>演算子で行える。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-</code></pre></div><p>試しに $\bm{w} = (-1, 2, 4, 1)$ でデータを生成して、そのうえで <code>w</code> を計算してみる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
-  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
-
-  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><p><code>[-1, 2, 4, 1]</code>に近い値になっていることが分かる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+</span></span></code></pre></div><p>試しに $\bm{w} = (-1, 2, 4, 1)$ でデータを生成して、そのうえで <code>w</code> を計算してみる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p><code>[-1, 2, 4, 1]</code>に近い値になっていることが分かる。</p>
 <pre class="cui">
 julia> include("regression.jl")
 4-element Vector{Float64}:
@@ -437,22 +436,22 @@ julia> include("regression.jl")
 
 <p>グラフでプロットして確認してみる。$\bm{w} = (1, 2)$ の場合で<code>w</code>を計算し、
 それを係数とした直線を引いてみる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
-  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
-
-  <span class="c"># wの計算</span>
-  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-
-  <span class="c"># y = w[1] + w[2]*x の描画</span>
-  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">minimum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">maximum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">plot!</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
-
-  <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><pre class="cui">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># wの計算</span>
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c"># y = w[1] + w[2]*x の描画</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">minimum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">maximum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot!</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><pre class="cui">
 julia> include("regression.jl")
 </pre>
 
@@ -521,51 +520,51 @@ $$</p>
 <p>$\Phi$ を計算するために、ベクトル値関数 $\bm{\phi}(\bm{x})$ を引数に持たせる。
 $\bm{w}$ の計算にもはや $X$ は必要ないのだが、グラフにデータをプロットする際に必要になるので、
 $X$ も返り値に含めている。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
-  <span class="n">dummy</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}(</span><span class="nb">undef</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">)</span>
-  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">phi</span><span class="p">(</span><span class="n">dummy</span><span class="p">))</span>
-
-  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">))</span>
-
-  <span class="n">Phi</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}(</span><span class="nb">undef</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">n</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
-    <span class="n">Phi</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="n">Phi</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
-  <span class="k">end</span>
-
-  <span class="n">y</span> <span class="o">=</span> <span class="n">Phi</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span>
-<span class="k">end</span>
-</code></pre></div><p>試しに関数 $y = 1 + 2x^2$ によるデータをプロットしてみる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
-  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
-
-  <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><figure><img src="img02.png" width="70%"/>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dummy</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}(</span><span class="nb">undef</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">D</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">phi</span><span class="p">(</span><span class="n">dummy</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">d</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span> <span class="o">=</span> <span class="n">hcat</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">num_of_var</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">Phi</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">}(</span><span class="nb">undef</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="n">n</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Phi</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Phi</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">y</span> <span class="o">=</span> <span class="n">Phi</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>試しに関数 $y = 1 + 2x^2$ によるデータをプロットしてみる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><figure><img src="img02.png" width="70%"/>
 </figure>
 
 <h3 id="wの計算-2">wの計算 (2)</h3>
 <p>これに対応する<code>w</code>を求める。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
-  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-
-  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
-  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
-
-  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">Phi</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">Phi</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">Phi</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-
-  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">minimum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">maximum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-  <span class="n">plot!</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
-
-  <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div><p><code>[1, 2]</code>に近い値をとっている。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="k">function</span> <span class="n">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">X</span><span class="p">,</span> <span class="n">Phi</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">x</span><span class="o">-&gt;</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mi">2</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p1</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">Phi</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">Phi</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">Phi</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">plot_x</span> <span class="o">=</span> <span class="n">range</span><span class="p">(</span><span class="n">minimum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">maximum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">:</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plot!</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">plot_x</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">display</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p><code>[1, 2]</code>に近い値をとっている。</p>
 <pre class="cui">
 julia> include("regression.jl")
 2-element Vector{Float64}:
@@ -585,8 +584,8 @@ X^TX\bm{w} = X^T \bm{y}
 \end{aligned}
 $$</p>
 <p>Juliaではこれを<code>\</code>演算子で行える。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-</code></pre></div><p>$X^T\bm{y}$ の計算量は、$D \times N$ 行列と $N \times 1$ 行列の積の計算だから $O(DN)$。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-julia" data-lang="julia"><span class="line"><span class="cl"><span class="n">w</span> <span class="o">=</span>  <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">\</span> <span class="p">(</span><span class="n">X</span><span class="o">&#39;</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+</span></span></code></pre></div><p>$X^T\bm{y}$ の計算量は、$D \times N$ 行列と $N \times 1$ 行列の積の計算だから $O(DN)$。</p>
 <p>$X^TX$ の計算量は、$D \times N$ 行列と $N \times D$ 行列の積の計算だから $O(ND^2)$。</p>
 <p><a href="https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/#Base.:%5C-Tuple%7BAbstractMatrix%7BT%7D%20where%20T,%20AbstractVecOrMat%7BT%7D%20where%20T%7D">\ のドキュメント</a>によると、
 三角行列の場合は交代代入 or 前進代入、そうでない場合はLU分解で三角行列に変換してから解くようだ。$X^TX$ は一般に三角行列ではないのでLU分解され、計算量は $O(D^3)$ となる。</p>

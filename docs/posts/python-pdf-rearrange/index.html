@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PythonでPDFの順序並び替えと空白ページ挿入(2種類の方法) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.91.2" />
+<meta name="generator" content="Hugo 0.106.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/python-pdf-rearrange/">
@@ -103,30 +103,30 @@
 <p>平綴じの場合、紙に両面4ページずつ印刷されることになる。するとPDFのページ数は4の倍数でなくてはならない。よって、4の倍数でなかった場合はその分を空白ページで埋めなければならない。</p>
 <h3 id="pdfファイルの準備">PDFファイルの準備</h3>
 <p>テスト用にPDFファイルを作っておく。ここはなんでも良いのだが、とりあえず以下のLaTeXのコードから10ページのPDFファイルを作る。名前は<code>input.pdf</code>としておく。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-latex" data-lang="latex"><span class="k">\documentclass</span><span class="nb">{</span>jsarticle<span class="nb">}</span>
-<span class="k">\begin</span><span class="nb">{</span>document<span class="nb">}</span>
-<span class="k">\centering</span> <span class="k">\Huge</span>
-1 Page
-<span class="k">\newpage</span>
-2 Page
-<span class="k">\newpage</span>
-3 Page
-<span class="k">\newpage</span>
-4 Page
-<span class="k">\newpage</span>
-5 Page
-<span class="k">\newpage</span>
-6 Page
-<span class="k">\newpage</span>
-7 Page
-<span class="k">\newpage</span>
-8 Page
-<span class="k">\newpage</span>
-9 Page
-<span class="k">\newpage</span>
-10 Page
-<span class="k">\end</span><span class="nb">{</span>document<span class="nb">}</span>
-</code></pre></div><h2 id="方法1python--諸々のコマンドの利用">方法1：Python + 諸々のコマンドの利用</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-latex" data-lang="latex"><span class="line"><span class="cl"><span class="k">\documentclass</span><span class="nb">{</span>jsarticle<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>document<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\centering</span> <span class="k">\Huge</span>
+</span></span><span class="line"><span class="cl">1 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">2 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">3 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">4 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">5 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">6 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">7 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">8 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">9 Page
+</span></span><span class="line"><span class="cl"><span class="k">\newpage</span>
+</span></span><span class="line"><span class="cl">10 Page
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>document<span class="nb">}</span>
+</span></span></code></pre></div><h2 id="方法1python--諸々のコマンドの利用">方法1：Python + 諸々のコマンドの利用</h2>
 <h3 id="方針">方針</h3>
 <p>PDFのページ順を変えるためには、<code>pdftk</code>コマンドを利用すれば良い。<code>pdftk</code>は、Homebrewなら<code>brew install pdftk-java</code>で使えるようになる)。例えば8ページのPDFファイル<code>input.pdf</code>を並び替えるなら次のコマンドで可能。</p>
 <pre class="cui">
@@ -159,74 +159,74 @@ Page size:      595.28 x 841.89 pts (A4)
 <p>まずはPDFの情報を取得する関数を作る。Pythonでコマンドを実行するために<code>subprocess</code>モジュールを使う。
 <code>pdftk</code>コマンドの出力結果は<code>key: val</code>の形で与えられるので、正規表現で<code>key</code>と<code>val</code>を取り出す。
 <code>Pages</code>はそのまま<code>int</code>に変換すれば良いが、<code>Page size</code>は<code>[float] x [float]</code>の形で書かれているので、それを正規表現で取り出す。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">import</span> <span class="nn">re</span>
-
-<span class="k">def</span> <span class="nf">get_pdfinfo</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">&#34;pdfinfo&#34;</span><span class="p">,</span> <span class="n">path</span><span class="p">],</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-
-    <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;(.+): +(.+)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">info_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">])</span>
-
-    <span class="n">pages</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">info_dict</span><span class="p">[</span><span class="s1">&#39;Pages&#39;</span><span class="p">])</span>
-    <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+(?:\.\d+)?) x (\d+(?:\.\d+)?)&#39;</span><span class="p">,</span> <span class="n">info_dict</span><span class="p">[</span><span class="s1">&#39;Page size&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
-
-    <span class="k">class</span> <span class="nc">PDFInfo</span><span class="p">:</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">=</span> <span class="n">pages</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
-
-    <span class="k">return</span> <span class="n">PDFInfo</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
-</code></pre></div><p>空白ページを1ページ持つのPDFファイルを作成する関数は次のようにする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">create_blank_page</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;convert&#39;</span><span class="p">,</span> <span class="s1">&#39;xc:none&#39;</span><span class="p">,</span> <span class="s1">&#39;-page&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="n">height</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">])</span>
-</code></pre></div><p>平綴じ用の順序を作る関数を定義する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">new_page_index</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
-    <span class="n">page_index</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">new_pages</span> <span class="o">=</span> <span class="p">(</span><span class="n">pages</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">//</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_pages</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">page_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">page_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">page_index</span>
-</code></pre></div><p>最後に、実際に入れ替える処理を<code>rearrange_pdf</code>関数としてまとめる。ヘルパー関数として、ページ順序を<code>pdftk</code>の引数用のフォーマットに変換する関数<code>make_cat_args</code>を作る。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">tmpfile</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-
-<span class="o">...</span>
-
-<span class="k">def</span> <span class="nf">make_cat_args</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span> <span class="n">page_index</span><span class="p">):</span>
-    <span class="n">cat_args</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">page_index</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">pages</span><span class="p">:</span>
-            <span class="n">cat_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;A&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">cat_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;B1&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cat_args</span>
-
-
-<span class="k">def</span> <span class="nf">rearrange_pdf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
-    <span class="n">tmp_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
-    <span class="n">blank_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="s1">&#39;blank.pdf&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">blank_path</span><span class="p">)</span>
-
-    <span class="n">info</span> <span class="o">=</span> <span class="n">get_pdfinfo</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="n">create_blank_page</span><span class="p">(</span><span class="n">blank_path</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
-    <span class="n">page_index</span> <span class="o">=</span> <span class="n">new_page_index</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">pages</span><span class="p">)</span>
-    <span class="n">cat_args</span> <span class="o">=</span> <span class="n">make_cat_args</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">pages</span><span class="p">,</span> <span class="n">page_index</span><span class="p">)</span>
-
-    <span class="n">arg1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;A=</span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s1">&#39;</span>
-    <span class="n">arg2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;B=</span><span class="si">{</span><span class="n">blank_path</span><span class="si">}</span><span class="s1">&#39;</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;pdftk&#39;</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">cat_args</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">dst</span><span class="p">])</span>
-
-    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
-</code></pre></div><p>例えば、<code>rearrange_pdf('input.pdf', 'output.pdf')</code>のように用いる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">rearrange_pdf</span><span class="p">(</span><span class="s1">&#39;input.pdf&#39;</span><span class="p">,</span> <span class="s1">&#39;output.pdf&#39;</span><span class="p">)</span>
-</code></pre></div><h2 id="方法2python--pypdf4の利用">方法2：Python + PyPDF4の利用</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">subprocess</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">re</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_pdfinfo</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">&#34;pdfinfo&#34;</span><span class="p">,</span> <span class="n">path</span><span class="p">],</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;(.+): +(.+)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">info_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">pages</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">info_dict</span><span class="p">[</span><span class="s1">&#39;Pages&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+(?:\.\d+)?) x (\d+(?:\.\d+)?)&#39;</span><span class="p">,</span> <span class="n">info_dict</span><span class="p">[</span><span class="s1">&#39;Page size&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">PDFInfo</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">=</span> <span class="n">pages</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">PDFInfo</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+</span></span></code></pre></div><p>空白ページを1ページ持つのPDFファイルを作成する関数は次のようにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_blank_page</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;convert&#39;</span><span class="p">,</span> <span class="s1">&#39;xc:none&#39;</span><span class="p">,</span> <span class="s1">&#39;-page&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="n">height</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">])</span>
+</span></span></code></pre></div><p>平綴じ用の順序を作る関数を定義する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">new_page_index</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">page_index</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">new_pages</span> <span class="o">=</span> <span class="p">(</span><span class="n">pages</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">//</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_pages</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">page_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">page_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">page_index</span>
+</span></span></code></pre></div><p>最後に、実際に入れ替える処理を<code>rearrange_pdf</code>関数としてまとめる。ヘルパー関数として、ページ順序を<code>pdftk</code>の引数用のフォーマットに変換する関数<code>make_cat_args</code>を作る。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">tmpfile</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">shutil</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">make_cat_args</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span> <span class="n">page_index</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cat_args</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">page_index</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">pages</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cat_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;A&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cat_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;B1&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">cat_args</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rearrange_pdf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tmp_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">blank_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="s1">&#39;blank.pdf&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">blank_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">info</span> <span class="o">=</span> <span class="n">get_pdfinfo</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">create_blank_page</span><span class="p">(</span><span class="n">blank_path</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">page_index</span> <span class="o">=</span> <span class="n">new_page_index</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">pages</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cat_args</span> <span class="o">=</span> <span class="n">make_cat_args</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">pages</span><span class="p">,</span> <span class="n">page_index</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">arg1</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;A=</span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s1">&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">arg2</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;B=</span><span class="si">{</span><span class="n">blank_path</span><span class="si">}</span><span class="s1">&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;pdftk&#39;</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">cat_args</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">dst</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
+</span></span></code></pre></div><p>例えば、<code>rearrange_pdf('input.pdf', 'output.pdf')</code>のように用いる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rearrange_pdf</span><span class="p">(</span><span class="s1">&#39;input.pdf&#39;</span><span class="p">,</span> <span class="s1">&#39;output.pdf&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="方法2python--pypdf4の利用">方法2：Python + PyPDF4の利用</h2>
 <p>実は、以前Python + <a href="https://github.com/mstamy2/PyPDF2">PyPDF2</a>という組み合わせで、目的のプログラムを書いたことがある。PDFの並び替えも、空白ページを作成する関数もあるので、今回やりたいことはこれだけで事足りる。</p>
 <p>調べてみるとそのforkである<a href="https://github.com/claird/PyPDF4">PyPDF4</a>があるらしいので、今回はこちらを使ってみる。Web上にドキュメントが見つからないので、<code>pydoc PyPDF4</code>コマンドで読むのが良さそう。また、PyPDF2と基本的なインターフェースは変わっていないと予想されるので、<a href="https://pythonhosted.org/PyPDF2/">PyPDF2のドキュメント</a>も一部参考になるだろう。</p>
 <h3 id="実装-1">実装</h3>
@@ -237,34 +237,34 @@ Page size:      595.28 x 841.89 pts (A4)
 <li><code>PdfFileWriter</code>クラスの<code>addBlankPage</code>メソッドで空白ページを追加する(ページサイズを引数に指定しなかった場合、1つ前のページサイズと同じになる)。<code>addPage</code>でページを追加する。<code>write</code>メソッドで書き出しをする。</li>
 </ul>
 <p><code>getPage</code>メソッドに指定するページ番号は0-indexedなので、<code>new_page_index</code>の実装が方法1と少し異なっていることに注意。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">PyPDF4</span>
-
-<span class="k">def</span> <span class="nf">new_page_index</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
-    <span class="n">page_index</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">new_pages</span> <span class="o">=</span> <span class="p">(</span><span class="n">pages</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">//</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_pages</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">page_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">page_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">page_index</span>
-
-
-<span class="k">def</span> <span class="nf">rearrange_pdf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
-    <span class="n">pdf_src</span> <span class="o">=</span> <span class="n">PyPDF4</span><span class="o">.</span><span class="n">PdfFileReader</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="n">num_pages</span> <span class="o">=</span> <span class="n">pdf_src</span><span class="o">.</span><span class="n">getNumPages</span><span class="p">()</span>
-    <span class="n">page_index</span> <span class="o">=</span> <span class="n">new_page_index</span><span class="p">(</span><span class="n">num_pages</span><span class="p">)</span>
-
-    <span class="n">pdf_dst</span> <span class="o">=</span> <span class="n">PyPDF4</span><span class="o">.</span><span class="n">PdfFileWriter</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">page_index</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_pages</span><span class="p">:</span>
-            <span class="n">pdf_dst</span><span class="o">.</span><span class="n">addPage</span><span class="p">(</span><span class="n">pdf_src</span><span class="o">.</span><span class="n">getPage</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">pdf_dst</span><span class="o">.</span><span class="n">addBlankPage</span><span class="p">()</span>
-
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">pdf_dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">PyPDF4</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">new_page_index</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">page_index</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">new_pages</span> <span class="o">=</span> <span class="p">(</span><span class="n">pages</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">//</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_pages</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">page_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">page_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">page_index</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rearrange_pdf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pdf_src</span> <span class="o">=</span> <span class="n">PyPDF4</span><span class="o">.</span><span class="n">PdfFileReader</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">num_pages</span> <span class="o">=</span> <span class="n">pdf_src</span><span class="o">.</span><span class="n">getNumPages</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">page_index</span> <span class="o">=</span> <span class="n">new_page_index</span><span class="p">(</span><span class="n">num_pages</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">pdf_dst</span> <span class="o">=</span> <span class="n">PyPDF4</span><span class="o">.</span><span class="n">PdfFileWriter</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">page_index</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_pages</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">pdf_dst</span><span class="o">.</span><span class="n">addPage</span><span class="p">(</span><span class="n">pdf_src</span><span class="o">.</span><span class="n">getPage</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">pdf_dst</span><span class="o">.</span><span class="n">addBlankPage</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pdf_dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span></span></code></pre></div>
 </article>
 
 

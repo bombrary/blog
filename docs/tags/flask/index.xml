@@ -15,12 +15,12 @@
       <guid>https://bombrary.github.io/blog/posts/python-get-img-url-static/</guid>
       <description>Webページの画像だけを手っ取り早く取得したい場合にどうすれば良いのかを考えた。 これを行うプログラムをPythonで取得する。
 この記事で作成したプログラムはGitHubのRepositoryに公開した。
-前提   Pythonのバージョンは3.10を想定。
-  この記事では外部ライブラリとして
- Requests 2.26.0 Beautiful Soup 4.10.0 tqdm 4.62.3 w3lib 1.22.0  を使う。この記事のコードを動かす場合はpipコマンドなどでインストールしておく。
-  方針 やることは案外単純である。
- WebページのHTMLデータを取ってくる。 img要素を探して、そのsrc属性を取ってくる。 scheme、netlocが無かったらそれを付加して、完全なURLにする。  1はRequests、2はBeautiful Soupを使えば良いだろう。 3は思ったより複雑である。src属性に入っているパスには、
- URL: http://foo.org/bar/hoge.png スキームが省略されている: //foo.org/bar/hoge.png 絶対パス: /bar/hoge.png 相対パス: ../bar/hoge.png データURL: data:image/png;base64,...  など色々ある。 これらのフォーマットを統一して完全なURLにするのは面倒であるが、幸運にもurllib.parse.urljoinという関数があったのでこれを使う (余談: 初め、urljoinの存在を知らずに自前でURLの変換機能を実装してしまった。学びにはなったが時間を費やした…)。
+前提 Pythonのバージョンは3.10を想定。
+この記事では外部ライブラリとして
+Requests 2.26.0 Beautiful Soup 4.10.0 tqdm 4.62.3 w3lib 1.22.0 を使う。この記事のコードを動かす場合はpipコマンドなどでインストールしておく。
+方針 やることは案外単純である。
+WebページのHTMLデータを取ってくる。 img要素を探して、そのsrc属性を取ってくる。 scheme、netlocが無かったらそれを付加して、完全なURLにする。 1はRequests、2はBeautiful Soupを使えば良いだろう。 3は思ったより複雑である。src属性に入っているパスには、
+URL: http://foo.org/bar/hoge.png スキームが省略されている: //foo.org/bar/hoge.png 絶対パス: /bar/hoge.png 相対パス: ../bar/hoge.png データURL: data:image/png;base64,... など色々ある。 これらのフォーマットを統一して完全なURLにするのは面倒であるが、幸運にもurllib.parse.urljoinという関数があったのでこれを使う (余談: 初め、urljoinの存在を知らずに自前でURLの変換機能を実装してしまった。学びにはなったが時間を費やした…)。
 ついでの機能として、「特定の要素の中に含まれているimg要素のURLを取得する」ことも考える。 これはCSSセレクタとして指定できるようにする。
 まとめると、画像のURLを取得する関数は以下のようなインターフェースとなる。
 def get_img_urls(url: str, selector: Optional[str]=None) -&amp;gt; list[str]: pass # これから実装する URLとセレクタを引数にとり、img要素のURLのリストを返す関数である。
@@ -36,11 +36,13 @@ def get_img_urls(url: str, selector: Optional[str]=None) -&amp;gt; list[str]: pa
       
       <guid>https://bombrary.github.io/blog/posts/todo-api-flask/</guid>
       <description>シンプルなToDoリストのWeb APIを作る。 今までWSGIの仕様のみ、Werkzeug の2通りで実装したが、今回はFlaskといくつかのライブラリを使う。使うのは以下の通り。
- Flask: WSGIアプリフレームワーク。 peewee: ORMライブラリ。 marshmallow: データの変換やvalidationをするためのライブラリ。  Flaskとは WSGIのWebアプリを作るためのフレームワーク。 フレームワークであるため、Flaskが用意した作法に従ってコードを書くことで比較的手軽にWebアプリが作成できる。 前回との比較でいうならば、例えばルーティングの仕組みをプログラマが書く必要はない。これはFlaskに備わっている。
+Flask: WSGIアプリフレームワーク。 peewee: ORMライブラリ。 marshmallow: データの変換やvalidationをするためのライブラリ。 Flaskとは WSGIのWebアプリを作るためのフレームワーク。 フレームワークであるため、Flaskが用意した作法に従ってコードを書くことで比較的手軽にWebアプリが作成できる。 前回との比較でいうならば、例えばルーティングの仕組みをプログラマが書く必要はない。これはFlaskに備わっている。
 Djangoのようなフレームワークとは違って、持っている機能は少ない。必要に応じて外部ライブラリを組み合わせる。 例えば、Djangoではデフォルトでデータベースの仕組みが内蔵されているが、Flaskにはない。その代わりに、 データベースのライブラリとしてsqlite3やSQLAlchemy、peeweeなど、好きなものを用いれば良い。
 ToDoリストAPIの仕様 今回ToDoのデータは以下キーと値を持つJSONデータとする。
-   key value     id ID   content ToDoの内容   created_at 作成日時 (ISO8601)   updated_at 更新日時 (ISO8601)    APIの仕様は以下の通り。
-   URL Method 説明 返却値     /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト   /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる)   /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ   /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし   /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし    データはSQLiteで管理する。</description>
+key value id ID content ToDoの内容 created_at 作成日時 (ISO8601) updated_at 更新日時 (ISO8601) APIの仕様は以下の通り。
+URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データはSQLiteで管理する。
+雛形 todo_listディレクトリを作成。todo_list/__init__.pyを以下のようにする。
+from flask import Flask def create_app(): app = Flask(__name__) @app.route(&amp;#39;/&amp;#39;) def hello(): return &amp;#39;Hello, World&amp;#39; return app exportコマンドで環境変数を設定する。</description>
     </item>
     
   </channel>
