@@ -6,7 +6,6 @@ categories: ["TikZ", "TeX"]
 toc: true
 ---
 
-
 毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
 
 またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。
@@ -33,6 +32,18 @@ TikZは`tikz`パッケージから読み込める。
 ```
 以降、コード中で必要なライブラリがあった場合は、コードの先頭に`\usetikzlibrary`を記載することにする。
 このコマンドは実際にはプリアンブルに書く必要があることに注意。
+
+### DVIドライバの指定
+
+必ずクラスオプションにDVIドライバを指定すること．さもなければ，色が出力されなかったり，図形の位置が正確に計算されなかったりする．
+
+以下は，DVIドライバを`dvipdfmx`，クラスを`jsarticle`で行う例．
+```tex
+\documentclass[dvipdfmx]{jsarticle}
+```
+
+クラスオプションにDVIドライバを指定する必要性については，以下のサイトを参照：
+[日本語 LaTeX の新常識 2021 - Qiita](https://qiita.com/wtsnjp/items/76557b1598445a1fc9da#新常識-2-dvi-ドライバはクラスオプションで明示しよう)．
 
 
 ## 色を定義 (TikZの話ではない)
@@ -203,6 +214,8 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 終端を変えたいなら`>`を設定する。他にも色々あるのでマニュアル参照。
 
 ```tex
+\usetikzlibrary{arrows.meta}
+
 \begin{tikzpicture}
   \draw [->]                     (0,0) -- (1,0);
   \draw [->, >=Stealth]          (0,-0.5) -- (1,-0.5);
@@ -348,7 +361,7 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 `($(a)!1cm!(b)$)`とすると、ab 上の点pで、ap = 1cm を満たすものが計算できる。
 
 ```tex
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, arrows.meta}
 
 \begin{tikzpicture}
   \coordinate (a) at (0,0);
@@ -368,7 +381,7 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 `($(a)!1cm!30:(b)$)`とすると、「abを30度回転させた線分」 上の点pで、ap = 1cm を満たすものが計算できる。
 
 ```tex
-\usetikzlibrary{calc, angles, quotes}
+\usetikzlibrary{calc, angles, quotes, arrows.meta}
 
 \begin{tikzpicture}
   \coordinate (a) at (0,0);
@@ -392,7 +405,7 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 `($(a)!(c)!(b)$)`とすると、c から ab へ下ろした垂線の足を計算できる。
 
 ```tex
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, angles, arrows.meta}
 
 \begin{tikzpicture}
   \coordinate (a) at (0,0);
@@ -403,6 +416,10 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
   \draw (a) -- (b);
   \draw [<-, >=Stealth] (c) -- node [midway, auto] {$w$} (p);
   \path pic [draw, angle radius=2mm] { right angle=b--p--c };
+
+  \node [xshift=-2mm] at (a) {$A$};
+  \node [xshift=2mm] at (b) {$B$};
+  \node [yshift=2mm] at (c) {$C$};
 \end{tikzpicture}
 ```
 
@@ -411,17 +428,56 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 ab 上にある点 c を通る垂線を引きたいなら、線分cbを90度回転させれば良い。
 
 ```tex
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, arrows.meta}
 
 \begin{tikzpicture}
-  \coordinate (a) at (0,0);
-  \coordinate (b) at (2,-1);
-  \coordinate (c) at ($(a)!1cm!(b)$);
+    \coordinate (a) at (0,0);
+    \coordinate (b) at (2,-1);
+    \coordinate (c) at ($(a)!1cm!(b)$);
 
-  \draw (a) -- (b);
-  \draw [->, >=Stealth] (c) -- ($(c)!1cm!90:(b)$);
+    \draw (a) -- (b);
+    \draw [->, >=Stealth] (c) -- ($(c)!1cm!90:(b)$);
+
+    \node [xshift=-2mm] at (a) {$A$};
+    \node [xshift=2mm] at (b) {$B$};
+    \node [yshift=-2.5mm] at (c) {$C$};
+\end{tikzpicture}
+
+```
+
+{{< figure src="./img/perpendicular2.png" >}}
+
+### 垂線（縦軸または横軸に対して）
+
+**参考**: PGF Manual, Part III, 13.3.1 Intersections of Perpendicular Lines
+
+前節では垂線を求めるのに3点の座標を使ったが，特別なケースでは2点で垂線を引くことができるので，それを紹介する．
+
+`(c |- a)`とすると、c から 「aを通る，横軸に平行な直線」との垂線の足を求められる．
+前節では垂線の足を求めるためにはbの座標が必要だったが，横軸に平行な場合は必要ない．
+
+ちなみに見方を変えると「cを通る，縦軸に平行な直線」との垂線の足とも捉えられる．
+また，`(a -| c)`のように逆向きに書くことが可能である．
+`(a |- c)`なのか`(c |- a)`なのか混乱するかもしれないが，その都度実際に描画してみて確認すれば良いと思う．
+
+```tex
+\begin{tikzpicture}
+  \coordinate (a) at (0,0);
+  \coordinate (b) at (2,0);
+  \coordinate (c) at (1, 1);
+  \coordinate (p) at (c |- a);
+
+  \draw (a) -- (p);
+  \draw [dotted] (p) -- (b);
+  \draw (c) -- (p);
+
+  \node [xshift=-2mm] at (a) {$A$};
+  \node [xshift=2mm] at (b) {$B$};
+  \node [yshift=2mm] at (c) {$C$};
 \end{tikzpicture}
 ```
+
+{{< figure src="./img/perpendicular3.png" >}}
 
 ### ベクトルを平行にずらす
 
@@ -432,7 +488,7 @@ xy軸ごとの移動方向vが決まっているなら、`$(a) + (v)$`みたい�
 `($(a)!1cm!90:(b)$)`については以前説明した通り。`($(b)+(c)-(a)$)`で、「点bをベクトルacだけ移動した点」を計算している。
 
 ```tex
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, arrows.meta}
 
 \begin{tikzpicture}
   \coordinate (a) at (0,0);
@@ -459,7 +515,7 @@ xy軸ごとの移動方向vが決まっているなら、`$(a) + (v)$`みたい�
 ```tex
 \usetikzlibrary{intersections}
 
-\begin{tikzpicture}[>=Stealth]
+\begin{tikzpicture}[>=Stealth, arrows.meta]
   \coordinate (e1) at (-1, 0);
   \coordinate (e2) at (1, 0);
 
@@ -512,7 +568,7 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 直感的な記述でノード間の関係を記述できる。
 
 ```tex
-\usetikzlibrary{calc, positioning, graphs}
+\usetikzlibrary{calc, positioning, graphs, arrows.meta}
 
 \begin{tikzpicture}
   [entity-x/.style={draw, circle},
@@ -556,7 +612,7 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 `row sep`や`column sep`の指定に注意 (図の赤文字を参考)。
 
 ```tex
-\usetikzlibrary{graphs}
+\usetikzlibrary{graphs, arrows.meta}
 
 \begin{tikzpicture}
   [entity-x/.style={draw, circle},
@@ -599,7 +655,7 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 `minimum width`、`minimum height`を使う。ノード同士のサイズを合わせたいならこれを使うとよい。
 
 ```tex
-\usetikzlibrary{graphs}
+\usetikzlibrary{graphs, arrows.meta}
 
 \begin{tikzpicture}
   [entity-x/.style={draw, circle, minimum height=4ex},
@@ -826,7 +882,7 @@ l.286 \show\pgfmathresult
 以下は、反射角の計算のために`let`を使っている。`\p<name>`、`\n<name>`は特殊なレジスタ。前者は点の座標を保持し、`\x<name>`、`\y<name>`で点の座標にアクセスできる。後者は値を保持し、`\n<name>`でアクセスできる。`<name>`の部分には、数字や`{文字列}`が指定できる例えば`\p1`、`\p{foo}`のように使う。
 
 ```tex
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, arrows.meta}
 
 \begin{tikzpicture}[>=Stealth]
   \coordinate (a) at (0.5, 2);
@@ -852,7 +908,7 @@ l.286 \show\pgfmathresult
 座標計算を行いたい多くの場合は、`let`を使わなくても解決できる気がする。例えば反射の場合は、一旦延長してから垂線を伸ばせば良い。
 
 ```tex
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, arrows.meta}
 
 \begin{tikzpicture}[>=Stealth]
   \coordinate (a) at (0.5, 2);
