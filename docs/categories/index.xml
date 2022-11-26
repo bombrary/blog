@@ -98,11 +98,11 @@
     </item>
     
     <item>
-      <title>TeX</title>
-      <link>https://bombrary.github.io/blog/categories/tex/</link>
+      <title>LaTeX</title>
+      <link>https://bombrary.github.io/blog/categories/latex/</link>
       <pubDate>Fri, 30 Jul 2021 22:30:00 +0900</pubDate>
       
-      <guid>https://bombrary.github.io/blog/categories/tex/</guid>
+      <guid>https://bombrary.github.io/blog/categories/latex/</guid>
       <description></description>
     </item>
     
@@ -139,15 +139,6 @@
       <pubDate>Sat, 06 Mar 2021 22:00:00 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/network/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>LaTeX</title>
-      <link>https://bombrary.github.io/blog/categories/latex/</link>
-      <pubDate>Sun, 31 May 2020 19:03:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/categories/latex/</guid>
       <description></description>
     </item>
     
@@ -238,6 +229,15 @@
       <pubDate>Tue, 11 Feb 2020 21:57:47 +0900</pubDate>
       
       <guid>https://bombrary.github.io/blog/categories/graphviz/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>TeX</title>
+      <link>https://bombrary.github.io/blog/categories/tex/</link>
+      <pubDate>Tue, 11 Feb 2020 21:57:47 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/categories/tex/</guid>
       <description></description>
     </item>
     

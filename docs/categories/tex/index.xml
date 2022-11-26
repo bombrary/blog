@@ -6,31 +6,7 @@
     <description>Recent content in TeX on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 30 Jul 2021 22:30:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/tex/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>TikZ 備忘録</title>
-      <link>https://bombrary.github.io/blog/posts/tikz-note01/</link>
-      <pubDate>Fri, 30 Jul 2021 22:30:00 +0900</pubDate>
-      
-      <guid>https://bombrary.github.io/blog/posts/tikz-note01/</guid>
-      <description>毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
-またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。
-情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアル(CTANの &amp;ldquo;PDF Manual&amp;quot;のこと) に載っている。TeX Liveを導入しているなら、コマンドtexdoc tikzで開くはず。この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
-知らないキーワードや記号が出てきたらマニュアル末尾のindexで探すと良い。 TikZで出来ることを把握したいなら、Part Iのチュートリアルを読んでみるのが有効。もしくはPartIII, Vあたりを流し読みする。PGF Manualはページ数が膨大なため、全部読もうとするのは恐らく得策では無い。目次を眺めながら興味のあるところをつまむのが良いと思う(読み方について、Introductionの1.4 How to Read This Manualも参照)。 既にやりたいことがあるが、TikZで実現する方法が分からない場合は、ググる。英語のキーワードで検索すれば、大抵Stack Exchangeがヒットする。画像検索も有効。 (準備) パッケージ読み込み・この記事での記法の注意 TikZはtikzパッケージから読み込める。
-\usepakcage{tikz} 以降、コードを記載するときはこの記述を省略する。
-また、TikZには色々な便利なライブラリが用意されている。例えば座標計算に便利なライブラリであるCalcは次のように読み込む。
-\usetikzlibrary{calc} 以降、コード中で必要なライブラリがあった場合は、コードの先頭に\usetikzlibraryを記載することにする。 このコマンドは実際にはプリアンブルに書く必要があることに注意。
-DVIドライバの指定 必ずクラスオプションにDVIドライバを指定すること．さもなければ，色が出力されなかったり，図形の位置が正確に計算されなかったりする．
-以下は，DVIドライバをdvipdfmx，クラスをjsarticleで行う例．
-\documentclass[dvipdfmx]{jsarticle} クラスオプションにDVIドライバを指定する必要性については，以下のサイトを参照： 日本語 LaTeX の新常識 2021 - Qiita．
-色を定義 (TikZの話ではない) TikZではなくxcolorの話だが、大事なのでここで記す。これはtikzパッケージを読み込んだときに自動で読み込まれるようだが、もしxcolor単体で使いたいなら、xcolorパッケージを読み込むこと。
-\usepakcage{xcolor} 色同士を!で混ぜることができる。例えばred!20!blue!30!whiteと書くと、赤、青、白がそれぞれ20%、30%、(100-20-30)%混ざった色になる。
-カラーコードやRGB値などから定義したい場合は\definecolor、既存の色を混ぜて使いたい場合は\colorletを利用。
-\definecolor{mycolor1}{HTML}{888888} # 定義する色名 カラーモデル 色の値 \colorlet{mycolor2}{orange!75!white} # 定義する色名 色 色名に-をつけると補色を表現できる。ただし、ここでの補色はRGBでの補色。例えば-redとすると赤色の補色のシアンとなる。RYBでの補色を使いたい場合は-には頼らず、色を直接\definecolorで指定する必要があると思われる。
-文字にマーカーをつける 参考: TikZ で“インラインな”図を描く - Qiita
-\tikzはtikzpicture環境がコマンドになっただけで、使い方は同じ。 \tikzコマンドのオプション引数baselineで位置を補正。 inner sepやouter sepで余白調整。 高さを固定したい場合はminimum heightで調整。 枠の下に文字を配置したい場合は、remember pictureとoverlayを利用。 overlayを使わず直接\tikzの中に書いても良いが、文字が多すぎると左右に余計な余白が空く。 \usetikzlibrary{positioning} \begin{align*} f(x) = \tikz[remember picture, baseline=(T1.</description>
-    </item>
-    
+    <lastBuildDate>Tue, 11 Feb 2020 21:57:47 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/tex/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GraphvizでTeXの数式を表示する(2) - PDFにしたい場合</title>
       <link>https://bombrary.github.io/blog/posts/graphviz-tex02/</link>
