@@ -2,7 +2,7 @@
 title: "TikZ 備忘録"
 date: 2021-07-30T22:30:00+09:00
 tags: ["作図"]
-categories: ["TikZ", "TeX"]
+categories: ["TikZ", "LaTeX"]
 toc: true
 ---
 
@@ -18,7 +18,9 @@ toc: true
 - TikZで出来ることを把握したいなら、Part Iのチュートリアルを読んでみるのが有効。もしくはPartIII, Vあたりを流し読みする。PGF Manualはページ数が膨大なため、全部読もうとするのは恐らく得策では無い。目次を眺めながら興味のあるところをつまむのが良いと思う(読み方について、Introductionの1.4 How to Read This Manualも参照)。
 - 既にやりたいことがあるが、TikZで実現する方法が分からない場合は、ググる。英語のキーワードで検索すれば、大抵Stack Exchangeがヒットする。画像検索も有効。
 
-## (準備) パッケージ読み込み・この記事での記法の注意
+## 準備
+
+### パッケージ読み込み・この記事での記法の注意
 
 TikZは`tikz`パッケージから読み込める。
 ```tex
@@ -30,21 +32,36 @@ TikZは`tikz`パッケージから読み込める。
 ```tex
 \usetikzlibrary{calc}
 ```
+
 以降、コード中で必要なライブラリがあった場合は、コードの先頭に`\usetikzlibrary`を記載することにする。
 このコマンドは実際にはプリアンブルに書く必要があることに注意。
 
 ### DVIドライバの指定
 
-必ずクラスオプションにDVIドライバを指定すること．さもなければ，色が出力されなかったり，図形の位置が正確に計算されなかったりする．
+必ずクラスオプションにDVIドライバを指定すること。さもなければ、色が出力されなかったり、図形の位置が正確に計算されなかったりする。
 
-以下は，DVIドライバを`dvipdfmx`，クラスを`jsarticle`で行う例．
+以下は、DVIドライバを`dvipdfmx`、クラスを`jsarticle`で行う例。
 ```tex
 \documentclass[dvipdfmx]{jsarticle}
 ```
 
-クラスオプションにDVIドライバを指定する必要性については，以下のサイトを参照：
-[日本語 LaTeX の新常識 2021 - Qiita](https://qiita.com/wtsnjp/items/76557b1598445a1fc9da#新常識-2-dvi-ドライバはクラスオプションで明示しよう)．
+クラスオプションにDVIドライバを指定する必要性については、以下のサイトを参照：
+[日本語 LaTeX の新常識 2021 - Qiita](https://qiita.com/wtsnjp/items/76557b1598445a1fc9da#新常識-2-dvi-ドライバはクラスオプションで明示しよう)。
 
+### 個人的な図の描き方
+
+自分は主にBeamerでスライドを作ったり、論文やレポートなどのLaTeX文書を書いたりするときにTikZを用いる。その場合、以下のワークフローが現状良いと思っている。
+1. 書き捨て用のLaTeX文書を作成し、そこにTikZのコードを書く。
+2. 満足した出来になったら、スライドや論文、レポートのLaTeX文書に貼り付ける。
+
+1でわざわざ別ファイルで書く理由は、タイプセット時間削減のためである。
+本命のLaTeX文書に直接書き込む方式だと、今書いている図形以外のところまでタイプセットの処理が入るため、どうしてもタイプセットの時間が遅くなる（もしかしたら部分的にタイプセットしたり、それ以外の部分をキャッシュで残したりする仕組みがあるのかもしれないが、未調査）。
+
+ちなみにLaTeX文書に埋め込む以外の用途で用いるなら、
+- 生成されたPDF文書を適当に拡大してスクショする：ラスタ形式の画像しか取得できないが、手軽。
+- `standalone`クラスでタイプセットし、それを適当な方法で変換する：例えば`dvisvgm`を使えばSVGファイルを作れる。
+
+などが考えられる。
 
 ## 色を定義 (TikZの話ではない)
 
@@ -150,6 +167,8 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 
 ### 矢印
 
+(**補足** Shapeライブラリを使わない方法も後で紹介している。）
+
 `shapes.arrows`で`single arrow`として定義されている。
 
 - `single arrow`で矢印を描画。
@@ -227,6 +246,33 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 
 {{< figure src="./img/arrows.png" >}}
 
+### 巨大な矢印
+
+Shapeライブラリの`single arrows`を使ってもよいが、以下のように`Triangle`の矢印を使うことで同じ図形を再現できる。パラメータは以下の通り。
+- `\draw`の`line width`：線の太さ。
+- `\draw`の`Triangle`：
+  - `width`：矢印の幅。
+  - `length`：矢印の長さ。
+
+`outer sep`は始点と終点の空白を制御する。詳しくは後述。
+
+```tex
+\usetikzlibrary{arrows.meta}
+
+\begin{tikzpicture}
+  \node [outer sep=2pt] (p) at (0, 0) {命題Pが真};
+  \node [outer sep=2pt] (q) at (0, 2cm) {命題Qが真};
+  \draw [->,
+         >={Triangle[width=10mm, length=5mm]},
+         line width=6mm,
+         red] (q) -- (p);
+\end{tikzpicture}
+```
+
+{{< figure src="./img/big-arrow.png" >}}
+
+Shapeライブラリの場合は矢印を回転させて使う必要があるが、こちらは向きは自動で変わる。そのため多くの場合はこちらのほうが使いやすいかもしれない。
+
 ## 点の上にラベルをつける
 
 **参考**: PGF Manual, Part III, 17.10 The Label and Pin Options
@@ -260,7 +306,7 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 
 **参考**: PGF Manual, Part V, 74 To Path Library
 
-自由に曲線を描きたいなら，`\path`の`controls`を使えば良い(参考: PGF Manual, PartIII, 14.3 The Curve-To Operation)。しかしベジェ曲線に慣れていないと、思い通りの曲線を描くのは大変。しかし、シンプルなケースであればTo Path Libraryを使えば簡単に描ける。
+自由に曲線を描きたいなら、`\path`の`controls`を使えば良い(参考: PGF Manual, PartIII, 14.3 The Curve-To Operation)。しかしベジェ曲線に慣れていないと、思い通りの曲線を描くのは大変。しかし、シンプルなケースであればTo Path Libraryを使えば簡単に描ける。
 
 例えば「線分をある方向に曲げたい場合は、`bend right`や`bend left`が使える。これはTo Path Library で提供されている。以下のように`to`の引数に指定する。
 
@@ -277,7 +323,7 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 
 {{< figure src="./img/path-bend.png" >}}
 
-`bend right/bend left`は、グラフ構造を描く際に利用できる．また以下のように、図形の長さを明示したいときに使える。
+`bend right/bend left`は、グラフ構造を描く際に利用できる。また以下のように、図形の長さを明示したいときに使える。
 
 ```tex
 \begin{tikzpicture}
@@ -451,14 +497,14 @@ ab 上にある点 c を通る垂線を引きたいなら、線分cbを90度回�
 
 **参考**: PGF Manual, Part III, 13.3.1 Intersections of Perpendicular Lines
 
-前節では垂線を求めるのに3点の座標を使ったが，特別なケースでは2点で垂線を引くことができるので，それを紹介する．
+前節では垂線を求めるのに3点の座標を使ったが、特別なケースでは2点で垂線を引くことができるので、それを紹介する。
 
-`(c |- a)`とすると、c から 「aを通る，横軸に平行な直線」との垂線の足を求められる．
-前節では垂線の足を求めるためにはbの座標が必要だったが，横軸に平行な場合は必要ない．
+`(c |- a)`とすると、c から 「aを通る、横軸に平行な直線」との垂線の足を求められる。
+前節では垂線の足を求めるためにはbの座標が必要だったが、横軸に平行な場合は必要ない。
 
-ちなみに見方を変えると「cを通る，縦軸に平行な直線」との垂線の足とも捉えられる．
-また，`(a -| c)`のように逆向きに書くことが可能である．
-`(a |- c)`なのか`(c |- a)`なのか混乱するかもしれないが，その都度実際に描画してみて確認すれば良いと思う．
+ちなみに見方を変えると「cを通る、縦軸に平行な直線」との垂線の足とも捉えられる。
+また、`(a -| c)`のように逆向きに書くことが可能である。
+`(a |- c)`なのか`(c |- a)`なのか混乱するかもしれないが、その都度実際に描画してみて確認すれば良いと思う。
 
 ```tex
 \begin{tikzpicture}
@@ -478,6 +524,18 @@ ab 上にある点 c を通る垂線を引きたいなら、線分cbを90度回�
 ```
 
 {{< figure src="./img/perpendicular3.png" >}}
+
+垂線の足としての使い方だけでなく、「2点A, Cを始点として横軸方向、縦軸方向にそれぞれ伸ばし、ぶつかった点を計算する」という用途で使うこともある。例えば、以下は黒枠でノードを囲む例である（実は [Fitting Library](#囲み枠fitting-library利用) を使うともっと直感的に書ける）。
+```tex
+\begin{tikzpicture}[every node/.style={draw, circle}]
+  \node (a) at (0,0) {$A$};
+  \node (b) at (1.5,0.5) {$B$};
+  \node (c) at (1,1) {$C$};
+  \draw [dashed] (c.north  -| a.west) rectangle (a.south -| b.east);
+\end{tikzpicture}
+```
+
+{{< figure src="./img/perpendicular4.png" >}}
 
 ### ベクトルを平行にずらす
 
@@ -566,6 +624,7 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 
 `graph`を使うと、グラフがより簡潔に書ける。`\draw [->] (x1) -- (x2);`みたいに矢印を1つずつ描かず、
 直感的な記述でノード間の関係を記述できる。
+`\graph`の`edges`パラメータで、グラフ内の辺のスタイルを設定できる。
 
 ```tex
 \usetikzlibrary{calc, positioning, graphs, arrows.meta}
@@ -573,8 +632,7 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 \begin{tikzpicture}
   [entity-x/.style={draw, circle},
    entity-u/.style={draw},
-   entity-y/.style={draw},
-   >=Stealth]
+   entity-y/.style={draw}]
 
   \node [entity-x] (x1) {$x_1$};
   \node [right=1cm of x1, entity-x] (x2) {$x_2$};
@@ -591,7 +649,7 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
   \node [below=1cm of x2, entity-y] (y2) {$y_2$};
   \node [below=1cm of x3, entity-y] (y3) {$y_3$};
 
-  \graph {
+  \graph [edges={>=Stealth}]{
     (x0) -> (x1) -> (x2) -> (x3) -> (x4);
     (u1) -> (x1-2);
     (u2) -> (x2-3);
@@ -645,6 +703,10 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 ```
 
 {{< figure src="./img/matrix.png" >}}
+
+## 文字を揃えて並べる
+
+ノードの端を揃えたいときは、`anchor`をうまく使う。
 
 ## node関連
 
@@ -717,6 +779,24 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 ```
 
 {{< figure src="./img/node-align.png" >}}
+
+### 矢印とノードとの余白を空ける
+
+手軽な方法として2つ思い浮かんだ。1つ目は、`node`側で`outer sep`を指定する方法。始点と終点の余白を同じにしたいならこちらの方法が簡潔。2つ目は、`draw`側で`shorten <`と`shorten >`を指定する方法。それぞれ始点と終点の長さを指定できるため自由度が高い。
+
+```tex
+\begin{tikzpicture}
+  \node [draw, outer sep=4pt] (a) at (0,0) {$a$};
+  \node [draw, outer sep=4pt] (b) at (1,0) {$b$};
+  \node [draw] (c) at (0,1) {$c$};
+  \node [draw] (d) at (1,1) {$d$};
+
+  \draw[->] (a) -- (b);
+  \draw[->, shorten <=2pt, shorten >=4pt] (c) -- (d);
+\end{tikzpicture}
+```
+
+{{< figure src="./img/padding.png" >}}
 
 ## 繰り返し文
 
@@ -949,3 +1029,195 @@ PGF Manualでは「直線に接する円」を描画するために`let`を使�
 ```
 
 {{< figure src="./img/inscribed-circle.png" >}}
+
+## レイヤを使う
+
+**参考** PGF Manual, Part IX, 113 Layered Graphics
+
+描画順を制御したいときがたまにある。そんなときはレイヤの仕組みを使う。
+
+TikZコマンドは、基本的に書いた順に実行され、図形が重ねられる。
+そのため、描画順を変えたいなら、素朴にはTikZコマンドの順番を変えれば良い。
+しかし、「各ノードの座標を考慮した上で、それらを囲む色付き枠を作る」ような場合だと、
+素朴な方法ではできなくはないもののコード量が増える（未検証ではあるが、`\coordinate`で座標を定義する部分と、それを使って`node`を定義する部分に分ければできるはず）。
+
+`\pgfdeflarelayer`で新しいレイヤーをセットし、`\pgfsetlayers`でレイヤの描画順を設定する。
+ただし、`main`レイヤーは特殊なレイヤ（後述）のため、必ず指定する必要がある。
+以下は、`background`レイヤを定義し、それを`main`の後ろに設定する例。
+```tex
+\pgfdeflarelayer{background}
+\pgfsetlayers{background, main}
+```
+
+実際に特定のレイヤに対して描画を行うときは`pgfonlayer`環境を使う。
+`main`レイヤだけは特殊で、`pgfonlayer`で指定しなかったTikZのコマンドはすべて`main`レイヤで描画される。
+
+```tex
+\usetikzlibrary{positioning, graphs}
+\pgfdeclarelayer{background}
+\pgfsetlayers{background, main}
+
+\begin{tikzpicture}
+  \matrix [row sep=2em, column sep=2em,
+           entity/.style={draw, circle,
+                          minimum width=3em,
+                          outer sep=3pt,
+                          fill=white}] {
+      \coordinate (instart) at (0,0);
+    & \node [entity] (in0) { $u_{k-1}$ };
+    & \node [entity] (in1) { $u_{k}$ };
+    & \\
+
+      \node [] (ststart) { $\cdots$ };
+    & \node [entity] (st0) { $x_{k-1}$ };
+    & \node [entity] (st1) { $x_{k}$ };
+    & \node [] (stend) { $\cdots$ };\\
+
+    & \node [entity] (ob0) { $y_{k-1}$ };
+    & \node [entity] (ob1) { $y_{k}$ };
+    & \coordinate (obend) at (0,0); \\
+  };
+
+  \graph {
+      (ststart) -> (st0) -> (st1) -> (stend);
+      (in0) -> (st0) -> (ob0);
+      (in1) -> (st1) -> (ob1);
+  };
+
+  \coordinate (strect start) at (in0.north -| ststart.south west);
+  \coordinate (strect end) at (st1.south -| stend.south east);
+
+  \begin{pgfonlayer}{background}
+    \fill [blue!20!white] (strect start) rectangle (strect end);
+  \end{pgfonlayer}
+\end{tikzpicture}
+```
+
+{{< figure src="./img/layer.png" >}}
+
+## 囲み枠（Fitting Library利用）
+
+**参考** PGF Manual, Part V, 54 Fitting Library
+
+前節では、青色の四角形の座標を`\coordinate (strect start) ...`と`\coordinate (strect end) ...`で計算している。このケースではそこまで複雑ではないが、ノードの囲み枠の座標を計算せずに描画したいなら、Fittingライブラリが使える。
+
+`\node [fit=...] {};`で囲み枠を作成。`...`の部分にはスペース区切りのノードが入る。枠の余白を調整したいなら`inner sep`を指定する。
+
+```tex
+\usetikzlibrary{positioning, graphs, fit}
+\pgfdeclarelayer{background}
+\pgfsetlayers{background, main}
+
+\begin{tikzpicture}
+  \matrix [row sep=2em, column sep=2em,
+           entity/.style={draw, circle,
+                          minimum width=3em,
+                          outer sep=3pt,
+                          fill=white}] {
+      \coordinate (instart) at (0,0);
+    & \node [entity] (in0) { $u_{k-1}$ };
+    & \node [entity] (in1) { $u_{k}$ };
+    & \\
+
+      \node [] (ststart) { $\cdots$ };
+    & \node [entity] (st0) { $x_{k-1}$ };
+    & \node [entity] (st1) { $x_{k}$ };
+    & \node [] (stend) { $\cdots$ };\\
+
+    & \node [entity] (ob0) { $y_{k-1}$ };
+    & \node [entity] (ob1) { $y_{k}$ };
+    & \coordinate (obend) at (0,0); \\
+  };
+
+  \graph {
+      (ststart) -> (st0) -> (st1) -> (stend);
+      (in0) -> (st0) -> (ob0);
+      (in1) -> (st1) -> (ob1);
+  };
+
+  \begin{pgfonlayer}{background}
+    \node [fit=(in0) (in1) (ststart) (st0) (st1) (stend),
+           fill=blue!20!white,
+           inner sep=0pt] {};
+  \end{pgfonlayer}
+\end{tikzpicture}
+```
+
+結果の画像は前節と同様なので省略。
+
+## 関数のグラフの描画
+
+**参考** PGF Manual, Part III, 22.5 Plotting a Function
+
+簡単な関数の描画なら`plot`を使う。
+
+`plot`は`\draw`コマンドの中で指定できる。基本的には`plot (\x, {\xについての関数})`のような形で書く。`domain`で定義域、`samples`でサンプル数（大きいほど滑らか）を指定。
+`\x^2`ではなく`(\x)^2`としないと2乗が正しく計算されないことに注意。
+
+
+```tex
+\begin{tikzpicture}
+  \draw [domain=-1.5:1.5, samples=100] plot (\x, {exp(-(\x)^2/(2*0.1))/(2*pi*0.1)});
+  \draw [->, yshift=-0.5pt] (-1.6,0) -- (1.6,0) node [below] {$x$};
+  \node at (1, 1) {$p(x)$};
+\end{tikzpicture}
+```
+
+{{< figure src="./img/plot.png" >}}
+
+あまり複雑な関数だとTeXでは効率的に計算できないらしいので、その場合はgnuplotと連携する方法を検討したほうが良いらしい（参考：PGF Manual, Part III, 22.6 Plotting a Function Using Gnuplot）。
+
+gnuplotで連携する以外にも、pyplotなど外部プログラム予め画像を作っておき、それを`\includegraphics`で読み込む方法が考えられる。実際、TikZでは以下のように`node`の中に画像を埋め込める。
+```tex
+\node at (0,0) {\includegraphics[width=1cm, clip]{path/to/file.pdf}};
+```
+
+## 座標を使った平行移動
+
+`xshift`で横軸方向、`yshift`で縦軸方向の平行移動が可能。
+それだけでなく、`shift={(座標)}`で縦軸、横軸まとめて平行移動が可能。
+
+```tex
+\usetikzlibrary{calc, positioning}
+
+\begin{tikzpicture}
+  \node (a) {正規分布（$\sigma^2 = 0.1$）};
+  \node [right=1cm of a] (b) {正規分布（$\sigma^2 = 0.2$）};
+
+  \begin{scope}[shift={($(a.south) + (0, -1.7cm)$)}]
+    \draw [domain=-1.5:1.5,
+           samples=100] plot (\x, {exp(-(\x)^2/(2*0.1))/(2*pi*0.1)});
+    \draw [->, yshift=-0.5pt] (-1.6,0) -- (1.6,0) node [below] {$x$};
+    \node at (1, 1) {$p(x)$};
+  \end{scope}
+
+  \begin{scope}[shift={($(b.south) + (0, -1.7cm)$)}]
+    \draw [domain=-1.5:1.5,
+           samples=100] plot (\x, {exp(-(\x)^2/(2*0.2))/(2*pi*0.2)});
+    \draw [->, yshift=-0.5pt] (-1.6,0) -- (1.6,0) node [below] {$x$};
+    \node at (1, 1) {$p(x)$};
+  \end{scope}
+\end{tikzpicture}
+```
+
+{{< figure src="./img/shift.png" >}}
+
+## 図を拡大縮小する（TikZの話ではない）
+
+図がPDFの文書からはみ出たり、逆に小さすぎたりした場合、位置やフォント、図形のサイズをうまく調整して直すべきではあるのだが、それでも難しい場合の最終手段として「`tikzpicture`環境内の図形をまるごと拡大縮小する」がある。それには`\scalebox`コマンドを使う。これはTikZではなく、LaTeXのコマンドである（参考：[LaTeX2e unofficial reference manual 22.3.3](https://latexref.xyz/_005cscalebox.html)）。以下のように、環境全体をくくって使う。
+```tex
+\begin{tikzpicture}
+  \node [draw] {文章};
+\end{tikzpicture}
+\scalebox{0.5}{
+  \begin{tikzpicture}
+    \node [draw] {文章};
+  \end{tikzpicture}
+}
+```
+
+{{< figure src="./img/scalebox.png" >}}
+
+とはいえ、拡大縮小しすぎて図が見づらくなる危険があるため、むやみな使用は禁物かもしれない。
+
+（**補足** `\begin{tikzpicture}[scale=0.5]...`のように`scale`を指定しても縮小可能なのではないか、と感じるが、実際は期待通りにはならない。この`scale`は座標系の縮尺を変更するだけで、図形やテキストのサイズには変化を及ぼさない。）
