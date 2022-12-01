@@ -19,6 +19,8 @@
 {{ if or .Params.math .Site.Params.math }}
 {{- partial "math.html" . -}}
 {{ end }}
+{{ template "_internal/opengraph.html" . }}
+{{ template "_internal/twitter_cards.html" . }}
 
 <header>
   {{ if not (gt (len .Site.Menus) 1) }}
