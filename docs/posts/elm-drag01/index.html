@@ -24,6 +24,24 @@
 
 
 
+<meta property="og:title" content="Elmメモ ドラッグ移動の実現(1)" />
+<meta property="og:description" content="ElmでSVGの要素をドラッグ移動したいと思った。ドラッグ操作を実現するパッケージにelm-draggableがある。今回は勉強として、それに頼らず実装することを試みる。elm-draggableを用いた方法については次回やる。
+初期状態 詳細は省略するが、Elmプロジェクトを作成してelm/svgとelm/jsonをインストールしておく。
+src/Main.elmは以下のようにしておく。elm reactorで動くことを確認する。
+module Main exposing (..) import Browser import Browser.Events as BE import Html exposing (..) import Html.Attributes exposing (..) import Json.Decode as JD import Svg as S exposing (Svg) import Svg.Attributes as SA import Svg.Events as SE main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type alias Model = {} type Msg = Dummy init : () -&gt; ( Model, Cmd Msg ) init _ = ( {}, Cmd." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/elm-drag01/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-02-25T19:15:00+09:00" />
+<meta property="article:modified_time" content="2020-03-04T13:44:16+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Elmメモ ドラッグ移動の実現(1)"/>
+<meta name="twitter:description" content="ElmでSVGの要素をドラッグ移動したいと思った。ドラッグ操作を実現するパッケージにelm-draggableがある。今回は勉強として、それに頼らず実装することを試みる。elm-draggableを用いた方法については次回やる。
+初期状態 詳細は省略するが、Elmプロジェクトを作成してelm/svgとelm/jsonをインストールしておく。
+src/Main.elmは以下のようにしておく。elm reactorで動くことを確認する。
+module Main exposing (..) import Browser import Browser.Events as BE import Html exposing (..) import Html.Attributes exposing (..) import Json.Decode as JD import Svg as S exposing (Svg) import Svg.Attributes as SA import Svg.Events as SE main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type alias Model = {} type Msg = Dummy init : () -&gt; ( Model, Cmd Msg ) init _ = ( {}, Cmd."/>
+
 
 <header>
   

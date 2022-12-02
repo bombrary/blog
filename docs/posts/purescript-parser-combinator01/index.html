@@ -24,6 +24,32 @@
 
 
 
+<meta property="og:title" content="PureScriptでパーサーコンビネータを触る (1) 四則演算のパース" />
+<meta property="og:description" content="PureScriptのパーサーコンビネータにpurescript-parsingがある。これはHaskellのParsecが基になっているので、使い方はParsecとほとんど同じだと思われる(とはいえ、Parsecを使ったことはあまりない)。これを用いて四則演算のパーサーを実装してみたが、うまく動かず詰まる点がいくつかあった。その備忘録。
+パーサーコンビネータの準備 % spago install parsing 後々使うので以下のパッケージもインストール。
+% spago install either integers maybe strings arrays lists src/Main.pursに以下の記述を追加。
+import Text.Parsing.Parser (Parser) parser :: Parser String String parser = pure &#34;Hello&#34; REPLを起動して、動くか確認する。どんな文字列を食わせても&quot;Hello&quot;としか結果を返さないパーサーの完成。
+&gt; import Main &gt; import Text.Parsing.Parser (runParser) &gt; runParser &#34;hoge&#34; parser (Right &#34;Hello&#34;) REPLでMain.pursをリロードする場合は:rをREPLで実行する。
+数字のパース 1文字取得 1文字の数字を読み取りたいなら、Text.Parsing.Parser.Tokenにdigitがあるのでそれを使う。
+import Text.Parsing.Parser.Token (digit) parser :: Parser String Char parser = digit &gt; runParser &#34;12345&#34; parser (Right &#39;1&#39;) 1文字以上取得 1文字以上を取得したいなら、Data.Array.Someを使う。
+import Data.Array as Array parser :: Parser String (Array Char) parser = Array." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/purescript-parser-combinator01/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-12-30T09:40:00+09:00" />
+<meta property="article:modified_time" content="2021-12-30T09:43:28+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PureScriptでパーサーコンビネータを触る (1) 四則演算のパース"/>
+<meta name="twitter:description" content="PureScriptのパーサーコンビネータにpurescript-parsingがある。これはHaskellのParsecが基になっているので、使い方はParsecとほとんど同じだと思われる(とはいえ、Parsecを使ったことはあまりない)。これを用いて四則演算のパーサーを実装してみたが、うまく動かず詰まる点がいくつかあった。その備忘録。
+パーサーコンビネータの準備 % spago install parsing 後々使うので以下のパッケージもインストール。
+% spago install either integers maybe strings arrays lists src/Main.pursに以下の記述を追加。
+import Text.Parsing.Parser (Parser) parser :: Parser String String parser = pure &#34;Hello&#34; REPLを起動して、動くか確認する。どんな文字列を食わせても&quot;Hello&quot;としか結果を返さないパーサーの完成。
+&gt; import Main &gt; import Text.Parsing.Parser (runParser) &gt; runParser &#34;hoge&#34; parser (Right &#34;Hello&#34;) REPLでMain.pursをリロードする場合は:rをREPLで実行する。
+数字のパース 1文字取得 1文字の数字を読み取りたいなら、Text.Parsing.Parser.Tokenにdigitがあるのでそれを使う。
+import Text.Parsing.Parser.Token (digit) parser :: Parser String Char parser = digit &gt; runParser &#34;12345&#34; parser (Right &#39;1&#39;) 1文字以上取得 1文字以上を取得したいなら、Data.Array.Someを使う。
+import Data.Array as Array parser :: Parser String (Array Char) parser = Array."/>
+
 
 <header>
   

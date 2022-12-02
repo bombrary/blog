@@ -24,6 +24,36 @@
 
 
 
+<meta property="og:title" content="zipファイルの構造を少しだけ理解する" />
+<meta property="og:description" content="Unix系のコマンド(od、grep)だけを使って、zipファイルの中身をのぞく。
+zip形式の参考サイト zipの仕様書はZIP File Format Specificationで確認できる。ページ内検索をかけながら必要なところをつまんでいく、という読み方が良さそう。
+日本語ならWikipediaがある。こちらは図が書かれているし日本語なので分かりやすい。
+zipファイルの用意 まずはzipファイルを用意する。
+foo.txtとbar.txtを用意する。
+$ echo &#34;Hello, World.&#34; &gt; foo.txt $ echo &#34;Good Bye.&#34; &gt; bar.txt これらをzipコマンドでまとめる。
+$ zip tmp.zip foo.txt bar.txt バイナリ形式で出力 zipファイルはテキストとして表示できるものではなく、バイナリとして表示しないとあまり意味を掴めない。バイナリ表示ができるテキストエディタを使ってもよいが、ここではodコマンドを用いる。
+$ od -Ax -tx1z tmp.zip 引数の意味は以下の通り。man odでも確認できる。
+-A: アドレスの基数(Address-radix)。出力時、最も左の値がファイル先頭から何バイト目なのかを表示する。続けてxと書くと、16進数(hex)で出力する。 -t: データの出力形式(おそらくtypeの略)。 続けてx1と書くと、1バイト区切りの16進数で出力する。 続けてzと書くと、右側にテキストでの表示を添える。ただし表示されるのはASCIIコードで認識される文字のみ。 結果は以下のようになる。
+000000 50 4b 03 04 0a 00 00 00 00 00 28 70 64 50 4b 82 &gt;PK........(pdPK.&lt; 000010 70 33 0e 00 00 00 0e 00 00 00 07 00 1c 00 66 6f &gt;p3." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/zip-format-report/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-03-04T13:50:16+09:00" />
+<meta property="article:modified_time" content="2020-03-06T11:26:07+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="zipファイルの構造を少しだけ理解する"/>
+<meta name="twitter:description" content="Unix系のコマンド(od、grep)だけを使って、zipファイルの中身をのぞく。
+zip形式の参考サイト zipの仕様書はZIP File Format Specificationで確認できる。ページ内検索をかけながら必要なところをつまんでいく、という読み方が良さそう。
+日本語ならWikipediaがある。こちらは図が書かれているし日本語なので分かりやすい。
+zipファイルの用意 まずはzipファイルを用意する。
+foo.txtとbar.txtを用意する。
+$ echo &#34;Hello, World.&#34; &gt; foo.txt $ echo &#34;Good Bye.&#34; &gt; bar.txt これらをzipコマンドでまとめる。
+$ zip tmp.zip foo.txt bar.txt バイナリ形式で出力 zipファイルはテキストとして表示できるものではなく、バイナリとして表示しないとあまり意味を掴めない。バイナリ表示ができるテキストエディタを使ってもよいが、ここではodコマンドを用いる。
+$ od -Ax -tx1z tmp.zip 引数の意味は以下の通り。man odでも確認できる。
+-A: アドレスの基数(Address-radix)。出力時、最も左の値がファイル先頭から何バイト目なのかを表示する。続けてxと書くと、16進数(hex)で出力する。 -t: データの出力形式(おそらくtypeの略)。 続けてx1と書くと、1バイト区切りの16進数で出力する。 続けてzと書くと、右側にテキストでの表示を添える。ただし表示されるのはASCIIコードで認識される文字のみ。 結果は以下のようになる。
+000000 50 4b 03 04 0a 00 00 00 00 00 28 70 64 50 4b 82 &gt;PK........(pdPK.&lt; 000010 70 33 0e 00 00 00 0e 00 00 00 07 00 1c 00 66 6f &gt;p3."/>
+
 
 <header>
   

@@ -24,6 +24,32 @@
 
 
 
+<meta property="og:title" content="Elmメモ - 文字列をIPアドレスに変換(1) splitを用いる方法" />
+<meta property="og:description" content="IPv4アドレスの文字列&quot;192.168.1.1&quot;をパースする方法を考える。IPAddrの内部表現は次のようにする。
+type IPAddr = IPAddr Int Int Int Int 思いつくのは次の2通り。
+ピリオドでsplitして、整数値に変換する。 パーサを利用する。 いずれにしても結構面倒。この記事では前者だけやる。
+準備 適当なディレクトリで次のコマンドを実行。
+$ elm init $ elm install elm/parser src/IPAddr.elmを作り、内容を以下の通りにする。
+module IPAddr exposing (..) type IPAddr = IPAddr Int Int Int Int $ elm repl &gt; import IPAddr exposing (..) 方針 次の処理を行う関数をfromStringとして定義する。
+文字列を.でsplitする。 Listの要素数が4でなければ失敗。 Listの各要素にString.toIntを適用し、どれか一つでも失敗すれば全体としても失敗。 Listを[a,b,c,d]としたとき、IPAddr a b c dを返す。 traverseの実装 3の処理は、次の関数として抽象化できる: リストの各要素にfを適用し、その結果すべてがJustを返したときだけ、全体の結果を返す。
+traverse : (a -&gt; Maybe b) -&gt; List a -&gt; Maybe List b 原始的な実装 なるべくfoldrとかを使わずに書こうとするとこんな感じになる。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/elm-ipaddr-split/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-01-05T11:27:01+09:00" />
+<meta property="article:modified_time" content="2020-01-05T16:29:13+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Elmメモ - 文字列をIPアドレスに変換(1) splitを用いる方法"/>
+<meta name="twitter:description" content="IPv4アドレスの文字列&quot;192.168.1.1&quot;をパースする方法を考える。IPAddrの内部表現は次のようにする。
+type IPAddr = IPAddr Int Int Int Int 思いつくのは次の2通り。
+ピリオドでsplitして、整数値に変換する。 パーサを利用する。 いずれにしても結構面倒。この記事では前者だけやる。
+準備 適当なディレクトリで次のコマンドを実行。
+$ elm init $ elm install elm/parser src/IPAddr.elmを作り、内容を以下の通りにする。
+module IPAddr exposing (..) type IPAddr = IPAddr Int Int Int Int $ elm repl &gt; import IPAddr exposing (..) 方針 次の処理を行う関数をfromStringとして定義する。
+文字列を.でsplitする。 Listの要素数が4でなければ失敗。 Listの各要素にString.toIntを適用し、どれか一つでも失敗すれば全体としても失敗。 Listを[a,b,c,d]としたとき、IPAddr a b c dを返す。 traverseの実装 3の処理は、次の関数として抽象化できる: リストの各要素にfを適用し、その結果すべてがJustを返したときだけ、全体の結果を返す。
+traverse : (a -&gt; Maybe b) -&gt; List a -&gt; Maybe List b 原始的な実装 なるべくfoldrとかを使わずに書こうとするとこんな感じになる。"/>
+
 
 <header>
   

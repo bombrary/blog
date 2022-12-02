@@ -24,6 +24,32 @@
 
 
 
+<meta property="og:title" content="PythonとFlask(&#43;α)で作るToDoリストAPI" />
+<meta property="og:description" content="シンプルなToDoリストのWeb APIを作る。 今までWSGIの仕様のみ、Werkzeug の2通りで実装したが、今回はFlaskといくつかのライブラリを使う。使うのは以下の通り。
+Flask: WSGIアプリフレームワーク。 peewee: ORMライブラリ。 marshmallow: データの変換やvalidationをするためのライブラリ。 Flaskとは WSGIのWebアプリを作るためのフレームワーク。 フレームワークであるため、Flaskが用意した作法に従ってコードを書くことで比較的手軽にWebアプリが作成できる。 前回との比較でいうならば、例えばルーティングの仕組みをプログラマが書く必要はない。これはFlaskに備わっている。
+Djangoのようなフレームワークとは違って、持っている機能は少ない。必要に応じて外部ライブラリを組み合わせる。 例えば、Djangoではデフォルトでデータベースの仕組みが内蔵されているが、Flaskにはない。その代わりに、 データベースのライブラリとしてsqlite3やSQLAlchemy、peeweeなど、好きなものを用いれば良い。
+ToDoリストAPIの仕様 今回ToDoのデータは以下キーと値を持つJSONデータとする。
+key value id ID content ToDoの内容 created_at 作成日時 (ISO8601) updated_at 更新日時 (ISO8601) APIの仕様は以下の通り。
+URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&lt;todo_id&gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&lt;todo_id&gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&lt;todo_id&gt; DELETE todo_idのidを持つToDoを削除 なし データはSQLiteで管理する。
+雛形 todo_listディレクトリを作成。todo_list/__init__.pyを以下のようにする。
+from flask import Flask def create_app(): app = Flask(__name__) @app.route(&#39;/&#39;) def hello(): return &#39;Hello, World&#39; return app exportコマンドで環境変数を設定する。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/todo-api-flask/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-06-03T23:29:00+09:00" />
+<meta property="article:modified_time" content="2021-06-04T21:28:29+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PythonとFlask(&#43;α)で作るToDoリストAPI"/>
+<meta name="twitter:description" content="シンプルなToDoリストのWeb APIを作る。 今までWSGIの仕様のみ、Werkzeug の2通りで実装したが、今回はFlaskといくつかのライブラリを使う。使うのは以下の通り。
+Flask: WSGIアプリフレームワーク。 peewee: ORMライブラリ。 marshmallow: データの変換やvalidationをするためのライブラリ。 Flaskとは WSGIのWebアプリを作るためのフレームワーク。 フレームワークであるため、Flaskが用意した作法に従ってコードを書くことで比較的手軽にWebアプリが作成できる。 前回との比較でいうならば、例えばルーティングの仕組みをプログラマが書く必要はない。これはFlaskに備わっている。
+Djangoのようなフレームワークとは違って、持っている機能は少ない。必要に応じて外部ライブラリを組み合わせる。 例えば、Djangoではデフォルトでデータベースの仕組みが内蔵されているが、Flaskにはない。その代わりに、 データベースのライブラリとしてsqlite3やSQLAlchemy、peeweeなど、好きなものを用いれば良い。
+ToDoリストAPIの仕様 今回ToDoのデータは以下キーと値を持つJSONデータとする。
+key value id ID content ToDoの内容 created_at 作成日時 (ISO8601) updated_at 更新日時 (ISO8601) APIの仕様は以下の通り。
+URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&lt;todo_id&gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&lt;todo_id&gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&lt;todo_id&gt; DELETE todo_idのidを持つToDoを削除 なし データはSQLiteで管理する。
+雛形 todo_listディレクトリを作成。todo_list/__init__.pyを以下のようにする。
+from flask import Flask def create_app(): app = Flask(__name__) @app.route(&#39;/&#39;) def hello(): return &#39;Hello, World&#39; return app exportコマンドで環境変数を設定する。"/>
+
 
 <header>
   

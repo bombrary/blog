@@ -24,6 +24,22 @@
 
 
 
+<meta property="og:title" content="Elm/JavaScript ローカルサーバーで通信する際にハマったこと" />
+<meta property="og:description" content="今回たまたまクライアント側でElmを使ったけど、これはElmに限ったことではない。
+結論 Client側での留意点 urlはlocalhost:[port]ではなくhttp://localhost:[port]と指定しなければならない。つまり、URLにはちゃんとスキーム名を指定する。 Server側での留意点 Access-Control-Allow-Originに関連するヘッダーをちゃんと設定する。 成功コード プログラムの内容 サーバーは{ &quot;msg&quot; : &quot;Hello, World!&quot; }という内容のJSONを送ってくるので、クライアントはその値を受け取って&quot;Success: Hello, World!&ldquo;を出力する。それだけ。
+Client: Elm module Main exposing (..) import Browser exposing (..) import Json.Decode exposing (..) import Http exposing (..) import Html exposing (..) import Html.Attributes exposing (..) main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type Model = Loading | Failed | Success String init : () -&gt; (Model, Cmd Msg) init _ = ( Loading, getServer ) type Msg = GotData (Result Http." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/elm-with-localserver/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-12-19T09:50:00+09:00" />
+<meta property="article:modified_time" content="2019-12-19T09:51:54+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Elm/JavaScript ローカルサーバーで通信する際にハマったこと"/>
+<meta name="twitter:description" content="今回たまたまクライアント側でElmを使ったけど、これはElmに限ったことではない。
+結論 Client側での留意点 urlはlocalhost:[port]ではなくhttp://localhost:[port]と指定しなければならない。つまり、URLにはちゃんとスキーム名を指定する。 Server側での留意点 Access-Control-Allow-Originに関連するヘッダーをちゃんと設定する。 成功コード プログラムの内容 サーバーは{ &quot;msg&quot; : &quot;Hello, World!&quot; }という内容のJSONを送ってくるので、クライアントはその値を受け取って&quot;Success: Hello, World!&ldquo;を出力する。それだけ。
+Client: Elm module Main exposing (..) import Browser exposing (..) import Json.Decode exposing (..) import Http exposing (..) import Html exposing (..) import Html.Attributes exposing (..) main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type Model = Loading | Failed | Success String init : () -&gt; (Model, Cmd Msg) init _ = ( Loading, getServer ) type Msg = GotData (Result Http."/>
+
 
 <header>
   

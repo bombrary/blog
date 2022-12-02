@@ -24,6 +24,38 @@
 
 
 
+<meta property="og:title" content="PureScriptでじゃんけんゲーム(CUI)を作る" />
+<meta property="og:description" content="プログラミングの初歩で作りそうなじゃんけんゲームを作る。ただし、PureScriptで作る。
+方針 Jankenというモジュールを作る グー・チョキ・パーをHandとして定義する じゃんけんの勝負の結果をJudgementとして定義する コンピュータが出す手はランダムに出したいので、ランダムな手を出す関数randomを作っておく 入力は文字列にしたいので、文字列から手に変換する関数fromStringを作っておく 入出力はMainに書く。Node.ReadLineモジュールの力で入力を受け付ける。 準備 適当なプロジェクトディレクトリを作っておいて、
+$ spago init /src/Main.pursと/src/Janken.pursを作っておく。
+/src/Main.pursはとりあえず以下のようにしておく。
+module Main where import Prelude import Effect (Effect) import Effect.Console (log) main :: Effect Unit main = do log &#34;Hello&#34; 次のコマンドでHelloが出力されることを確認する。
+$ spago run Jankenモジュールの定義 この節では/src/Janken.pursを編集していく。
+module Janken where import Prelude Handの定義 じゃんけんの手を表す型Handを定義する。
+data Hand = Rock | Scissors | Paper 余談。これは公式ではタグ付き共用体と呼ばれているもの。Haskellでは代数的データ型と呼ばれているが、正直名前はどうでもいい。データをこのように表現すれば、「データはこの値しかとりえない」という制限が得られる。制限があれば、プログラムのバグも減らせる。たとえば、「グーを0、チョキを1、パーを2」として表現すると、万が一それ以外の値が来た場合に困る。上のようなHandの定義では、「それ以外の値」が入る余地すら与えない。…この話は、Elm Guideの受け売り。
+Judgementの定義 同じようにして、じゃんけんの勝敗を表す型Judgementを定義する。
+Judgement = WinLeft | WinRight | Draw なぜWinとかLoseではないのかというと、これはjudge関数の都合である。Judgeは、2つの手を引数にとり、その勝負結果を返す。WinやLoseだと、どっちが勝ちでどっちが負けか分からない。なので、「judgeの左側の引数が勝ったらWinLeft、右側が勝ったらWinRight、引き分けならDraw」と定義している。
+judge :: Hand -&gt; Hand -&gt; Judgement judge Rock Rock = Draw judge Scissors Scissors = Draw judge Papser Paper = Draw judge Rock Scissors = WinLeft judge Scissors Paper = WinLeft judge Paper Rock = WinLeft judge _ _ = WinRight REPLで遊ぶ REPLでテストしてみたい。Showクラスのインスタンスにすることで、REPLで値が出力できるようになる。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/purescript-janken/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-06-25T09:05:09+09:00" />
+<meta property="article:modified_time" content="2020-06-25T12:50:16+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PureScriptでじゃんけんゲーム(CUI)を作る"/>
+<meta name="twitter:description" content="プログラミングの初歩で作りそうなじゃんけんゲームを作る。ただし、PureScriptで作る。
+方針 Jankenというモジュールを作る グー・チョキ・パーをHandとして定義する じゃんけんの勝負の結果をJudgementとして定義する コンピュータが出す手はランダムに出したいので、ランダムな手を出す関数randomを作っておく 入力は文字列にしたいので、文字列から手に変換する関数fromStringを作っておく 入出力はMainに書く。Node.ReadLineモジュールの力で入力を受け付ける。 準備 適当なプロジェクトディレクトリを作っておいて、
+$ spago init /src/Main.pursと/src/Janken.pursを作っておく。
+/src/Main.pursはとりあえず以下のようにしておく。
+module Main where import Prelude import Effect (Effect) import Effect.Console (log) main :: Effect Unit main = do log &#34;Hello&#34; 次のコマンドでHelloが出力されることを確認する。
+$ spago run Jankenモジュールの定義 この節では/src/Janken.pursを編集していく。
+module Janken where import Prelude Handの定義 じゃんけんの手を表す型Handを定義する。
+data Hand = Rock | Scissors | Paper 余談。これは公式ではタグ付き共用体と呼ばれているもの。Haskellでは代数的データ型と呼ばれているが、正直名前はどうでもいい。データをこのように表現すれば、「データはこの値しかとりえない」という制限が得られる。制限があれば、プログラムのバグも減らせる。たとえば、「グーを0、チョキを1、パーを2」として表現すると、万が一それ以外の値が来た場合に困る。上のようなHandの定義では、「それ以外の値」が入る余地すら与えない。…この話は、Elm Guideの受け売り。
+Judgementの定義 同じようにして、じゃんけんの勝敗を表す型Judgementを定義する。
+Judgement = WinLeft | WinRight | Draw なぜWinとかLoseではないのかというと、これはjudge関数の都合である。Judgeは、2つの手を引数にとり、その勝負結果を返す。WinやLoseだと、どっちが勝ちでどっちが負けか分からない。なので、「judgeの左側の引数が勝ったらWinLeft、右側が勝ったらWinRight、引き分けならDraw」と定義している。
+judge :: Hand -&gt; Hand -&gt; Judgement judge Rock Rock = Draw judge Scissors Scissors = Draw judge Papser Paper = Draw judge Rock Scissors = WinLeft judge Scissors Paper = WinLeft judge Paper Rock = WinLeft judge _ _ = WinRight REPLで遊ぶ REPLでテストしてみたい。Showクラスのインスタンスにすることで、REPLで値が出力できるようになる。"/>
+
 
 <header>
   

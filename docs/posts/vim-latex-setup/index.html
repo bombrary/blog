@@ -24,6 +24,48 @@
 
 
 
+<meta property="og:title" content="VimでLaTeXを使うための環境構築(Mac)" />
+<meta property="og:description" content="備忘録。基本的にはMacのTerminalでやることを想定。Macをインストールしたての状態を仮定する。
+homebrewを使って、TeXLiveとSkimをインストールする。latexmkの設定をした後、vimにdein.vimを入れて、それを用いてvimtexを入れるところまでやる。おまけでvimrcの他の設定や、colorschemeの設定もやる。
+注意 なるべくコマンドを載せるようにするが、それを実行しても上手くいかない場合は、公式サイトなどを参照すること。この記事が古くなっていて、打つべきコマンドが変わっている可能性がある。
+homebrewのインストール homebrewをインストールしておくと、いろいろなソフトがbrew (cack) install ...だけでインストールできる。便利なので入れる。
+homebrewの公式サイトのインストールを参照。
+念のため、Terminalを再起動しておく。
+TeXLive(MacTeX)のインストール TeXLiveの説明についてはWikiを参照。TeX関連のあらゆるパッケージやソフトの詰め合わせ。そのMac版がMacTeX。
+MacTeXやそのインストール方法については、Wikiを参照。homebrewをインストールしたので、次のコマンドでインストールできる。以下はmactex-no-guiとしているが、もしguiアプリも入れたい場合はmactexとする。どんなguiアプリが入るのかについてはWikiを参照。
+かなり巨大なファイル群のため、インストールにかなり時間がかかった気がする。
+$ brew cask install mactex-no-gui $ sudo tlmgr update --self --all $ sudo tlmgr paper a4 念のため、Terminalを再起動しておく。
+Skimのインストール SkimとはPDFビュワーの一種で、PDFの自動リロードを行ってくれる。こちらもhomebrewでインストールできる。
+$ brew cask install Skim 起動して、環境設定を開く。「同期」タブに移動して、「ファイルの変更をチェック」と「自動的にリロードする」にチェックを入れておく。
+latexmkの設定 後でインストールするVimのプラグイン(vimtex)がlatexmkを利用するので、設定しておく。
+こちらのページは、latexmkについて分かりやすく説明してくれているので見ておくと良い。
+~/.latexmkrcを作成し、内容を以下のようにする。これは上の参考サイトの引用。
+#!/usr/bin/env perl $latex = &#39;platex -synctex=1 -halt-on-error&#39;; $latex_silent = &#39;platex -synctex=1 -halt-on-error -interaction=batchmode&#39;; $bibtex = &#39;pbibtex&#39;; $biber = &#39;biber --bblencoding=utf8 -u -U --output_safechars&#39;; $dvipdf = &#39;dvipdfmx %O -o %D %S&#39;; $makeindex = &#39;mendex %O -o %D %S&#39;; $max_repeat = 5; $pdf_mode = 3; $pvc_view_file_via_temporary = 0; $pdf_previewer = &#34;open -ga /Applications/Skim." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/vim-latex-setup/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-05-31T19:03:00+09:00" />
+<meta property="article:modified_time" content="2020-05-31T22:49:13+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="VimでLaTeXを使うための環境構築(Mac)"/>
+<meta name="twitter:description" content="備忘録。基本的にはMacのTerminalでやることを想定。Macをインストールしたての状態を仮定する。
+homebrewを使って、TeXLiveとSkimをインストールする。latexmkの設定をした後、vimにdein.vimを入れて、それを用いてvimtexを入れるところまでやる。おまけでvimrcの他の設定や、colorschemeの設定もやる。
+注意 なるべくコマンドを載せるようにするが、それを実行しても上手くいかない場合は、公式サイトなどを参照すること。この記事が古くなっていて、打つべきコマンドが変わっている可能性がある。
+homebrewのインストール homebrewをインストールしておくと、いろいろなソフトがbrew (cack) install ...だけでインストールできる。便利なので入れる。
+homebrewの公式サイトのインストールを参照。
+念のため、Terminalを再起動しておく。
+TeXLive(MacTeX)のインストール TeXLiveの説明についてはWikiを参照。TeX関連のあらゆるパッケージやソフトの詰め合わせ。そのMac版がMacTeX。
+MacTeXやそのインストール方法については、Wikiを参照。homebrewをインストールしたので、次のコマンドでインストールできる。以下はmactex-no-guiとしているが、もしguiアプリも入れたい場合はmactexとする。どんなguiアプリが入るのかについてはWikiを参照。
+かなり巨大なファイル群のため、インストールにかなり時間がかかった気がする。
+$ brew cask install mactex-no-gui $ sudo tlmgr update --self --all $ sudo tlmgr paper a4 念のため、Terminalを再起動しておく。
+Skimのインストール SkimとはPDFビュワーの一種で、PDFの自動リロードを行ってくれる。こちらもhomebrewでインストールできる。
+$ brew cask install Skim 起動して、環境設定を開く。「同期」タブに移動して、「ファイルの変更をチェック」と「自動的にリロードする」にチェックを入れておく。
+latexmkの設定 後でインストールするVimのプラグイン(vimtex)がlatexmkを利用するので、設定しておく。
+こちらのページは、latexmkについて分かりやすく説明してくれているので見ておくと良い。
+~/.latexmkrcを作成し、内容を以下のようにする。これは上の参考サイトの引用。
+#!/usr/bin/env perl $latex = &#39;platex -synctex=1 -halt-on-error&#39;; $latex_silent = &#39;platex -synctex=1 -halt-on-error -interaction=batchmode&#39;; $bibtex = &#39;pbibtex&#39;; $biber = &#39;biber --bblencoding=utf8 -u -U --output_safechars&#39;; $dvipdf = &#39;dvipdfmx %O -o %D %S&#39;; $makeindex = &#39;mendex %O -o %D %S&#39;; $max_repeat = 5; $pdf_mode = 3; $pvc_view_file_via_temporary = 0; $pdf_previewer = &#34;open -ga /Applications/Skim."/>
+
 
 <header>
   

@@ -24,6 +24,30 @@
 
 
 
+<meta property="og:title" content="iPhoneアプリ開発メモ - UIPageViewControllerの利用" />
+<meta property="og:description" content="目標 ウォークスルーっぽいものを作る。
+メイン画面でボタンを押すとウォークスルー画面に飛ぶ。 ウォークスルー画面では、左右にスワイプすると画面が移動する。 画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。 登場物 Main.storyboardとViewController.swift Walkthrough.storyboardとPageViewController.swift 準備 上に書いたものをとりあえず全て作る。ただし、PageViewControllerのサブクラスはUIPageViewControllerであることに注意。
+Main.storyboard ボタンを一つ作っておく。
+Walkthrough.storyboard 配置を次のようにする
+Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &ldquo;Page1&quot;と書かれたViewControllerのidentifierはpage1とする。 &ldquo;Page2&quot;と書かれたViewControllerのidentifierはpage2とする。 &ldquo;Page3&quot;と書かれたViewControllerのidentifierはpage3とする。 以下で、Transition Styleを&quot;Scroll&quot;とする。もし&quot;Page Curl&quot;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
+PageViewController.swift 次のように書く。
+class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.instantiateViewController(withIdentifier: &#34;page1&#34;) let page2 = stb.instantiateViewController(withIdentifier: &#34;page2&#34;) let page3 = stb." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/iphone-pageview/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-12-14T22:35:31+09:00" />
+<meta property="article:modified_time" content="2019-12-22T15:09:44+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="iPhoneアプリ開発メモ - UIPageViewControllerの利用"/>
+<meta name="twitter:description" content="目標 ウォークスルーっぽいものを作る。
+メイン画面でボタンを押すとウォークスルー画面に飛ぶ。 ウォークスルー画面では、左右にスワイプすると画面が移動する。 画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。 登場物 Main.storyboardとViewController.swift Walkthrough.storyboardとPageViewController.swift 準備 上に書いたものをとりあえず全て作る。ただし、PageViewControllerのサブクラスはUIPageViewControllerであることに注意。
+Main.storyboard ボタンを一つ作っておく。
+Walkthrough.storyboard 配置を次のようにする
+Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &ldquo;Page1&quot;と書かれたViewControllerのidentifierはpage1とする。 &ldquo;Page2&quot;と書かれたViewControllerのidentifierはpage2とする。 &ldquo;Page3&quot;と書かれたViewControllerのidentifierはpage3とする。 以下で、Transition Styleを&quot;Scroll&quot;とする。もし&quot;Page Curl&quot;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
+PageViewController.swift 次のように書く。
+class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.instantiateViewController(withIdentifier: &#34;page1&#34;) let page2 = stb.instantiateViewController(withIdentifier: &#34;page2&#34;) let page3 = stb."/>
+
 
 <header>
   

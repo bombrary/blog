@@ -24,6 +24,36 @@
 
 
 
+<meta property="og:title" content="Androidアプリ開発勉強(2) - Navigationの基本" />
+<meta property="og:description" content="Navigationを用いて画面遷移をやってみる。具体的には以下の処理を行う。
+Fragment01とFragment02を用意する Fragment01でボタンが押されたらFragment02に遷移する Android Kotlin Fundamentals Courseでの03辺りを勉強した記録なので、詳しいことはそちらに載っている。
+Navigationについて 異なるFragment間の遷移を制御する仕組み。遷移の設定を視覚的に行えるらしい。
+これ以前はIntentという仕組みを用いていたらしい。これについては必要になりそうならいつか調べる。
+プロジェクト作成 Empty Activityを選択し、名前をNavigation Testとする。
+build.gradle(Module: app)でDataBindingを有効にしておく。
+Fragmentの作成 layouts/にFragmentを作成する。&ldquo;Create layout XML?&ldquo;だけチェックをつけておく。Fragmentは2つ作成し、それぞれ&quot;Fragment01&quot;と&quot;Fragment02&quot;とする。xmlファイルはそれぞれfragment_fragment01.xml、fragment_fragment02.xmlとする。
+まずTextViewのtext要素に設定するための定数をstrings.xmlに内容を追加しておく。 &lt;resources&gt; &lt;string name=&#34;app_name&#34;&gt;NavigationTest&lt;/string&gt; &lt;!-- TODO: Remove or change this placeholder text --&gt; &lt;string name=&#34;hello_blank_fragment&#34;&gt;Hello blank fragment&lt;/string&gt; &lt;string name=&#34;fragment01&#34;&gt;Fragment01&lt;/string&gt; &lt;string name=&#34;fragment02&#34;&gt;Fragment02&lt;/string&gt; &lt;string name=&#34;click&#34;&gt;Click&lt;/string&gt; &lt;/resources&gt;
+fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し、textを@string/clickに設定する。TextViewのtextを@string/fragment01に設定する。また全体をConstraintLayoutで包み、DataBindingのためにlayoutでさらに包む。
+&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt; &lt;layout xmlns:android=&#34;http://schemas.android.com/apk/res/android&#34; xmlns:app=&#34;http://schemas.android.com/apk/res-auto&#34; xmlns:tools=&#34;http://schemas.android.com/tools&#34; tools:context=&#34;.Fragment01&#34;&gt; &lt;androidx.constraintlayout.widget.ConstraintLayout android:layout_width=&#34;match_parent&#34; android:layout_height=&#34;match_parent&#34;&gt; &lt;TextView android:id=&#34;@&#43;id/text_fragment01&#34; android:layout_width=&#34;wrap_content&#34; android:layout_height=&#34;wrap_content&#34; android:text=&#34;@string/fragment01&#34; app:layout_constraintBottom_toBottomOf=&#34;parent&#34; app:layout_constraintEnd_toEndOf=&#34;parent&#34; app:layout_constraintStart_toStartOf=&#34;parent&#34; app:layout_constraintTop_toTopOf=&#34;parent&#34; /&gt; &lt;Button android:id=&#34;@&#43;id/button&#34; android:layout_width=&#34;wrap_content&#34; android:layout_height=&#34;wrap_content&#34; android:text=&#34;@string/click&#34; app:layout_constraintBottom_toTopOf=&#34;@&#43;id/text_fragment01&#34; app:layout_constraintEnd_toEndOf=&#34;parent&#34; app:layout_constraintStart_toStartOf=&#34;parent&#34; app:layout_constraintTop_toTopOf=&#34;parent&#34; /&gt; &lt;/androidx." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/android02-navigation/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-11-20T09:03:17+09:00" />
+<meta property="article:modified_time" content="2019-12-08T16:19:40+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Androidアプリ開発勉強(2) - Navigationの基本"/>
+<meta name="twitter:description" content="Navigationを用いて画面遷移をやってみる。具体的には以下の処理を行う。
+Fragment01とFragment02を用意する Fragment01でボタンが押されたらFragment02に遷移する Android Kotlin Fundamentals Courseでの03辺りを勉強した記録なので、詳しいことはそちらに載っている。
+Navigationについて 異なるFragment間の遷移を制御する仕組み。遷移の設定を視覚的に行えるらしい。
+これ以前はIntentという仕組みを用いていたらしい。これについては必要になりそうならいつか調べる。
+プロジェクト作成 Empty Activityを選択し、名前をNavigation Testとする。
+build.gradle(Module: app)でDataBindingを有効にしておく。
+Fragmentの作成 layouts/にFragmentを作成する。&ldquo;Create layout XML?&ldquo;だけチェックをつけておく。Fragmentは2つ作成し、それぞれ&quot;Fragment01&quot;と&quot;Fragment02&quot;とする。xmlファイルはそれぞれfragment_fragment01.xml、fragment_fragment02.xmlとする。
+まずTextViewのtext要素に設定するための定数をstrings.xmlに内容を追加しておく。 &lt;resources&gt; &lt;string name=&#34;app_name&#34;&gt;NavigationTest&lt;/string&gt; &lt;!-- TODO: Remove or change this placeholder text --&gt; &lt;string name=&#34;hello_blank_fragment&#34;&gt;Hello blank fragment&lt;/string&gt; &lt;string name=&#34;fragment01&#34;&gt;Fragment01&lt;/string&gt; &lt;string name=&#34;fragment02&#34;&gt;Fragment02&lt;/string&gt; &lt;string name=&#34;click&#34;&gt;Click&lt;/string&gt; &lt;/resources&gt;
+fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し、textを@string/clickに設定する。TextViewのtextを@string/fragment01に設定する。また全体をConstraintLayoutで包み、DataBindingのためにlayoutでさらに包む。
+&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt; &lt;layout xmlns:android=&#34;http://schemas.android.com/apk/res/android&#34; xmlns:app=&#34;http://schemas.android.com/apk/res-auto&#34; xmlns:tools=&#34;http://schemas.android.com/tools&#34; tools:context=&#34;.Fragment01&#34;&gt; &lt;androidx.constraintlayout.widget.ConstraintLayout android:layout_width=&#34;match_parent&#34; android:layout_height=&#34;match_parent&#34;&gt; &lt;TextView android:id=&#34;@&#43;id/text_fragment01&#34; android:layout_width=&#34;wrap_content&#34; android:layout_height=&#34;wrap_content&#34; android:text=&#34;@string/fragment01&#34; app:layout_constraintBottom_toBottomOf=&#34;parent&#34; app:layout_constraintEnd_toEndOf=&#34;parent&#34; app:layout_constraintStart_toStartOf=&#34;parent&#34; app:layout_constraintTop_toTopOf=&#34;parent&#34; /&gt; &lt;Button android:id=&#34;@&#43;id/button&#34; android:layout_width=&#34;wrap_content&#34; android:layout_height=&#34;wrap_content&#34; android:text=&#34;@string/click&#34; app:layout_constraintBottom_toTopOf=&#34;@&#43;id/text_fragment01&#34; app:layout_constraintEnd_toEndOf=&#34;parent&#34; app:layout_constraintStart_toStartOf=&#34;parent&#34; app:layout_constraintTop_toTopOf=&#34;parent&#34; /&gt; &lt;/androidx."/>
+
 
 <header>
   

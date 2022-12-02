@@ -24,6 +24,36 @@
 
 
 
+<meta property="og:title" content="PureScriptで作るBrainfuckインタプリタ 1/4 基礎部分の作成" />
+<meta property="og:description" content="Brainfuckの記事ではあるが、実はモナド変換子を使ってみたかっただけだったりする。
+以下の3部の記事で構成されている。
+インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 CUIでのインタプリタ可視化 Halogenを用いた入出力処理の実装 この記事でインタプリタの基本的な部分を実装し、 残りの3記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
+Brainfuckインタプリタの構造 Brainfuckインタプリタは以下の情報を内部に持っているものとする。
+program: 命令の列。 iptr: インストラクションポインタ。実行する命令の位置を示す。プログラムカウンタみたいなもの。 dptr: データポインタ。メモリ上のある位置を示す。 memory: メモリ。 インタプリタは以下の手順を踏む。
+iptr番目の命令をprogramから読み取る。 読み取れなかったらプログラムを終了する。 命令に応じてmemory、dptrの書き換えだったり、入出力を行う。 iptrを1進め、手順1に戻る。 どんな命令があるのかについてはWikipedia参照。
+準備 適当なディレクトリを作って、プロジェクトの初期化を行う。
+% spago init 命令列の作成 src/Brainfuck/Command.pursを作成する。
+Commandを定義。Showクラスのインスタンスにして、Charからの変換をする関数を作る。
+module Brainfuck.Command where import Prelude data Command = IncPtr -- &#34;&#43;&#34; | DecPtr -- &#34;-&#34; | IncDat -- &#34;&gt;&#34; | DecDat -- &#34;&lt;&#34; | LBrace -- &#34;[&#34; | RBrace -- &#34;]&#34; | Output -- &#34;." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/purescript-brainfuck01/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-04T11:40:00+09:00" />
+<meta property="article:modified_time" content="2021-07-06T17:10:18+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PureScriptで作るBrainfuckインタプリタ 1/4 基礎部分の作成"/>
+<meta name="twitter:description" content="Brainfuckの記事ではあるが、実はモナド変換子を使ってみたかっただけだったりする。
+以下の3部の記事で構成されている。
+インタプリタと基本的な命令の実装 (この記事) CUIでの入出力処理の実装 CUIでのインタプリタ可視化 Halogenを用いた入出力処理の実装 この記事でインタプリタの基本的な部分を実装し、 残りの3記事はインタプリタとはあまり関係ない話となる (とはいえ出力ができないと Hello, World すら書けないので、必要な記事ではある)。
+Brainfuckインタプリタの構造 Brainfuckインタプリタは以下の情報を内部に持っているものとする。
+program: 命令の列。 iptr: インストラクションポインタ。実行する命令の位置を示す。プログラムカウンタみたいなもの。 dptr: データポインタ。メモリ上のある位置を示す。 memory: メモリ。 インタプリタは以下の手順を踏む。
+iptr番目の命令をprogramから読み取る。 読み取れなかったらプログラムを終了する。 命令に応じてmemory、dptrの書き換えだったり、入出力を行う。 iptrを1進め、手順1に戻る。 どんな命令があるのかについてはWikipedia参照。
+準備 適当なディレクトリを作って、プロジェクトの初期化を行う。
+% spago init 命令列の作成 src/Brainfuck/Command.pursを作成する。
+Commandを定義。Showクラスのインスタンスにして、Charからの変換をする関数を作る。
+module Brainfuck.Command where import Prelude data Command = IncPtr -- &#34;&#43;&#34; | DecPtr -- &#34;-&#34; | IncDat -- &#34;&gt;&#34; | DecDat -- &#34;&lt;&#34; | LBrace -- &#34;[&#34; | RBrace -- &#34;]&#34; | Output -- &#34;."/>
+
 
 <header>
   

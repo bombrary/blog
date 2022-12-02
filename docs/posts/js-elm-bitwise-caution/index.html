@@ -24,6 +24,24 @@
 
 
 
+<meta property="og:title" content="JavaScript/Elm ビット演算のときにはまったこと" />
+<meta property="og:description" content="結論 JavaScriptにおいて、&gt;&gt;&gt;以外のビット演算は32ビット符号付き整数値として扱われる。
+→ 例えば&amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。 JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい JavaScriptにおいて、x &gt;&gt;&gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。 これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。 ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。 各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース) 検証コード $ elm init src/MyBitwise.elmを作成し、内容を以下のようにする。
+module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &gt; 0 then (toBinaryString rem) &#43;&#43; (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。
+$ elm repl &gt; import Bitwise &gt; import MyBitwise exposing (..) 232-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-12-31T09:34:25+09:00" />
+<meta property="article:modified_time" content="2019-12-31T14:02:25+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="JavaScript/Elm ビット演算のときにはまったこと"/>
+<meta name="twitter:description" content="結論 JavaScriptにおいて、&gt;&gt;&gt;以外のビット演算は32ビット符号付き整数値として扱われる。
+→ 例えば&amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。 JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい JavaScriptにおいて、x &gt;&gt;&gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。 これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。 ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。 各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース) 検証コード $ elm init src/MyBitwise.elmを作成し、内容を以下のようにする。
+module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &gt; 0 then (toBinaryString rem) &#43;&#43; (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。
+$ elm repl &gt; import Bitwise &gt; import MyBitwise exposing (..) 232-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。"/>
+
 
 <header>
   

@@ -24,6 +24,32 @@
 
 
 
+<meta property="og:title" content="PythonとWSGIで作るToDoリストAPI" />
+<meta property="og:description" content="シンプルなToDoリストを作る。 今回は勉強のため、Webアプリケーションフレームワークは使わずに、 敢えてWSGIの仕様のみ参考にして書く．
+WSGIとは WSGIとは、WebサーバーとWebアプリとの間の標準的なインターフェース。 WSGIの仕様に沿ってWebアプリを作れば、 WSGI対応のどんなWebサーバーとも連携することができる。
+WSGIの仕様はPEP3333に書かれている．
+ToDoリストAPIの仕様 簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、{ id: 0, &quot;content&quot;: &quot;やること&quot; }というJSON形式とする。
+APIの仕様は以下の通り。
+URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&lt;todo_id&gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&lt;todo_id&gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&lt;todo_id&gt; DELETE todo_idのidを持つToDoを削除 なし データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
+雛形 まずはサーバーを作る。この時点ではルーティング処理を書いていない。 どのようなリクエストをしてもHello, Worldをレスポンスとして返す。
+from wsgiref.simple_server import make_server def app(env, start_response): start_response(&#39;200 OK&#39;, [(&#39;Content-type&#39;, &#39;text/plain; charset=utf-8&#39;)]) return [b&#39;Hello, World.&#39;] if __name__ == &#39;__main__&#39;: httpd = make_server(&#39;&#39;, 5000, app) httpd." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/todo-api-wsgi/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-05-29T13:00:00+09:00" />
+<meta property="article:modified_time" content="2021-06-04T21:30:10+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PythonとWSGIで作るToDoリストAPI"/>
+<meta name="twitter:description" content="シンプルなToDoリストを作る。 今回は勉強のため、Webアプリケーションフレームワークは使わずに、 敢えてWSGIの仕様のみ参考にして書く．
+WSGIとは WSGIとは、WebサーバーとWebアプリとの間の標準的なインターフェース。 WSGIの仕様に沿ってWebアプリを作れば、 WSGI対応のどんなWebサーバーとも連携することができる。
+WSGIの仕様はPEP3333に書かれている．
+ToDoリストAPIの仕様 簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、{ id: 0, &quot;content&quot;: &quot;やること&quot; }というJSON形式とする。
+APIの仕様は以下の通り。
+URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&lt;todo_id&gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&lt;todo_id&gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&lt;todo_id&gt; DELETE todo_idのidを持つToDoを削除 なし データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
+雛形 まずはサーバーを作る。この時点ではルーティング処理を書いていない。 どのようなリクエストをしてもHello, Worldをレスポンスとして返す。
+from wsgiref.simple_server import make_server def app(env, start_response): start_response(&#39;200 OK&#39;, [(&#39;Content-type&#39;, &#39;text/plain; charset=utf-8&#39;)]) return [b&#39;Hello, World.&#39;] if __name__ == &#39;__main__&#39;: httpd = make_server(&#39;&#39;, 5000, app) httpd."/>
+
 
 <header>
   

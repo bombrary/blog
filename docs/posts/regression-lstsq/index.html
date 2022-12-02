@@ -46,6 +46,32 @@
   });
 </script>
 
+<meta property="og:title" content="線形回帰メモ 最小二乗法" />
+<meta property="og:description" content="学校の授業で勉強はしたが、自分で考えてまとめたことはなかったのでここに記しておく。
+問題設定(1) $\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T$ とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に
+$$ \begin{aligned} y &amp;= h_{\bm{w}}(\bm{x})\\ &amp;:= w_0 &#43; w_1x_1 &#43; w_2x_2 &#43; \cdots &#43; w_Dx_D\\ &amp;= \bm{w}^T\bm{x} \end{aligned} $$
+が成り立つと仮定し、これに適する$\bm{w}$を見つけたい。「適する」とは具体的に何なのかというと、ここでは予測とデータとの二乗誤差の和
+$$ J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 $$
+が最小となる $\bm{w}$ を求める。この $J$ については呼び名がいくつかあるが、ここではコスト関数と呼ぶ。 係数 $1/2$ は微分した時に出てくる $2$ を消し去るための便宜的なものであり、つける必然はない。
+コスト関数の最小値を求める(1) コスト関数の行列表現 まず $J$ を行列だけで表現してみる。
+$$ \begin{aligned} J(\bm{w}) &= \frac{1}{2} \sum_{i=1}^{N} (\bm{w}^T\bm{x}_i - y^{(i)})^2\\ &= \frac{1}{2} \sum_{i=1}^{N} (\bm{x}_i^T\bm{w} - y^{(i)})^2\\ &= \frac{1}{2} \begin{pmatrix} \bm{x}_1^T\bm{w} - y^{(1)}\\ \bm{x}_2^T\bm{w} - y^{(2)}\\ \vdots\\ \bm{x}_N^T\bm{w} - y^{(N)}\\ \end{pmatrix}^T \begin{pmatrix} \bm{x}_1^T\bm{w} - y^{(1)}\\ \bm{x}_2^T\bm{w} - y^{(2)}\\ \vdots\\ \bm{x}_N^T\bm{w} - y^{(N)}\\ \end{pmatrix}\\ &= \frac{1}{2} \left( \begin{pmatrix} \bm{x}_1^T\bm{w}\\ \bm{x}_2^T\bm{w}\\ \vdots\\ \bm{x}_N^T\bm{w}\\ \end{pmatrix} - \bm{y} \right)^T \left( \begin{pmatrix} \bm{x}_1^T\bm{w}\\ \bm{x}_2^T\bm{w}\\ \vdots\\ \bm{x}_N^T\bm{w}\\ \end{pmatrix} - \bm{y} \right) \end{aligned} $$ ここで、" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/regression-lstsq/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-06-20T22:10:00+09:00" />
+<meta property="article:modified_time" content="2022-01-13T11:41:05+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="線形回帰メモ 最小二乗法"/>
+<meta name="twitter:description" content="学校の授業で勉強はしたが、自分で考えてまとめたことはなかったのでここに記しておく。
+問題設定(1) $\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T$ とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に
+$$ \begin{aligned} y &amp;= h_{\bm{w}}(\bm{x})\\ &amp;:= w_0 &#43; w_1x_1 &#43; w_2x_2 &#43; \cdots &#43; w_Dx_D\\ &amp;= \bm{w}^T\bm{x} \end{aligned} $$
+が成り立つと仮定し、これに適する$\bm{w}$を見つけたい。「適する」とは具体的に何なのかというと、ここでは予測とデータとの二乗誤差の和
+$$ J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 $$
+が最小となる $\bm{w}$ を求める。この $J$ については呼び名がいくつかあるが、ここではコスト関数と呼ぶ。 係数 $1/2$ は微分した時に出てくる $2$ を消し去るための便宜的なものであり、つける必然はない。
+コスト関数の最小値を求める(1) コスト関数の行列表現 まず $J$ を行列だけで表現してみる。
+$$ \begin{aligned} J(\bm{w}) &= \frac{1}{2} \sum_{i=1}^{N} (\bm{w}^T\bm{x}_i - y^{(i)})^2\\ &= \frac{1}{2} \sum_{i=1}^{N} (\bm{x}_i^T\bm{w} - y^{(i)})^2\\ &= \frac{1}{2} \begin{pmatrix} \bm{x}_1^T\bm{w} - y^{(1)}\\ \bm{x}_2^T\bm{w} - y^{(2)}\\ \vdots\\ \bm{x}_N^T\bm{w} - y^{(N)}\\ \end{pmatrix}^T \begin{pmatrix} \bm{x}_1^T\bm{w} - y^{(1)}\\ \bm{x}_2^T\bm{w} - y^{(2)}\\ \vdots\\ \bm{x}_N^T\bm{w} - y^{(N)}\\ \end{pmatrix}\\ &= \frac{1}{2} \left( \begin{pmatrix} \bm{x}_1^T\bm{w}\\ \bm{x}_2^T\bm{w}\\ \vdots\\ \bm{x}_N^T\bm{w}\\ \end{pmatrix} - \bm{y} \right)^T \left( \begin{pmatrix} \bm{x}_1^T\bm{w}\\ \bm{x}_2^T\bm{w}\\ \vdots\\ \bm{x}_N^T\bm{w}\\ \end{pmatrix} - \bm{y} \right) \end{aligned} $$ ここで、"/>
+
 
 <header>
   

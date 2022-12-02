@@ -24,6 +24,24 @@
 
 
 
+<meta property="og:title" content="Elmで超簡易Todoリスト" />
+<meta property="og:description" content="Todoリストと言っても、フィールドに入力した内容がli要素として追加されるだけ。
+Elm習いたてなので、何か無駄があるかも。
+個人的になるほどと思った点はList.mapを利用してli要素を生成するところで、これは要素を生成する関数が子要素のリストを引数に取るから実現できる。
+import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (onClick, onInput) main = Browser.sandbox { init = init, update = update, view = view } --Model type alias Todo = { description : String } type alias Model = { todos : List Todo , input : Todo } init : Model init = { todos = [] , input = Todo &#34;&#34; } type Msg = Add | Change String --Update update : Msg -&gt; Model -&gt; Model update msg model = case msg of Add -&gt; { model | todos = model." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/elm-todo-list/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-11-10T21:08:12+09:00" />
+<meta property="article:modified_time" content="2019-11-13T23:54:51+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Elmで超簡易Todoリスト"/>
+<meta name="twitter:description" content="Todoリストと言っても、フィールドに入力した内容がli要素として追加されるだけ。
+Elm習いたてなので、何か無駄があるかも。
+個人的になるほどと思った点はList.mapを利用してli要素を生成するところで、これは要素を生成する関数が子要素のリストを引数に取るから実現できる。
+import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (onClick, onInput) main = Browser.sandbox { init = init, update = update, view = view } --Model type alias Todo = { description : String } type alias Model = { todos : List Todo , input : Todo } init : Model init = { todos = [] , input = Todo &#34;&#34; } type Msg = Add | Change String --Update update : Msg -&gt; Model -&gt; Model update msg model = case msg of Add -&gt; { model | todos = model."/>
+
 
 <header>
   

@@ -24,6 +24,54 @@
 
 
 
+<meta property="og:title" content="iPhoneアプリ開発メモ - セミモーダルビューからの遷移" />
+<meta property="og:description" content="目標 セミモーダルビューを作成する セミモーダルビュー上のボタンを押すと、それを閉じた後に別ビューに遷移する。 登場物 Main.storyboardとViewController Menu.storyboardとMenuViewController Dest1.storyboard Dest2.storyboard 前提 今後Viewが増えていく状況を想定して、Storyboardを分割することを考える。Storyboard同士はStoryboard Referenceで結びつける。 セミモーダルビューの作成 検索して良く出てくるのはUIPresentationControllerを利用する方法。ただ今回はなるべくStoryboardで完結させたい。
+そこで、以下のページを参考して作ることを考える。
+ハンバーガーメニューを作成するには？ - Swift Life
+ファイル作成 Menu.storyboard、MenuViewController、 Menu.storyboard、Dest1.storyboard、 Dest2.storyboardの5つをあらかじめ作成しておく。
+Menu.storyboard classにはMenuViewControllerを指定する。部品配置は以下のようにする。
+全体を包むViewを親View、その中に作ったViewを子Viewと呼ぶことにすると、
+Constraintは適当に設定する。子Viewが画面下に配置されるようにする。 StackViewにはFill Equallyの設定を行っておく。 親Viewの背景色を、黒の半透明に設定する。設定手順は以下の通り。 BackgroundをBlackに設定 BackgroundをCustomに設定し直すと、カラーピッカーが現れる。そこで透明度を50%に設定する。 また、&ldquo;Initial View Controller&quot;にチェックをつける。
+親Viewのtagを1に設定しておく。これはタッチイベントを捕捉する際に必要になる。
+Dest1.storyboard、Dest2.storyboard Dest1.storyboardの部品配置は以下のようにする。
+&ldquo;Is initial View Controller&quot;にチェックをつける。
+Dest2.storyboardの部品配置は以下のようにする。
+&ldquo;Is initial View Controller&quot;にチェックをつける。
+Main.storyboard 部品配置は以下のようにする。
+OpenButtonからStoryboard ReferenceへのSegueのActionは&quot;Present Modally&quot;を選択。Segueの設定は以下のようにする。
+Storyboard Referenceにて、&ldquo;Storyboard&quot;をMenuに、&ldquo;Referenced ID&quot;を未記入にする。
+&ldquo;Referenced ID&quot;が未記入の場合、Storyboard上のInitial View Controllerへの参照にしてくれる。もしInitial View ControllerでないViewControllerに遷移したいなら、ここに記入する。ただし、遷移先のView ControllerにてIdentifierを設定しておくことを忘れずに。
+MenuViewController.swift Menu.storyboardの小ViewのOutletを作成する。名前はmenuViewとする。
+その上で以下の文を追記する。
+class MenuViewController: UIViewController { ... override func viewWillAppear(_ animated: Bool) { super." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/iphone-modal-segue/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-12-14T11:00:24+09:00" />
+<meta property="article:modified_time" content="2019-12-15T23:33:28+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="iPhoneアプリ開発メモ - セミモーダルビューからの遷移"/>
+<meta name="twitter:description" content="目標 セミモーダルビューを作成する セミモーダルビュー上のボタンを押すと、それを閉じた後に別ビューに遷移する。 登場物 Main.storyboardとViewController Menu.storyboardとMenuViewController Dest1.storyboard Dest2.storyboard 前提 今後Viewが増えていく状況を想定して、Storyboardを分割することを考える。Storyboard同士はStoryboard Referenceで結びつける。 セミモーダルビューの作成 検索して良く出てくるのはUIPresentationControllerを利用する方法。ただ今回はなるべくStoryboardで完結させたい。
+そこで、以下のページを参考して作ることを考える。
+ハンバーガーメニューを作成するには？ - Swift Life
+ファイル作成 Menu.storyboard、MenuViewController、 Menu.storyboard、Dest1.storyboard、 Dest2.storyboardの5つをあらかじめ作成しておく。
+Menu.storyboard classにはMenuViewControllerを指定する。部品配置は以下のようにする。
+全体を包むViewを親View、その中に作ったViewを子Viewと呼ぶことにすると、
+Constraintは適当に設定する。子Viewが画面下に配置されるようにする。 StackViewにはFill Equallyの設定を行っておく。 親Viewの背景色を、黒の半透明に設定する。設定手順は以下の通り。 BackgroundをBlackに設定 BackgroundをCustomに設定し直すと、カラーピッカーが現れる。そこで透明度を50%に設定する。 また、&ldquo;Initial View Controller&quot;にチェックをつける。
+親Viewのtagを1に設定しておく。これはタッチイベントを捕捉する際に必要になる。
+Dest1.storyboard、Dest2.storyboard Dest1.storyboardの部品配置は以下のようにする。
+&ldquo;Is initial View Controller&quot;にチェックをつける。
+Dest2.storyboardの部品配置は以下のようにする。
+&ldquo;Is initial View Controller&quot;にチェックをつける。
+Main.storyboard 部品配置は以下のようにする。
+OpenButtonからStoryboard ReferenceへのSegueのActionは&quot;Present Modally&quot;を選択。Segueの設定は以下のようにする。
+Storyboard Referenceにて、&ldquo;Storyboard&quot;をMenuに、&ldquo;Referenced ID&quot;を未記入にする。
+&ldquo;Referenced ID&quot;が未記入の場合、Storyboard上のInitial View Controllerへの参照にしてくれる。もしInitial View ControllerでないViewControllerに遷移したいなら、ここに記入する。ただし、遷移先のView ControllerにてIdentifierを設定しておくことを忘れずに。
+MenuViewController.swift Menu.storyboardの小ViewのOutletを作成する。名前はmenuViewとする。
+その上で以下の文を追記する。
+class MenuViewController: UIViewController { ... override func viewWillAppear(_ animated: Bool) { super."/>
+
 
 <header>
   

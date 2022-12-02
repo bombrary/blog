@@ -24,6 +24,32 @@
 
 
 
+<meta property="og:title" content="PureScriptメモ - Generics" />
+<meta property="og:description" content="purescript-generics-repパッケージを使ってGenericなSerializer型クラスを作った。以下はそのメモ。
+準備 プロジェクトを作成。
+$ spago init Arrayを使うので、パッケージをインストールしてsrc/Main.pursにimport文を書き込んでいく。 本記事の本命であるgenerics-rep入れる。 $ spago install arrays $ spago install generics-rep import Data.Array ((:)) REPLで色々実験するので、あらかじめ起動しておく。 $ spago repl &gt; import Main 以降はsrc/Main.pursに色々書き足していく。REPLで:r(もしくは:reload)とコマンドを打てばモジュールが再読み込みされるので、src/Main.pursを書き換える度にこのコマンドを打つと良い。
+Serializer そもそもSerializerとは何か。ここでは単に「データをビット列に変換するもの」程度の意味で捉えれば良い。 厳密にはJSONなどの階層を持つデータを，文字列などの平坦なデータに変換するという意味合いとしてシリアライズ(直列化)という言葉を使う。実際、本記事では最終的に木構造をシリアライズする。
+まずビットは次のように定義する。
+data Bit = O | I instance showBit :: Show Bit where show O = &#34;O&#34; show I = &#34;I&#34; Serializer型クラスを以下のように定義する。
+class Serializer a where serialize :: a -&gt; Array Bit 試しに適当な型をつくり、それをSerializer型クラスのインスタンスにしてみる。
+data Person = Alice | Bob | Carol instance serializerUser :: Serializer Person where serialize Alice = [ I ] serialize Bob = [ O, I ] serialize Carol = [ O, O, I ] 余談。今回はデシリアライザは実装しないので、シリアライズしたデータを同じ形に戻せるかは考えない。このあたりは情報理論の授業で「一意復号化可能性」などをやった気がするけど、忘れてしまった。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/purescript-note-generics/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-11-03T13:17:39+09:00" />
+<meta property="article:modified_time" content="2020-11-06T08:53:07+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PureScriptメモ - Generics"/>
+<meta name="twitter:description" content="purescript-generics-repパッケージを使ってGenericなSerializer型クラスを作った。以下はそのメモ。
+準備 プロジェクトを作成。
+$ spago init Arrayを使うので、パッケージをインストールしてsrc/Main.pursにimport文を書き込んでいく。 本記事の本命であるgenerics-rep入れる。 $ spago install arrays $ spago install generics-rep import Data.Array ((:)) REPLで色々実験するので、あらかじめ起動しておく。 $ spago repl &gt; import Main 以降はsrc/Main.pursに色々書き足していく。REPLで:r(もしくは:reload)とコマンドを打てばモジュールが再読み込みされるので、src/Main.pursを書き換える度にこのコマンドを打つと良い。
+Serializer そもそもSerializerとは何か。ここでは単に「データをビット列に変換するもの」程度の意味で捉えれば良い。 厳密にはJSONなどの階層を持つデータを，文字列などの平坦なデータに変換するという意味合いとしてシリアライズ(直列化)という言葉を使う。実際、本記事では最終的に木構造をシリアライズする。
+まずビットは次のように定義する。
+data Bit = O | I instance showBit :: Show Bit where show O = &#34;O&#34; show I = &#34;I&#34; Serializer型クラスを以下のように定義する。
+class Serializer a where serialize :: a -&gt; Array Bit 試しに適当な型をつくり、それをSerializer型クラスのインスタンスにしてみる。
+data Person = Alice | Bob | Carol instance serializerUser :: Serializer Person where serialize Alice = [ I ] serialize Bob = [ O, I ] serialize Carol = [ O, O, I ] 余談。今回はデシリアライザは実装しないので、シリアライズしたデータを同じ形に戻せるかは考えない。このあたりは情報理論の授業で「一意復号化可能性」などをやった気がするけど、忘れてしまった。"/>
+
 
 <header>
   

@@ -24,6 +24,34 @@
 
 
 
+<meta property="og:title" content="Elmメモ - ランダムな位置に円を描画する" />
+<meta property="og:description" content="乱数の練習に。
+準備 プロジェクト用のディレクトリを適当に作り、そこで以下のコマンドを実行。
+$ elm init 必要なモジュールを入れる。
+$ elm install elm/svg $ elm install elm/random Main.elmを作成し、最低限の文を定義しておく。
+module Main exposing (..) import Browser import Svg exposing (..) import Svg.Attributes as SA exposing (..) import Svg.Events as SE exposing (..) import Random 円の描画 こんな感じの円を描画する。
+1 SVGでは次のように書く。
+&lt;svg width=&#34;100px&#34; height=&#34;100px&#34;&gt; &lt;g transform=&#34;translate(50, 50)&#34;&gt; &lt;circle r=&#34;10&#34; fill=&#34;white&#34; stroke=&#34;black&#34; /&gt; &lt;text text-anchor=&#34;middle&#34; dominant-baseline=&#34;central&#34;&gt;1&lt;/text&gt; &lt;/g&gt; &lt;/svg&gt; 円の情報で必要なのは次の4つ:
+x座標 y座標 半径 text要素の文字列 そこで円は次のように定義する。
+type alias Circle = { r: Float , x: Float , y: Float , text: String } Elmでは宣言的にSVGやHTMLを書けるので、SVGの文法とほとんど似た構造でかける。直感的で嬉しい。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/elm-random-circle/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-01-01T21:03:50+09:00" />
+<meta property="article:modified_time" content="2020-01-05T14:24:06+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Elmメモ - ランダムな位置に円を描画する"/>
+<meta name="twitter:description" content="乱数の練習に。
+準備 プロジェクト用のディレクトリを適当に作り、そこで以下のコマンドを実行。
+$ elm init 必要なモジュールを入れる。
+$ elm install elm/svg $ elm install elm/random Main.elmを作成し、最低限の文を定義しておく。
+module Main exposing (..) import Browser import Svg exposing (..) import Svg.Attributes as SA exposing (..) import Svg.Events as SE exposing (..) import Random 円の描画 こんな感じの円を描画する。
+1 SVGでは次のように書く。
+&lt;svg width=&#34;100px&#34; height=&#34;100px&#34;&gt; &lt;g transform=&#34;translate(50, 50)&#34;&gt; &lt;circle r=&#34;10&#34; fill=&#34;white&#34; stroke=&#34;black&#34; /&gt; &lt;text text-anchor=&#34;middle&#34; dominant-baseline=&#34;central&#34;&gt;1&lt;/text&gt; &lt;/g&gt; &lt;/svg&gt; 円の情報で必要なのは次の4つ:
+x座標 y座標 半径 text要素の文字列 そこで円は次のように定義する。
+type alias Circle = { r: Float , x: Float , y: Float , text: String } Elmでは宣言的にSVGやHTMLを書けるので、SVGの文法とほとんど似た構造でかける。直感的で嬉しい。"/>
+
 
 <header>
   

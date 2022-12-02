@@ -24,6 +24,28 @@
 
 
 
+<meta property="og:title" content="PureScriptで作るBrainfuckインタプリタ 2/4 CUIでの入出力" />
+<meta property="og:description" content="入出力用のストリーム作成 例えば出力だけ考えてみると、まず考えられるのは単純に、 logで出力することである。しかしlog以外の選択肢も考えられる。 logでコンソール出力するだけでなく、Webページのテキスト上で出力したり、テキストファイルに吐き出したりできるような汎用性が持たせられると良い。
+そこで今回は、いわゆる「ストリームオブジェクト」のようなものを作って、そこから入出力を行うような設計にしてみる。
+Streamの作成 src/Brainfuck/Interp/Stream.pursを作成。この後使うモジュールをインポート。
+module Brainfuck.Interp.Stream where import Prelude import Brainfuck.Interp (Interp) Stream型を作成する。これは入出力を束ねた型になっている。 inputは、外部からの入力を1文字受け取る。 outputは、Charの値を外部に出力する。
+newtype Stream = Stream { input :: Interp Char , output ::Char -&gt; Interp Unit } Streamを通じてデータを読み書きする関数を作成。
+read :: Stream -&gt; Interp Char read (Stream { input }) = input write :: Char -&gt; Stream -&gt; Interp Unit write c (Stream { output }) = output c defaultStream :: Stream defaultStream = Stream { input, output } where input = pure &#39;N&#39; -- Not Implemented output _ = pure unit -- Not Implemented &lsquo;." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/purescript-brainfuck02/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-05T17:05:00+09:00" />
+<meta property="article:modified_time" content="2021-07-06T17:10:18+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PureScriptで作るBrainfuckインタプリタ 2/4 CUIでの入出力"/>
+<meta name="twitter:description" content="入出力用のストリーム作成 例えば出力だけ考えてみると、まず考えられるのは単純に、 logで出力することである。しかしlog以外の選択肢も考えられる。 logでコンソール出力するだけでなく、Webページのテキスト上で出力したり、テキストファイルに吐き出したりできるような汎用性が持たせられると良い。
+そこで今回は、いわゆる「ストリームオブジェクト」のようなものを作って、そこから入出力を行うような設計にしてみる。
+Streamの作成 src/Brainfuck/Interp/Stream.pursを作成。この後使うモジュールをインポート。
+module Brainfuck.Interp.Stream where import Prelude import Brainfuck.Interp (Interp) Stream型を作成する。これは入出力を束ねた型になっている。 inputは、外部からの入力を1文字受け取る。 outputは、Charの値を外部に出力する。
+newtype Stream = Stream { input :: Interp Char , output ::Char -&gt; Interp Unit } Streamを通じてデータを読み書きする関数を作成。
+read :: Stream -&gt; Interp Char read (Stream { input }) = input write :: Char -&gt; Stream -&gt; Interp Unit write c (Stream { output }) = output c defaultStream :: Stream defaultStream = Stream { input, output } where input = pure &#39;N&#39; -- Not Implemented output _ = pure unit -- Not Implemented &lsquo;."/>
+
 
 <header>
   

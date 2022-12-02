@@ -24,6 +24,40 @@
 
 
 
+<meta property="og:title" content="HugoセットアップからGitHubにデプロイするまでの備忘録" />
+<meta property="og:description" content="簡単にセットアップ方法を備忘のために書いておく
+前提 MacOS Mojave Homebrew 2.1.16 GitHubのblogリポジトリで公開する この記事でディレクトリを表記する時は、blogローカルリポジトリの最上位を/で表現する インストール ターミナルにて以下のコマンドを叩く
+$ brew install hugo ブログサイトの作成 blogサイトのローカルリポジトリがある前提で進める。blogディレクトリに移動して以下のコマンドを実行する。 forceフラグをつけると、今のディレクトリに何かファイルがあった場合でもサイトを生成してくれる。僕の環境の場合はREADME.mdしかなかったので何も上書きされなかったが、hugoが生成するファイルと名前がかぶる場合は、何かファイルが上書きされる恐れがあるので注意。
+$ hugo new site ./ --force すると、何やらたくさんファイルやディレクトリを生成してくれる。
+テーマの追加 contrast-hugoが気に入ったのでこれを使う。
+/themesに移動して、contrast-hugoのファイルをcloneしてくる
+$ git clone https://github.com/niklasbuschmann/contrast-hugo.git 後でテーマをいじるので、一応テーマ名を変更しておく。contrast-hugoをch-modifiedに変更する。
+シンタックスハイライトの設定 Chromaというハイライターが入っているらしい。そのテーマはこちらで見られる。今回はgithubというテーマを利用する。
+/config.tomlでpygmentsStyle=githubと指定すると、スタイルをhtmlに直接埋め込んでくれる。しかしCSSを後で自分でいじりたいのでこの方法は用いない。その代わり、pygmentsUseClasses=trueとして、CSSを利用することにする。
+/themes/ch-modified/static/cssに移動して、以下のコマンドを実行する。
+$ hugo gen chromastyles --style=github &gt; syntax.css configの設定 /config.tomlの内容を以下の通りにする。ほとんどの設定項目がデフォルトのもので、正直意味が分かっていないものもある。コメントアウトのところはAboutページのリンクを貼るものだが、Aboutページができたらコメントを外そうと思っている。
+baseURL = [ブログのURL] title = [ブログのタイトル] author = [作成者] paginate = 3 languageCode = &#34;ja-jp&#34; DefaultContentLanguage = &#34;ja&#34; enableInlineShortcodes = true footnoteReturnLinkContents = &#34;^&#34; theme = [テーマ] publishDir=&#34;docs&#34; pygmentsUseClasses = true [menu] # 気が向いたら設定する # [[menu." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/hugo-setup/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-11-09T19:33:37+09:00" />
+<meta property="article:modified_time" content="2019-11-13T23:54:51+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="HugoセットアップからGitHubにデプロイするまでの備忘録"/>
+<meta name="twitter:description" content="簡単にセットアップ方法を備忘のために書いておく
+前提 MacOS Mojave Homebrew 2.1.16 GitHubのblogリポジトリで公開する この記事でディレクトリを表記する時は、blogローカルリポジトリの最上位を/で表現する インストール ターミナルにて以下のコマンドを叩く
+$ brew install hugo ブログサイトの作成 blogサイトのローカルリポジトリがある前提で進める。blogディレクトリに移動して以下のコマンドを実行する。 forceフラグをつけると、今のディレクトリに何かファイルがあった場合でもサイトを生成してくれる。僕の環境の場合はREADME.mdしかなかったので何も上書きされなかったが、hugoが生成するファイルと名前がかぶる場合は、何かファイルが上書きされる恐れがあるので注意。
+$ hugo new site ./ --force すると、何やらたくさんファイルやディレクトリを生成してくれる。
+テーマの追加 contrast-hugoが気に入ったのでこれを使う。
+/themesに移動して、contrast-hugoのファイルをcloneしてくる
+$ git clone https://github.com/niklasbuschmann/contrast-hugo.git 後でテーマをいじるので、一応テーマ名を変更しておく。contrast-hugoをch-modifiedに変更する。
+シンタックスハイライトの設定 Chromaというハイライターが入っているらしい。そのテーマはこちらで見られる。今回はgithubというテーマを利用する。
+/config.tomlでpygmentsStyle=githubと指定すると、スタイルをhtmlに直接埋め込んでくれる。しかしCSSを後で自分でいじりたいのでこの方法は用いない。その代わり、pygmentsUseClasses=trueとして、CSSを利用することにする。
+/themes/ch-modified/static/cssに移動して、以下のコマンドを実行する。
+$ hugo gen chromastyles --style=github &gt; syntax.css configの設定 /config.tomlの内容を以下の通りにする。ほとんどの設定項目がデフォルトのもので、正直意味が分かっていないものもある。コメントアウトのところはAboutページのリンクを貼るものだが、Aboutページができたらコメントを外そうと思っている。
+baseURL = [ブログのURL] title = [ブログのタイトル] author = [作成者] paginate = 3 languageCode = &#34;ja-jp&#34; DefaultContentLanguage = &#34;ja&#34; enableInlineShortcodes = true footnoteReturnLinkContents = &#34;^&#34; theme = [テーマ] publishDir=&#34;docs&#34; pygmentsUseClasses = true [menu] # 気が向いたら設定する # [[menu."/>
+
 
 <header>
   

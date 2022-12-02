@@ -46,6 +46,28 @@
   });
 </script>
 
+<meta property="og:title" content="ロジスティック回帰 メモ" />
+<meta property="og:description" content="式変形の一部はProbabilistic Machine Learning: An Introductionを参考にしている。
+問題設定 データが $N$ 個あり、入力は $\bm{x}_n = (x_{n1}, x_{n2}, \ldots, x_{nD})$、出力は $y_n \in \{ 0, 1 \}$ とする。 このとき、入力 $\bm{x}$ が与えられたとき出力 $y$ を予測したい。
+確率モデルの定義 ここでは確率的なモデルを考える。すなわち、 データ $\bm{x}$ が与えられたとき、 $y = 0, 1$ のどちらの確率が高いのかを考える。
+$y$ は2値だから、ベルヌーイ分布としてモデル化できる。
+$$ p(y ; \mu) = \mu^y (1 - \mu)^{1 - y} $$
+これは、$y = 1$ である確率が $\mu$ 、$y = 0$ である確率が $1 - \mu$ であることを意味する。 $\mu$ は確率だから、$0 \le \mu \le 1$ である必要がある。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/logistic-regression/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-11T12:40:00+09:00" />
+<meta property="article:modified_time" content="2021-12-25T16:02:21+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ロジスティック回帰 メモ"/>
+<meta name="twitter:description" content="式変形の一部はProbabilistic Machine Learning: An Introductionを参考にしている。
+問題設定 データが $N$ 個あり、入力は $\bm{x}_n = (x_{n1}, x_{n2}, \ldots, x_{nD})$、出力は $y_n \in \{ 0, 1 \}$ とする。 このとき、入力 $\bm{x}$ が与えられたとき出力 $y$ を予測したい。
+確率モデルの定義 ここでは確率的なモデルを考える。すなわち、 データ $\bm{x}$ が与えられたとき、 $y = 0, 1$ のどちらの確率が高いのかを考える。
+$y$ は2値だから、ベルヌーイ分布としてモデル化できる。
+$$ p(y ; \mu) = \mu^y (1 - \mu)^{1 - y} $$
+これは、$y = 1$ である確率が $\mu$ 、$y = 0$ である確率が $1 - \mu$ であることを意味する。 $\mu$ は確率だから、$0 \le \mu \le 1$ である必要がある。"/>
+
 
 <header>
   

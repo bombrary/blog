@@ -24,6 +24,40 @@
 
 
 
+<meta property="og:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (2) アニメーションとタップ処理" />
+<meta property="og:description" content="棒グラフをアニメーションさせたり、タップしたら詳細画面に遷移するようにしたい。
+(寄り道) StackViewのアニメーション 自分がいままでやったことがあるのは以下のような感じで、frameやlayer.positionをいじるパターン。
+UIView.animate(withDuration: 1, animations: { view.position.x &#43;= 100 view.frame.size.height &#43;= 20 }); ただし、これをAutoLayoutと混ぜて使おうとすると動かなかったり、動いたとしても変な挙動を起こす。そもそも、AutoLayoutは制約を設定して位置やサイズを決定する仕組みで、frameは位置やサイズを手動で決める仕組み。これが競合を起こすのは当たり前な気もする。
+StackViewはframeを設定しても何も反応しない。これは内部的にAutoLayoutっぽいことをやっているからなのかもしれない。例えば次のようにしてもStackViewの子要素は変更されない。
+subView.frame.size.height = 100 stackView.addArrangedSubview(subView) その代わり、次のようにすると、ちゃんと子要素の高さは100になる。
+subView.heightAnchor.constraint(equalToConstant: 100).isActive = true stackView.addArrangedSubview(subView) よって、StackViewでアニメーションするためには、AutoLayoutでのアニメーションの方法を知る必要がある。
+AutoLayoutでのアニメーション 例えば、「ボタンを押すと長方形が0から伸びる」アニメーションを実現したい。
+まずは次のように、高さ制約を0に設定しておく。ただし、それを何か変数に入れておく。
+var constraint: NSLayoutConstraint view.addSubview(view0) constraint = view0.heightAnchor.constraint(equalToConstant: 0) constraint.isActive = true アニメーションをしたいタイミングで、次のように書けば良い。
+UIView.animate(withDuration: 1, animations: { constraint.constant = 100 view.layoutIfNeeded() }) constraintにはconstantプロパティがあるので、そこで制約の定数を変更できる。layoutIfNeededは、アプリにレイアウト変更を直ちにさせるメソッド。
+画面遷移後、下から長方形が伸びてくる処理は次のように書ける。
+class ViewController: UIViewController { var constraint: NSLayoutConstraint! override func viewDidLoad() { super.viewDidLoad() let myView = UIView() myView." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/iphone-barchart-view02/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-12-26T10:00:00+09:00" />
+<meta property="article:modified_time" content="2019-12-26T10:13:24+09:00" />
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (2) アニメーションとタップ処理"/>
+<meta name="twitter:description" content="棒グラフをアニメーションさせたり、タップしたら詳細画面に遷移するようにしたい。
+(寄り道) StackViewのアニメーション 自分がいままでやったことがあるのは以下のような感じで、frameやlayer.positionをいじるパターン。
+UIView.animate(withDuration: 1, animations: { view.position.x &#43;= 100 view.frame.size.height &#43;= 20 }); ただし、これをAutoLayoutと混ぜて使おうとすると動かなかったり、動いたとしても変な挙動を起こす。そもそも、AutoLayoutは制約を設定して位置やサイズを決定する仕組みで、frameは位置やサイズを手動で決める仕組み。これが競合を起こすのは当たり前な気もする。
+StackViewはframeを設定しても何も反応しない。これは内部的にAutoLayoutっぽいことをやっているからなのかもしれない。例えば次のようにしてもStackViewの子要素は変更されない。
+subView.frame.size.height = 100 stackView.addArrangedSubview(subView) その代わり、次のようにすると、ちゃんと子要素の高さは100になる。
+subView.heightAnchor.constraint(equalToConstant: 100).isActive = true stackView.addArrangedSubview(subView) よって、StackViewでアニメーションするためには、AutoLayoutでのアニメーションの方法を知る必要がある。
+AutoLayoutでのアニメーション 例えば、「ボタンを押すと長方形が0から伸びる」アニメーションを実現したい。
+まずは次のように、高さ制約を0に設定しておく。ただし、それを何か変数に入れておく。
+var constraint: NSLayoutConstraint view.addSubview(view0) constraint = view0.heightAnchor.constraint(equalToConstant: 0) constraint.isActive = true アニメーションをしたいタイミングで、次のように書けば良い。
+UIView.animate(withDuration: 1, animations: { constraint.constant = 100 view.layoutIfNeeded() }) constraintにはconstantプロパティがあるので、そこで制約の定数を変更できる。layoutIfNeededは、アプリにレイアウト変更を直ちにさせるメソッド。
+画面遷移後、下から長方形が伸びてくる処理は次のように書ける。
+class ViewController: UIViewController { var constraint: NSLayoutConstraint! override func viewDidLoad() { super.viewDidLoad() let myView = UIView() myView."/>
+
 
 <header>
   
