@@ -12,7 +12,11 @@ toc: true
 
 ## 情報の集め方
 
-ここに載っているものはほぼTikZ/PGFのマニュアル([CTAN](https://ctan.org/pkg/pgf)の "PDF Manual"のこと) に載っている。TeX Liveを導入しているなら、コマンド`texdoc tikz`で開くはず。この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
+ここに載っているものはほぼTikZ/PGFのマニュアル() に載っている。
+- TeX Liveを導入しているなら、コマンド`texdoc tikz`で開くはず。これと同じものが[CTAN](https://ctan.org/pkg/pgf)の "PGF Manual"のリンクからダウンロードできる。
+- 非公式ではあるが、HTML版のマニュアルも公開されたようだ：[The TikZ and PGF Packages](https://tikz.dev)
+
+この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
 
 - 知らないキーワードや記号が出てきたらマニュアル末尾のindexで探すと良い。
 - TikZで出来ることを把握したいなら、Part Iのチュートリアルを読んでみるのが有効。もしくはPartIII, Vあたりを流し読みする。PGF Manualはページ数が膨大なため、全部読もうとするのは恐らく得策では無い。目次を眺めながら興味のあるところをつまむのが良いと思う(読み方について、Introductionの1.4 How to Read This Manualも参照)。
@@ -562,6 +566,53 @@ xy軸ごとの移動方向vが決まっているなら、`$(a) + (v)$`みたい�
 
 {{< figure src="./img/arrow-shift.png" >}}
 
+### 座標計算のネスト
+
+座標の計算は`($...$)`で行うが、これはネストすることができる。
+例えば、点`a`と`b`に対して、`2(b-a)`のようなベクトルを計算したい場合は、
+`($2*($(b) - (a)$)$)`のように計算する。もし`($2*((b) - (a))$)`みたいに計算できたら直感的で良かったのだが、Calcライブラリのシンタックスの都合上`($...$)`をネストさせないといけない。
+
+#### （細かい話）Calcライブラリのシンタックスについて
+
+シンタックスについて少し説明する。
+まず、"PGF Manual Part III, 13.5.1 The General Syntax"によると、
+- 一般のシンタックスは`([<options>]$<coordinate computation>$)`。
+- `<coordinate computation>`は、
+  1. `<factor>*<coordinate><modifiers>`で始まる。
+  2. 任意で `+`または`-`が続き、その後に`<factor>*<coordinate><modifiers>`が続く。
+  3. 同様にして、`+`または`-`が続き、そのあとに上記の`<factor>...`が続く。
+
+と書かれている。ただし、`[<options>]`、`<factor>*`、`<modifiers>`はそれぞれ、
+- `[<options>]`：何らかのオプションを設定する（Calcライブラリの場合、これが果たして何に使われるのか不明）。
+- `<factor>*`：スカラー倍。例えば`2*(a)`の`2*`の部分。
+- `<modifiers>`：前述の，[2点間の内分点外分点](#2点間の内分点外分点)，[2点間の任意の長さのベクトル](#2点間の任意の長さのベクトル)のためのシンタックス．例えば`(a)!0.5!(b)`の`!0.5(b)`の部分。詳しい文法は"13.5.3 The Syntax of Partway Modifiers"や"13.5.4 The Syntax of Distance Modifiers"を参照。
+
+を意味する。これらは省略可能である。
+
+上記より、Calcライブラリで行う計算のシンタックスをBNF風に書くと以下のようになってるらしいことが分かる（合っているか少し不安だが）。
+
+```
+<coordinate> := ([<options>]$⟨coordinate computation⟩$)
+<coorinate computation> := <modified coordinate>
+                         | <modified coordinate> + <modified coordinate>
+                         | <modified coordinate> - <modified coordinate>
+<modified coordinate> := <factor>*<coordinate><modifiers>
+```
+
+ただし、`[<options>]`、`<factor>`、`<modifiers>`をつけるかは任意である。
+また、`<coordinate>`として、TikZ標準の`(a)`や`(1, 2)`、`(5mm, 1mm)`などの表記もあり得るが、ここでは省略している。
+
+上のBNF風の表現に照らし合わせると、
+```
+($2*((b) - (a))$)
+```
+という計算はシンタックスエラーになることが分かる。
+なぜなら、内側の`2*((b) - (a))`は`<factor>*<coordinate><modifiers>`の形であり、
+`((b) - (a))`は`<coordinate>`の定義に反しているからである。
+`($(b) - (a))$`なら`<coordinate>`の定義に沿っている。
+
+
+
 ## 交点の計算
 
 **参考** PFG Manual, Part III, 13.3.2 Intersections of Arbitrary Paths
@@ -746,6 +797,7 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 ```
 
 {{< figure src="./img/node-width-height.png" >}}
+
 
 ### 改行できるようにする
 
@@ -1218,6 +1270,291 @@ gnuplotで連携する以外にも、pyplotなど外部プログラム予め画�
 
 {{< figure src="./img/scalebox.png" >}}
 
-とはいえ、拡大縮小しすぎて図が見づらくなる危険があるため、むやみな使用は禁物かもしれない。
+拡大縮小しすぎて図が見づらくなる危険があるため、むやみな使用は禁物かもしれない。
 
 （**補足** `\begin{tikzpicture}[scale=0.5]...`のように`scale`を指定しても縮小可能なのではないか、と感じるが、実際は期待通りにはならない。この`scale`は座標系の縮尺を変更するだけで、図形やテキストのサイズには変化を及ぼさない。）
+
+## 特定の座標を中心にした水平方向の中央寄せ
+
+以下のように`figure`環境でくくり，`\centering`を使って中央寄せしたケースを考える．
+
+```tex
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
+  ]
+    \node [node] (a) {
+    \begin{minipage}{\linewidth}
+        Step1
+        \par{\centering 文章1}
+    \end{minipage}};
+    \node [node, below=3em of a] (b) {文章2};
+    \node [node, below=3em of b] (c) {文章3};
+
+    \draw [->] (a) -- (b);
+    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
+  \end{tikzpicture}
+  \caption{図の説明}
+\end{figure}
+```
+
+結果は以下のようになる．
+
+{{< figure src="./img/centering-before.png" >}}
+
+ここで，「文章1」「文章2」「文章3」のノードが，水平方向に対し中央に来るように中央寄せしたい．
+
+ここでは2つの方法を紹介する．個人的には方法2の方がクセが無くて使いやすいと思われる．
+
+### （方法1）use as bounding boxを使う
+
+**参考**： 
+- PGF Manual Part III, 15.8 Establishing a Bounding Box
+- [How can I save the bounding box of a TikZpicture and use in other TikZpicture - Stack Exchange](https://tex.stackexchange.com/questions/12473/how-can-i-save-the-bounding-box-of-a-tikzpicture-and-use-in-other-tikzpicture/12474)
+
+`\path`，`\draw`，`\fill`などの`\path`系の命令に対し，`use as bounding box`というオプションを付けると，`tikzpicture`の画面枠を描いた図形のサイズに変更できる．
+
+**注意** `use as bounding box`を書く位置や指定する座標によっては動かない．詳しくは後述．
+
+```tex
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
+  ]
+    \node [node] (a) {文章1};
+    \node [node, below=3em of a] (b) {文章2};
+    \node [node, below=3em of b] (c) {文章3};
+    \draw [dashed, use as bounding box] (c.south east) rectangle (a.north west);
+
+    \draw [->] (a) -- (b);
+    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
+
+    \draw [densely dotted, red]
+      (current bounding box.north west) rectangle (current bounding box.south east);
+  \end{tikzpicture}
+  \caption{図の説明}
+\end{figure}
+```
+
+{{< figure src="./img/centering-after1.png" >}}
+
+bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる用語のようだ（参考：[TeXWiki](https://texwiki.texjp.org/?バウンディングボックス)）．グラフィックの領域を囲うのに必要な領域，ということだろうか．`\centering`コマンドはこのbounding boxが中央になるように配置されるため，
+
+上記のコードでは，実際にbounding boxを可視化したかったため，点線を描画している．
+また`current bounding box`は組み込みで定義されているノードで（参考：PGF Manual Part IX, 106.4 Special Nodes），現在のbounding boxを表す．そのため，`current bounding box.north west`でbounding boxの左上の座標を取得できる．参考までに，`current bounding box`を赤点線で示している．
+
+点線は邪魔だと思うので，以下のように`\draw [dashed, use as bounding box] ...`を`\path`にし，最後の`current bounding box`に関する記述を消せば，望み通りの結果になる．
+
+```tex
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
+  ]
+    \node [node] (a) {文章1};
+    \node [node, below=3em of a] (b) {文章2};
+    \node [node, below=3em of b] (c) {文章3};
+    \path [use as bounding box] (c.south east) rectangle (a.north west);
+
+    \draw [->] (a) -- (b);
+    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
+  \end{tikzpicture}
+  \caption{図の説明}
+\end{figure}
+```
+
+#### 注意点：use as bounding boxの位置によっては動かない
+
+以下のように，`use as bounding box`を使う位置を，「長い文章 長い文章 長い文章」というラベルが定義された後にする．
+
+```tex
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
+  ]
+    \node [node] (a) {文章1};
+    \node [node, below=3em of a] (b) {文章2};
+    \node [node, below=3em of b] (c) {文章3};
+
+    \draw [->] (a) -- (b);
+    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
+
+    \draw [dashed, use as bounding box] (c.south east) rectangle (a.north west);
+
+    \draw [densely dotted, red]
+      (current bounding box.north west) rectangle (current bounding box.south east);
+  \end{tikzpicture}
+  \caption{図の説明}
+\end{figure}
+```
+
+すると，以下のようにbounding boxが変化しないことが分かる．
+
+{{< figure src="./img/centering-fail.png" >}}
+
+こうなる理由は"PGF Manual Part III, 15.8 Establishing a Bounding Box"に記載されている．
+`/tikz/use as bounding box`の説明文を引用する．
+> Normally, when this option is given on a path, the bounding box of the present path is used to determine the size of the picture and the size of all subsequent paths are ignored. However, if there were previous path operations that have already established a larger bounding box, it will not be made smaller by this operation (consider the \pgfresetboundingbox command to reset the previous bounding box).
+
+"However ..."で始まる文に注目．意訳すると，`use as bounding box`で指定されるよりも前に，より大きなbounding boxが作られていたならば，大きな方に合わせられる，みたいなことが書かれている．
+
+そもそも前述の成功例は，「長い文章 長い文章 長い文章」がbounding boxからはみ出てしまっているため，あまり行儀の良い書き方ではないのかもしれない．しかしそれを気にせず，かつ引用文に書かれているような，`use as bounding box`のクセを理解して使えば，比較的シンプルな記述で中央寄せできる．
+
+### （方法2）pathで領域を引き伸ばす
+
+**参考** [How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange](https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node)
+
+あるノードを視点として，左右対称に線を引けば良い．そうすれば勝手にbounding boxが伸び，中央寄せになる．
+
+```tex
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
+  ]
+    \node [node] (a) {文章1};
+    \node [node, below=3em of a] (b) {文章2};
+    \node [node, below=3em of b] (c) {文章3};
+
+    \draw [->] (a) -- (b);
+    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
+
+    \draw [<->, red, line width=2pt]
+      ($(current bounding box.west |- a)$) --
+      ++ ($-2*($(current bounding box.west |- a) - (a)$)$);
+    \draw [<->, green!75!black, line width=1pt]
+      ($(current bounding box.east |- a)$) --
+      ++ ($-2*($(current bounding box.east |- a) - (a)$)$);
+
+    \draw [densely dotted, red]
+      (current bounding box.north west) rectangle (current bounding box.south east);
+  \end{tikzpicture}
+  \caption{図の説明}
+\end{figure}
+```
+
+{{< figure src="./img/centering-after2.png" >}}
+
+上記のコードは，bounding boxの広がりを矢印で可視化するために冗長に書いてある．
+よりシンプルで，かつ矢印や点線を書かないなら，以下のようにする．
+
+```tex
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
+  ]
+    \node [node] (a) {文章1};
+    \node [node, below=3em of a] (b) {文章2};
+    \node [node, below=3em of b] (c) {文章3};
+
+    \draw [->] (a) -- (b);
+    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
+
+    \path (a) -- ++($-1*($(current bounding box.west |- a) - (a)$)$)
+          (a) -- ++($-1*($(current bounding box.east |- a) - (a)$)$);
+  \end{tikzpicture}
+  \caption{図の説明}
+\end{figure}
+```
+
+この方法は[How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange](https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node) を参考にした．こちらでは「ベクトルを-1倍する」という操作を「180度回転させる」という操作にしてコードを書いているようだ．
+
+参考サイトのように，`\tikzset`を使って再利用したい場合は次にようにする（プリアンブルに書いておく）．
+```tex
+\tikzset{
+  center coordinate/.style={
+    execute at end picture={
+      \path (#1) -- ++($-1*($(current bounding box.west |- #1) - (#1)$)$)
+            (#1) -- ++($-1*($(current bounding box.east |- #1) - (#1)$)$);
+    }
+  }
+}
+```
+
+これは以下のように，`center coordinate=a`のように使う．
+```tex
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    center coordinate=a,
+    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
+  ]
+    \node [node] (a) {文章1};
+    \node [node, below=3em of a] (b) {文章2};
+    \node [node, below=3em of b] (c) {文章3};
+
+    \draw [->] (a) -- (b);
+    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
+  \end{tikzpicture}
+  \caption{図の説明}
+\end{figure}
+```
+
+## ノードの幅や高さを合わせる
+
+頑張って幅を計算する方法と，Fittingライブラリを使う方法の2種類がある．
+
+### （方法1）letを使って幅を計算する
+
+以下のように，`let`を使って |(`a.west`のx座標) - (`c.east`のy座標)| を計算し，それを`minimum width`に設定する．ただし，`a.west`と`c.east`の座標は`outer sep`に影響を受けるため，その分を差し引きする．
+
+```tex
+  \begin{tikzpicture}[
+    node/.style={draw, outer sep=4pt},
+  ]
+    \node [node] (a) {要素1};
+    \node [node, right=1em of a] (b) {要素2};
+    \node [node, right=1em of b] (c) {要素3};
+
+    \coordinate (d) at ($(a)!0.5!(c) + (0, -4em)$);
+
+    \path let \p0 = (a.west),
+              \p1 = (c.east),
+          in
+          node [node, minimum width={abs(\x1-\x0) - 2*4pt}]
+            (d) at ($(a)!0.5!(c) + (0, -4em)$) {要素4};
+
+    \draw[->] ($(a.south west)!0.5!(c.south east)$) -- (d);
+    \draw[->] ($(a.south west)!0.25!(c.south east)$) -- (d);
+    \draw[->] ($(a.south west)!0.75!(c.south east)$) -- (d);
+  \end{tikzpicture}
+```
+
+{{< figure src="./img/adjust-width1.png" >}}
+
+### （方法2）Fitting Libraryを使う
+
+**参考** [Creating a node fitting the horizontal width of two other nodes](https://tex.stackexchange.com/questions/23480/creating-a-node-fitting-the-horizontal-width-of-two-other-nodes)
+
+以下のように，`fit={(a) (b) (c)}`を`\node`のオプションとして指定すれば，
+`(a) (b) (c)`を囲むノードが作成できる．これを`yshift`を使い下にずらす．
+テキストは`label`オプションで指定している．
+
+```tex
+\begin{tikzpicture}[
+  node/.style={draw, outer sep=4pt},
+]
+  \node [node] (a) {要素1};
+  \node [node, right=1em of a] (b) {要素2};
+  \node [node, right=1em of b] (c) {要素3};
+
+  \node [node, fit={(a) (b) (c)}, inner sep=-4pt, label={center:要素4}, yshift=-4em] (d) {};
+
+  \draw[->] ($(a.south west)!0.5!(c.south east)$) -- (d);
+  \draw[->] ($(a.south west)!0.25!(c.south east)$) -- (d);
+  \draw[->] ($(a.south west)!0.75!(c.south east)$) -- (d);
+\end{tikzpicture}
+```
+
+#### （補足）ノードのテキストについて
+
+ノードのテキストを`\node [...] (d) {...}`の`{...}`の部分に指定すると，若干上にずれる
+（Fittingライブラリの仕様のようだが，なぜそのようなことが起こるのかは良くわかっていない）．
+"PGF Manual Part V, 54 Fitting Library"の`/tikz/every fit`の説明の下に書かれている文章によると，
+> （中略） The above means that, generally speaking, if the node contains text like box in the above example, it will be centered inside the box. It will be difficult to put the text elsewhere, in particular, changing the anchor of the node will not have the desired effect. **Instead, what you should do is to create a node with the fit option that does not contain any text, give it a name, and then use normal nodes to add text at the desired positions. Alternatively, consider using the label or pin options.**
+
+とある．別の`\node`を作成してそこにテキストを書いたり，`label`や`pin`オプションを使ってテキストを指定したりすると良いらしい．
