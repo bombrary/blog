@@ -25,9 +25,11 @@
 
 
 <meta property="og:title" content="TikZ 備忘録" />
-<meta property="og:description" content="毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
+<meta property="og:description" content="随時更新。
+毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
 またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。
-情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアル(CTANの &ldquo;PDF Manual&quot;のこと) に載っている。TeX Liveを導入しているなら、コマンドtexdoc tikzで開くはず。この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
+情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアル() に載っている。
+TeX Liveを導入しているなら、コマンドtexdoc tikzで開くはず。これと同じものがCTANの &ldquo;PGF Manual&quot;のリンクからダウンロードできる。 非公式ではあるが、HTML版のマニュアルも公開されたようだ：The TikZ and PGF Packages この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
 知らないキーワードや記号が出てきたらマニュアル末尾のindexで探すと良い。 TikZで出来ることを把握したいなら、Part Iのチュートリアルを読んでみるのが有効。もしくはPartIII, Vあたりを流し読みする。PGF Manualはページ数が膨大なため、全部読もうとするのは恐らく得策では無い。目次を眺めながら興味のあるところをつまむのが良いと思う(読み方について、Introductionの1.4 How to Read This Manualも参照)。 既にやりたいことがあるが、TikZで実現する方法が分からない場合は、ググる。英語のキーワードで検索すれば、大抵Stack Exchangeがヒットする。画像検索も有効。 準備 パッケージ読み込み・この記事での記法の注意 TikZはtikzパッケージから読み込める。
 \usepakcage{tikz} 以降、コードを記載するときはこの記述を省略する。
 また、TikZには色々な便利なライブラリが用意されている。例えば座標計算に便利なライブラリであるCalcは次のように読み込む。
@@ -35,10 +37,6 @@
 DVIドライバの指定 必ずクラスオプションにDVIドライバを指定すること。さもなければ、色が出力されなかったり、図形の位置が正確に計算されなかったりする。
 以下は、DVIドライバをdvipdfmx、クラスをjsarticleで行う例。
 \documentclass[dvipdfmx]{jsarticle} クラスオプションにDVIドライバを指定する必要性については、以下のサイトを参照： 日本語 LaTeX の新常識 2021 - Qiita。
-個人的な図の描き方 自分は主にBeamerでスライドを作ったり、論文やレポートなどのLaTeX文書を書いたりするときにTikZを用いる。その場合、以下のワークフローが現状良いと思っている。
-書き捨て用のLaTeX文書を作成し、そこにTikZのコードを書く。 満足した出来になったら、スライドや論文、レポートのLaTeX文書に貼り付ける。 1でわざわざ別ファイルで書く理由は、タイプセット時間削減のためである。 本命のLaTeX文書に直接書き込む方式だと、今書いている図形以外のところまでタイプセットの処理が入るため、どうしてもタイプセットの時間が遅くなる（もしかしたら部分的にタイプセットしたり、それ以外の部分をキャッシュで残したりする仕組みがあるのかもしれないが、未調査）。
-ちなみにLaTeX文書に埋め込む以外の用途で用いるなら、
-生成されたPDF文書を適当に拡大してスクショする：ラスタ形式の画像しか取得できないが、手軽。 standaloneクラスでタイプセットし、それを適当な方法で変換する：例えばdvisvgmを使えばSVGファイルを作れる。 などが考えられる。
 色を定義 (TikZの話ではない) TikZではなくxcolorの話だが、大事なのでここで記す。これはtikzパッケージを読み込んだときに自動で読み込まれるようだが、もしxcolor単体で使いたいなら、xcolorパッケージを読み込むこと。
 \usepakcage{xcolor} 色同士を!で混ぜることができる。例えばred!20!blue!30!whiteと書くと、赤、青、白がそれぞれ20%、30%、(100-20-30)%混ざった色になる。
 カラーコードやRGB値などから定義したい場合は\definecolor、既存の色を混ぜて使いたい場合は\colorletを利用。
@@ -47,14 +45,16 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://bombrary.github.io/blog/posts/tikz-note01/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-07-30T22:30:00+09:00" />
-<meta property="article:modified_time" content="2022-11-26T22:50:27+09:00" />
+<meta property="article:modified_time" content="2022-12-09T08:51:34+09:00" />
 
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="TikZ 備忘録"/>
-<meta name="twitter:description" content="毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
+<meta name="twitter:description" content="随時更新。
+毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
 またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。
-情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアル(CTANの &ldquo;PDF Manual&quot;のこと) に載っている。TeX Liveを導入しているなら、コマンドtexdoc tikzで開くはず。この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
+情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアル() に載っている。
+TeX Liveを導入しているなら、コマンドtexdoc tikzで開くはず。これと同じものがCTANの &ldquo;PGF Manual&quot;のリンクからダウンロードできる。 非公式ではあるが、HTML版のマニュアルも公開されたようだ：The TikZ and PGF Packages この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
 知らないキーワードや記号が出てきたらマニュアル末尾のindexで探すと良い。 TikZで出来ることを把握したいなら、Part Iのチュートリアルを読んでみるのが有効。もしくはPartIII, Vあたりを流し読みする。PGF Manualはページ数が膨大なため、全部読もうとするのは恐らく得策では無い。目次を眺めながら興味のあるところをつまむのが良いと思う(読み方について、Introductionの1.4 How to Read This Manualも参照)。 既にやりたいことがあるが、TikZで実現する方法が分からない場合は、ググる。英語のキーワードで検索すれば、大抵Stack Exchangeがヒットする。画像検索も有効。 準備 パッケージ読み込み・この記事での記法の注意 TikZはtikzパッケージから読み込める。
 \usepakcage{tikz} 以降、コードを記載するときはこの記述を省略する。
 また、TikZには色々な便利なライブラリが用意されている。例えば座標計算に便利なライブラリであるCalcは次のように読み込む。
@@ -62,10 +62,6 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
 DVIドライバの指定 必ずクラスオプションにDVIドライバを指定すること。さもなければ、色が出力されなかったり、図形の位置が正確に計算されなかったりする。
 以下は、DVIドライバをdvipdfmx、クラスをjsarticleで行う例。
 \documentclass[dvipdfmx]{jsarticle} クラスオプションにDVIドライバを指定する必要性については、以下のサイトを参照： 日本語 LaTeX の新常識 2021 - Qiita。
-個人的な図の描き方 自分は主にBeamerでスライドを作ったり、論文やレポートなどのLaTeX文書を書いたりするときにTikZを用いる。その場合、以下のワークフローが現状良いと思っている。
-書き捨て用のLaTeX文書を作成し、そこにTikZのコードを書く。 満足した出来になったら、スライドや論文、レポートのLaTeX文書に貼り付ける。 1でわざわざ別ファイルで書く理由は、タイプセット時間削減のためである。 本命のLaTeX文書に直接書き込む方式だと、今書いている図形以外のところまでタイプセットの処理が入るため、どうしてもタイプセットの時間が遅くなる（もしかしたら部分的にタイプセットしたり、それ以外の部分をキャッシュで残したりする仕組みがあるのかもしれないが、未調査）。
-ちなみにLaTeX文書に埋め込む以外の用途で用いるなら、
-生成されたPDF文書を適当に拡大してスクショする：ラスタ形式の画像しか取得できないが、手軽。 standaloneクラスでタイプセットし、それを適当な方法で変換する：例えばdvisvgmを使えばSVGファイルを作れる。 などが考えられる。
 色を定義 (TikZの話ではない) TikZではなくxcolorの話だが、大事なのでここで記す。これはtikzパッケージを読み込んだときに自動で読み込まれるようだが、もしxcolor単体で使いたいなら、xcolorパッケージを読み込むこと。
 \usepakcage{xcolor} 色同士を!で混ぜることができる。例えばred!20!blue!30!whiteと書くと、赤、青、白がそれぞれ20%、30%、(100-20-30)%混ざった色になる。
 カラーコードやRGB値などから定義したい場合は\definecolor、既存の色を混ぜて使いたい場合は\colorletを利用。
@@ -93,7 +89,7 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2021-07-30T22:30:00&#43;09:00">November 26, 2022</time>
+        <time datetime="2021-07-30T22:30:00&#43;09:00">December 09, 2022</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -127,7 +123,6 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
       <ul>
         <li><a href="#パッケージ読み込みこの記事での記法の注意">パッケージ読み込み・この記事での記法の注意</a></li>
         <li><a href="#dviドライバの指定">DVIドライバの指定</a></li>
-        <li><a href="#個人的な図の描き方">個人的な図の描き方</a></li>
       </ul>
     </li>
     <li><a href="#色を定義-tikzの話ではない">色を定義 (TikZの話ではない)</a></li>
@@ -161,6 +156,7 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
         <li><a href="#垂線">垂線</a></li>
         <li><a href="#垂線縦軸または横軸に対して">垂線（縦軸または横軸に対して）</a></li>
         <li><a href="#ベクトルを平行にずらす">ベクトルを平行にずらす</a></li>
+        <li><a href="#座標計算のネスト">座標計算のネスト</a></li>
       </ul>
     </li>
     <li><a href="#交点の計算">交点の計算</a></li>
@@ -191,14 +187,32 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
     <li><a href="#関数のグラフの描画">関数のグラフの描画</a></li>
     <li><a href="#座標を使った平行移動">座標を使った平行移動</a></li>
     <li><a href="#図を拡大縮小するtikzの話ではない">図を拡大縮小する（TikZの話ではない）</a></li>
+    <li><a href="#特定の座標を中心にした水平方向の中央寄せ">特定の座標を中心にした水平方向の中央寄せ</a>
+      <ul>
+        <li><a href="#方法1use-as-bounding-boxを使う">（方法1）use as bounding boxを使う</a></li>
+        <li><a href="#方法2pathで領域を引き伸ばす">（方法2）pathで領域を引き伸ばす</a></li>
+      </ul>
+    </li>
+    <li><a href="#ノードの幅や高さを合わせる">ノードの幅や高さを合わせる</a>
+      <ul>
+        <li><a href="#方法1letを使って幅を計算する">（方法1）letを使って幅を計算する</a></li>
+        <li><a href="#方法2fitting-libraryを使う">（方法2）Fitting Libraryを使う</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </aside>
     
-  <p>毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。</p>
+  <p>随時更新。</p>
+<p>毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。</p>
 <p>またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。</p>
 <h2 id="情報の集め方">情報の集め方</h2>
-<p>ここに載っているものはほぼTikZ/PGFのマニュアル(<a href="https://ctan.org/pkg/pgf">CTAN</a>の &ldquo;PDF Manual&quot;のこと) に載っている。TeX Liveを導入しているなら、コマンド<code>texdoc tikz</code>で開くはず。この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。</p>
+<p>ここに載っているものはほぼTikZ/PGFのマニュアル() に載っている。</p>
+<ul>
+<li>TeX Liveを導入しているなら、コマンド<code>texdoc tikz</code>で開くはず。これと同じものが<a href="https://ctan.org/pkg/pgf">CTAN</a>の &ldquo;PGF Manual&quot;のリンクからダウンロードできる。</li>
+<li>非公式ではあるが、HTML版のマニュアルも公開されたようだ：<a href="https://tikz.dev">The TikZ and PGF Packages</a></li>
+</ul>
+<p>この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。</p>
 <ul>
 <li>知らないキーワードや記号が出てきたらマニュアル末尾のindexで探すと良い。</li>
 <li>TikZで出来ることを把握したいなら、Part Iのチュートリアルを読んでみるのが有効。もしくはPartIII, Vあたりを流し読みする。PGF Manualはページ数が膨大なため、全部読もうとするのは恐らく得策では無い。目次を眺めながら興味のあるところをつまむのが良いと思う(読み方について、Introductionの1.4 How to Read This Manualも参照)。</li>
@@ -219,20 +233,6 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\documentclass</span><span class="na">[dvipdfmx]</span><span class="nb">{</span>jsarticle<span class="nb">}</span>
 </span></span></code></pre></div><p>クラスオプションにDVIドライバを指定する必要性については、以下のサイトを参照：
 <a href="https://qiita.com/wtsnjp/items/76557b1598445a1fc9da#%E6%96%B0%E5%B8%B8%E8%AD%98-2-dvi-%E3%83%89%E3%83%A9%E3%82%A4%E3%83%90%E3%81%AF%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A7%E6%98%8E%E7%A4%BA%E3%81%97%E3%82%88%E3%81%86">日本語 LaTeX の新常識 2021 - Qiita</a>。</p>
-<h3 id="個人的な図の描き方">個人的な図の描き方</h3>
-<p>自分は主にBeamerでスライドを作ったり、論文やレポートなどのLaTeX文書を書いたりするときにTikZを用いる。その場合、以下のワークフローが現状良いと思っている。</p>
-<ol>
-<li>書き捨て用のLaTeX文書を作成し、そこにTikZのコードを書く。</li>
-<li>満足した出来になったら、スライドや論文、レポートのLaTeX文書に貼り付ける。</li>
-</ol>
-<p>1でわざわざ別ファイルで書く理由は、タイプセット時間削減のためである。
-本命のLaTeX文書に直接書き込む方式だと、今書いている図形以外のところまでタイプセットの処理が入るため、どうしてもタイプセットの時間が遅くなる（もしかしたら部分的にタイプセットしたり、それ以外の部分をキャッシュで残したりする仕組みがあるのかもしれないが、未調査）。</p>
-<p>ちなみにLaTeX文書に埋め込む以外の用途で用いるなら、</p>
-<ul>
-<li>生成されたPDF文書を適当に拡大してスクショする：ラスタ形式の画像しか取得できないが、手軽。</li>
-<li><code>standalone</code>クラスでタイプセットし、それを適当な方法で変換する：例えば<code>dvisvgm</code>を使えばSVGファイルを作れる。</li>
-</ul>
-<p>などが考えられる。</p>
 <h2 id="色を定義-tikzの話ではない">色を定義 (TikZの話ではない)</h2>
 <p>TikZではなくxcolorの話だが、大事なのでここで記す。これは<code>tikz</code>パッケージを読み込んだときに自動で読み込まれるようだが、もしxcolor単体で使いたいなら、<code>xcolor</code>パッケージを読み込むこと。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\usepakcage</span><span class="nb">{</span>xcolor<span class="nb">}</span>
@@ -620,6 +620,44 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
 </span></span></code></pre></div><figure><img src="./img/arrow-shift.png"/>
 </figure>
 
+<h3 id="座標計算のネスト">座標計算のネスト</h3>
+<p>座標の計算は<code>($...$)</code>で行うが、これはネストすることができる。
+例えば、点<code>a</code>と<code>b</code>に対して、<code>2(b-a)</code>のようなベクトルを計算したい場合は、
+<code>($2*($(b) - (a)$)$)</code>のように計算する。もし<code>($2*((b) - (a))$)</code>みたいに計算できたら直感的で良かったのだが、Calcライブラリのシンタックスの都合上<code>($...$)</code>をネストさせないといけない。</p>
+<h4 id="細かい話calcライブラリのシンタックスについて">（細かい話）Calcライブラリのシンタックスについて</h4>
+<p>シンタックスについて少し説明する。
+まず、&ldquo;PGF Manual Part III, 13.5.1 The General Syntax&quot;によると、</p>
+<ul>
+<li>一般のシンタックスは<code>([&lt;options&gt;]$&lt;coordinate computation&gt;$)</code>。</li>
+<li><code>&lt;coordinate computation&gt;</code>は、
+<ol>
+<li><code>&lt;factor&gt;*&lt;coordinate&gt;&lt;modifiers&gt;</code>で始まる。</li>
+<li>任意で <code>+</code>または<code>-</code>が続き、その後に<code>&lt;factor&gt;*&lt;coordinate&gt;&lt;modifiers&gt;</code>が続く。</li>
+<li>同様にして、<code>+</code>または<code>-</code>が続き、そのあとに上記の<code>&lt;factor&gt;...</code>が続く。</li>
+</ol>
+</li>
+</ul>
+<p>と書かれている。ただし、<code>[&lt;options&gt;]</code>、<code>&lt;factor&gt;*</code>、<code>&lt;modifiers&gt;</code>はそれぞれ、</p>
+<ul>
+<li><code>[&lt;options&gt;]</code>：何らかのオプションを設定する（Calcライブラリの場合、これが果たして何に使われるのか不明）。</li>
+<li><code>&lt;factor&gt;*</code>：スカラー倍。例えば<code>2*(a)</code>の<code>2*</code>の部分。</li>
+<li><code>&lt;modifiers&gt;</code>：前述の、<a href="#2%E7%82%B9%E9%96%93%E3%81%AE%E5%86%85%E5%88%86%E7%82%B9%E5%A4%96%E5%88%86%E7%82%B9">2点間の内分点外分点</a>、<a href="#2%E7%82%B9%E9%96%93%E3%81%AE%E4%BB%BB%E6%84%8F%E3%81%AE%E9%95%B7%E3%81%95%E3%81%AE%E3%83%99%E3%82%AF%E3%83%88%E3%83%AB">2点間の任意の長さのベクトル</a>のためのシンタックス。例えば<code>(a)!0.5!(b)</code>の<code>!0.5(b)</code>の部分。詳しい文法は&quot;13.5.3 The Syntax of Partway Modifiers&quot;や&quot;13.5.4 The Syntax of Distance Modifiers&quot;を参照。</li>
+</ul>
+<p>を意味する。これらは省略可能である。</p>
+<p>上記より、Calcライブラリで行う計算のシンタックスをBNF風に書くと以下のようになってるらしいことが分かる（合っているか少し不安だが）。</p>
+<pre tabindex="0"><code>&lt;coordinate&gt; := ([&lt;options&gt;]$⟨coordinate computation⟩$)
+&lt;coorinate computation&gt; := &lt;modified coordinate&gt;
+                         | &lt;modified coordinate&gt; + &lt;modified coordinate&gt;
+                         | &lt;modified coordinate&gt; - &lt;modified coordinate&gt;
+&lt;modified coordinate&gt; := &lt;factor&gt;*&lt;coordinate&gt;&lt;modifiers&gt;
+</code></pre><p>ただし、<code>[&lt;options&gt;]</code>、<code>&lt;factor&gt;</code>、<code>&lt;modifiers&gt;</code>をつけるかは任意である。
+また、<code>&lt;coordinate&gt;</code>として、TikZ標準の<code>(a)</code>や<code>(1, 2)</code>、<code>(5mm, 1mm)</code>などの表記もあり得るが、ここでは省略している。</p>
+<p>上のBNF風の表現に照らし合わせると、</p>
+<pre tabindex="0"><code>($2*((b) - (a))$)
+</code></pre><p>という計算はシンタックスエラーになることが分かる。
+なぜなら、内側の<code>2*((b) - (a))</code>は<code>&lt;factor&gt;*&lt;coordinate&gt;&lt;modifiers&gt;</code>の形であり、
+<code>((b) - (a))</code>は<code>&lt;coordinate&gt;</code>の定義に反しているからである。
+<code>($(b) - (a))$</code>なら<code>&lt;coordinate&gt;</code>の定義に沿っている。</p>
 <h2 id="交点の計算">交点の計算</h2>
 <p><strong>参考</strong> PFG Manual, Part III, 13.3.2 Intersections of Arbitrary Paths</p>
 <p><code>name path</code>でパスの名前を指定して、<code>name intersections</code>でパス同士の交点を計算する。
@@ -1142,8 +1180,242 @@ l.286 \show\pgfmathresult
 </span></span></code></pre></div><figure><img src="./img/scalebox.png"/>
 </figure>
 
-<p>とはいえ、拡大縮小しすぎて図が見づらくなる危険があるため、むやみな使用は禁物かもしれない。</p>
+<p>拡大縮小しすぎて図が見づらくなる危険があるため、むやみな使用は禁物かもしれない。</p>
 <p>（<strong>補足</strong> <code>\begin{tikzpicture}[scale=0.5]...</code>のように<code>scale</code>を指定しても縮小可能なのではないか、と感じるが、実際は期待通りにはならない。この<code>scale</code>は座標系の縮尺を変更するだけで、図形やテキストのサイズには変化を及ぼさない。）</p>
+<h2 id="特定の座標を中心にした水平方向の中央寄せ">特定の座標を中心にした水平方向の中央寄せ</h2>
+<p>以下のように<code>figure</code>環境でくくり、<code>\centering</code>を使って中央寄せしたケースを考える。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">  ]
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">\begin</span><span class="nb">{</span>minipage<span class="nb">}{</span><span class="k">\linewidth</span><span class="nb">}</span>
+</span></span><span class="line"><span class="cl">        Step1
+</span></span><span class="line"><span class="cl">        <span class="k">\par</span><span class="nb">{</span><span class="k">\centering</span> 文章1<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">\end</span><span class="nb">{</span>minipage<span class="nb">}}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
+</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span></code></pre></div><p>結果は以下のようになる。</p>
+<figure><img src="./img/centering-before.png"/>
+</figure>
+
+<p>ここで、「文章1」「文章2」「文章3」のノードが、水平方向に対し中央に来るように中央寄せしたい。</p>
+<p>ここでは2つの方法を紹介する。個人的には方法2の方がクセが無くて使いやすいと思われる。</p>
+<h3 id="方法1use-as-bounding-boxを使う">（方法1）use as bounding boxを使う</h3>
+<p><strong>参考</strong>：</p>
+<ul>
+<li>PGF Manual Part III, 15.8 Establishing a Bounding Box</li>
+<li><a href="https://tex.stackexchange.com/questions/12473/how-can-i-save-the-bounding-box-of-a-tikzpicture-and-use-in-other-tikzpicture/12474">How can I save the bounding box of a TikZpicture and use in other TikZpicture - Stack Exchange</a></li>
+</ul>
+<p><code>\path</code>、<code>\draw</code>、<code>\fill</code>などの<code>\path</code>系の命令に対し、<code>use as bounding box</code>というオプションを付けると、<code>tikzpicture</code>の画面枠を描いた図形のサイズに変更できる。</p>
+<p><strong>注意</strong> <code>use as bounding box</code>を書く位置や指定する座標によっては動かない。詳しくは後述。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">  ]
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [dashed, use as bounding box] (c.south east) rectangle (a.north west);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [densely dotted, red]
+</span></span><span class="line"><span class="cl">      (current bounding box.north west) rectangle (current bounding box.south east);
+</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span></code></pre></div><figure><img src="./img/centering-after1.png"/>
+</figure>
+
+<p>bounding boxは、TikZに限らずTeXの画像読み込みの際に使われる用語のようだ（参考：<a href="https://texwiki.texjp.org/?%E3%83%90%E3%82%A6%E3%83%B3%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9">TeXWiki</a>）。グラフィックの領域を囲うのに必要な領域、ということだろうか。<code>\centering</code>コマンドはこのbounding boxが中央になるように配置されるため、</p>
+<p>上記のコードでは、実際にbounding boxを可視化したかったため、点線を描画している。
+また<code>current bounding box</code>は組み込みで定義されているノードで（参考：PGF Manual Part IX, 106.4 Special Nodes）、現在のbounding boxを表す。そのため、<code>current bounding box.north west</code>でbounding boxの左上の座標を取得できる。参考までに、<code>current bounding box</code>を赤点線で示している。</p>
+<p>点線は邪魔だと思うので、以下のように<code>\draw [dashed, use as bounding box] ...</code>を<code>\path</code>にし、最後の<code>current bounding box</code>に関する記述を消せば、望み通りの結果になる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">  ]
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\path</span> [use as bounding box] (c.south east) rectangle (a.north west);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
+</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span></code></pre></div><h4 id="注意点use-as-bounding-boxの位置によっては動かない">注意点：use as bounding boxの位置によっては動かない</h4>
+<p>以下のように、<code>use as bounding box</code>を使う位置を、「長い文章 長い文章 長い文章」というラベルが定義された後にする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">  ]
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [dashed, use as bounding box] (c.south east) rectangle (a.north west);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [densely dotted, red]
+</span></span><span class="line"><span class="cl">      (current bounding box.north west) rectangle (current bounding box.south east);
+</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span></code></pre></div><p>すると、以下のようにbounding boxが変化しないことが分かる。</p>
+<figure><img src="./img/centering-fail.png"/>
+</figure>
+
+<p>こうなる理由は&quot;PGF Manual Part III, 15.8 Establishing a Bounding Box&quot;に記載されている。
+<code>/tikz/use as bounding box</code>の説明文を引用する。</p>
+<blockquote>
+<p>Normally, when this option is given on a path, the bounding box of the present path is used to determine the size of the picture and the size of all subsequent paths are ignored. However, if there were previous path operations that have already established a larger bounding box, it will not be made smaller by this operation (consider the \pgfresetboundingbox command to reset the previous bounding box).</p>
+</blockquote>
+<p>&ldquo;However &hellip;&ldquo;で始まる文に注目。意訳すると、<code>use as bounding box</code>で指定されるよりも前に、より大きなbounding boxが作られていたならば、大きな方に合わせられる、みたいなことが書かれている。</p>
+<p>そもそも前述の成功例は、「長い文章 長い文章 長い文章」がbounding boxからはみ出てしまっているため、あまり行儀の良い書き方ではないのかもしれない。しかしそれを気にせず、かつ引用文に書かれているような、<code>use as bounding box</code>のクセを理解して使えば、比較的シンプルな記述で中央寄せできる。</p>
+<h3 id="方法2pathで領域を引き伸ばす">（方法2）pathで領域を引き伸ばす</h3>
+<p><strong>参考</strong> <a href="https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node">How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange</a></p>
+<p>あるノードを視点として、左右対称に線を引けば良い。そうすれば勝手にbounding boxが伸び、中央寄せになる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">  ]
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [&lt;-&gt;, red, line width=2pt]
+</span></span><span class="line"><span class="cl">      (<span class="s">$</span><span class="o">(</span><span class="nb">current bounding box.west |</span><span class="o">-</span><span class="nb"> a</span><span class="o">)</span><span class="s">$</span>) --
+</span></span><span class="line"><span class="cl">      ++ (<span class="s">$</span><span class="o">-</span><span class="m">2</span><span class="o">*(</span><span class="s">$</span>(current bounding box.west |- a) - (a)<span class="s">$</span><span class="o">)</span><span class="s">$</span>);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [&lt;-&gt;, green!75!black, line width=1pt]
+</span></span><span class="line"><span class="cl">      (<span class="s">$</span><span class="o">(</span><span class="nb">current bounding box.east |</span><span class="o">-</span><span class="nb"> a</span><span class="o">)</span><span class="s">$</span>) --
+</span></span><span class="line"><span class="cl">      ++ (<span class="s">$</span><span class="o">-</span><span class="m">2</span><span class="o">*(</span><span class="s">$</span>(current bounding box.east |- a) - (a)<span class="s">$</span><span class="o">)</span><span class="s">$</span>);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [densely dotted, red]
+</span></span><span class="line"><span class="cl">      (current bounding box.north west) rectangle (current bounding box.south east);
+</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span></code></pre></div><figure><img src="./img/centering-after2.png"/>
+</figure>
+
+<p>上記のコードは、bounding boxの広がりを矢印で可視化するために冗長に書いてある。
+よりシンプルで、かつ矢印や点線を書かないなら、以下のようにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">  ]
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\path</span> (a) -- ++(<span class="s">$</span><span class="o">-</span><span class="m">1</span><span class="o">*(</span><span class="s">$</span>(current bounding box.west |- a) - (a)<span class="s">$</span><span class="o">)</span><span class="s">$</span>)
+</span></span><span class="line"><span class="cl">          (a) -- ++(<span class="s">$</span><span class="o">-</span><span class="m">1</span><span class="o">*(</span><span class="s">$</span>(current bounding box.east |- a) - (a)<span class="s">$</span><span class="o">)</span><span class="s">$</span>);
+</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span></code></pre></div><p>この方法は<a href="https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node">How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange</a> を参考にした。こちらでは「ベクトルを-1倍する」という操作を「180度回転させる」という操作にしてコードを書いているようだ。</p>
+<p>参考サイトのように、<code>\tikzset</code>を使って再利用したい場合は次にようにする（プリアンブルに書いておく）。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\tikzset</span><span class="nb">{</span>
+</span></span><span class="line"><span class="cl">  center coordinate/.style=<span class="nb">{</span>
+</span></span><span class="line"><span class="cl">    execute at end picture=<span class="nb">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">\path</span> (#1) -- ++(<span class="s">$</span><span class="o">-</span><span class="m">1</span><span class="o">*(</span><span class="s">$</span>(current bounding box.west |- #1) - (#1)<span class="s">$</span><span class="o">)</span><span class="s">$</span>)
+</span></span><span class="line"><span class="cl">            (#1) -- ++(<span class="s">$</span><span class="o">-</span><span class="m">1</span><span class="o">*(</span><span class="s">$</span>(current bounding box.east |- #1) - (#1)<span class="s">$</span><span class="o">)</span><span class="s">$</span>);
+</span></span><span class="line"><span class="cl">    <span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="nb">}</span>
+</span></span></code></pre></div><p>これは以下のように、<code>center coordinate=a</code>のように使う。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">    center coordinate=a,
+</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">  ]
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
+</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
+</span></span></code></pre></div><h2 id="ノードの幅や高さを合わせる">ノードの幅や高さを合わせる</h2>
+<p>他にもあるかもしれないが，頑張って幅を計算する方法と、Fittingライブラリを使う方法の2種類が考えられる．</p>
+<h3 id="方法1letを使って幅を計算する">（方法1）letを使って幅を計算する</h3>
+<p>こちらは自分で考えた方法．</p>
+<p>以下のように、<code>let</code>を使って |(<code>a.west</code>のx座標) - (<code>c.east</code>のy座標)| を計算し、それを<code>minimum width</code>に設定する。ただし、<code>a.west</code>と<code>c.east</code>の座標は<code>outer sep</code>に影響を受けるため、その分を差し引きする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, outer sep=4pt<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">  ]
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>要素1<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, right=1em of a] (b) <span class="nb">{</span>要素2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, right=1em of b] (c) <span class="nb">{</span>要素3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\coordinate</span> (d) at (<span class="s">$</span><span class="o">(</span><span class="nb">a</span><span class="o">)!</span><span class="m">0</span><span class="nb">.</span><span class="m">5</span><span class="o">!(</span><span class="nb">c</span><span class="o">)</span><span class="nb"> </span><span class="o">+</span><span class="nb"> </span><span class="o">(</span><span class="m">0</span><span class="nb">, </span><span class="o">-</span><span class="m">4</span><span class="nb">em</span><span class="o">)</span><span class="s">$</span>);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\path</span> let <span class="k">\p</span>0 = (a.west),
+</span></span><span class="line"><span class="cl">              <span class="k">\p</span>1 = (c.east),
+</span></span><span class="line"><span class="cl">          in
+</span></span><span class="line"><span class="cl">          node [node, minimum width=<span class="nb">{</span>abs(<span class="k">\x</span>1-<span class="k">\x</span>0) - 2*4pt<span class="nb">}</span>]
+</span></span><span class="line"><span class="cl">            (d) at (<span class="s">$</span><span class="o">(</span><span class="nb">a</span><span class="o">)!</span><span class="m">0</span><span class="nb">.</span><span class="m">5</span><span class="o">!(</span><span class="nb">c</span><span class="o">)</span><span class="nb"> </span><span class="o">+</span><span class="nb"> </span><span class="o">(</span><span class="m">0</span><span class="nb">, </span><span class="o">-</span><span class="m">4</span><span class="nb">em</span><span class="o">)</span><span class="s">$</span>) <span class="nb">{</span>要素4<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span><span class="na">[-&gt;]</span> (<span class="s">$</span><span class="o">(</span><span class="nb">a.south west</span><span class="o">)!</span><span class="m">0</span><span class="nb">.</span><span class="m">5</span><span class="o">!(</span><span class="nb">c.south east</span><span class="o">)</span><span class="s">$</span>) -- (d);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span><span class="na">[-&gt;]</span> (<span class="s">$</span><span class="o">(</span><span class="nb">a.south west</span><span class="o">)!</span><span class="m">0</span><span class="nb">.</span><span class="m">25</span><span class="o">!(</span><span class="nb">c.south east</span><span class="o">)</span><span class="s">$</span>) -- (d);
+</span></span><span class="line"><span class="cl">    <span class="k">\draw</span><span class="na">[-&gt;]</span> (<span class="s">$</span><span class="o">(</span><span class="nb">a.south west</span><span class="o">)!</span><span class="m">0</span><span class="nb">.</span><span class="m">75</span><span class="o">!(</span><span class="nb">c.south east</span><span class="o">)</span><span class="s">$</span>) -- (d);
+</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span></code></pre></div><figure><img src="./img/adjust-width1.png"/>
+</figure>
+
+<h3 id="方法2fitting-libraryを使う">（方法2）Fitting Libraryを使う</h3>
+<p><strong>参考</strong> <a href="https://tex.stackexchange.com/questions/23480/creating-a-node-fitting-the-horizontal-width-of-two-other-nodes">Creating a node fitting the horizontal width of two other nodes</a></p>
+<p>以下のように、<code>fit={(a) (b) (c)}</code>を<code>\node</code>のオプションとして指定すれば、
+<code>(a) (b) (c)</code>を囲むノードが作成できる。これを<code>yshift</code>を使い下にずらす。
+テキストは<code>label</code>オプションで指定している。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
+</span></span><span class="line"><span class="cl">  node/.style=<span class="nb">{</span>draw, outer sep=4pt<span class="nb">}</span>,
+</span></span><span class="line"><span class="cl">]
+</span></span><span class="line"><span class="cl">  <span class="k">\node</span> [node] (a) <span class="nb">{</span>要素1<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">  <span class="k">\node</span> [node, right=1em of a] (b) <span class="nb">{</span>要素2<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">  <span class="k">\node</span> [node, right=1em of b] (c) <span class="nb">{</span>要素3<span class="nb">}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">\node</span> [node, fit=<span class="nb">{</span>(a) (b) (c)<span class="nb">}</span>, inner sep=-4pt, label=<span class="nb">{</span>center:要素4<span class="nb">}</span>, yshift=-4em] (d) <span class="nb">{}</span>;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">\draw</span><span class="na">[-&gt;]</span> (<span class="s">$</span><span class="o">(</span><span class="nb">a.south west</span><span class="o">)!</span><span class="m">0</span><span class="nb">.</span><span class="m">5</span><span class="o">!(</span><span class="nb">c.south east</span><span class="o">)</span><span class="s">$</span>) -- (d);
+</span></span><span class="line"><span class="cl">  <span class="k">\draw</span><span class="na">[-&gt;]</span> (<span class="s">$</span><span class="o">(</span><span class="nb">a.south west</span><span class="o">)!</span><span class="m">0</span><span class="nb">.</span><span class="m">25</span><span class="o">!(</span><span class="nb">c.south east</span><span class="o">)</span><span class="s">$</span>) -- (d);
+</span></span><span class="line"><span class="cl">  <span class="k">\draw</span><span class="na">[-&gt;]</span> (<span class="s">$</span><span class="o">(</span><span class="nb">a.south west</span><span class="o">)!</span><span class="m">0</span><span class="nb">.</span><span class="m">75</span><span class="o">!(</span><span class="nb">c.south east</span><span class="o">)</span><span class="s">$</span>) -- (d);
+</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
+</span></span></code></pre></div><h4 id="補足ノードのテキストについて">（補足）ノードのテキストについて</h4>
+<p>ノードのテキストを<code>\node [...] (d) {...}</code>の<code>{...}</code>の部分に指定すると、若干上にずれる
+（Fittingライブラリの仕様のようだが、なぜそのようなことが起こるのかは良くわかっていない）。
+&ldquo;PGF Manual Part V, 54 Fitting Library&quot;の<code>/tikz/every fit</code>の説明の下に書かれている文章によると、</p>
+<blockquote>
+<p>（中略） The above means that, generally speaking, if the node contains text like box in the above example, it will be centered inside the box. It will be difficult to put the text elsewhere, in particular, changing the anchor of the node will not have the desired effect. <strong>Instead, what you should do is to create a node with the fit option that does not contain any text, give it a name, and then use normal nodes to add text at the desired positions. Alternatively, consider using the label or pin options.</strong></p>
+</blockquote>
+<p>とある。別の<code>\node</code>を作成してそこにテキストを書いたり、<code>label</code>や<code>pin</code>オプションを使ってテキストを指定したりすると良いらしい。</p>
 
 </article>
 
