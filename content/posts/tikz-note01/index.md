@@ -6,6 +6,8 @@ categories: ["TikZ", "LaTeX"]
 toc: true
 ---
 
+随時更新。
+
 毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
 
 またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。
@@ -51,21 +53,6 @@ TikZは`tikz`パッケージから読み込める。
 
 クラスオプションにDVIドライバを指定する必要性については、以下のサイトを参照：
 [日本語 LaTeX の新常識 2021 - Qiita](https://qiita.com/wtsnjp/items/76557b1598445a1fc9da#新常識-2-dvi-ドライバはクラスオプションで明示しよう)。
-
-### 個人的な図の描き方
-
-自分は主にBeamerでスライドを作ったり、論文やレポートなどのLaTeX文書を書いたりするときにTikZを用いる。その場合、以下のワークフローが現状良いと思っている。
-1. 書き捨て用のLaTeX文書を作成し、そこにTikZのコードを書く。
-2. 満足した出来になったら、スライドや論文、レポートのLaTeX文書に貼り付ける。
-
-1でわざわざ別ファイルで書く理由は、タイプセット時間削減のためである。
-本命のLaTeX文書に直接書き込む方式だと、今書いている図形以外のところまでタイプセットの処理が入るため、どうしてもタイプセットの時間が遅くなる（もしかしたら部分的にタイプセットしたり、それ以外の部分をキャッシュで残したりする仕組みがあるのかもしれないが、未調査）。
-
-ちなみにLaTeX文書に埋め込む以外の用途で用いるなら、
-- 生成されたPDF文書を適当に拡大してスクショする：ラスタ形式の画像しか取得できないが、手軽。
-- `standalone`クラスでタイプセットし、それを適当な方法で変換する：例えば`dvisvgm`を使えばSVGファイルを作れる。
-
-などが考えられる。
 
 ## 色を定義 (TikZの話ではない)
 
@@ -585,7 +572,7 @@ xy軸ごとの移動方向vが決まっているなら、`$(a) + (v)$`みたい�
 と書かれている。ただし、`[<options>]`、`<factor>*`、`<modifiers>`はそれぞれ、
 - `[<options>]`：何らかのオプションを設定する（Calcライブラリの場合、これが果たして何に使われるのか不明）。
 - `<factor>*`：スカラー倍。例えば`2*(a)`の`2*`の部分。
-- `<modifiers>`：前述の，[2点間の内分点外分点](#2点間の内分点外分点)，[2点間の任意の長さのベクトル](#2点間の任意の長さのベクトル)のためのシンタックス．例えば`(a)!0.5!(b)`の`!0.5(b)`の部分。詳しい文法は"13.5.3 The Syntax of Partway Modifiers"や"13.5.4 The Syntax of Distance Modifiers"を参照。
+- `<modifiers>`：前述の、[2点間の内分点外分点](#2点間の内分点外分点)、[2点間の任意の長さのベクトル](#2点間の任意の長さのベクトル)のためのシンタックス。例えば`(a)!0.5!(b)`の`!0.5(b)`の部分。詳しい文法は"13.5.3 The Syntax of Partway Modifiers"や"13.5.4 The Syntax of Distance Modifiers"を参照。
 
 を意味する。これらは省略可能である。
 
@@ -1276,7 +1263,7 @@ gnuplotで連携する以外にも、pyplotなど外部プログラム予め画�
 
 ## 特定の座標を中心にした水平方向の中央寄せ
 
-以下のように`figure`環境でくくり，`\centering`を使って中央寄せしたケースを考える．
+以下のように`figure`環境でくくり、`\centering`を使って中央寄せしたケースを考える。
 
 ```tex
 \begin{figure}
@@ -1299,13 +1286,13 @@ gnuplotで連携する以外にも、pyplotなど外部プログラム予め画�
 \end{figure}
 ```
 
-結果は以下のようになる．
+結果は以下のようになる。
 
 {{< figure src="./img/centering-before.png" >}}
 
-ここで，「文章1」「文章2」「文章3」のノードが，水平方向に対し中央に来るように中央寄せしたい．
+ここで、「文章1」「文章2」「文章3」のノードが、水平方向に対し中央に来るように中央寄せしたい。
 
-ここでは2つの方法を紹介する．個人的には方法2の方がクセが無くて使いやすいと思われる．
+ここでは2つの方法を紹介する。個人的には方法2の方がクセが無くて使いやすいと思われる。
 
 ### （方法1）use as bounding boxを使う
 
@@ -1313,9 +1300,9 @@ gnuplotで連携する以外にも、pyplotなど外部プログラム予め画�
 - PGF Manual Part III, 15.8 Establishing a Bounding Box
 - [How can I save the bounding box of a TikZpicture and use in other TikZpicture - Stack Exchange](https://tex.stackexchange.com/questions/12473/how-can-i-save-the-bounding-box-of-a-tikzpicture-and-use-in-other-tikzpicture/12474)
 
-`\path`，`\draw`，`\fill`などの`\path`系の命令に対し，`use as bounding box`というオプションを付けると，`tikzpicture`の画面枠を描いた図形のサイズに変更できる．
+`\path`、`\draw`、`\fill`などの`\path`系の命令に対し、`use as bounding box`というオプションを付けると、`tikzpicture`の画面枠を描いた図形のサイズに変更できる。
 
-**注意** `use as bounding box`を書く位置や指定する座標によっては動かない．詳しくは後述．
+**注意** `use as bounding box`を書く位置や指定する座標によっては動かない。詳しくは後述。
 
 ```tex
 \begin{figure}
@@ -1340,12 +1327,12 @@ gnuplotで連携する以外にも、pyplotなど外部プログラム予め画�
 
 {{< figure src="./img/centering-after1.png" >}}
 
-bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる用語のようだ（参考：[TeXWiki](https://texwiki.texjp.org/?バウンディングボックス)）．グラフィックの領域を囲うのに必要な領域，ということだろうか．`\centering`コマンドはこのbounding boxが中央になるように配置されるため，
+bounding boxは、TikZに限らずTeXの画像読み込みの際に使われる用語のようだ（参考：[TeXWiki](https://texwiki.texjp.org/?バウンディングボックス)）。グラフィックの領域を囲うのに必要な領域、ということだろうか。`\centering`コマンドはこのbounding boxが中央になるように配置されるため、
 
-上記のコードでは，実際にbounding boxを可視化したかったため，点線を描画している．
-また`current bounding box`は組み込みで定義されているノードで（参考：PGF Manual Part IX, 106.4 Special Nodes），現在のbounding boxを表す．そのため，`current bounding box.north west`でbounding boxの左上の座標を取得できる．参考までに，`current bounding box`を赤点線で示している．
+上記のコードでは、実際にbounding boxを可視化したかったため、点線を描画している。
+また`current bounding box`は組み込みで定義されているノードで（参考：PGF Manual Part IX, 106.4 Special Nodes）、現在のbounding boxを表す。そのため、`current bounding box.north west`でbounding boxの左上の座標を取得できる。参考までに、`current bounding box`を赤点線で示している。
 
-点線は邪魔だと思うので，以下のように`\draw [dashed, use as bounding box] ...`を`\path`にし，最後の`current bounding box`に関する記述を消せば，望み通りの結果になる．
+点線は邪魔だと思うので、以下のように`\draw [dashed, use as bounding box] ...`を`\path`にし、最後の`current bounding box`に関する記述を消せば、望み通りの結果になる。
 
 ```tex
 \begin{figure}
@@ -1367,7 +1354,7 @@ bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる�
 
 #### 注意点：use as bounding boxの位置によっては動かない
 
-以下のように，`use as bounding box`を使う位置を，「長い文章 長い文章 長い文章」というラベルが定義された後にする．
+以下のように、`use as bounding box`を使う位置を、「長い文章 長い文章 長い文章」というラベルが定義された後にする。
 
 ```tex
 \begin{figure}
@@ -1391,23 +1378,23 @@ bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる�
 \end{figure}
 ```
 
-すると，以下のようにbounding boxが変化しないことが分かる．
+すると、以下のようにbounding boxが変化しないことが分かる。
 
 {{< figure src="./img/centering-fail.png" >}}
 
-こうなる理由は"PGF Manual Part III, 15.8 Establishing a Bounding Box"に記載されている．
-`/tikz/use as bounding box`の説明文を引用する．
+こうなる理由は"PGF Manual Part III, 15.8 Establishing a Bounding Box"に記載されている。
+`/tikz/use as bounding box`の説明文を引用する。
 > Normally, when this option is given on a path, the bounding box of the present path is used to determine the size of the picture and the size of all subsequent paths are ignored. However, if there were previous path operations that have already established a larger bounding box, it will not be made smaller by this operation (consider the \pgfresetboundingbox command to reset the previous bounding box).
 
-"However ..."で始まる文に注目．意訳すると，`use as bounding box`で指定されるよりも前に，より大きなbounding boxが作られていたならば，大きな方に合わせられる，みたいなことが書かれている．
+"However ..."で始まる文に注目。意訳すると、`use as bounding box`で指定されるよりも前に、より大きなbounding boxが作られていたならば、大きな方に合わせられる、みたいなことが書かれている。
 
-そもそも前述の成功例は，「長い文章 長い文章 長い文章」がbounding boxからはみ出てしまっているため，あまり行儀の良い書き方ではないのかもしれない．しかしそれを気にせず，かつ引用文に書かれているような，`use as bounding box`のクセを理解して使えば，比較的シンプルな記述で中央寄せできる．
+そもそも前述の成功例は、「長い文章 長い文章 長い文章」がbounding boxからはみ出てしまっているため、あまり行儀の良い書き方ではないのかもしれない。しかしそれを気にせず、かつ引用文に書かれているような、`use as bounding box`のクセを理解して使えば、比較的シンプルな記述で中央寄せできる。
 
 ### （方法2）pathで領域を引き伸ばす
 
 **参考** [How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange](https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node)
 
-あるノードを視点として，左右対称に線を引けば良い．そうすれば勝手にbounding boxが伸び，中央寄せになる．
+あるノードを視点として、左右対称に線を引けば良い。そうすれば勝手にbounding boxが伸び、中央寄せになる。
 
 ```tex
 \begin{figure}
@@ -1438,8 +1425,8 @@ bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる�
 
 {{< figure src="./img/centering-after2.png" >}}
 
-上記のコードは，bounding boxの広がりを矢印で可視化するために冗長に書いてある．
-よりシンプルで，かつ矢印や点線を書かないなら，以下のようにする．
+上記のコードは、bounding boxの広がりを矢印で可視化するために冗長に書いてある。
+よりシンプルで、かつ矢印や点線を書かないなら、以下のようにする。
 
 ```tex
 \begin{figure}
@@ -1461,9 +1448,9 @@ bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる�
 \end{figure}
 ```
 
-この方法は[How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange](https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node) を参考にした．こちらでは「ベクトルを-1倍する」という操作を「180度回転させる」という操作にしてコードを書いているようだ．
+この方法は[How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange](https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node) を参考にした。こちらでは「ベクトルを-1倍する」という操作を「180度回転させる」という操作にしてコードを書いているようだ。
 
-参考サイトのように，`\tikzset`を使って再利用したい場合は次にようにする（プリアンブルに書いておく）．
+参考サイトのように、`\tikzset`を使って再利用したい場合は次にようにする（プリアンブルに書いておく）。
 ```tex
 \tikzset{
   center coordinate/.style={
@@ -1475,7 +1462,7 @@ bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる�
 }
 ```
 
-これは以下のように，`center coordinate=a`のように使う．
+これは以下のように、`center coordinate=a`のように使う。
 ```tex
 \begin{figure}
   \centering
@@ -1496,11 +1483,13 @@ bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる�
 
 ## ノードの幅や高さを合わせる
 
-頑張って幅を計算する方法と，Fittingライブラリを使う方法の2種類がある．
+他にもあるかもしれないが，頑張って幅を計算する方法と、Fittingライブラリを使う方法の2種類が考えられる．
 
 ### （方法1）letを使って幅を計算する
 
-以下のように，`let`を使って |(`a.west`のx座標) - (`c.east`のy座標)| を計算し，それを`minimum width`に設定する．ただし，`a.west`と`c.east`の座標は`outer sep`に影響を受けるため，その分を差し引きする．
+こちらは自分で考えた方法．
+
+以下のように、`let`を使って |(`a.west`のx座標) - (`c.east`のy座標)| を計算し、それを`minimum width`に設定する。ただし、`a.west`と`c.east`の座標は`outer sep`に影響を受けるため、その分を差し引きする。
 
 ```tex
   \begin{tikzpicture}[
@@ -1530,9 +1519,9 @@ bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる�
 
 **参考** [Creating a node fitting the horizontal width of two other nodes](https://tex.stackexchange.com/questions/23480/creating-a-node-fitting-the-horizontal-width-of-two-other-nodes)
 
-以下のように，`fit={(a) (b) (c)}`を`\node`のオプションとして指定すれば，
-`(a) (b) (c)`を囲むノードが作成できる．これを`yshift`を使い下にずらす．
-テキストは`label`オプションで指定している．
+以下のように、`fit={(a) (b) (c)}`を`\node`のオプションとして指定すれば、
+`(a) (b) (c)`を囲むノードが作成できる。これを`yshift`を使い下にずらす。
+テキストは`label`オプションで指定している。
 
 ```tex
 \begin{tikzpicture}[
@@ -1552,9 +1541,9 @@ bounding boxは，TikZに限らずTeXの画像読み込みの際に使われる�
 
 #### （補足）ノードのテキストについて
 
-ノードのテキストを`\node [...] (d) {...}`の`{...}`の部分に指定すると，若干上にずれる
-（Fittingライブラリの仕様のようだが，なぜそのようなことが起こるのかは良くわかっていない）．
-"PGF Manual Part V, 54 Fitting Library"の`/tikz/every fit`の説明の下に書かれている文章によると，
+ノードのテキストを`\node [...] (d) {...}`の`{...}`の部分に指定すると、若干上にずれる
+（Fittingライブラリの仕様のようだが、なぜそのようなことが起こるのかは良くわかっていない）。
+"PGF Manual Part V, 54 Fitting Library"の`/tikz/every fit`の説明の下に書かれている文章によると、
 > （中略） The above means that, generally speaking, if the node contains text like box in the above example, it will be centered inside the box. It will be difficult to put the text elsewhere, in particular, changing the anchor of the node will not have the desired effect. **Instead, what you should do is to create a node with the fit option that does not contain any text, give it a name, and then use normal nodes to add text at the desired positions. Alternatively, consider using the label or pin options.**
 
-とある．別の`\node`を作成してそこにテキストを書いたり，`label`や`pin`オプションを使ってテキストを指定したりすると良いらしい．
+とある。別の`\node`を作成してそこにテキストを書いたり、`label`や`pin`オプションを使ってテキストを指定したりすると良いらしい。
