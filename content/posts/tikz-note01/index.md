@@ -6,7 +6,7 @@ categories: ["TikZ", "LaTeX"]
 toc: true
 ---
 
-随時更新。
+随時更新。だいぶ量が増えてきたので，いくつかを分割したほうが良いかもしれない．
 
 毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
 
@@ -742,10 +742,6 @@ Patternsライブラリを使えば良い。`pattern`で使いたいパターン
 
 {{< figure src="./img/matrix.png" >}}
 
-## 文字を揃えて並べる
-
-ノードの端を揃えたいときは、`anchor`をうまく使う。
-
 ## node関連
 
 **参考**: PGF Manual, Part III, 17.2.3 Common Options: Separations, Margins, Padding and Border Rotation
@@ -1206,7 +1202,7 @@ TikZコマンドは、基本的に書いた順に実行され、図形が重ね�
 
 あまり複雑な関数だとTeXでは効率的に計算できないらしいので、その場合はgnuplotと連携する方法を検討したほうが良いらしい（参考：PGF Manual, Part III, 22.6 Plotting a Function Using Gnuplot）。
 
-gnuplotで連携する以外にも、pyplotなど外部プログラム予め画像を作っておき、それを`\includegraphics`で読み込む方法が考えられる。実際、TikZでは以下のように`node`の中に画像を埋め込める。
+gnuplotで連携する以外にも、pyplotなど外部プログラムで予め画像を作っておき、それを`\includegraphics`で読み込む方法が考えられる。実際、TikZでは以下のように`node`の中に画像を埋め込める。
 ```tex
 \node at (0,0) {\includegraphics[width=1cm, clip]{path/to/file.pdf}};
 ```
