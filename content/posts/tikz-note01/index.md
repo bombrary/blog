@@ -14,7 +14,7 @@ toc: true
 
 ## 情報の集め方
 
-ここに載っているものはほぼTikZ/PGFのマニュアル() に載っている。
+ここに載っているものはほぼTikZ/PGFのマニュアルに載っている。
 - TeX Liveを導入しているなら、コマンド`texdoc tikz`で開くはず。これと同じものが[CTAN](https://ctan.org/pkg/pgf)の "PGF Manual"のリンクからダウンロードできる。
 - 非公式ではあるが、HTML版のマニュアルも公開されたようだ：[The TikZ and PGF Packages](https://tikz.dev)
 
