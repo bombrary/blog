@@ -1288,107 +1288,12 @@ gnuplotで連携する以外にも、pyplotなど外部プログラムで予め�
 
 ここで、「文章1」「文章2」「文章3」のノードが、水平方向に対し中央に来るように中央寄せしたい。
 
-ここでは2つの方法を紹介する。個人的には方法2の方がクセが無くて使いやすいと思われる。
+調べてみたところ，2つの方法があった．
 
-### （方法1）use as bounding boxを使う
+- `use as bounding box`を利用した方法（[参考](https://tex.stackexchange.com/questions/12473/how-can-i-save-the-bounding-box-of-a-tikzpicture-and-use-in-other-tikzpicture/12474)）
+- `path`コマンドで左右を引き伸ばす（[参考](https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node)）
 
-**参考**： 
-- PGF Manual Part III, 15.8 Establishing a Bounding Box
-- [How can I save the bounding box of a TikZpicture and use in other TikZpicture - Stack Exchange](https://tex.stackexchange.com/questions/12473/how-can-i-save-the-bounding-box-of-a-tikzpicture-and-use-in-other-tikzpicture/12474)
-
-`\path`、`\draw`、`\fill`などの`\path`系の命令に対し、`use as bounding box`というオプションを付けると、`tikzpicture`の画面枠を描いた図形のサイズに変更できる。
-
-**注意** `use as bounding box`を書く位置や指定する座標によっては動かない。詳しくは後述。
-
-```tex
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[
-    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
-  ]
-    \node [node] (a) {文章1};
-    \node [node, below=3em of a] (b) {文章2};
-    \node [node, below=3em of b] (c) {文章3};
-    \draw [dashed, use as bounding box] (c.south east) rectangle (a.north west);
-
-    \draw [->] (a) -- (b);
-    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
-
-    \draw [densely dotted, red]
-      (current bounding box.north west) rectangle (current bounding box.south east);
-  \end{tikzpicture}
-  \caption{図の説明}
-\end{figure}
-```
-
-{{< figure src="./img/centering-after1.png" >}}
-
-bounding boxは、TikZに限らずTeXの画像読み込みの際に使われる用語のようだ（参考：[TeXWiki](https://texwiki.texjp.org/?バウンディングボックス)）。グラフィックの領域を囲うのに必要な領域、ということだろうか。`\centering`コマンドはこのbounding boxが中央になるように配置されるため、
-
-上記のコードでは、実際にbounding boxを可視化したかったため、点線を描画している。
-また`current bounding box`は組み込みで定義されているノードで（参考：PGF Manual Part IX, 106.4 Special Nodes）、現在のbounding boxを表す。そのため、`current bounding box.north west`でbounding boxの左上の座標を取得できる。参考までに、`current bounding box`を赤点線で示している。
-
-点線は邪魔だと思うので、以下のように`\draw [dashed, use as bounding box] ...`を`\path`にし、最後の`current bounding box`に関する記述を消せば、望み通りの結果になる。
-
-```tex
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[
-    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
-  ]
-    \node [node] (a) {文章1};
-    \node [node, below=3em of a] (b) {文章2};
-    \node [node, below=3em of b] (c) {文章3};
-    \path [use as bounding box] (c.south east) rectangle (a.north west);
-
-    \draw [->] (a) -- (b);
-    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
-  \end{tikzpicture}
-  \caption{図の説明}
-\end{figure}
-```
-
-#### 注意点：use as bounding boxの位置によっては動かない
-
-以下のように、`use as bounding box`を使う位置を、「長い文章 長い文章 長い文章」というラベルが定義された後にする。
-
-```tex
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[
-    node/.style={draw, minimum width=10em, text width=10em, outer sep=4pt, align=left},
-  ]
-    \node [node] (a) {文章1};
-    \node [node, below=3em of a] (b) {文章2};
-    \node [node, below=3em of b] (c) {文章3};
-
-    \draw [->] (a) -- (b);
-    \draw [->] (b) -- node[right=1em] {長い文章 長い文章 長い文章} (c);
-
-    \draw [dashed, use as bounding box] (c.south east) rectangle (a.north west);
-
-    \draw [densely dotted, red]
-      (current bounding box.north west) rectangle (current bounding box.south east);
-  \end{tikzpicture}
-  \caption{図の説明}
-\end{figure}
-```
-
-すると、以下のようにbounding boxが変化しないことが分かる。
-
-{{< figure src="./img/centering-fail.png" >}}
-
-こうなる理由は"PGF Manual Part III, 15.8 Establishing a Bounding Box"に記載されている。
-`/tikz/use as bounding box`の説明文を引用する。
-> Normally, when this option is given on a path, the bounding box of the present path is used to determine the size of the picture and the size of all subsequent paths are ignored. However, if there were previous path operations that have already established a larger bounding box, it will not be made smaller by this operation (consider the \pgfresetboundingbox command to reset the previous bounding box).
-
-"However ..."で始まる文に注目。意訳すると、`use as bounding box`で指定されるよりも前に、より大きなbounding boxが作られていたならば、大きな方に合わせられる、みたいなことが書かれている。
-
-そもそも前述の成功例は、「長い文章 長い文章 長い文章」がbounding boxからはみ出てしまっているため、あまり行儀の良い書き方ではないのかもしれない。しかしそれを気にせず、かつ引用文に書かれているような、`use as bounding box`のクセを理解して使えば、比較的シンプルな記述で中央寄せできる。
-
-### （方法2）pathで領域を引き伸ばす
-
-**参考** [How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange](https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node)
+個人的には後者がクセが無くて使いやすいので，後者の方法のみ記す．
 
 あるノードを視点として、左右対称に線を引けば良い。そうすれば勝手にbounding boxが伸び、中央寄せになる。
 
