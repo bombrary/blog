@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>TikZ 備忘録 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.106.0">
+<meta name="generator" content="Hugo 0.109.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/tikz-note01/">
@@ -28,7 +28,7 @@
 <meta property="og:description" content="随時更新。だいぶ量が増えてきたので，いくつかを分割したほうが良いかもしれない．
 毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
 またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。
-情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアル() に載っている。
+情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアルに載っている。
 TeX Liveを導入しているなら、コマンドtexdoc tikzで開くはず。これと同じものがCTANの &ldquo;PGF Manual&quot;のリンクからダウンロードできる。 非公式ではあるが、HTML版のマニュアルも公開されたようだ：The TikZ and PGF Packages この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
 知らないキーワードや記号が出てきたらマニュアル末尾のindexで探すと良い。 TikZで出来ることを把握したいなら、Part Iのチュートリアルを読んでみるのが有効。もしくはPartIII, Vあたりを流し読みする。PGF Manualはページ数が膨大なため、全部読もうとするのは恐らく得策では無い。目次を眺めながら興味のあるところをつまむのが良いと思う(読み方について、Introductionの1.4 How to Read This Manualも参照)。 既にやりたいことがあるが、TikZで実現する方法が分からない場合は、ググる。英語のキーワードで検索すれば、大抵Stack Exchangeがヒットする。画像検索も有効。 準備 パッケージ読み込み・この記事での記法の注意 TikZはtikzパッケージから読み込める。
 \usepakcage{tikz} 以降、コードを記載するときはこの記述を省略する。
@@ -45,15 +45,14 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://bombrary.github.io/blog/posts/tikz-note01/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-07-30T22:30:00+09:00" />
-<meta property="article:modified_time" content="2022-12-17T22:17:27+09:00" />
-
+<meta property="article:modified_time" content="2023-01-06T10:22:18+09:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="TikZ 備忘録"/>
 <meta name="twitter:description" content="随時更新。だいぶ量が増えてきたので，いくつかを分割したほうが良いかもしれない．
 毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。
 またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。
-情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアル() に載っている。
+情報の集め方 ここに載っているものはほぼTikZ/PGFのマニュアルに載っている。
 TeX Liveを導入しているなら、コマンドtexdoc tikzで開くはず。これと同じものがCTANの &ldquo;PGF Manual&quot;のリンクからダウンロードできる。 非公式ではあるが、HTML版のマニュアルも公開されたようだ：The TikZ and PGF Packages この記事では、なるべく参照した情報を記載するようにする。ここに書いてあることが間違っている場合があるので、何かおかしいなと思ったらマニュアルを参照すること。
 知らないキーワードや記号が出てきたらマニュアル末尾のindexで探すと良い。 TikZで出来ることを把握したいなら、Part Iのチュートリアルを読んでみるのが有効。もしくはPartIII, Vあたりを流し読みする。PGF Manualはページ数が膨大なため、全部読もうとするのは恐らく得策では無い。目次を眺めながら興味のあるところをつまむのが良いと思う(読み方について、Introductionの1.4 How to Read This Manualも参照)。 既にやりたいことがあるが、TikZで実現する方法が分からない場合は、ググる。英語のキーワードで検索すれば、大抵Stack Exchangeがヒットする。画像検索も有効。 準備 パッケージ読み込み・この記事での記法の注意 TikZはtikzパッケージから読み込める。
 \usepakcage{tikz} 以降、コードを記載するときはこの記述を省略する。
@@ -89,7 +88,7 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2021-07-30T22:30:00&#43;09:00">December 17, 2022</time>
+        <time datetime="2021-07-30T22:30:00&#43;09:00">January 06, 2023</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -186,12 +185,7 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
     <li><a href="#関数のグラフの描画">関数のグラフの描画</a></li>
     <li><a href="#座標を使った平行移動">座標を使った平行移動</a></li>
     <li><a href="#図を拡大縮小するtikzの話ではない">図を拡大縮小する（TikZの話ではない）</a></li>
-    <li><a href="#特定の座標を中心にした水平方向の中央寄せ">特定の座標を中心にした水平方向の中央寄せ</a>
-      <ul>
-        <li><a href="#方法1use-as-bounding-boxを使う">（方法1）use as bounding boxを使う</a></li>
-        <li><a href="#方法2pathで領域を引き伸ばす">（方法2）pathで領域を引き伸ばす</a></li>
-      </ul>
-    </li>
+    <li><a href="#特定の座標を中心にした水平方向の中央寄せ">特定の座標を中心にした水平方向の中央寄せ</a></li>
     <li><a href="#ノードの幅や高さを合わせる">ノードの幅や高さを合わせる</a>
       <ul>
         <li><a href="#方法1letを使って幅を計算する">（方法1）letを使って幅を計算する</a></li>
@@ -206,7 +200,7 @@ DVIドライバの指定 必ずクラスオプションにDVIドライバを指�
 <p>毎回マニュアルから情報を探すのが面倒なので、基本的なものをここにまとめたい。個人的に気になったことに対しては深堀して補足しているが、細かいことを気にしすぎた結果、TikZやPGFのソースコードを読みに行く羽目になった。</p>
 <p>またここに書いてある内容がベストプラクティスとは限らないことに注意。もっと簡単な書き方があるかもしれない。</p>
 <h2 id="情報の集め方">情報の集め方</h2>
-<p>ここに載っているものはほぼTikZ/PGFのマニュアル() に載っている。</p>
+<p>ここに載っているものはほぼTikZ/PGFのマニュアルに載っている。</p>
 <ul>
 <li>TeX Liveを導入しているなら、コマンド<code>texdoc tikz</code>で開くはず。これと同じものが<a href="https://ctan.org/pkg/pgf">CTAN</a>の &ldquo;PGF Manual&quot;のリンクからダウンロードできる。</li>
 <li>非公式ではあるが、HTML版のマニュアルも公開されたようだ：<a href="https://tikz.dev">The TikZ and PGF Packages</a></li>
@@ -1204,89 +1198,12 @@ l.286 \show\pgfmathresult
 </figure>
 
 <p>ここで、「文章1」「文章2」「文章3」のノードが、水平方向に対し中央に来るように中央寄せしたい。</p>
-<p>ここでは2つの方法を紹介する。個人的には方法2の方がクセが無くて使いやすいと思われる。</p>
-<h3 id="方法1use-as-bounding-boxを使う">（方法1）use as bounding boxを使う</h3>
-<p><strong>参考</strong>：</p>
+<p>調べてみたところ，2つの方法があった．</p>
 <ul>
-<li>PGF Manual Part III, 15.8 Establishing a Bounding Box</li>
-<li><a href="https://tex.stackexchange.com/questions/12473/how-can-i-save-the-bounding-box-of-a-tikzpicture-and-use-in-other-tikzpicture/12474">How can I save the bounding box of a TikZpicture and use in other TikZpicture - Stack Exchange</a></li>
+<li><code>use as bounding box</code>を利用した方法（<a href="https://tex.stackexchange.com/questions/12473/how-can-i-save-the-bounding-box-of-a-tikzpicture-and-use-in-other-tikzpicture/12474">参考</a>）</li>
+<li><code>path</code>コマンドで左右を引き伸ばす（<a href="https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node">参考</a>）</li>
 </ul>
-<p><code>\path</code>、<code>\draw</code>、<code>\fill</code>などの<code>\path</code>系の命令に対し、<code>use as bounding box</code>というオプションを付けると、<code>tikzpicture</code>の画面枠を描いた図形のサイズに変更できる。</p>
-<p><strong>注意</strong> <code>use as bounding box</code>を書く位置や指定する座標によっては動かない。詳しくは後述。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
-</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
-</span></span><span class="line"><span class="cl">  ]
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [dashed, use as bounding box] (c.south east) rectangle (a.north west);
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [densely dotted, red]
-</span></span><span class="line"><span class="cl">      (current bounding box.north west) rectangle (current bounding box.south east);
-</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
-</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
-</span></span></code></pre></div><figure><img src="./img/centering-after1.png"/>
-</figure>
-
-<p>bounding boxは、TikZに限らずTeXの画像読み込みの際に使われる用語のようだ（参考：<a href="https://texwiki.texjp.org/?%E3%83%90%E3%82%A6%E3%83%B3%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9">TeXWiki</a>）。グラフィックの領域を囲うのに必要な領域、ということだろうか。<code>\centering</code>コマンドはこのbounding boxが中央になるように配置されるため、</p>
-<p>上記のコードでは、実際にbounding boxを可視化したかったため、点線を描画している。
-また<code>current bounding box</code>は組み込みで定義されているノードで（参考：PGF Manual Part IX, 106.4 Special Nodes）、現在のbounding boxを表す。そのため、<code>current bounding box.north west</code>でbounding boxの左上の座標を取得できる。参考までに、<code>current bounding box</code>を赤点線で示している。</p>
-<p>点線は邪魔だと思うので、以下のように<code>\draw [dashed, use as bounding box] ...</code>を<code>\path</code>にし、最後の<code>current bounding box</code>に関する記述を消せば、望み通りの結果になる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
-</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
-</span></span><span class="line"><span class="cl">  ]
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">    <span class="k">\path</span> [use as bounding box] (c.south east) rectangle (a.north west);
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
-</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
-</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
-</span></span></code></pre></div><h4 id="注意点use-as-bounding-boxの位置によっては動かない">注意点：use as bounding boxの位置によっては動かない</h4>
-<p>以下のように、<code>use as bounding box</code>を使う位置を、「長い文章 長い文章 長い文章」というラベルが定義された後にする。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\centering</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\begin</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>[
-</span></span><span class="line"><span class="cl">    node/.style=<span class="nb">{</span>draw, minimum width=10em, text width=10em, outer sep=4pt, align=left<span class="nb">}</span>,
-</span></span><span class="line"><span class="cl">  ]
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node] (a) <span class="nb">{</span>文章1<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of a] (b) <span class="nb">{</span>文章2<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">    <span class="k">\node</span> [node, below=3em of b] (c) <span class="nb">{</span>文章3<span class="nb">}</span>;
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (a) -- (b);
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [-&gt;] (b) -- node[right=1em] <span class="nb">{</span>長い文章 長い文章 長い文章<span class="nb">}</span> (c);
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [dashed, use as bounding box] (c.south east) rectangle (a.north west);
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">\draw</span> [densely dotted, red]
-</span></span><span class="line"><span class="cl">      (current bounding box.north west) rectangle (current bounding box.south east);
-</span></span><span class="line"><span class="cl">  <span class="k">\end</span><span class="nb">{</span>tikzpicture<span class="nb">}</span>
-</span></span><span class="line"><span class="cl">  <span class="k">\caption</span><span class="nb">{</span>図の説明<span class="nb">}</span>
-</span></span><span class="line"><span class="cl"><span class="k">\end</span><span class="nb">{</span>figure<span class="nb">}</span>
-</span></span></code></pre></div><p>すると、以下のようにbounding boxが変化しないことが分かる。</p>
-<figure><img src="./img/centering-fail.png"/>
-</figure>
-
-<p>こうなる理由は&quot;PGF Manual Part III, 15.8 Establishing a Bounding Box&quot;に記載されている。
-<code>/tikz/use as bounding box</code>の説明文を引用する。</p>
-<blockquote>
-<p>Normally, when this option is given on a path, the bounding box of the present path is used to determine the size of the picture and the size of all subsequent paths are ignored. However, if there were previous path operations that have already established a larger bounding box, it will not be made smaller by this operation (consider the \pgfresetboundingbox command to reset the previous bounding box).</p>
-</blockquote>
-<p>&ldquo;However &hellip;&ldquo;で始まる文に注目。意訳すると、<code>use as bounding box</code>で指定されるよりも前に、より大きなbounding boxが作られていたならば、大きな方に合わせられる、みたいなことが書かれている。</p>
-<p>そもそも前述の成功例は、「長い文章 長い文章 長い文章」がbounding boxからはみ出てしまっているため、あまり行儀の良い書き方ではないのかもしれない。しかしそれを気にせず、かつ引用文に書かれているような、<code>use as bounding box</code>のクセを理解して使えば、比較的シンプルな記述で中央寄せできる。</p>
-<h3 id="方法2pathで領域を引き伸ばす">（方法2）pathで領域を引き伸ばす</h3>
-<p><strong>参考</strong> <a href="https://tex.stackexchange.com/questions/250557/how-to-center-horizontally-tikzpicture-in-beamer-frame-using-a-specific-node">How to center horizontally tikzpicture in beamer frame using a specific node?- Stack Exchange</a></p>
+<p>個人的には後者がクセが無くて使いやすいので，後者の方法のみ記す．</p>
 <p>あるノードを視点として、左右対称に線を引けば良い。そうすれば勝手にbounding boxが伸び、中央寄せになる。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tex" data-lang="tex"><span class="line"><span class="cl"><span class="k">\begin</span><span class="nb">{</span>figure<span class="nb">}</span>
 </span></span><span class="line"><span class="cl">  <span class="k">\centering</span>

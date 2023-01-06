@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Neovimのプラグインを初めて作る - REPLの操作 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.106.0">
+<meta name="generator" content="Hugo 0.109.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/nvim-plugin-repl/">
@@ -41,7 +41,6 @@ function! repl#open(cmd) abort vnew call termopen(a:cmd) endfunction 「a:変数
 <meta property="og:url" content="https://bombrary.github.io/blog/posts/nvim-plugin-repl/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-25T18:35:00+09:00" />
 <meta property="article:modified_time" content="2022-01-01T15:53:58+09:00" />
-
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Neovimのプラグインを初めて作る - REPLの操作"/>
@@ -269,7 +268,7 @@ Vim scriptでは関数と変数の名前空間が別らしく、関数の参照�
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">endfunction</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">function</span><span class="p">!</span> <span class="nx">repl</span>#<span class="nx">open</span><span class="p">(</span><span class="nx">cmd</span><span class="p">)</span> <span class="nx">abort</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="sr">//</span> <span class="nx">略</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="sr">//</span> 略<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="k">let</span> <span class="nx">option</span> <span class="p">=</span> {<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>        \ <span class="s1">&#39;on_exit&#39;</span>: <span class="k">function</span><span class="p">(</span><span class="s1">&#39;s:on_exit&#39;</span><span class="p">),</span><span class="err">
@@ -278,7 +277,7 @@ Vim scriptでは関数と変数の名前空間が別らしく、関数の参照�
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>        \ }<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="k">let</span> <span class="nx">s</span>:<span class="nx">repl_id</span> <span class="p">=</span> <span class="nx">termopen</span><span class="p">(</span><span class="nx">a</span>:<span class="nx">cmd</span><span class="p">,</span> <span class="nx">option</span><span class="p">)</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="sr">//</span> <span class="nx">略</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="sr">//</span> 略<span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">endfunction</span><span class="err">
 </span></span></span></code></pre></div><h2 id="入力用バッファーの作成">入力用バッファーの作成</h2>
 <p>画面下に1行入力用のバッファーを表示させたい。以下のような、2行の高さを持つバッファーを作る。</p>

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>VimでLaTeXを使うための環境構築(Mac) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.106.0">
+<meta name="generator" content="Hugo 0.109.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/vim-latex-setup/">
@@ -45,7 +45,6 @@ latexmkの設定 後でインストールするVimのプラグイン(vimtex)がl
 <meta property="og:url" content="https://bombrary.github.io/blog/posts/vim-latex-setup/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2020-05-31T19:03:00+09:00" />
 <meta property="article:modified_time" content="2020-05-31T22:49:13+09:00" />
-
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="VimでLaTeXを使うための環境構築(Mac)"/>
@@ -246,7 +245,7 @@ Complete setup dein!
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">load_toml</span><span class="p">(</span><span class="nx">s</span>:<span class="nx">toml</span><span class="p">,</span> {<span class="s1">&#39;lazy&#39;</span>: <span class="m">0</span>}<span class="p">)</span> <span class="c">&#34;追加</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">load_toml</span><span class="p">(</span><span class="nx">s</span>:<span class="nx">toml_lazy</span><span class="p">,</span> {<span class="s1">&#39;lazy&#39;</span>: <span class="m">1</span>}<span class="p">)</span> <span class="c">&#34;追加</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  ...<span class="p">(</span><span class="nx">略</span><span class="p">)</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  ...<span class="p">(</span>略<span class="p">)</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">end</span><span class="p">()</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">save_state</span><span class="p">()</span><span class="err">
@@ -289,11 +288,11 @@ Complete setup dein!
 <p>ここでは<a href="https://github.com/cocopon/iceberg.vim">iceberg</a>を利用する。<code>dein.toml</code>にcolorschemeの設定をしてもうまく動かない。<code>:h dein-faq</code>に詳細が載っていたので、それに沿って設定。<code>.vimrc</code>において、<code>dein#load_state</code>の中と外に文を追加する。<a href="https://qiita.com/kawaz/items/ee725f6214f91337b42b#colorscheme-%E3%81%AF-vimenter-%E3%81%AB-nested-%E6%8C%87%E5%AE%9A%E3%81%A7%E9%81%85%E5%BB%B6%E8%A8%AD%E5%AE%9A%E3%81%99%E3%82%8B">別の解決方法</a>もあるみたい。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="c">&#34;dein Scripts-----------------------------</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>...<span class="p">(</span><span class="nx">略</span><span class="p">)</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>...<span class="p">(</span>略<span class="p">)</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">if</span> <span class="nx">dein</span>#<span class="nx">load_state</span><span class="p">(</span><span class="s1">&#39;...&#39;</span><span class="p">)</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  ...<span class="p">(</span><span class="nx">略</span><span class="p">)</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>  ...<span class="p">(</span>略<span class="p">)</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
 </span></span></span><span class="line"><span class="cl"><span class="c">  &#34; Let dein manage dein</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">  &#34; Required:</span><span class="err">
@@ -307,7 +306,7 @@ Complete setup dein!
 </span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">save_state</span><span class="p">()</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">endif</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>...<span class="p">(</span><span class="nx">略</span><span class="p">)</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>...<span class="p">(</span>略<span class="p">)</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
 </span></span></span><span class="line"><span class="cl"><span class="c">&#34;End dein Scripts-------------------------</span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err">

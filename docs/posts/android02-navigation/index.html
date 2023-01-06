@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Androidアプリ開発勉強(2) - Navigationの基本 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.106.0">
+<meta name="generator" content="Hugo 0.109.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/android02-navigation/">
@@ -39,7 +39,6 @@ fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し
 <meta property="og:url" content="https://bombrary.github.io/blog/posts/android02-navigation/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2019-11-20T09:03:17+09:00" />
 <meta property="article:modified_time" content="2019-12-08T16:19:40+09:00" />
-
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Androidアプリ開発勉強(2) - Navigationの基本"/>
@@ -253,7 +252,7 @@ fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し
 </span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">binding</span><span class="p">:</span> <span class="n">ActivityMainBinding</span>
 </span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">super</span><span class="p">.</span><span class="n">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">setContentView</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_main</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="nc">DataBindingUtil</span><span class="p">.</span><span class="n">setContentView</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nc">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">activity_main</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
 <p><code>Fragment02.kt</code>を編集する。</p>
@@ -264,7 +263,7 @@ fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し
 </span></span><span class="line"><span class="cl">        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
 </span></span><span class="line"><span class="cl">        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
 </span></span><span class="line"><span class="cl">    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_fragment02</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="nc">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="nc">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_fragment02</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
@@ -278,9 +277,9 @@ fragment_fragment01.xmlの内容は以下の通りにする。Buttonを追加し
 </span></span><span class="line"><span class="cl">        <span class="n">inflater</span><span class="p">:</span> <span class="n">LayoutInflater</span><span class="p">,</span> <span class="n">container</span><span class="p">:</span> <span class="n">ViewGroup</span><span class="p">?,</span>
 </span></span><span class="line"><span class="cl">        <span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?</span>
 </span></span><span class="line"><span class="cl">    <span class="p">):</span> <span class="n">View</span><span class="p">?</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="n">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_fragment01</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">binding</span> <span class="p">=</span> <span class="nc">DataBindingUtil</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="nc">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">fragment_fragment01</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="n">binding</span><span class="p">.</span><span class="n">button</span><span class="p">.</span><span class="n">setOnClickListener</span> <span class="p">{</span> <span class="n">view</span><span class="p">:</span> <span class="n">View</span> <span class="o">-&gt;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">view</span><span class="p">.</span><span class="n">findNavController</span><span class="p">().</span><span class="n">navigate</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">action_fragment01_to_fragment02</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">view</span><span class="p">.</span><span class="n">findNavController</span><span class="p">().</span><span class="n">navigate</span><span class="p">(</span><span class="nc">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">action_fragment01_to_fragment02</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">binding</span><span class="p">.</span><span class="n">root</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
