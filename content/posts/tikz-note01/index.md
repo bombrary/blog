@@ -165,7 +165,7 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 - `single arrow`で矢印を描画。
 - `arrow head extend`で矢印の先端の幅を設定。
 - `minimum height`で長さ調整。
-- `shape border rotate=-90`で向きを設定。それに伴い`shape border incircle`を設定しておく(後述)。
+- `shape border rotate=270`で向きを設定。必要に応じて`shape border incircle`を設定しておく(後述)。
 
 ```tex
 \usetikzlibrary{shapes.arrows}
@@ -173,49 +173,23 @@ Shapeライブラリでは色々な図形が定義されている。種類は色
 \begin{tikzpicture}
   \node at (0, 0) {命題Pが真};
   \node [fill=red, single arrow, single arrow head extend=2mm,
-         minimum height=8mm, shape border uses incircle,
-         shape border rotate=-90] at (0, 1cm) {};
+         minimum height=8mm,
+         shape border rotate=270] at (0, 1cm) {};
   \node at (0, 2cm) {命題Qが真};
 \end{tikzpicture}
 ```
 
-`shape border uses incircle`は、shapeの境界線が内接円を使って構成されているかどうかを決定するキー、
-とマニュアルには書いてあったが、いまいちよくわからなかった…。
-`shape border rotate`の説明曰く、
-`shape border uses incircle`を設定しない状態で`shape border rotate=a`を設定すると、`a`の部分が
-「90度の整数倍に最も近い数」に丸められて解釈されるらしい。
+`shape border uses incircle`は、shapeの境界線がincircle（ノード内のコンテンツを収めるための円。造語？）を使って作られているかどうかを決定するキー。
+これを指定すると任意角度の回転ができるようになるが，一方で図形内部にincircleの分スペースが確保されるので，サイズの微調整が少しやりづらくなるかもしれない。
+
+`shape border uses incircle`を設定しない状態で`shape border rotate=a`を設定すると、incircle分の余白は空かなくなるが、
+代わりに`a`の部分が「90度の整数倍に最も近い数」に丸められて解釈される。そのため，90度ずつの回転しかできなくなる。
 
 (参考: PGF Manual, Part II, 17.2.3 Common Options)
 
 
 {{< figure src="./img/arrow-shape.png" >}}
 
-
-### (込み入った補足): shape border rotateの挙動
-
-「90度の整数倍に最も近い数」に丸められるのであれば、`-90`のとき`shape border uses incircle`を設定しなくても良いのではないか、と思うが、実際にやってみると`-90`は`0`と解釈される。
-`-90`ではなく`270`を指定すると、ちゃんと-90度回転される。この理由を知るために、該当ソースコードを探して読んだ。
-
-この計算は、おそらく[このソースコード](https://github.com/pgf-tikz/pgf/blob/master/tex/generic/pgf/libraries/shapes/pgflibraryshapes.geometric.code.tex#L3644)で行っている。
-
-1. 角度aに45度加える。
-2. 1を90で割る。
-3. 2に90を掛ける。
-
-要するに、`(a + 45) / 90 * 90`を計算している。ただし、`/`は整数の除算を表す。
-この答えは負数の切り捨て方に依存する。Pythonでは`-1 // 2 == -1`となる。Pythonでは負の方向に丸められるようだ。
-ではTeXではどうなのかというと、割り算の結果は単純に切り捨てになる模様。
-
-```tex
-\newcount\x
-\x=-1
-\divide\x2
-計算結果: \the\x
-```
-
-{{< figure src="./img/tex-division.png" >}}
-
-よって、`(-90 + 45) / 90 * 90`は`0`と計算される。
 
 ## 矢印の形を変える
 
