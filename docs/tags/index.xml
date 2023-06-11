@@ -6,7 +6,16 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 15 Jan 2022 18:45:40 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 11 Jun 2023 12:06:51 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>WordCloud</title>
+      <link>https://bombrary.github.io/blog/tags/wordcloud/</link>
+      <pubDate>Sun, 11 Jun 2023 12:06:51 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/tags/wordcloud/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>誤差逆伝播法</title>
       <link>https://bombrary.github.io/blog/tags/%E8%AA%A4%E5%B7%AE%E9%80%86%E4%BC%9D%E6%92%AD%E6%B3%95/</link>

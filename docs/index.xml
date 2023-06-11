@@ -7,6 +7,24 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language><atom:link href="https://bombrary.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>ReactとD3.jsを使ったWordCloudの作成（備忘録）</title>
+      <link>https://bombrary.github.io/blog/posts/react-d3-wordcloud/</link>
+      <pubDate>Sun, 11 Jun 2023 12:06:51 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/react-d3-wordcloud/</guid>
+      <description>注意 筆者はReact歴1週間なので、筋の良い書き方でなかったり、間違った書き方であったりするかもしれない。 前半は車輪の再発明をしてしまっている。書いている途中にreact-d3-cloudライブラリの存在に気づいたので、記事の最後にサンプルコードを記載している。 プロジェクト準備 このあたりは人によりけりだが、ここでは次のようにする。
+Reactのビルド環境はDockerないしDocker Composeで構築。 Reactのプロジェクトはcreate-react-appで構築。 それではまずDocker・Docker Composeの構築から。 プロジェクトディレクトリを適当に作成し、そこにdocker-compose.yamlを書く。
+version: &amp;#34;3.0&amp;#34; services: app: image: node:20-slim volumes: - ./app:/src ports: - 3000:3000 command: npm start working_dir: /src 続いて次のコマンドを実行してcreate-react-appを導入し、実行する。
+$ docker-compose run --rm app sh -c &amp;#34;npm install -g create-react-app &amp;amp;&amp;amp; create-react-app .&amp;#34; これによりappディレクトリが作成され、中にReactのプロジェクトが生成される。
+このタイミングでD3.jsとd3-cloudも入れておく。
+docker-compose run --rm app npm install d3 d3-cloud これでサーバーを起動してみると、localhost:3000にアクセスできることがわかるだろう。
+$ docker-compouse up ちなみに現状ではapp下のディレクトリがコンテナ内のrootで作成されたため、権限の問題で中のソースコードを編集できない。 VSCodeとかだとRemote Containerという拡張を入れることで解決できるらしいが、Vimユーザの自分にとっての正しい解決策はまだ未調査。 今回は、その場しのぎでsudo chownを使うことで、権限を変更しておく。
+ひな形作成 WordCloudというコンポーネントを作成し、そこでD3.jsの要素が動かせるかどうか確かめてみる。
+App.jsを次のようにする。
+import &amp;#39;./App.css&amp;#39;; import WordCloud from &amp;#39;.</description>
+    </item>
+    
+    <item>
       <title>ニューラルネットワーク ノート - 誤差逆伝播の計算</title>
       <link>https://bombrary.github.io/blog/posts/nn-backprop/</link>
       <pubDate>Sat, 15 Jan 2022 18:45:40 +0900</pubDate>

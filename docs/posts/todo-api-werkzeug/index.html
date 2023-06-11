@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PythonとWerkzeugで作るToDoリストAPI | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.109.0">
+<meta name="generator" content="Hugo 0.113.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/todo-api-werkzeug/">
@@ -250,7 +250,7 @@ Hello, World
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">    <span class="n">adapter</span> <span class="o">=</span> <span class="n">URL_MAP</span><span class="o">.</span><span class="n">bind_to_environ</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="k">match</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">endpoint</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">HTTPException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">e</span>
