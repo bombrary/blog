@@ -38,7 +38,7 @@ import &#39;./App.css&#39;; import WordCloud from &#39;." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://bombrary.github.io/blog/posts/react-d3-wordcloud/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-06-11T12:06:51+09:00" />
-<meta property="article:modified_time" content="2023-06-11T17:35:17+09:00" />
+<meta property="article:modified_time" content="2023-06-11T20:12:50+09:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="ReactとD3.jsを使ったWordCloudの作成（備忘録）"/>
@@ -326,36 +326,37 @@ D3.jsとd3-cloudも認識されているし、svg要素も取得できている�
 </span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;{</span> <span class="nx">word</span> <span class="p">}&lt;/</span><span class="nt">h1</span><span class="p">&gt;);</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">clickedWord</span><span class="p">,</span> <span class="nx">setClickedWord</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">onWordClick</span> <span class="o">=</span> <span class="nx">useCallback</span><span class="p">((</span><span class="nx">e</span><span class="p">,</span> <span class="p">{</span> <span class="nx">text</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nx">setClickedWord</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">WordCloudMemo</span> <span class="o">=</span> <span class="nx">useMemo</span><span class="p">(()</span> <span class="p">=&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">(&lt;</span><span class="nt">WordCloud</span> 
-</span></span><span class="line"><span class="cl">      <span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">SAMPLE_WORDS</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="na">font</span><span class="o">=</span><span class="s">&#34;Impact&#34;</span>
-</span></span><span class="line"><span class="cl">      <span class="na">fontWeight</span><span class="o">=</span><span class="s">&#34;bold&#34;</span>
-</span></span><span class="line"><span class="cl">      <span class="na">fontSize</span><span class="o">=</span><span class="p">{(</span><span class="nx">word</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">value</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="na">rotate</span><span class="o">=</span><span class="p">{(</span><span class="nx">word</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="o">~~</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">90</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="na">padding</span><span class="o">=</span><span class="p">{</span><span class="mi">5</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="na">random</span><span class="o">=</span><span class="p">{</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="na">onWordClick</span><span class="o">=</span><span class="p">{</span><span class="nx">onWordClick</span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="p">/&gt;),</span>
-</span></span><span class="line"><span class="cl">  <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">fontSize</span> <span class="o">=</span> <span class="nx">useCallback</span><span class="p">((</span><span class="nx">word</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">rotate</span> <span class="o">=</span> <span class="nx">useCallback</span><span class="p">((</span><span class="nx">word</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="o">~~</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">90</span><span class="p">,</span> <span class="p">[]);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
 </span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;App&#34;</span><span class="p">&gt;</span>
-</span></span><span class="line"><span class="cl">     <span class="p">{</span><span class="nx">WordCloudMemo</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">WordCloud</span> 
+</span></span><span class="line"><span class="cl">        <span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">SAMPLE_WORDS</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">font</span><span class="o">=</span><span class="s">&#34;Impact&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">fontWeight</span><span class="o">=</span><span class="s">&#34;bold&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">fontSize</span><span class="o">=</span><span class="p">{</span><span class="nx">fontSize</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">rotate</span><span class="o">=</span><span class="p">{</span><span class="nx">rotate</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">padding</span><span class="o">=</span><span class="p">{</span><span class="mi">5</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">random</span><span class="o">=</span><span class="p">{</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onWordClick</span><span class="o">=</span><span class="p">{</span><span class="nx">onWordClick</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
 </span></span><span class="line"><span class="cl">     <span class="p">&lt;</span><span class="nt">ClickedWord</span> <span class="na">word</span><span class="o">=</span><span class="p">{</span><span class="nx">clickedWord</span><span class="p">}</span> <span class="p">/&gt;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
 </span></span><span class="line"><span class="cl">  <span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
-</span></span></code></pre></div><p>個人的なハマりポイントは<code>useMemo</code>を使う点。これを行わないと、クリックのたびに<code>clickedWord</code>の変更を検知してしまい再レンダーされてしまう（初めて<code>useMemo</code>を使ったので果たして使い方は合っているかどうか）。</p>
+</span></span></code></pre></div><p>個人的なハマりポイントは<code>useCallback</code>を使う点。これを行わないと、クリックのたびに<code>clickedWord</code>の変更を検知してしまい再レンダーされてしまう。
+<a href="https://github.com/Yoctol/react-d3-cloud#how-to-avoid-unnecessary-re-render">README</a>によると<code>&lt;WordCloud&gt;</code>は<code>React.memo</code>を使っているらしいので、
+propsの変更がなければ再レンダーされない。そのため、コールバック関数の再生成を防ぐため<code>useCallback</code>を使っている。</p>
 <p><img src="img/react-d3-wordcloud.png" alt="react-d3-wordcloud"></p>
 
 </article>
