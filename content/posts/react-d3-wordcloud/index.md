@@ -295,37 +295,40 @@ const ClickedWord = ({ word }) => {
   return (<h1>{ word }</h1>);
 };
 
+
 function App() {
   const [clickedWord, setClickedWord] = useState()
 
   const onWordClick = useCallback((e, { text }) => {
     setClickedWord(text);
   }, []);
-
-  const WordCloudMemo = useMemo(() =>
-    (<WordCloud 
-      data={SAMPLE_WORDS}
-      font="Impact"
-      fontWeight="bold"
-      fontSize={(word) => word.value}
-      rotate={(word) => ~~(Math.random() * 2) * 90}
-      padding={5}
-      random={Math.random}
-      onWordClick={onWordClick}
-      />),
-  []);
+  const fontSize = useCallback((word) => word.value, []);
+  const rotate = useCallback((word) => ~~(Math.random() * 2) * 90, []);
 
   return (
     <div className="App">
-     {WordCloudMemo}
+      <WordCloud 
+        data={SAMPLE_WORDS}
+        font="Impact"
+        fontWeight="bold"
+        fontSize={fontSize}
+        rotate={rotate}
+        padding={5}
+        random={Math.random}
+        onWordClick={onWordClick}
+      />
      <ClickedWord word={clickedWord} />
     </div>
   );
 }
 
 export default App;
+
+
 ```
 
-個人的なハマりポイントは`useMemo`を使う点。これを行わないと、クリックのたびに`clickedWord`の変更を検知してしまい再レンダーされてしまう（初めて`useMemo`を使ったので果たして使い方は合っているかどうか）。
+個人的なハマりポイントは`useCallback`を使う点。これを行わないと、クリックのたびに`clickedWord`の変更を検知してしまい再レンダーされてしまう。
+[README](https://github.com/Yoctol/react-d3-cloud#how-to-avoid-unnecessary-re-render)によると`<WordCloud>`は`React.memo`を使っているらしいので、
+propsの変更がなければ再レンダーされない。そのため、コールバック関数の再生成を防ぐため`useCallback`を使っている。
 
 ![react-d3-wordcloud](img/react-d3-wordcloud.png)
