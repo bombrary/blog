@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DB on Chanomic Blog</title>
+    <link>https://bombrary.github.io/blog/tags/db/</link>
+    <description>Recent content in DB on Chanomic Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Tue, 20 Jun 2023 18:38:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/db/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Alembicを使ったDBマイグレーション（備忘録）</title>
+      <link>https://bombrary.github.io/blog/posts/alembic-note/</link>
+      <pubDate>Tue, 20 Jun 2023 18:38:00 +0900</pubDate>
+      
+      <guid>https://bombrary.github.io/blog/posts/alembic-note/</guid>
+      <description>経緯 Alembicというライブラリを知ったので、試しに触ってみたメモ。
+そもそもAlembicとは Alembicとは、DBマイグレーションライブラリの1つ。SQLAlchemyと一緒に用いる。
+今回やってみること 今回行うマイグレーションは、以下の3つ。
+空 User(email, password)を作成 User(email, password, name)に変更 使い方 Alembicの初期化 使うDBとの紐づけ エンティティ作成 マイグレーションファイルを作成 マイグレーション 想定する状況と準備 FastAPI上でWeb APIを提供し、その中でDBを操作することを想定する。ただし、メインテーマがマイグレーションのため、この記事でFastAPIの話は一切出ない。プロジェクト作成について、詳しくはFastAPI入門を参照するとよい。この記事では、ディレクトリ構成を大きく参考にしている。 パッケージ管理にはpoetryを使う。 DBにはMySQLを使う。 マイグレーションは同期処理で行うため、入れるのはPyMySQLだけでよい。しかしFastAPIでDBを処理するときに非同期での操作を行うことを見越し、aiomysqlを入れる。この時点でPyMySQLも入る。
+poetry add sqlalchemy alembic aiomysql alembicの初期化 次のコマンドを実行する。
+poetry run alembic init プロジェクト配下にalembic/というディレクトリが生成される。
+使うDBとの紐づけ alembic.iniを編集する。sqlalchemy.urlの記述を見つけたら以下のようにする。
+sqlalchemy.url = mysql+pymysql://&amp;lt;url&amp;gt;/&amp;lt;name&amp;gt;?charset=utf8 &amp;lt;url&amp;gt;と&amp;lt;name&amp;gt;にはそれぞれ、mysqlのサーバーのURLとそのDBの名前を指定する。例えばmysqlがdbというDocker Composeのサービスとして稼働しており、3306ポートで受け付けており、そのDBの名前がappdbだった場合、次のようになる。
+sqlalchemy.url = mysql+pymysql://root@:3306/appdb?charset=utf8 api/db.pyにDBエンティティのベースを作っておく。
+from sqlalchemy.ext.declarative import declarative_base Base = declarative_base() alembic/env.pyのtarget_metadataを以下のようにする。
+from api.db import Base target_metadata = Base.metadata 空のマイグレーション まだエンティティを作成していない状態でマイグレーションを行ってみる。
+マイグレーション用のファイル作成 以下でマイグレーション用のファイルを作成する
+poetry run alembic revision --autogenerate -m &amp;#34;empty revision&amp;#34; alembic/versionsにマイグレーション用のファイルが生成されている。</description>
+    </item>
+    
+  </channel>
+</rss>

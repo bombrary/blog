@@ -2,22 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2023-06-11T20:12:50+09:00</lastmod>
+    <loc>https://bombrary.github.io/blog/tags/alembic/</loc>
+    <lastmod>2023-06-20T19:15:28+09:00</lastmod>
   </url><url>
-    <loc>https://bombrary.github.io/blog/categories/d3.js/</loc>
-    <lastmod>2023-06-11T20:12:50+09:00</lastmod>
+    <loc>https://bombrary.github.io/blog/posts/alembic-note/</loc>
+    <lastmod>2023-06-20T19:15:28+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/</loc>
+    <lastmod>2023-06-20T19:15:28+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/db/</loc>
+    <lastmod>2023-06-20T19:15:28+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2023-06-20T19:15:28+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/python/</loc>
+    <lastmod>2023-06-20T19:15:28+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2023-06-20T19:15:28+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/d3.js/</loc>
     <lastmod>2023-06-11T20:12:50+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/categories/react/</loc>
     <lastmod>2023-06-11T20:12:50+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/react-d3-wordcloud/</loc>
-    <lastmod>2023-06-11T20:12:50+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/tags/</loc>
     <lastmod>2023-06-11T20:12:50+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/wordcloud/</loc>
@@ -93,9 +105,6 @@
     <lastmod>2021-12-16T07:20:20+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/flask/</loc>
-    <lastmod>2021-12-16T07:20:20+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/categories/python/</loc>
     <lastmod>2021-12-16T07:20:20+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/posts/python-get-img-url-static/</loc>
