@@ -62,7 +62,7 @@ sqlalchemy.url = mysql+pymysql://<url>/<name>?charset=utf8
 `<url>`と`<name>`にはそれぞれ、mysqlのサーバーのURLとそのDBの名前を指定する。例えばmysqlが`db`というDocker Composeのサービスとして稼働しており、3306ポートで受け付けており、そのDBの名前が`appdb`だった場合、次のようになる。
 
 ```ini
-sqlalchemy.url = mysql+pymysql://root@:3306/appdb?charset=utf8
+sqlalchemy.url = mysql+pymysql://root@db:3306/appdb?charset=utf8
 ```
 
 `api/db.py`にDBエンティティのベースを作っておく。
