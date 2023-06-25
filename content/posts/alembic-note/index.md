@@ -46,7 +46,7 @@ poetry add sqlalchemy alembic aiomysql
 次のコマンドを実行する。
 
 ```sh
-poetry run alembic init
+poetry run alembic init alembic
 ```
 
 プロジェクト配下に`alembic/`というディレクトリが生成される。
