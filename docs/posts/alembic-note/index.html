@@ -30,10 +30,10 @@
 今回やってみること 今回行うマイグレーションは、以下の3つ。
 空 User(email, password)を作成 User(email, password, name)に変更 使い方 Alembicの初期化 使うDBとの紐づけ エンティティ作成 マイグレーションファイルを作成 マイグレーション 想定する状況と準備 FastAPI上でWeb APIを提供し、その中でDBを操作することを想定する。ただし、メインテーマがマイグレーションのため、この記事でFastAPIの話は一切出ない。プロジェクト作成について、詳しくはFastAPI入門を参照するとよい。この記事では、ディレクトリ構成を大きく参考にしている。 パッケージ管理にはpoetryを使う。 DBにはMySQLを使う。 マイグレーションは同期処理で行うため、入れるのはPyMySQLだけでよい。しかしFastAPIでDBを処理するときに非同期での操作を行うことを見越し、aiomysqlを入れる。この時点でPyMySQLも入る。
 poetry add sqlalchemy alembic aiomysql alembicの初期化 次のコマンドを実行する。
-poetry run alembic init プロジェクト配下にalembic/というディレクトリが生成される。
+poetry run alembic init alembic プロジェクト配下にalembic/というディレクトリが生成される。
 使うDBとの紐づけ alembic.iniを編集する。sqlalchemy.urlの記述を見つけたら以下のようにする。
 sqlalchemy.url = mysql&#43;pymysql://&lt;url&gt;/&lt;name&gt;?charset=utf8 &lt;url&gt;と&lt;name&gt;にはそれぞれ、mysqlのサーバーのURLとそのDBの名前を指定する。例えばmysqlがdbというDocker Composeのサービスとして稼働しており、3306ポートで受け付けており、そのDBの名前がappdbだった場合、次のようになる。
-sqlalchemy.url = mysql&#43;pymysql://root@:3306/appdb?charset=utf8 api/db.pyにDBエンティティのベースを作っておく。
+sqlalchemy.url = mysql&#43;pymysql://root@db:3306/appdb?charset=utf8 api/db.pyにDBエンティティのベースを作っておく。
 from sqlalchemy.ext.declarative import declarative_base Base = declarative_base() alembic/env.pyのtarget_metadataを以下のようにする。
 from api.db import Base target_metadata = Base.metadata 空のマイグレーション まだエンティティを作成していない状態でマイグレーションを行ってみる。
 マイグレーション用のファイル作成 以下でマイグレーション用のファイルを作成する
@@ -41,7 +41,7 @@ poetry run alembic revision --autogenerate -m &#34;empty revision&#34; alembic/v
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://bombrary.github.io/blog/posts/alembic-note/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-06-20T18:38:00+09:00" />
-<meta property="article:modified_time" content="2023-06-20T19:15:28+09:00" />
+<meta property="article:modified_time" content="2023-06-25T15:09:12+09:00" />
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Alembicを使ったDBマイグレーション（備忘録）"/>
@@ -50,10 +50,10 @@ poetry run alembic revision --autogenerate -m &#34;empty revision&#34; alembic/v
 今回やってみること 今回行うマイグレーションは、以下の3つ。
 空 User(email, password)を作成 User(email, password, name)に変更 使い方 Alembicの初期化 使うDBとの紐づけ エンティティ作成 マイグレーションファイルを作成 マイグレーション 想定する状況と準備 FastAPI上でWeb APIを提供し、その中でDBを操作することを想定する。ただし、メインテーマがマイグレーションのため、この記事でFastAPIの話は一切出ない。プロジェクト作成について、詳しくはFastAPI入門を参照するとよい。この記事では、ディレクトリ構成を大きく参考にしている。 パッケージ管理にはpoetryを使う。 DBにはMySQLを使う。 マイグレーションは同期処理で行うため、入れるのはPyMySQLだけでよい。しかしFastAPIでDBを処理するときに非同期での操作を行うことを見越し、aiomysqlを入れる。この時点でPyMySQLも入る。
 poetry add sqlalchemy alembic aiomysql alembicの初期化 次のコマンドを実行する。
-poetry run alembic init プロジェクト配下にalembic/というディレクトリが生成される。
+poetry run alembic init alembic プロジェクト配下にalembic/というディレクトリが生成される。
 使うDBとの紐づけ alembic.iniを編集する。sqlalchemy.urlの記述を見つけたら以下のようにする。
 sqlalchemy.url = mysql&#43;pymysql://&lt;url&gt;/&lt;name&gt;?charset=utf8 &lt;url&gt;と&lt;name&gt;にはそれぞれ、mysqlのサーバーのURLとそのDBの名前を指定する。例えばmysqlがdbというDocker Composeのサービスとして稼働しており、3306ポートで受け付けており、そのDBの名前がappdbだった場合、次のようになる。
-sqlalchemy.url = mysql&#43;pymysql://root@:3306/appdb?charset=utf8 api/db.pyにDBエンティティのベースを作っておく。
+sqlalchemy.url = mysql&#43;pymysql://root@db:3306/appdb?charset=utf8 api/db.pyにDBエンティティのベースを作っておく。
 from sqlalchemy.ext.declarative import declarative_base Base = declarative_base() alembic/env.pyのtarget_metadataを以下のようにする。
 from api.db import Base target_metadata = Base.metadata 空のマイグレーション まだエンティティを作成していない状態でマイグレーションを行ってみる。
 マイグレーション用のファイル作成 以下でマイグレーション用のファイルを作成する
@@ -80,7 +80,7 @@ poetry run alembic revision --autogenerate -m &#34;empty revision&#34; alembic/v
       
       <div class="lastmod-date">
         <div class="lastmod-date__label">(last modified:</div>
-        <time datetime="2023-06-20T18:38:00&#43;09:00">June 20, 2023</time>
+        <time datetime="2023-06-20T18:38:00&#43;09:00">June 25, 2023</time>
         <div class="lastmod-date__label">)</div>
       </div>
       
@@ -134,13 +134,13 @@ poetry run alembic revision --autogenerate -m &#34;empty revision&#34; alembic/v
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">poetry add sqlalchemy alembic aiomysql
 </span></span></code></pre></div><h2 id="alembicの初期化">alembicの初期化</h2>
 <p>次のコマンドを実行する。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">poetry run alembic init
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">poetry run alembic init alembic
 </span></span></code></pre></div><p>プロジェクト配下に<code>alembic/</code>というディレクトリが生成される。</p>
 <h2 id="使うdbとの紐づけ">使うDBとの紐づけ</h2>
 <p><code>alembic.ini</code>を編集する。<code>sqlalchemy.url</code>の記述を見つけたら以下のようにする。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="na">sqlalchemy.url</span> <span class="o">=</span> <span class="s">mysql+pymysql://&lt;url&gt;/&lt;name&gt;?charset=utf8</span>
 </span></span></code></pre></div><p><code>&lt;url&gt;</code>と<code>&lt;name&gt;</code>にはそれぞれ、mysqlのサーバーのURLとそのDBの名前を指定する。例えばmysqlが<code>db</code>というDocker Composeのサービスとして稼働しており、3306ポートで受け付けており、そのDBの名前が<code>appdb</code>だった場合、次のようになる。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="na">sqlalchemy.url</span> <span class="o">=</span> <span class="s">mysql+pymysql://root@:3306/appdb?charset=utf8</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="na">sqlalchemy.url</span> <span class="o">=</span> <span class="s">mysql+pymysql://root@db:3306/appdb?charset=utf8</span>
 </span></span></code></pre></div><p><code>api/db.py</code>にDBエンティティのベースを作っておく。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
 </span></span><span class="line"><span class="cl">

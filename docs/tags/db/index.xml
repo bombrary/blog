@@ -18,10 +18,10 @@
 今回やってみること 今回行うマイグレーションは、以下の3つ。
 空 User(email, password)を作成 User(email, password, name)に変更 使い方 Alembicの初期化 使うDBとの紐づけ エンティティ作成 マイグレーションファイルを作成 マイグレーション 想定する状況と準備 FastAPI上でWeb APIを提供し、その中でDBを操作することを想定する。ただし、メインテーマがマイグレーションのため、この記事でFastAPIの話は一切出ない。プロジェクト作成について、詳しくはFastAPI入門を参照するとよい。この記事では、ディレクトリ構成を大きく参考にしている。 パッケージ管理にはpoetryを使う。 DBにはMySQLを使う。 マイグレーションは同期処理で行うため、入れるのはPyMySQLだけでよい。しかしFastAPIでDBを処理するときに非同期での操作を行うことを見越し、aiomysqlを入れる。この時点でPyMySQLも入る。
 poetry add sqlalchemy alembic aiomysql alembicの初期化 次のコマンドを実行する。
-poetry run alembic init プロジェクト配下にalembic/というディレクトリが生成される。
+poetry run alembic init alembic プロジェクト配下にalembic/というディレクトリが生成される。
 使うDBとの紐づけ alembic.iniを編集する。sqlalchemy.urlの記述を見つけたら以下のようにする。
 sqlalchemy.url = mysql+pymysql://&amp;lt;url&amp;gt;/&amp;lt;name&amp;gt;?charset=utf8 &amp;lt;url&amp;gt;と&amp;lt;name&amp;gt;にはそれぞれ、mysqlのサーバーのURLとそのDBの名前を指定する。例えばmysqlがdbというDocker Composeのサービスとして稼働しており、3306ポートで受け付けており、そのDBの名前がappdbだった場合、次のようになる。
-sqlalchemy.url = mysql+pymysql://root@:3306/appdb?charset=utf8 api/db.pyにDBエンティティのベースを作っておく。
+sqlalchemy.url = mysql+pymysql://root@db:3306/appdb?charset=utf8 api/db.pyにDBエンティティのベースを作っておく。
 from sqlalchemy.ext.declarative import declarative_base Base = declarative_base() alembic/env.pyのtarget_metadataを以下のようにする。
 from api.db import Base target_metadata = Base.metadata 空のマイグレーション まだエンティティを作成していない状態でマイグレーションを行ってみる。
 マイグレーション用のファイル作成 以下でマイグレーション用のファイルを作成する
