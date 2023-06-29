@@ -1,9 +1,9 @@
 ---
 title: "FastAPIとOAuth2でユーザログイン機能（備忘録）"
-date: 2023-06-14T05:18:31+09:00
+date: 2023-06-29T20:34:00+09:00
 draft: true
-tags: []
-categories: []
+tags: ["FastAPI", "OAuth2", "ROPC"]
+categories: ["Python"]
 ---
 
 ## 何をするか
@@ -210,13 +210,11 @@ $ docker-compose run --entrypoint=poetry app run alembic upgrade head
 
 ```python
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-h
 from sqlalchemy.orm import sessionmaker, declarative_base
-from alembic.config import Config
 
-config = Config('alembic.ini')
+DB_URL = 'mysql+aiomysql://root@db:3306/app-db?charset=utf8'
 
-async_engine = create_async_engine(config.get_main_option('sqlalchemy.async_url'), echo=True)
+async_engine = create_async_engine(DB_URL, echo=True)
 async_session = sessionmaker(
         autocommit=False,
         autoflush=False,
@@ -378,6 +376,182 @@ async def register_user(
 
 となる。なお、`jwt.encode`の暗号化アルゴリズムとしてHS256を用いる。そのための鍵（シークレットキー）をあらかじめ生成しておく。
 
+このタイミングでjoseを入れておく。また、`OAuth2PasswordReqeustForm`の利用のためにはmultipartも必要なため、それも入れる。
+
+```sh
+docker-compose run --entrypoint=poetry app add python-jose[cryptgraphy] python-multipart
+```
+
+### 準備
+
+ひな形を作っておく。
+
+`api/routers/user.py`に追記する。
+
+```python
+from api.schema import token as token_schema
+from fastapi.security import OAuth2PasswordRequestForm
+
+@router.post('/api/token', response_model=token_schema.Token)
+async def login(form: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    pass
+```
+
+`api/schema/token.py`を作成。
+
+```python
+from pydantic import BaseModel
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+```
+
+この時点でSwagger UIを開いて、`/api/token`のエンドポイントが開かれていればOK。
+
+### 中身の作成
+
+`api/routers/user.py`を編集。ここでは、
+
+1. 受け取った`username`と`password`をそれぞれ`email`と`password`とみなして、合致するユーザを取得する。
+2. トークンを作成して返す。
+
+という処理を行っている。それぞれについての細かい処理は別の関数にまとめる。
+
+```python
+from datetime import datetime, timedelta
+
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+@router.post('/api/token', response_model=token_schema.Token)
+async def login(form: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[AsyncSession, Depends(get_db)]):
+    user = await user_cruds.authorize_user(db, form.username, form.password)
+    if user is None:
+        raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='incorrect email or password'
+        )
+    token = create_access_token(
+            { 'sub': user.email },
+            timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    return token_schema.Token(access_token=token, token_type='bearer')
+```
+
+まず`authorize_user`を実装する。これは`api/cruds/user.py`に書く。これは次の処理を行う。
+
+1. `get_user_by_email`で、メールアドレスに合致するユーザを取得。
+2. パスワードを照合。
+
+```python
+from sqlalchemy import select
+
+async def get_user_by_email(
+        db: AsyncSession,
+        email: str
+) -> user_model.User | None:
+    result = await db.execute(select(user_model.User).where(user_model.User.email == email))
+    row = result.first()
+
+    if row is not None:
+        return row[0]
+    else:
+        return None
+
+
+async def authorize_user(
+        db: AsyncSession,
+        email: str,
+        password: str,
+) -> user_model.User | None:
+    user = await get_user_by_email(db, email)
+
+    if user is None:
+        return None
+    if not pwd_context.verify(password, user.password):
+        return None
+
+    return user
+```
+
+次に`create_access_token`を実装する。これは`api/routers/user.py`に書く。
+
+1. 付加的な情報`data`と有効期限の情報`exp`を結合した新しい`dict`を作成。
+2. JWTにエンコードして返す。
+
+```python
+from jose import jwt
+
+ALGORITHM = 'HS256'
+SECRET_KEY ='secret'
+
+def create_access_token(data: dict, expires_delta: timedelta):
+    expire = datetime.utcnow() + expires_delta
+    return jwt.encode({ **data, 'exp': expire }, SECRET_KEY, algorithm=ALGORITHM)
+```
+
+この時点でSwagger UIを開き、`/api/token`に登録したメールアドレス、パスワードを入力して送信すればトークンが返ってくることを確認する。
+
+### シークレットキーの分離
+
+コード中にシークレットキーが入っているとセキュリティ的にまずい。
+
+そこで、`.env`にシークレットキーの情報を書くことにする。コミットする際には、それをignoreする設定を書いておく。
+そして、`.env`からデータを読みだすためにpydanticの`BaseSettings`クラスを用いる。
+
+まず、`api/settings.py`を作成する。今回は`SECRET_KEY`のみ入れた設定クラスを作成する。`.env`を読み込んで作成するという情報もここに入れる。
+
+```python
+from pydantic import BaseSettings
+from functools import lru_cache
+
+
+class Settings(BaseSettings):
+    secret_key: str
+
+    class Config:
+        env_file = ".env"
+
+
+@lru_cache
+def get_settings():
+    return Settings()
+```
+
+つづいて、2つの関数を変更する。
+- `create_access_token`：`SECRET_KEY`を`secret_key`にし、引数から読み取るようにする。
+- `login`：新たに引数`settings`を追加。
+
+```python
+from api.settings import get_settings, Settings
+
+
+def create_access_token(data: dict, expires_delta: timedelta, secret_key: str):
+    expire = datetime.utcnow() + expires_delta
+    return jwt.encode({ **data, 'exp': expire }, secret_key, algorithm=ALGORITHM)
+
+
+@router.post('/api/token', response_model=token_schema.Token)
+async def login(
+        form: Annotated[OAuth2PasswordRequestForm, Depends()],
+        db: Annotated[AsyncSession, Depends(get_db)],
+        settings: Annotated[str, Depends(get_settings)]
+):
+    # 中略
+    token = create_access_token(
+            { 'sub': user.email },
+            timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+            secret_key=settings.secret_key
+    )
+    return token_schema.Token(access_token=token, token_type="bearer")
+```
+
+最後に、`.env`を作成する。`SECRET_KEY`には、コマンド`openssl rand -hex 32`で出力したランダムな値を入れておく。
+```.env
+SECRET_KEY=<openssl rand -hex 32 コマンドの実行結果>
+```
+
+
 ## ログインしているユーザ情報が見られるAPIを作成
 
 やることは、
@@ -390,10 +564,108 @@ async def register_user(
 
 1. `fastapi.security`モジュールで`OAuth2PasswordBearer`が提供されているのでそれを使う。
 2. `jose`モジュールの`jwt.decode`でJWTをデコードする。このとき有効期限情報もチェックされる（[参考ソースコード](https://github.com/mpdavis/python-jose/blob/master/jose/jwt.py)）。
-3. デコードされた辞書から`sub`情報を取り出す。ここには`email`の情報を入れたので、これをもとに`gt_user_by_email`を使ってユーザを取得する。
+3. デコードされた辞書から`sub`情報を取り出す。ここには`email`の情報を入れたので、これをもとに`get_user_by_email`を使ってユーザを取得する。
 
 となる。
 
+### ひな形づくり
+
+- リクエストヘッダからトークンを取得する処理は、OAuth2PasswordBearerのインスタンスをパスの引数に指定すれば勝手にやってくれるので、それを利用する。
+- `get_user_me`関数はユーザ情報を返すだけなので、以下だけで完成。ユーザの取得は`get_user`に任せる。
+
+```python
+from api.models import user as user_model
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/token')
+
+
+async def get_user(token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[AsyncSession, Depends(get_db)]):
+    pass
+
+
+@router.get('/api/user/me', response_model=user_schema.User)
+async def get_user_me(user: Annotated[user_model.User, Depends(get_user)]):
+    return user
+```
+
+この時点でSwagger UIを開いて、`/api/user/me`のエンドポイントが開かれていればOK。
+
+さらにUIの右上にAuthorizeが開かれ、ここからログインすることができる。
+ログイン後、`oauth2_scheme`が指定されているパスに対しては勝手に`Authorization: Bearer <token>`を付加して送信してくれる。
+
+### 中身の作成
+
+書くのはこれだけ。例外周りの処理で煩雑に見えるかもしれないが、ロジックはシンプル。
+
+1. トークンをでコードしてメールアドレスを取り出す。
+2. メールアドレスでユーザを検索して返す。
+
+
+```python
+from jose import jwt, JWTError
+
+
+async def get_user(
+        token: Annotated[str, Depends(oauth2_scheme)],
+        db: Annotated[AsyncSession, Depends(get_db)],
+        settings: Annotated[Settings, Depends(get_settings)],
+):
+    credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='could not validate credentials',
+            headers={'WWW-Authenticate': 'Bearer'},
+    )
+
+    try:
+        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+        email = payload.get('sub')
+    except JWTError:
+        raise credentials_exception
+
+    user = await user_cruds.get_user_by_email(db, email)
+    if user is None:
+        raise credentials_exception
+
+    return user
+```
+
+この時点でSwagger UIを開いて、Authorizeボタンからログインして、`/api/user/me`にGETリクエストを投げてみると、ちゃんとユーザ情報が帰ってくることが分かる。
+
 ## ログインしているかどうかを判定するAPIを作成
 
-やることは`OAuth2PasswordBearer`のインスタンス作成時に`auto_err=False`を設定する以外はまったく同じ。
+やることは前節とほとんど変わらない。
+
+今回は「ユーザ情報を取得出来たらログインできている」と判断し、それを真偽値で返すようなパスを作成してみる。そのために以下の工夫をする。
+
+- `OAuth2PasswordBearer`のインスタンス作成時に`auto_err=False`を設定する：前節の場合はトークンが取得できない時点で401を返してしまうが、こうすると例外を投げる代わりに`None`を返すようになる。
+- 各種エラー処理においても、例外を投げる代わりに`None`を返す。
+
+```python
+oauth2_scheme_noerr = OAuth2PasswordBearer(tokenUrl='/api/token', auto_error=False)
+
+
+async def get_user_if_exists(
+        token: Annotated[str, Depends(oauth2_scheme_noerr)],
+        db: Annotated[AsyncSession, Depends(get_db)],
+        settings: Annotated[Settings, Depends(get_settings)],
+):
+    if token is None:
+        return token
+
+    try:
+        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+        email = payload.get('sub')
+    except JWTError:
+        return None
+
+    user = await user_cruds.get_user_by_email(db, email)
+
+    return user
+
+
+@router.get('/api/is_logined')
+async def is_logined(user: Annotated[user_model.User | None, Depends(get_user_if_exists)]):
+    return { 'is_logined': user is not None }
+```
