@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<title>FastAPIとOAuth2でユーザログイン機能（備忘録） | Chanomic Blog</title>
+<meta charset="utf-8">
+<meta name="generator" content="Hugo 0.113.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
+<link rel="canonical" href="https://bombrary.github.io/blog/posts/fastapi-oauth-ropc/">
+<link rel="alternate" type="application/rss+xml" href="" title="Chanomic Blog">
+  <link rel="stylesheet" href="/blog/css/custom.css">
+
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-152083322-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-152083322-1');
+</script>
+
+
+
+<meta property="og:title" content="FastAPIとOAuth2でユーザログイン機能（備忘録）" />
+<meta property="og:description" content="何をするか 以下の3つの機能を実装する。
+ユーザを作成する。 ユーザを認証してトークンを生成し返す。 ユーザがログインしていないと401を返す：ここでは「ユーザ情報を返すAPI」を作成。 ユーザがログインしているかどうかで異なるレスポンスを返す：ここでは「ログインしているかどうかを真偽値で返すAPI」を作成。 方針 使う技術・フレームワーク、ライブラリなど PythonとMySQLはDocker Composeで動かす。 PythonのパッケージはPoetryで管理する。 APIサーバーはFastAPI &#43; uvicornで動かす。 認可の方式としてOAuth2.0を用いる。認可グラントのタイプはシンプルなROPC。 なぜこれを選んだのかというと、単純にFastAPIのドキュメントに書かれていたのがこれだったため。いつかほかのタイプも実装してみたい。 DBのマイグレーションはalbemicを使用してみる。今回はユーザ情報しか作らないので、alembicの使用は間違いなくオーバーなのだが、勉強のため使ってみる。 プロジェクト構成 プロジェクトディレクトリは次のようにする。
+DBに関するCRUDs処理はcrudsモジュールに書く。 DBと対応するモデルはmodelモジュールに書く。 APIのリクエストボディ、レスポンスボディの形式はschemas.pyに書く。 DBのセッションの作成はdb.pyに書く。 . ├── api │ ├── cruds │ │ ├── __init__.py │ │ └── user.py │ ├── models │ │ ├── __init__.py │ │ └── user.py │ ├── routers │ │ ├── __init__.py │ │ └── auth.py │ ├── schemas │ │ ├── __init__.py │ │ └── user.py │ ├── db." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://bombrary.github.io/blog/posts/fastapi-oauth-ropc/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-06-29T20:34:00+09:00" />
+<meta property="article:modified_time" content="2023-06-30T06:23:28+09:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="FastAPIとOAuth2でユーザログイン機能（備忘録）"/>
+<meta name="twitter:description" content="何をするか 以下の3つの機能を実装する。
+ユーザを作成する。 ユーザを認証してトークンを生成し返す。 ユーザがログインしていないと401を返す：ここでは「ユーザ情報を返すAPI」を作成。 ユーザがログインしているかどうかで異なるレスポンスを返す：ここでは「ログインしているかどうかを真偽値で返すAPI」を作成。 方針 使う技術・フレームワーク、ライブラリなど PythonとMySQLはDocker Composeで動かす。 PythonのパッケージはPoetryで管理する。 APIサーバーはFastAPI &#43; uvicornで動かす。 認可の方式としてOAuth2.0を用いる。認可グラントのタイプはシンプルなROPC。 なぜこれを選んだのかというと、単純にFastAPIのドキュメントに書かれていたのがこれだったため。いつかほかのタイプも実装してみたい。 DBのマイグレーションはalbemicを使用してみる。今回はユーザ情報しか作らないので、alembicの使用は間違いなくオーバーなのだが、勉強のため使ってみる。 プロジェクト構成 プロジェクトディレクトリは次のようにする。
+DBに関するCRUDs処理はcrudsモジュールに書く。 DBと対応するモデルはmodelモジュールに書く。 APIのリクエストボディ、レスポンスボディの形式はschemas.pyに書く。 DBのセッションの作成はdb.pyに書く。 . ├── api │ ├── cruds │ │ ├── __init__.py │ │ └── user.py │ ├── models │ │ ├── __init__.py │ │ └── user.py │ ├── routers │ │ ├── __init__.py │ │ └── auth.py │ ├── schemas │ │ ├── __init__.py │ │ └── user.py │ ├── db."/>
+
+
+<header>
+  
+    <a href="https://bombrary.github.io/blog/" class="title">Chanomic Blog</a>
+  
+  
+</header>
+
+
+<article>
+  <header>
+    <h1><a href="https://bombrary.github.io/blog/posts/fastapi-oauth-ropc/">FastAPIとOAuth2でユーザログイン機能（備忘録）</a></h1>
+    <div class="meta">
+      
+      <div class="pub-date">
+        <time datetime="2023-06-29T20:34:00&#43;09:00">June 29, 2023</time>
+      </div>
+      
+      
+      <div class="lastmod-date">
+        <div class="lastmod-date__label">(last modified:</div>
+        <time datetime="2023-06-29T20:34:00&#43;09:00">June 30, 2023</time>
+        <div class="lastmod-date__label">)</div>
+      </div>
+      
+    </div>
+    
+    <div class="tags-categories">
+      <div class="tags">
+        <p>tags: </p>
+        <ul class="tags_list">
+          <li class="tags_item"><a href="https://bombrary.github.io/blog//tags/fastapi/">FastAPI</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/oauth2/">OAuth2</a></li><li class="tags_item"><a href="https://bombrary.github.io/blog//tags/ropc/">ROPC</a></li>
+        </ul>
+        
+      </div>
+      <div class="categories">
+        <p>categories: </p>
+        
+        <ul class="categories_list">
+           <li class="categories_item"><a href="https://bombrary.github.io/blog//categories/python/">Python</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </header>
+  
+  <h2 id="何をするか">何をするか</h2>
+<p>以下の3つの機能を実装する。</p>
+<ul>
+<li>ユーザを作成する。</li>
+<li>ユーザを認証してトークンを生成し返す。</li>
+<li>ユーザがログインしていないと401を返す：ここでは「ユーザ情報を返すAPI」を作成。</li>
+<li>ユーザがログインしているかどうかで異なるレスポンスを返す：ここでは「ログインしているかどうかを真偽値で返すAPI」を作成。</li>
+</ul>
+<h2 id="方針">方針</h2>
+<h3 id="使う技術フレームワークライブラリなど">使う技術・フレームワーク、ライブラリなど</h3>
+<ul>
+<li>PythonとMySQLはDocker Composeで動かす。</li>
+<li>PythonのパッケージはPoetryで管理する。</li>
+<li>APIサーバーはFastAPI + uvicornで動かす。</li>
+<li>認可の方式としてOAuth2.0を用いる。認可グラントのタイプはシンプルな<a href="https://openid-foundation-japan.github.io/rfc6749.ja.html#grant-password">ROPC</a>。
+なぜこれを選んだのかというと、単純に<a href="https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/">FastAPIのドキュメント</a>に書かれていたのがこれだったため。いつかほかのタイプも実装してみたい。</li>
+<li>DBのマイグレーションは<a href="https://github.com/sqlalchemy/alembic">albemic</a>を使用してみる。今回はユーザ情報しか作らないので、alembicの使用は間違いなくオーバーなのだが、勉強のため使ってみる。</li>
+</ul>
+<h3 id="プロジェクト構成">プロジェクト構成</h3>
+<p>プロジェクトディレクトリは次のようにする。</p>
+<ul>
+<li>DBに関するCRUDs処理は<code>cruds</code>モジュールに書く。</li>
+<li>DBと対応するモデルは<code>model</code>モジュールに書く。</li>
+<li>APIのリクエストボディ、レスポンスボディの形式は<code>schemas.py</code>に書く。</li>
+<li>DBのセッションの作成は<code>db.py</code>に書く。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── api
+</span></span><span class="line"><span class="cl">│   ├── cruds
+</span></span><span class="line"><span class="cl">│   │   ├── __init__.py
+</span></span><span class="line"><span class="cl">│   │   └── user.py
+</span></span><span class="line"><span class="cl">│   ├── models
+</span></span><span class="line"><span class="cl">│   │   ├── __init__.py
+</span></span><span class="line"><span class="cl">│   │   └── user.py
+</span></span><span class="line"><span class="cl">│   ├── routers
+</span></span><span class="line"><span class="cl">│   │   ├── __init__.py
+</span></span><span class="line"><span class="cl">│   │   └── auth.py
+</span></span><span class="line"><span class="cl">│   ├── schemas
+</span></span><span class="line"><span class="cl">│   │   ├── __init__.py
+</span></span><span class="line"><span class="cl">│   │   └── user.py
+</span></span><span class="line"><span class="cl">│   ├── db.py
+</span></span><span class="line"><span class="cl">│   ├── main.py
+</span></span><span class="line"><span class="cl">│   └── migrate_db.py
+</span></span><span class="line"><span class="cl">├── Dockerfile
+</span></span><span class="line"><span class="cl">├── docker-compose.yaml
+</span></span><span class="line"><span class="cl">├── poetry.lock
+</span></span><span class="line"><span class="cl">└── pyproject.toml
+</span></span></code></pre></div><p>ちなみにこの図は<code>tree -I __pycache__ --dirsfirs</code>で生成。</p>
+<p>サービス名は以下の通り。</p>
+<ul>
+<li><code>app</code>：アプリケーションサーバー。FastAPI、albemicが動いている。</li>
+<li><code>db</code>：DBサーバー。MySQLが動いている。</li>
+</ul>
+<h2 id="開発環境作成">開発環境作成</h2>
+<p>最低限の環境を作る。本質的なところではないのであまり解説はしない。</p>
+<p><code>docker-compose.yaml</code>は次のようにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">app</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">.:/src</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">8000</span><span class="p">:</span><span class="m">8000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">db</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">mysql:8</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">MYSQL_ALLOW_EMPTY_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;yes&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">MYSQL_DATABASE</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;app-db&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">TZ</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">mysql_data:/var/lib/mysq</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span>--<span class="l">default-authentication-plugin=mysql_native_password</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mysql_data</span><span class="p">:</span><span class="w">
+</span></span></span></code></pre></div><p><code>Dockerfile</code>は次のようにする。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Dockerfile" data-lang="Dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> python:3.11-buster</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">PYTHONUNBUFFERED</span><span class="o">=</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">WORKDIR</span><span class="s"> /src</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> pip install poetry<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> poetry config virtualenvs.in-project true<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;poetry&#34;</span><span class="p">,</span> <span class="s2">&#34;run&#34;</span><span class="p">,</span> <span class="s2">&#34;uvicorn&#34;</span><span class="p">,</span> <span class="s2">&#34;api.main:app&#34;</span><span class="p">,</span> <span class="s2">&#34;--host&#34;</span><span class="p">,</span> <span class="s2">&#34;0.0.0.0&#34;</span><span class="p">,</span> <span class="s2">&#34;--reload&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></div><p>ちなみに、<code>virtualenvs.in-project ture</code>をやっておかないと、プロジェクトディレクトリに各種ライブラリが展開されないので注意。</p>
+<p>以下の3つのコマンドを実行する。この時点で必要なパッケージを<code>--dependency</code>で指定している。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">$ docker-compose build
+</span></span><span class="line"><span class="cl">$ docker-compose run --entrypoint<span class="o">=</span>poetry app init --name app <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --dependency fastapi <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --dependency uvicorn<span class="o">[</span>standard<span class="o">]</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --dependency alembic <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --dependency aiomysql <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>$ docker-compose run --entrypoint<span class="o">=</span>poetry app install --no-root
+</span></span></code></pre></div><p>簡単に<code>api/main.py</code>を作成しておく。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python3" data-lang="python3"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@app.get</span><span class="p">(</span><span class="s1">&#39;/api/hello&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;Hello&#39;</span>
+</span></span></code></pre></div><p>最後に<code>docker-compose up</code>すれば、FastAPI（on uvicorn）とMySQLのサーバーが起動する。</p>
+<h2 id="マイグレーションスクリプト作成">マイグレーションスクリプト作成</h2>
+<p>alembicを初期化。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">$ docker-compose run --entrypoint<span class="o">=</span>poetry app run alembic init alembic
+</span></span></code></pre></div><p><code>alembic.ini</code>にMySQLコンテナへのアドレスを指定する。ついでにここにasync版のURLを書いておく。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="na">sqlalchemy.url</span> <span class="o">=</span> <span class="s">mysql+pymysql://root@db:3306/app-db?charset=utf8</span>
+</span></span><span class="line"><span class="cl"><span class="na">sqlalchemy.async_url</span> <span class="o">=</span> <span class="s">mysql+aiomysql://root@db:3306/app-db?charset=utf8</span>
+</span></span></code></pre></div><p>DBとの疎通確認も兼ねて、空のマイグレーションをしておく。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">$ docker-compose run --entrypoint<span class="o">=</span>poetry app run alembic revision --autogenerate -m <span class="s2">&#34;empty migration&#34;</span>
+</span></span><span class="line"><span class="cl">$ docker-compose run --entrypoint<span class="o">=</span>poetry app run alembic upgrade head
+</span></span></code></pre></div><h2 id="ユーザのテーブル作成">ユーザのテーブル作成</h2>
+<p>今回はメールアドレスとパスワードで認証するような仕組みを作るので、ユーザのエンティティにはその2つを持たせる。</p>
+<p>まず<code>api/db.py</code>を編集する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">declarative_base</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+</span></span></code></pre></div><p><code>api/models/user.py</code>でユーザのエンティティを作成。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.db</span> <span class="kn">import</span> <span class="n">Base</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;users&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">email</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">password</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">256</span><span class="p">))</span>
+</span></span></code></pre></div><p><code>alembic/env.py</code>に<code>metadata</code>を指定。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.db</span> <span class="kn">import</span> <span class="n">Base</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.models</span> <span class="kn">import</span> <span class="n">user</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">target_metadata</span> <span class="o">=</span> <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
+</span></span></code></pre></div><p>マイグレーションをして、ユーザテーブルを作成。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">$ docker-compose run --entrypoint<span class="o">=</span>poetry app run alembic revision --autogenerate -m <span class="s2">&#34;user&#34;</span>
+</span></span><span class="line"><span class="cl">$ docker-compose run --entrypoint<span class="o">=</span>poetry app run alembic upgrade head
+</span></span></code></pre></div><h2 id="dbのセッション作成">DBのセッション作成</h2>
+<p>後々ユーザ登録とかログインで使うので、DBのセッションを作っておく。今回はDBのasync版のURLが<code>alembic.ini</code>に書かれているため、それを使わせてもらう。</p>
+<p><code>api/db.py</code>に追記。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">create_async_engine</span><span class="p">,</span> <span class="n">AsyncSession</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span><span class="p">,</span> <span class="n">declarative_base</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">DB_URL</span> <span class="o">=</span> <span class="s1">&#39;mysql+aiomysql://root@db:3306/app-db?charset=utf8&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">async_engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="n">DB_URL</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">async_session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">autocommit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">autoflush</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">bind</span><span class="o">=</span><span class="n">async_engine</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">class_</span><span class="o">=</span><span class="n">AsyncSession</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_db</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">async</span> <span class="k">with</span> <span class="n">async_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">yield</span> <span class="n">session</span>
+</span></span></code></pre></div><h2 id="ユーザ登録処理を作成">ユーザ登録処理を作成</h2>
+<p>やることは、パスワードをハッシュ化してDBに保存すること。</p>
+<ol>
+<li>メールとパスワードをスキーマの形で受け取る。</li>
+<li>パスワードハッシュ化する。</li>
+<li>DBに追加する。すでに存在するメールアドレスがあるなら例外を投げるはずなので、ちゃんとキャッチする。</li>
+<li>ユーザ情報を返す。</li>
+</ol>
+<p>ハッシュのためにpasslibが必要なので、このタイミングで入れておく。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">docker-compose run --entrypoint<span class="o">=</span>poetry app add passlib<span class="o">[</span>bcrypt<span class="o">]</span>
+</span></span></code></pre></div><h3 id="準備">準備</h3>
+<p><code>api/routers/user.py</code>でひな形を作っておく。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.schema</span> <span class="kn">import</span> <span class="n">user</span> <span class="k">as</span> <span class="n">user_schema</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@router.post</span><span class="p">(</span><span class="s1">&#39;/api/register&#39;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">user_schema</span><span class="o">.</span><span class="n">User</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">user_create</span><span class="p">:</span> <span class="n">user_schema</span><span class="o">.</span><span class="n">UserCreate</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span></code></pre></div><p>リクエストとレスポンスのスキーマが必要なのでそれをつくる。<code>api/schema/user.py</code>を編集する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">UserBase</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">UserCreate</span><span class="p">(</span><span class="n">UserBase</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">password</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">UserBase</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">orm_mode</span><span class="o">=</span><span class="kc">True</span>
+</span></span></code></pre></div><p><code>api/main.py</code>にルーターの記述を追加する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.routers</span> <span class="kn">import</span> <span class="n">user</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+</span></span></code></pre></div><p>この時点でSwagger UIを開いて、<code>/api/register</code>のエンドポイントが開かれていればOK。</p>
+<h3 id="中身の作成">中身の作成</h3>
+<p><code>api/routers/user.py</code>を編集する。UNIQUE制約に関する例外をキャッチする事情で、少し煩雑にはなっている。しかし、それ以外のところを見てみると、単にユーザを作って返しているだけだと分かる。
+ちなみに、<code>api.schema.user</code>の<code>User</code>クラスで<code>orm_mode=True</code>にしているおかげで、<code>api.models.user.User</code>が自動的に<code>api.schema.user.User</code>に変換されて出力される。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">status</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncSession</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pymysql.err</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pymysql.constants</span> <span class="kn">import</span> <span class="n">ER</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.db</span> <span class="kn">import</span> <span class="n">get_db</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.schema</span> <span class="kn">import</span> <span class="n">user</span> <span class="k">as</span> <span class="n">user_schema</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.cruds</span> <span class="kn">import</span> <span class="n">user</span> <span class="k">as</span> <span class="n">user_cruds</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@router.post</span><span class="p">(</span><span class="s1">&#39;/api/register&#39;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">user_schema</span><span class="o">.</span><span class="n">User</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">user_create</span><span class="p">:</span> <span class="n">user_schema</span><span class="o">.</span><span class="n">UserCreate</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)]):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">user_cruds</span><span class="o">.</span><span class="n">register_user</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">user_create</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">user</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">errcode</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">errcode</span> <span class="o">==</span> <span class="n">ER</span><span class="o">.</span><span class="n">DUP_ENTRY</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_409_CONFLICT</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">detail</span><span class="o">=</span><span class="s1">&#39;already used email address&#39;</span>
+</span></span><span class="line"><span class="cl">                  <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span>
+</span></span></code></pre></div><p><code>api/cruds/user.py</code>を編集する。</p>
+<p>パスワードをハッシュ化してDBに登録する。例外はSQLAlchemyがラップして返すので、それを引きはがして呼び出し元に任せる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncSession</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy.exc</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">passlib.context</span> <span class="kn">import</span> <span class="n">CryptContext</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pymysql.constants</span> <span class="kn">import</span> <span class="n">ER</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.models</span> <span class="kn">import</span> <span class="n">user</span> <span class="k">as</span> <span class="n">user_model</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.schema</span> <span class="kn">import</span> <span class="n">user</span> <span class="k">as</span> <span class="n">user_schema</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">pwd_context</span> <span class="o">=</span> <span class="n">CryptContext</span><span class="p">(</span><span class="n">schemes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;bcrypt&#39;</span><span class="p">],</span> <span class="n">deprecated</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">register_user</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user_create</span><span class="p">:</span> <span class="n">user_schema</span><span class="o">.</span><span class="n">UserCreate</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">user_model</span><span class="o">.</span><span class="n">User</span><span class="p">:</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">user</span> <span class="o">=</span> <span class="n">user_model</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="o">**</span><span class="n">user_create</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">        <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">pwd_context</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">user</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">e</span><span class="o">.</span><span class="n">orig</span>
+</span></span></code></pre></div><h2 id="トークン取得処理を作成">トークン取得処理を作成</h2>
+<p>やることは、</p>
+<ol>
+<li><a href="https://openid-foundation-japan.github.io/rfc6749.ja.html#password-tok-req">ROPCのフォーム形式</a>に従い、<code>username</code>、<code>password</code>を取得。</li>
+<li><code>username</code>に合致するユーザをDBから検索する。OAuth2の使用上<code>username</code>という名前で受け取るが、ここでは<code>email</code>と同じ意味。</li>
+<li>ユーザが見つかったらパスワードを照合。</li>
+<li>2、3が成功したらトークンを生成して返す。</li>
+</ol>
+<p>の4つ。それぞれについての実装方法は、</p>
+<ol>
+<li><code>fastapi.security</code>モジュールで<code>OAuth2PasswordReqeustForm</code>が提供されているのでそれを使う。</li>
+<li><code>api.cruds</code>モジュールに<code>get_user_by_email</code>という関数を作成し、そこでDBとの通信を行う。</li>
+<li><code>passlib</code>の<code>CryptContext.verify</code>関数を使う。</li>
+<li>ユーザを判別できるようなサブ情報（ここでは<code>email</code>）とトークンの有効期限を入れた辞書を作り、JWTにする。JWTの変換は<code>jose</code>モジュールの<code>jwt.encode</code>を用いる。</li>
+</ol>
+<p>となる。なお、<code>jwt.encode</code>の暗号化アルゴリズムとしてHS256を用いる。そのための鍵（シークレットキー）をあらかじめ生成しておく。</p>
+<p>このタイミングでjoseを入れておく。また、<code>OAuth2PasswordReqeustForm</code>の利用のためにはmultipartも必要なため、それも入れる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">docker-compose run --entrypoint<span class="o">=</span>poetry app add python-jose<span class="o">[</span>cryptgraphy<span class="o">]</span> python-multipart
+</span></span></code></pre></div><h3 id="準備-1">準備</h3>
+<p>ひな形を作っておく。</p>
+<p><code>api/routers/user.py</code>に追記する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.schema</span> <span class="kn">import</span> <span class="n">token</span> <span class="k">as</span> <span class="n">token_schema</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi.security</span> <span class="kn">import</span> <span class="n">OAuth2PasswordRequestForm</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@router.post</span><span class="p">(</span><span class="s1">&#39;/api/token&#39;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">token_schema</span><span class="o">.</span><span class="n">Token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">form</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">OAuth2PasswordRequestForm</span><span class="p">,</span> <span class="n">Depends</span><span class="p">()]):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span></code></pre></div><p><code>api/schema/token.py</code>を作成。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Token</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl">    <span class="n">token_type</span><span class="p">:</span> <span class="nb">str</span>
+</span></span></code></pre></div><p>この時点でSwagger UIを開いて、<code>/api/token</code>のエンドポイントが開かれていればOK。</p>
+<h3 id="中身の作成-1">中身の作成</h3>
+<p><code>api/routers/user.py</code>を編集。ここでは、</p>
+<ol>
+<li>受け取った<code>username</code>と<code>password</code>をそれぞれ<code>email</code>と<code>password</code>とみなして、合致するユーザを取得する。</li>
+<li>トークンを作成して返す。</li>
+</ol>
+<p>という処理を行っている。それぞれについての細かい処理は別の関数にまとめる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ACCESS_TOKEN_EXPIRE_MINUTES</span> <span class="o">=</span> <span class="mi">30</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@router.post</span><span class="p">(</span><span class="s1">&#39;/api/token&#39;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">token_schema</span><span class="o">.</span><span class="n">Token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">form</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">OAuth2PasswordRequestForm</span><span class="p">,</span> <span class="n">Depends</span><span class="p">()],</span> <span class="n">db</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)]):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">user_cruds</span><span class="o">.</span><span class="n">authorize_user</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_401_UNAUTHORIZED</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">detail</span><span class="o">=</span><span class="s1">&#39;incorrect email or password&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span> <span class="s1">&#39;sub&#39;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">ACCESS_TOKEN_EXPIRE_MINUTES</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">token_schema</span><span class="o">.</span><span class="n">Token</span><span class="p">(</span><span class="n">access_token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">token_type</span><span class="o">=</span><span class="s1">&#39;bearer&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>まず<code>authorize_user</code>を実装する。これは<code>api/cruds/user.py</code>に書く。これは次の処理を行う。</p>
+<ol>
+<li><code>get_user_by_email</code>で、メールアドレスに合致するユーザを取得。</li>
+<li>パスワードを照合。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">select</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_by_email</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">user_model</span><span class="o">.</span><span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">user_model</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">user_model</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">email</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">row</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">authorize_user</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">user_model</span><span class="o">.</span><span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_user_by_email</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">pwd_context</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">user</span>
+</span></span></code></pre></div><p>次に<code>create_access_token</code>を実装する。これは<code>api/routers/user.py</code>に書く。</p>
+<ol>
+<li>付加的な情報<code>data</code>と有効期限の情報<code>exp</code>を結合した新しい<code>dict</code>を作成。</li>
+<li>JWTにエンコードして返す。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">jose</span> <span class="kn">import</span> <span class="n">jwt</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ALGORITHM</span> <span class="o">=</span> <span class="s1">&#39;HS256&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">SECRET_KEY</span> <span class="o">=</span><span class="s1">&#39;secret&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_access_token</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">expires_delta</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">expire</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">+</span> <span class="n">expires_delta</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">({</span> <span class="o">**</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;exp&#39;</span><span class="p">:</span> <span class="n">expire</span> <span class="p">},</span> <span class="n">SECRET_KEY</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">ALGORITHM</span><span class="p">)</span>
+</span></span></code></pre></div><p>この時点でSwagger UIを開き、<code>/api/token</code>に登録したメールアドレス、パスワードを入力して送信すればトークンが返ってくることを確認する。</p>
+<h3 id="シークレットキーの分離">シークレットキーの分離</h3>
+<p>コード中にシークレットキーが入っているとセキュリティ的にまずい。</p>
+<p>そこで、<code>.env</code>にシークレットキーの情報を書くことにする。コミットする際には、それをignoreする設定を書いておく。
+そして、<code>.env</code>からデータを読みだすためにpydanticの<code>BaseSettings</code>クラスを用いる。</p>
+<p>まず、<code>api/settings.py</code>を作成する。今回は<code>SECRET_KEY</code>のみ入れた設定クラスを作成する。<code>.env</code>を読み込んで作成するという情報もここに入れる。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseSettings</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">secret_key</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">env_file</span> <span class="o">=</span> <span class="s2">&#34;.env&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@lru_cache</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_settings</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Settings</span><span class="p">()</span>
+</span></span></code></pre></div><p>つづいて、2つの関数を変更する。</p>
+<ul>
+<li><code>create_access_token</code>：<code>SECRET_KEY</code>を<code>secret_key</code>にし、引数から読み取るようにする。</li>
+<li><code>login</code>：新たに引数<code>settings</code>を追加。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.settings</span> <span class="kn">import</span> <span class="n">get_settings</span><span class="p">,</span> <span class="n">Settings</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_access_token</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">expires_delta</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">expire</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">+</span> <span class="n">expires_delta</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">({</span> <span class="o">**</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;exp&#39;</span><span class="p">:</span> <span class="n">expire</span> <span class="p">},</span> <span class="n">secret_key</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">ALGORITHM</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@router.post</span><span class="p">(</span><span class="s1">&#39;/api/token&#39;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">token_schema</span><span class="o">.</span><span class="n">Token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">login</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">form</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">OAuth2PasswordRequestForm</span><span class="p">,</span> <span class="n">Depends</span><span class="p">()],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">settings</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_settings</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl"><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 中略</span>
+</span></span><span class="line"><span class="cl">    <span class="n">token</span> <span class="o">=</span> <span class="n">create_access_token</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span> <span class="s1">&#39;sub&#39;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">ACCESS_TOKEN_EXPIRE_MINUTES</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">secret_key</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">secret_key</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">token_schema</span><span class="o">.</span><span class="n">Token</span><span class="p">(</span><span class="n">access_token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">token_type</span><span class="o">=</span><span class="s2">&#34;bearer&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>最後に、<code>.env</code>を作成する。<code>SECRET_KEY</code>には、コマンド<code>openssl rand -hex 32</code>で出力したランダムな値を入れておく。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-.env" data-lang=".env"><span class="line"><span class="cl"><span class="nv">SECRET_KEY</span><span class="o">=</span>&lt;openssl rand -hex <span class="m">32</span> コマンドの実行結果&gt;
+</span></span></code></pre></div><h2 id="ログインしているユーザ情報が見られるapiを作成">ログインしているユーザ情報が見られるAPIを作成</h2>
+<p>やることは、</p>
+<ol>
+<li>トークンを取得。</li>
+<li>トークンの有効期限をチェック。</li>
+<li>トークンの<code>sub</code>情報からユーザ情報をDBから検索し、返す。</li>
+</ol>
+<p>の4つ。それぞれについての実装方法は、</p>
+<ol>
+<li><code>fastapi.security</code>モジュールで<code>OAuth2PasswordBearer</code>が提供されているのでそれを使う。</li>
+<li><code>jose</code>モジュールの<code>jwt.decode</code>でJWTをデコードする。このとき有効期限情報もチェックされる（<a href="https://github.com/mpdavis/python-jose/blob/master/jose/jwt.py">参考ソースコード</a>）。</li>
+<li>デコードされた辞書から<code>sub</code>情報を取り出す。ここには<code>email</code>の情報を入れたので、これをもとに<code>get_user_by_email</code>を使ってユーザを取得する。</li>
+</ol>
+<p>となる。</p>
+<h3 id="ひな形づくり">ひな形づくり</h3>
+<ul>
+<li>リクエストヘッダからトークンを取得する処理は、OAuth2PasswordBearerのインスタンスをパスの引数に指定すれば勝手にやってくれるので、それを利用する。</li>
+<li><code>get_user_me</code>関数はユーザ情報を返すだけなので、以下だけで完成。ユーザの取得は<code>get_user</code>に任せる。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">api.models</span> <span class="kn">import</span> <span class="n">user</span> <span class="k">as</span> <span class="n">user_model</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi.security</span> <span class="kn">import</span> <span class="n">OAuth2PasswordRequestForm</span><span class="p">,</span> <span class="n">OAuth2PasswordBearer</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">oauth2_scheme</span> <span class="o">=</span> <span class="n">OAuth2PasswordBearer</span><span class="p">(</span><span class="n">tokenUrl</span><span class="o">=</span><span class="s1">&#39;/api/token&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">oauth2_scheme</span><span class="p">)],</span> <span class="n">db</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)]):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@router.get</span><span class="p">(</span><span class="s1">&#39;/api/user/me&#39;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">user_schema</span><span class="o">.</span><span class="n">User</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_me</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">user_model</span><span class="o">.</span><span class="n">User</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_user</span><span class="p">)]):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">user</span>
+</span></span></code></pre></div><p>この時点でSwagger UIを開いて、<code>/api/user/me</code>のエンドポイントが開かれていればOK。</p>
+<p>さらにUIの右上にAuthorizeが開かれ、ここからログインすることができる。
+ログイン後、<code>oauth2_scheme</code>が指定されているパスに対しては勝手に<code>Authorization: Bearer &lt;token&gt;</code>を付加して送信してくれる。</p>
+<h3 id="中身の作成-2">中身の作成</h3>
+<p>書くのはこれだけ。例外周りの処理で煩雑に見えるかもしれないが、ロジックはシンプル。</p>
+<ol>
+<li>トークンをでコードしてメールアドレスを取り出す。</li>
+<li>メールアドレスでユーザを検索して返す。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">jose</span> <span class="kn">import</span> <span class="n">jwt</span><span class="p">,</span> <span class="n">JWTError</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">oauth2_scheme</span><span class="p">)],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">settings</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Settings</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_settings</span><span class="p">)],</span>
+</span></span><span class="line"><span class="cl"><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">credentials_exception</span> <span class="o">=</span> <span class="n">HTTPException</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_401_UNAUTHORIZED</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">detail</span><span class="o">=</span><span class="s1">&#39;could not validate credentials&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;WWW-Authenticate&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">payload</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">secret_key</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="n">ALGORITHM</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">email</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">JWTError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">credentials_exception</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">user_cruds</span><span class="o">.</span><span class="n">get_user_by_email</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">credentials_exception</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">user</span>
+</span></span></code></pre></div><p>この時点でSwagger UIを開いて、Authorizeボタンからログインして、<code>/api/user/me</code>にGETリクエストを投げてみると、ちゃんとユーザ情報が帰ってくることが分かる。</p>
+<h2 id="ログインしているかどうかを判定するapiを作成">ログインしているかどうかを判定するAPIを作成</h2>
+<p>やることは前節とほとんど変わらない。</p>
+<p>今回は「ユーザ情報を取得出来たらログインできている」と判断し、それを真偽値で返すようなパスを作成してみる。そのために以下の工夫をする。</p>
+<ul>
+<li><code>OAuth2PasswordBearer</code>のインスタンス作成時に<code>auto_err=False</code>を設定する：前節の場合はトークンが取得できない時点で401を返してしまうが、こうすると例外を投げる代わりに<code>None</code>を返すようになる。</li>
+<li>各種エラー処理においても、例外を投げる代わりに<code>None</code>を返す。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">oauth2_scheme_noerr</span> <span class="o">=</span> <span class="n">OAuth2PasswordBearer</span><span class="p">(</span><span class="n">tokenUrl</span><span class="o">=</span><span class="s1">&#39;/api/token&#39;</span><span class="p">,</span> <span class="n">auto_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_if_exists</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">oauth2_scheme_noerr</span><span class="p">)],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">settings</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Settings</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_settings</span><span class="p">)],</span>
+</span></span><span class="line"><span class="cl"><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">token</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">payload</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">secret_key</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="n">ALGORITHM</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">email</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">JWTError</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">user_cruds</span><span class="o">.</span><span class="n">get_user_by_email</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">user</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@router.get</span><span class="p">(</span><span class="s1">&#39;/api/is_logined&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">is_logined</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">user_model</span><span class="o">.</span><span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_user_if_exists</span><span class="p">)]):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="s1">&#39;is_logined&#39;</span><span class="p">:</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">}</span>
+</span></span></code></pre></div>
+</article>
+
+
+
+</html>
