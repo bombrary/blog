@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PureScriptで作るBrainfuckインタプリタ 4/4 Halogenの利用 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-brainfuck04/">
@@ -34,8 +34,8 @@ module Component where import Prelude import Halogen as H import Halogen.HTML as
 <meta property="article:published_time" content="2021-07-09T23:15:00+09:00" />
 <meta property="article:modified_time" content="2021-07-09T23:16:10+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="PureScriptで作るBrainfuckインタプリタ 4/4 Halogenの利用"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="PureScriptで作るBrainfuckインタプリタ 4/4 Halogenの利用"/>
 <meta name="twitter:description" content="Halogenの利用 続いて、GUIでBrainfuckを動かすことをやってみる。 GUIのフレームワークとして、ここではpurescript-halogenを使ってみる。 Halogenについてはまだ勉強中で、この記事は解説記事というより勉強記録である(いままでの記事もそうではあるのだが)。
 % spago install halogen 雛形 src/Main.pursを以下のようにする。 ここのコードはほとんどHalogen Guideと同様。 関数名的におそらく、body要素を取得して、その中でcomponentを走らせるのだと思う。
 module Main where import Prelude import Effect (Effect) import Halogen.Aff (awaitBody, runHalogenAff) as HA import Halogen.VDom.Driver (runUI) import Component (component) main :: Effect Unit main = HA.runHalogenAff do body &lt;- HA.awaitBody runUI component unit body componentはsrc/Component.pursで定義する。とりあえず雛形を作成。

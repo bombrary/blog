@@ -6,17 +6,14 @@
     <description>Recent content in ROPC on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 29 Jun 2023 20:34:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/ropc/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 29 Jun 2023 20:34:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/ropc/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>FastAPIとOAuth2でユーザログイン機能（備忘録）</title>
       <link>https://bombrary.github.io/blog/posts/fastapi-oauth-ropc/</link>
       <pubDate>Thu, 29 Jun 2023 20:34:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/fastapi-oauth-ropc/</guid>
-      <description>何をするか 以下の3つの機能を実装する。
-ユーザを作成する。 ユーザを認証してトークンを生成し返す。 ユーザがログインしていないと401を返す：ここでは「ユーザ情報を返すAPI」を作成。 ユーザがログインしているかどうかで異なるレスポンスを返す：ここでは「ログインしているかどうかを真偽値で返すAPI」を作成。 方針 使う技術・フレームワーク、ライブラリなど PythonとMySQLはDocker Composeで動かす。 PythonのパッケージはPoetryで管理する。 APIサーバーはFastAPI + uvicornで動かす。 認可の方式としてOAuth2.0を用いる。認可グラントのタイプはシンプルなROPC。 なぜこれを選んだのかというと、単純にFastAPIのドキュメントに書かれていたのがこれだったため。いつかほかのタイプも実装してみたい。 DBのマイグレーションはalbemicを使用してみる。今回はユーザ情報しか作らないので、alembicの使用は間違いなくオーバーなのだが、勉強のため使ってみる。 プロジェクト構成 プロジェクトディレクトリは次のようにする。
-DBに関するCRUDs処理はcrudsモジュールに書く。 DBと対応するモデルはmodelモジュールに書く。 APIのリクエストボディ、レスポンスボディの形式はschemas.pyに書く。 DBのセッションの作成はdb.pyに書く。 . ├── api │ ├── cruds │ │ ├── __init__.py │ │ └── user.py │ ├── models │ │ ├── __init__.py │ │ └── user.py │ ├── routers │ │ ├── __init__.py │ │ └── auth.py │ ├── schemas │ │ ├── __init__.py │ │ └── user.py │ ├── db.</description>
+      <description>何をするか 以下の3つの機能を実装する。&#xA;ユーザを作成する。 ユーザを認証してトークンを生成し返す。 ユーザがログインしていないと401を返す：ここでは「ユーザ情報を返すAPI」を作成。 ユーザがログインしているかどうかで異なるレスポンスを返す：ここでは「ログインしているかどうかを真偽値で返すAPI」を作成。 方針 使う技術・フレームワーク、ライブラリなど PythonとMySQLはDocker Composeで動かす。 PythonのパッケージはPoetryで管理する。 APIサーバーはFastAPI + uvicornで動かす。 認可の方式としてOAuth2.0を用いる。認可グラントのタイプはシンプルなROPC。 なぜこれを選んだのかというと、単純にFastAPIのドキュメントに書かれていたのがこれだったため。いつかほかのタイプも実装してみたい。 DBのマイグレーションはalbemicを使用してみる。今回はユーザ情報しか作らないので、alembicの使用は間違いなくオーバーなのだが、勉強のため使ってみる。 プロジェクト構成 プロジェクトディレクトリは次のようにする。&#xA;DBに関するCRUDs処理はcrudsモジュールに書く。 DBと対応するモデルはmodelモジュールに書く。 APIのリクエストボディ、レスポンスボディの形式はschemas.pyに書く。 DBのセッションの作成はdb.pyに書く。 . ├── api │ ├── cruds │ │ ├── __init__.py │ │ └── user.py │ ├── models │ │ ├── __init__.py │ │ └── user.py │ ├── routers │ │ ├── __init__.py │ │ └── auth.py │ ├── schemas │ │ ├── __init__.py │ │ └── user.py │ ├── db.</description>
     </item>
-    
   </channel>
 </rss>

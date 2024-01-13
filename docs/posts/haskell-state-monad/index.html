@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>HaskellでStateモナドを自作する | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/haskell-state-monad/">
@@ -44,8 +44,8 @@ addX :: Int -&gt; State [Int] () addX x = State $ \s -&gt; ((), x:s) doubleAll :
 <meta property="article:published_time" content="2020-03-28T19:16:20+09:00" />
 <meta property="article:modified_time" content="2020-03-29T14:45:34+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="HaskellでStateモナドを自作する"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="HaskellでStateモナドを自作する"/>
 <meta name="twitter:description" content="Stateモナドがわからない状態から、ギリギリ分かる状態になった。
 Stateモナドを学習した流れ 結局、具体例を通して学習した。個人的には、いきなりモナドの定義から学習するよりも、たくさんの例を見たり、実際に例を作ってみたりした方が覚えられた。抽象的な概念を理解するためには具体的な概念に触れるべきだ、ということを改めて認識した。
 以下は、自分が行った学習の流れ。Haskell IOモナド 超入門は学習のうえで参考になった。とくに、&gt;&gt;=を漏斗の形に見立てる比喩のおかげで、モナドと関数の組み合わせのイメージがクリアになった。

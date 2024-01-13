@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-view01/">
@@ -36,8 +36,8 @@ ViewController.swift class ViewController: UIViewController { let colors: [UICol
 <meta property="article:published_time" content="2019-12-24T13:07:39+09:00" />
 <meta property="article:modified_time" content="2019-12-26T10:13:24+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (1)"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (1)"/>
 <meta name="twitter:description" content="前に頑張ってCoreGraphicsを使って棒グラフを描いたが、やはりViewを棒に見立てて扱った方が良さそうだ。考えられる利点は次の3つ。
 タップ時に何かアクションを起こせる。例えば、棒グラフをタップしたら、そのデータに関する詳細ページに飛ぶ、などの処理が実装できる。 アニメーションについてのコードを描きやすい。例えば棒グラフの高さを0から伸ばしていくアニメーションが実現できる。 StackViewで棒を管理すれば、棒のサイズや棒同士の間隔を自動で設定してくれる これはやるしかない。
 基本的にはこちらを参考にしながら進めていく。

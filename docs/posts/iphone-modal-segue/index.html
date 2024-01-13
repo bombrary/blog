@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - セミモーダルビューからの遷移 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-modal-segue/">
@@ -49,8 +49,8 @@ class MenuViewController: UIViewController { ... override func viewWillAppear(_ 
 <meta property="article:published_time" content="2019-12-14T11:00:24+09:00" />
 <meta property="article:modified_time" content="2019-12-15T23:33:28+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="iPhoneアプリ開発メモ - セミモーダルビューからの遷移"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="iPhoneアプリ開発メモ - セミモーダルビューからの遷移"/>
 <meta name="twitter:description" content="目標 セミモーダルビューを作成する セミモーダルビュー上のボタンを押すと、それを閉じた後に別ビューに遷移する。 登場物 Main.storyboardとViewController Menu.storyboardとMenuViewController Dest1.storyboard Dest2.storyboard 前提 今後Viewが増えていく状況を想定して、Storyboardを分割することを考える。Storyboard同士はStoryboard Referenceで結びつける。 セミモーダルビューの作成 検索して良く出てくるのはUIPresentationControllerを利用する方法。ただ今回はなるべくStoryboardで完結させたい。
 そこで、以下のページを参考して作ることを考える。
 ハンバーガーメニューを作成するには？ - Swift Life

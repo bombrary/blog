@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PureScriptでパーサーコンビネータを触る (1) 四則演算のパース | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-parser-combinator01/">
@@ -38,8 +38,8 @@ import Data.Array as Array parser :: Parser String (Array Char) parser = Array."
 <meta property="article:published_time" content="2021-12-30T09:40:00+09:00" />
 <meta property="article:modified_time" content="2021-12-30T09:43:28+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="PureScriptでパーサーコンビネータを触る (1) 四則演算のパース"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="PureScriptでパーサーコンビネータを触る (1) 四則演算のパース"/>
 <meta name="twitter:description" content="PureScriptのパーサーコンビネータにpurescript-parsingがある。これはHaskellのParsecが基になっているので、使い方はParsecとほとんど同じだと思われる(とはいえ、Parsecを使ったことはあまりない)。これを用いて四則演算のパーサーを実装してみたが、うまく動かず詰まる点がいくつかあった。その備忘録。
 パーサーコンビネータの準備 % spago install parsing 後々使うので以下のパッケージもインストール。
 % spago install either integers maybe strings arrays lists src/Main.pursに以下の記述を追加。

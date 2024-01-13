@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/android04-calc/">
@@ -36,8 +36,8 @@ CalcFragmentの設定 string.xml fragment_calc.xmlに設定するための文字
 <meta property="article:published_time" content="2019-11-28T14:24:39+09:00" />
 <meta property="article:modified_time" content="2019-12-08T16:19:40+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Androidアプリ開発勉強(4) - LiveData/TableLayout/電卓アプリ作成"/>
 <meta name="twitter:description" content="どんなアプリを作るか 電卓を作る。
 市販の電卓とは違い、括弧が使えるようにする。なので、軽い構文解析を書くことになる。しかし今回の記事ではデータの扱い方やViewの組み方に焦点を当てているため、電卓の計算処理についてはかなり軽めに説明する。
 プロジェクト作成 プロジェクト名は&quot;Calculator&quot;とする。 DataBindingは有効にする Fragmentに分ける 今回は1画面のアプリなのでわざわざFragmentに分ける必要もないのだが、「もしかしたら他にもFragmentを追加するかもしれない」というケースを想定して、一応分けてみる。
@@ -332,12 +332,12 @@ CalcFragmentの設定 string.xml fragment_calc.xmlに設定するための文字
 <p>電卓アプリを作る場合、ボタンは格子状に並べたい。これはTableLayoutで実現できる。次のように書く。<code>TableRow</code>はテーブルの行を定義する要素で、その中に実際のセル要素を並べていく。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;TableLayout</span> <span class="err">...</span><span class="nt">&gt;</span>
 </span></span><span class="line"><span class="cl">  <span class="nt">&lt;TableRow</span> <span class="err">...</span><span class="nt">&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="err">&lt;</span>要素...&gt;
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;要素...&gt;</span>
 </span></span><span class="line"><span class="cl">    ...
 </span></span><span class="line"><span class="cl">  <span class="nt">&lt;/TableRow&gt;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">  <span class="nt">&lt;TableRow</span> <span class="err">...</span><span class="nt">&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="err">&lt;</span>要素...&gt;
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;要素...&gt;</span>
 </span></span><span class="line"><span class="cl">    ...
 </span></span><span class="line"><span class="cl">  <span class="nt">&lt;/TableRow&gt;</span>
 </span></span><span class="line"><span class="cl">

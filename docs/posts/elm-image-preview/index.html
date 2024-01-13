@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Elmメモ - 画像のプレビュー機能を作る | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/elm-image-preview/">
@@ -39,8 +39,8 @@ module Main exposing (..) import Browser import Html exposing (..) import Html.A
 <meta property="article:published_time" content="2020-01-13T11:00:50+09:00" />
 <meta property="article:modified_time" content="2020-01-13T13:42:15+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Elmメモ - 画像のプレビュー機能を作る"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Elmメモ - 画像のプレビュー機能を作る"/>
 <meta name="twitter:description" content="Elmを利用して、画像を選択してそれを表示するアプリを作る。
 ファイル読み込みの方法 Select.file関数を利用する。これはファイル選択用のエクスプローラを開くためのCmd Msgを作成してくれる。選択したファイルはMsgに載せられる。
 適切なMIMEタイプを指定すると、エクスプローラ上にてそのタイプのファイルしか選択できなくなる。例えば、text/plainを選択しておけば、拡張子.txtのファイルしか選択できなくなる。

@@ -6,36 +6,21 @@
     <description>Recent content in 勾配降下法 on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 11 Jul 2021 12:40:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 11 Jul 2021 12:40:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ロジスティック回帰 メモ</title>
       <link>https://bombrary.github.io/blog/posts/logistic-regression/</link>
       <pubDate>Sun, 11 Jul 2021 12:40:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/logistic-regression/</guid>
-      <description>式変形の一部はProbabilistic Machine Learning: An Introductionを参考にしている。
-問題設定 データが $N$ 個あり、入力は $\bm{x}_n = (x_{n1}, x_{n2}, \ldots, x_{nD})$、出力は $y_n \in \{ 0, 1 \}$ とする。 このとき、入力 $\bm{x}$ が与えられたとき出力 $y$ を予測したい。
-確率モデルの定義 ここでは確率的なモデルを考える。すなわち、 データ $\bm{x}$ が与えられたとき、 $y = 0, 1$ のどちらの確率が高いのかを考える。
-$y$ は2値だから、ベルヌーイ分布としてモデル化できる。
-$$ p(y ; \mu) = \mu^y (1 - \mu)^{1 - y} $$
-これは、$y = 1$ である確率が $\mu$ 、$y = 0$ である確率が $1 - \mu$ であることを意味する。 $\mu$ は確率だから、$0 \le \mu \le 1$ である必要がある。</description>
+      <description>式変形の一部はProbabilistic Machine Learning: An Introductionを参考にしている。&#xA;問題設定 データが $N$ 個あり、入力は $\bm{x}_n = (x_{n1}, x_{n2}, \ldots, x_{nD})$、出力は $y_n \in \{ 0, 1 \}$ とする。 このとき、入力 $\bm{x}$ が与えられたとき出力 $y$ を予測したい。&#xA;確率モデルの定義 ここでは確率的なモデルを考える。すなわち、 データ $\bm{x}$ が与えられたとき、 $y = 0, 1$ のどちらの確率が高いのかを考える。&#xA;$y$ は2値だから、ベルヌーイ分布としてモデル化できる。&#xA;$$ p(y ; \mu) = \mu^y (1 - \mu)^{1 - y} $$&#xA;これは、$y = 1$ である確率が $\mu$ 、$y = 0$ である確率が $1 - \mu$ であることを意味する。 $\mu$ は確率だから、$0 \le \mu \le 1$ である必要がある。</description>
     </item>
-    
     <item>
       <title>線形回帰メモ 勾配降下法</title>
       <link>https://bombrary.github.io/blog/posts/regression-gradient-descent/</link>
       <pubDate>Tue, 22 Jun 2021 16:08:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/regression-gradient-descent/</guid>
-      <description>線形回帰を勾配降下法を使って解いてみたメモ。
-問題設定 $\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T$ とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に
-$$ \begin{aligned} y &amp;amp;= h_{\bm{w}}(\bm{x})\\ &amp;amp;:= w_0 + w_1x_1 + w_2x_2 + \cdots + w_Dx_D\\ &amp;amp;= \bm{w}^T\bm{x} \end{aligned} $$
-が成り立つと仮定し、これに適する$\bm{w}$を見つけたい。「適する」とは具体的に何なのかというと、ここでは予測とデータとの二乗誤差の和
-$$ J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 $$
-が最小となる $\bm{w}$ を求める。この $J$ については呼び名がいくつかあるが、ここではコスト関数と呼ぶ。 係数 $1/2$ は微分した時に出てくる $2$ を消し去るための便宜的なものであり、つける必然はない。
-コスト関数の勾配 $w_j$に関する偏微分を計算すると、
-$$ \frac{\partial J(\bm{w})}{\partial w_j} = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D $$</description>
+      <description>線形回帰を勾配降下法を使って解いてみたメモ。&#xA;問題設定 $\bm{y} = (y^{(1)}, y^{(2)}, \ldots, y^{(N)})^T,\ \bm{x}_i = (1, x_1^{(i)}, x_2^{(i)}, \ldots, x_D^{(i)})^T$ とおく。$(\bm{x}_i, y_i),\ i = 1, 2, \ldots, N$ がデータとして与えられている。このとき、入力と出力の間に&#xA;$$ \begin{aligned} y &amp;amp;= h_{\bm{w}}(\bm{x})\\ &amp;amp;:= w_0 + w_1x_1 + w_2x_2 + \cdots + w_Dx_D\\ &amp;amp;= \bm{w}^T\bm{x} \end{aligned} $$&#xA;が成り立つと仮定し、これに適する$\bm{w}$を見つけたい。「適する」とは具体的に何なのかというと、ここでは予測とデータとの二乗誤差の和&#xA;$$ J(\bm{w}) = \frac{1}{2} \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})^2 $$&#xA;が最小となる $\bm{w}$ を求める。この $J$ については呼び名がいくつかあるが、ここではコスト関数と呼ぶ。 係数 $1/2$ は微分した時に出てくる $2$ を消し去るための便宜的なものであり、つける必然はない。&#xA;コスト関数の勾配 $w_j$に関する偏微分を計算すると、&#xA;$$ \frac{\partial J(\bm{w})}{\partial w_j} = \sum_{i=1}^{N} (h_{\bm{w}}(\bm{x}_i) - y^{(i)})x_j^{(i)},\ j = 0, 1, \ldots, D $$</description>
     </item>
-    
   </channel>
 </rss>

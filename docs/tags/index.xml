@@ -6,987 +6,784 @@
     <description>Recent content in Tags on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 29 Jun 2023 20:34:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 13 Jan 2024 11:23:15 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NixOS</title>
+      <link>https://bombrary.github.io/blog/tags/nixos/</link>
+      <pubDate>Sat, 13 Jan 2024 11:23:15 +0900</pubDate>
+      <guid>https://bombrary.github.io/blog/tags/nixos/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>WSL</title>
+      <link>https://bombrary.github.io/blog/tags/wsl/</link>
+      <pubDate>Sat, 13 Jan 2024 11:23:15 +0900</pubDate>
+      <guid>https://bombrary.github.io/blog/tags/wsl/</guid>
+      <description></description>
+    </item>
     <item>
       <title>FastAPI</title>
       <link>https://bombrary.github.io/blog/tags/fastapi/</link>
       <pubDate>Thu, 29 Jun 2023 20:34:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/fastapi/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>OAuth2</title>
       <link>https://bombrary.github.io/blog/tags/oauth2/</link>
       <pubDate>Thu, 29 Jun 2023 20:34:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/oauth2/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>ROPC</title>
       <link>https://bombrary.github.io/blog/tags/ropc/</link>
       <pubDate>Thu, 29 Jun 2023 20:34:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/ropc/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Alembic</title>
       <link>https://bombrary.github.io/blog/tags/alembic/</link>
       <pubDate>Tue, 20 Jun 2023 18:38:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/alembic/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>DB</title>
       <link>https://bombrary.github.io/blog/tags/db/</link>
       <pubDate>Tue, 20 Jun 2023 18:38:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/db/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>WordCloud</title>
       <link>https://bombrary.github.io/blog/tags/wordcloud/</link>
       <pubDate>Sun, 11 Jun 2023 12:06:51 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/wordcloud/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>誤差逆伝播法</title>
       <link>https://bombrary.github.io/blog/tags/%E8%AA%A4%E5%B7%AE%E9%80%86%E4%BC%9D%E6%92%AD%E6%B3%95/</link>
       <pubDate>Sat, 15 Jan 2022 18:45:40 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E8%AA%A4%E5%B7%AE%E9%80%86%E4%BC%9D%E6%92%AD%E6%B3%95/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Parser</title>
       <link>https://bombrary.github.io/blog/tags/parser/</link>
       <pubDate>Fri, 31 Dec 2021 15:26:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/parser/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>遅延評価</title>
       <link>https://bombrary.github.io/blog/tags/%E9%81%85%E5%BB%B6%E8%A9%95%E4%BE%A1/</link>
       <pubDate>Thu, 30 Dec 2021 09:40:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E9%81%85%E5%BB%B6%E8%A9%95%E4%BE%A1/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>モンテカルロ法</title>
       <link>https://bombrary.github.io/blog/tags/%E3%83%A2%E3%83%B3%E3%83%86%E3%82%AB%E3%83%AB%E3%83%AD%E6%B3%95/</link>
       <pubDate>Tue, 28 Dec 2021 08:45:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E3%83%A2%E3%83%B3%E3%83%86%E3%82%AB%E3%83%AB%E3%83%AD%E6%B3%95/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>積分</title>
       <link>https://bombrary.github.io/blog/tags/%E7%A9%8D%E5%88%86/</link>
       <pubDate>Tue, 28 Dec 2021 08:45:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E7%A9%8D%E5%88%86/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>REPL</title>
       <link>https://bombrary.github.io/blog/tags/repl/</link>
       <pubDate>Sat, 25 Dec 2021 18:35:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/repl/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Audio</title>
       <link>https://bombrary.github.io/blog/tags/audio/</link>
       <pubDate>Fri, 24 Dec 2021 21:12:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/audio/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>D3.js</title>
       <link>https://bombrary.github.io/blog/tags/d3.js/</link>
       <pubDate>Fri, 24 Dec 2021 21:12:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/d3.js/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Visualization</title>
       <link>https://bombrary.github.io/blog/tags/visualization/</link>
       <pubDate>Fri, 24 Dec 2021 21:12:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/visualization/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Web Audio API</title>
       <link>https://bombrary.github.io/blog/tags/web-audio-api/</link>
       <pubDate>Fri, 24 Dec 2021 21:12:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/web-audio-api/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>CLI</title>
       <link>https://bombrary.github.io/blog/tags/cli/</link>
       <pubDate>Thu, 09 Dec 2021 11:08:15 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/cli/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Flask</title>
       <link>https://bombrary.github.io/blog/tags/flask/</link>
       <pubDate>Thu, 09 Dec 2021 11:08:15 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/flask/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Web</title>
       <link>https://bombrary.github.io/blog/tags/web/</link>
       <pubDate>Thu, 09 Dec 2021 11:08:15 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/web/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>テトリス</title>
       <link>https://bombrary.github.io/blog/tags/%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9/</link>
       <pubDate>Tue, 10 Aug 2021 17:10:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>正則化</title>
       <link>https://bombrary.github.io/blog/tags/%E6%AD%A3%E5%89%87%E5%8C%96/</link>
       <pubDate>Sat, 07 Aug 2021 07:17:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E6%AD%A3%E5%89%87%E5%8C%96/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>線形回帰</title>
       <link>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%BD%A2%E5%9B%9E%E5%B8%B0/</link>
       <pubDate>Sat, 07 Aug 2021 07:17:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%BD%A2%E5%9B%9E%E5%B8%B0/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>作図</title>
       <link>https://bombrary.github.io/blog/tags/%E4%BD%9C%E5%9B%B3/</link>
       <pubDate>Fri, 30 Jul 2021 22:30:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E4%BD%9C%E5%9B%B3/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>ロジスティック回帰</title>
       <link>https://bombrary.github.io/blog/tags/%E3%83%AD%E3%82%B8%E3%82%B9%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E5%9B%9E%E5%B8%B0/</link>
       <pubDate>Sun, 11 Jul 2021 12:40:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E3%83%AD%E3%82%B8%E3%82%B9%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E5%9B%9E%E5%B8%B0/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>勾配降下法</title>
       <link>https://bombrary.github.io/blog/tags/%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95/</link>
       <pubDate>Sun, 11 Jul 2021 12:40:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Halogen</title>
       <link>https://bombrary.github.io/blog/tags/halogen/</link>
       <pubDate>Fri, 09 Jul 2021 23:15:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/halogen/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>モナド変換子</title>
       <link>https://bombrary.github.io/blog/tags/%E3%83%A2%E3%83%8A%E3%83%89%E5%A4%89%E6%8F%9B%E5%AD%90/</link>
       <pubDate>Sun, 04 Jul 2021 11:40:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E3%83%A2%E3%83%8A%E3%83%89%E5%A4%89%E6%8F%9B%E5%AD%90/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>最小二乗法</title>
       <link>https://bombrary.github.io/blog/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%97%E6%B3%95/</link>
       <pubDate>Sun, 20 Jun 2021 22:10:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%97%E6%B3%95/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>線型代数</title>
       <link>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%9E%8B%E4%BB%A3%E6%95%B0/</link>
       <pubDate>Sun, 20 Jun 2021 22:10:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E7%B7%9A%E5%9E%8B%E4%BB%A3%E6%95%B0/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Bouncing Ball</title>
       <link>https://bombrary.github.io/blog/tags/bouncing-ball/</link>
       <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/bouncing-ball/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Canvas API</title>
       <link>https://bombrary.github.io/blog/tags/canvas-api/</link>
       <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/canvas-api/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Monad</title>
       <link>https://bombrary.github.io/blog/tags/monad/</link>
       <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/monad/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>State</title>
       <link>https://bombrary.github.io/blog/tags/state/</link>
       <pubDate>Thu, 17 Jun 2021 16:50:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/state/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>marshmallow</title>
       <link>https://bombrary.github.io/blog/tags/marshmallow/</link>
       <pubDate>Thu, 03 Jun 2021 23:29:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/marshmallow/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>peewee</title>
       <link>https://bombrary.github.io/blog/tags/peewee/</link>
       <pubDate>Thu, 03 Jun 2021 23:29:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/peewee/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Todoリスト</title>
       <link>https://bombrary.github.io/blog/tags/todo%E3%83%AA%E3%82%B9%E3%83%88/</link>
       <pubDate>Thu, 03 Jun 2021 23:29:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/todo%E3%83%AA%E3%82%B9%E3%83%88/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Web API</title>
       <link>https://bombrary.github.io/blog/tags/web-api/</link>
       <pubDate>Thu, 03 Jun 2021 23:29:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/web-api/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Werkzeug</title>
       <link>https://bombrary.github.io/blog/tags/werkzeug/</link>
       <pubDate>Sun, 30 May 2021 11:49:40 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/werkzeug/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>WSGI</title>
       <link>https://bombrary.github.io/blog/tags/wsgi/</link>
       <pubDate>Sat, 29 May 2021 13:00:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/wsgi/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>HTTP</title>
       <link>https://bombrary.github.io/blog/tags/http/</link>
       <pubDate>Sat, 06 Mar 2021 22:00:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/http/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Socket</title>
       <link>https://bombrary.github.io/blog/tags/socket/</link>
       <pubDate>Sat, 06 Mar 2021 22:00:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/socket/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>PDF</title>
       <link>https://bombrary.github.io/blog/tags/pdf/</link>
       <pubDate>Thu, 07 Jan 2021 11:50:37 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/pdf/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>PyPDF4</title>
       <link>https://bombrary.github.io/blog/tags/pypdf4/</link>
       <pubDate>Thu, 07 Jan 2021 11:50:37 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/pypdf4/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>FFI</title>
       <link>https://bombrary.github.io/blog/tags/ffi/</link>
       <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/ffi/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Fisher-Yates Shuffle</title>
       <link>https://bombrary.github.io/blog/tags/fisher-yates-shuffle/</link>
       <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/fisher-yates-shuffle/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>ST</title>
       <link>https://bombrary.github.io/blog/tags/st/</link>
       <pubDate>Mon, 04 Jan 2021 13:29:19 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/st/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Generics</title>
       <link>https://bombrary.github.io/blog/tags/generics/</link>
       <pubDate>Tue, 03 Nov 2020 13:17:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/generics/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>ジェネリックプログラミング</title>
       <link>https://bombrary.github.io/blog/tags/%E3%82%B8%E3%82%A7%E3%83%8D%E3%83%AA%E3%83%83%E3%82%AF%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/</link>
       <pubDate>Tue, 03 Nov 2020 13:17:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E3%82%B8%E3%82%A7%E3%83%8D%E3%83%AA%E3%83%83%E3%82%AF%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>CUI</title>
       <link>https://bombrary.github.io/blog/tags/cui/</link>
       <pubDate>Thu, 25 Jun 2020 09:05:09 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/cui/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Node.js</title>
       <link>https://bombrary.github.io/blog/tags/node.js/</link>
       <pubDate>Thu, 25 Jun 2020 09:05:09 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/node.js/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>じゃんけん</title>
       <link>https://bombrary.github.io/blog/tags/%E3%81%98%E3%82%83%E3%82%93%E3%81%91%E3%82%93/</link>
       <pubDate>Thu, 25 Jun 2020 09:05:09 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E3%81%98%E3%82%83%E3%82%93%E3%81%91%E3%82%93/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>latexmk</title>
       <link>https://bombrary.github.io/blog/tags/latexmk/</link>
       <pubDate>Sun, 31 May 2020 19:03:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/latexmk/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>vimtex</title>
       <link>https://bombrary.github.io/blog/tags/vimtex/</link>
       <pubDate>Sun, 31 May 2020 19:03:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/vimtex/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>数値解析</title>
       <link>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%80%A4%E8%A7%A3%E6%9E%90/</link>
       <pubDate>Thu, 28 May 2020 10:50:13 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%80%A4%E8%A7%A3%E6%9E%90/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>微分方程式</title>
       <link>https://bombrary.github.io/blog/tags/%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E5%BC%8F/</link>
       <pubDate>Thu, 28 May 2020 10:50:13 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E5%BC%8F/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>zip</title>
       <link>https://bombrary.github.io/blog/tags/zip/</link>
       <pubDate>Wed, 04 Mar 2020 13:50:16 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/zip/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Elm</title>
       <link>https://bombrary.github.io/blog/tags/elm/</link>
       <pubDate>Thu, 27 Feb 2020 12:39:44 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/elm/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>elm-draggable</title>
       <link>https://bombrary.github.io/blog/tags/elm-draggable/</link>
       <pubDate>Thu, 27 Feb 2020 12:39:44 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/elm-draggable/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>elm-svg</title>
       <link>https://bombrary.github.io/blog/tags/elm-svg/</link>
       <pubDate>Thu, 27 Feb 2020 12:39:44 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/elm-svg/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>JavaScript</title>
       <link>https://bombrary.github.io/blog/tags/javascript/</link>
       <pubDate>Sun, 16 Feb 2020 18:52:20 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/javascript/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Vue.js</title>
       <link>https://bombrary.github.io/blog/tags/vue.js/</link>
       <pubDate>Sun, 16 Feb 2020 18:52:20 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/vue.js/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>dot2tex</title>
       <link>https://bombrary.github.io/blog/tags/dot2tex/</link>
       <pubDate>Tue, 11 Feb 2020 21:57:47 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/dot2tex/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Graphviz</title>
       <link>https://bombrary.github.io/blog/tags/graphviz/</link>
       <pubDate>Tue, 11 Feb 2020 21:57:47 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/graphviz/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>TeX</title>
       <link>https://bombrary.github.io/blog/tags/tex/</link>
       <pubDate>Tue, 11 Feb 2020 21:57:47 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/tex/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>css</title>
       <link>https://bombrary.github.io/blog/tags/css/</link>
       <pubDate>Mon, 13 Jan 2020 11:00:50 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/css/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>elm-file</title>
       <link>https://bombrary.github.io/blog/tags/elm-file/</link>
       <pubDate>Mon, 13 Jan 2020 11:00:50 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/elm-file/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>html</title>
       <link>https://bombrary.github.io/blog/tags/html/</link>
       <pubDate>Mon, 13 Jan 2020 11:00:50 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/html/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>elm-parser</title>
       <link>https://bombrary.github.io/blog/tags/elm-parser/</link>
       <pubDate>Sun, 05 Jan 2020 14:29:15 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/elm-parser/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>IPv4</title>
       <link>https://bombrary.github.io/blog/tags/ipv4/</link>
       <pubDate>Sun, 05 Jan 2020 14:29:15 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/ipv4/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>IPアドレス</title>
       <link>https://bombrary.github.io/blog/tags/ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9/</link>
       <pubDate>Sun, 05 Jan 2020 14:29:15 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/ip%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>elm-random</title>
       <link>https://bombrary.github.io/blog/tags/elm-random/</link>
       <pubDate>Wed, 01 Jan 2020 21:03:50 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/elm-random/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>ビット演算</title>
       <link>https://bombrary.github.io/blog/tags/%E3%83%93%E3%83%83%E3%83%88%E6%BC%94%E7%AE%97/</link>
       <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E3%83%93%E3%83%83%E3%83%88%E6%BC%94%E7%AE%97/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Charts</title>
       <link>https://bombrary.github.io/blog/tags/charts/</link>
       <pubDate>Sun, 29 Dec 2019 22:37:26 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/charts/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>iPhone</title>
       <link>https://bombrary.github.io/blog/tags/iphone/</link>
       <pubDate>Sun, 29 Dec 2019 22:37:26 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/iphone/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Swift</title>
       <link>https://bombrary.github.io/blog/tags/swift/</link>
       <pubDate>Sun, 29 Dec 2019 22:37:26 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/swift/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>UIKit</title>
       <link>https://bombrary.github.io/blog/tags/uikit/</link>
       <pubDate>Sun, 29 Dec 2019 22:37:26 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/uikit/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>UIStackView</title>
       <link>https://bombrary.github.io/blog/tags/uistackview/</link>
       <pubDate>Thu, 26 Dec 2019 10:00:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/uistackview/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>棒グラフ</title>
       <link>https://bombrary.github.io/blog/tags/%E6%A3%92%E3%82%B0%E3%83%A9%E3%83%95/</link>
       <pubDate>Thu, 26 Dec 2019 10:00:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E6%A3%92%E3%82%B0%E3%83%A9%E3%83%95/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>CoreGraphics</title>
       <link>https://bombrary.github.io/blog/tags/coregraphics/</link>
       <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/coregraphics/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>UIScrollView</title>
       <link>https://bombrary.github.io/blog/tags/uiscrollview/</link>
       <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/uiscrollview/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>UIPresentationController</title>
       <link>https://bombrary.github.io/blog/tags/uipresentationcontroller/</link>
       <pubDate>Thu, 19 Dec 2019 10:01:42 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/uipresentationcontroller/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Network</title>
       <link>https://bombrary.github.io/blog/tags/network/</link>
       <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/network/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Server</title>
       <link>https://bombrary.github.io/blog/tags/server/</link>
       <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/server/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>可視化</title>
       <link>https://bombrary.github.io/blog/tags/%E5%8F%AF%E8%A6%96%E5%8C%96/</link>
       <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E5%8F%AF%E8%A6%96%E5%8C%96/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>TableView</title>
       <link>https://bombrary.github.io/blog/tags/tableview/</link>
       <pubDate>Sun, 15 Dec 2019 10:27:58 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/tableview/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>PageViewController</title>
       <link>https://bombrary.github.io/blog/tags/pageviewcontroller/</link>
       <pubDate>Sat, 14 Dec 2019 22:35:31 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/pageviewcontroller/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>SegmentedControl</title>
       <link>https://bombrary.github.io/blog/tags/segmentedcontrol/</link>
       <pubDate>Sat, 14 Dec 2019 19:44:49 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/segmentedcontrol/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Selector</title>
       <link>https://bombrary.github.io/blog/tags/selector/</link>
       <pubDate>Sat, 14 Dec 2019 19:44:49 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/selector/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Python</title>
       <link>https://bombrary.github.io/blog/tags/python/</link>
       <pubDate>Sun, 08 Dec 2019 11:09:35 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/python/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>TCP</title>
       <link>https://bombrary.github.io/blog/tags/tcp/</link>
       <pubDate>Sun, 08 Dec 2019 11:09:35 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/tcp/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Android</title>
       <link>https://bombrary.github.io/blog/tags/android/</link>
       <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/android/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Kotlin</title>
       <link>https://bombrary.github.io/blog/tags/kotlin/</link>
       <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/kotlin/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>LivaData</title>
       <link>https://bombrary.github.io/blog/tags/livadata/</link>
       <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/livadata/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Programming</title>
       <link>https://bombrary.github.io/blog/tags/programming/</link>
       <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/programming/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>TableLayout</title>
       <link>https://bombrary.github.io/blog/tags/tablelayout/</link>
       <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/tablelayout/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>電卓アプリ</title>
       <link>https://bombrary.github.io/blog/tags/%E9%9B%BB%E5%8D%93%E3%82%A2%E3%83%97%E3%83%AA/</link>
       <pubDate>Thu, 28 Nov 2019 14:24:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E9%9B%BB%E5%8D%93%E3%82%A2%E3%83%97%E3%83%AA/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>gnuplot</title>
       <link>https://bombrary.github.io/blog/tags/gnuplot/</link>
       <pubDate>Tue, 26 Nov 2019 10:59:56 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/gnuplot/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>グラフ</title>
       <link>https://bombrary.github.io/blog/tags/%E3%82%B0%E3%83%A9%E3%83%95/</link>
       <pubDate>Tue, 26 Nov 2019 10:59:56 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E3%82%B0%E3%83%A9%E3%83%95/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>C</title>
       <link>https://bombrary.github.io/blog/tags/c/</link>
       <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/c/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>C&#43;&#43;</title>
       <link>https://bombrary.github.io/blog/tags/c&#43;&#43;/</link>
       <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/c&#43;&#43;/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Navigation</title>
       <link>https://bombrary.github.io/blog/tags/navigation/</link>
       <pubDate>Wed, 20 Nov 2019 09:03:17 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/navigation/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>DataFinding</title>
       <link>https://bombrary.github.io/blog/tags/datafinding/</link>
       <pubDate>Tue, 19 Nov 2019 19:54:40 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/datafinding/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Fragment</title>
       <link>https://bombrary.github.io/blog/tags/fragment/</link>
       <pubDate>Tue, 19 Nov 2019 19:54:40 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/fragment/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Django</title>
       <link>https://bombrary.github.io/blog/tags/django/</link>
       <pubDate>Fri, 15 Nov 2019 08:26:41 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/django/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Permutation</title>
       <link>https://bombrary.github.io/blog/tags/permutation/</link>
       <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/permutation/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>数学</title>
       <link>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</link>
       <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E6%95%B0%E5%AD%A6/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>置換</title>
       <link>https://bombrary.github.io/blog/tags/%E7%BD%AE%E6%8F%9B/</link>
       <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/%E7%BD%AE%E6%8F%9B/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>GitHub</title>
       <link>https://bombrary.github.io/blog/tags/github/</link>
       <pubDate>Sat, 09 Nov 2019 19:33:37 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/github/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Hugo</title>
       <link>https://bombrary.github.io/blog/tags/hugo/</link>
       <pubDate>Sat, 09 Nov 2019 19:33:37 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/tags/hugo/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

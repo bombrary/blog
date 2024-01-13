@@ -6,54 +6,21 @@
     <description>Recent content in vim on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 01 Oct 2021 09:19:20 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/vim/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Oct 2021 09:19:20 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/categories/vim/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>neovimのプラグインがうまく動かなかったので原因を探した話</title>
       <link>https://bombrary.github.io/blog/posts/nvim-note0/</link>
       <pubDate>Fri, 01 Oct 2021 09:19:20 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/nvim-note0/</guid>
-      <description>(2021/12/25追記) この記事で話題にした問題は最新のddc-nvim-lspで修正されている。こちらのissue及びこちらのcommitを参照。もっとも、この記事を書いてから大分経ったため、ddc_nvim_lsp.luaのソースコードも今では大分変わっている。
-以下の文章のまとめ バージョン違いには注意する
-ddc-nvim-lspは2021/10/1時点では、neovim 0.5.0を想定して作られているプラグインである。しかし自分はneovim 0.5.1を使ってしまっていた。neovim 0.5.1からlsp handlerの引数に破壊的変更があったため、LSPの補完が効かなかった。
-究明に当たってDockerを触ったり、Luaを触ったり、ドキュメントを漁ったりして色々糧にはなったので、記録しておく。
-何が起きたのか まず、プラグインの管理にはShougo/dein.vimを使った。
-neovimのbuildin LSPを使ってLSPが使える環境を構築した。設定に当たって以下のプラグインを導入した。
-neovim/nvim-lspconfig 入力補完はShougo/ddc.vimを使った。それにあたって以下のプラグインを導入した。
-vim-denops/denops.vim: ddc.vimがDenoの機能を使うため必要。 Shougo/ddc-matcher_head Shougo/ddc-sorter_rank Shougo/ddc-around Shougo/ddc-nvim-lsp 最後のddc-nvim-lspがうまく動かなかった．
-Language Serverとしてpyrightを導入したのだが、実際にPythonのファイルで入力補完を試したところ，ddc-aroundの補完は反応するが，ddc-nvim-lspの補完候補が現れなかった。
-Dockerを使って再現性を検証する まず、
-何か他のプラグインが邪魔しているのではないか Macという環境だから問題なのだろうか という仮説を立てた。そのためには、何も無い素のneovimの環境を作る必要があると考えた。そこで、環境をDockerで構築しようと考えた。
-Docker環境の構築 適当なディレクトリを作って、そこにDockerfileとdocker-compose.ymlを作成する。
-Dockerfileを以下のようにする。ベースイメージはanatolelucet/neovimにした。この時点でdeinを導入する。コマンドはdeinのQuick startを参照した。deinのインストールにあたってcurl、gitコマンドが必要なので、ここで導入する。
-FROM anatolelucet/neovim:stable-ubuntu RUN apt-get update &amp;amp;&amp;amp; apt-get install -y curl git RUN curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh &amp;gt; installer.sh &amp;amp;&amp;amp; sh ./installer.sh ~/.cache/dein neovimの設定ファイルはコンテナ外で編集できるようにしておく。同ディレクトリにディレクトリ.config/nvim/を作成し、その上で、docker-compose.ymlを以下のようにする。
-version: &amp;#39;3&amp;#39; services: nvim: build: . volumes: - .config:/root/.config entrypoint: &amp;#39;bash&amp;#39; working_dir: /root .config/nvim/の中にinit.vim、dein.toml&#39;、&#39;dein_lazy.tomlを作成。init.vimは以下の通り。
-&amp;#34;dein Scripts----------------------------- if &amp;amp;compatible set nocompatible &amp;#34; Be iMproved endif &amp;#34; Required: set runtimepath+=/root/.</description>
+      <description>(2021/12/25追記) この記事で話題にした問題は最新のddc-nvim-lspで修正されている。こちらのissue及びこちらのcommitを参照。もっとも、この記事を書いてから大分経ったため、ddc_nvim_lsp.luaのソースコードも今では大分変わっている。&#xA;以下の文章のまとめ バージョン違いには注意する&#xA;ddc-nvim-lspは2021/10/1時点では、neovim 0.5.0を想定して作られているプラグインである。しかし自分はneovim 0.5.1を使ってしまっていた。neovim 0.5.1からlsp handlerの引数に破壊的変更があったため、LSPの補完が効かなかった。&#xA;究明に当たってDockerを触ったり、Luaを触ったり、ドキュメントを漁ったりして色々糧にはなったので、記録しておく。&#xA;何が起きたのか まず、プラグインの管理にはShougo/dein.vimを使った。&#xA;neovimのbuildin LSPを使ってLSPが使える環境を構築した。設定に当たって以下のプラグインを導入した。&#xA;neovim/nvim-lspconfig 入力補完はShougo/ddc.vimを使った。それにあたって以下のプラグインを導入した。&#xA;vim-denops/denops.vim: ddc.vimがDenoの機能を使うため必要。 Shougo/ddc-matcher_head Shougo/ddc-sorter_rank Shougo/ddc-around Shougo/ddc-nvim-lsp 最後のddc-nvim-lspがうまく動かなかった．&#xA;Language Serverとしてpyrightを導入したのだが、実際にPythonのファイルで入力補完を試したところ，ddc-aroundの補完は反応するが，ddc-nvim-lspの補完候補が現れなかった。&#xA;Dockerを使って再現性を検証する まず、&#xA;何か他のプラグインが邪魔しているのではないか Macという環境だから問題なのだろうか という仮説を立てた。そのためには、何も無い素のneovimの環境を作る必要があると考えた。そこで、環境をDockerで構築しようと考えた。&#xA;Docker環境の構築 適当なディレクトリを作って、そこにDockerfileとdocker-compose.ymlを作成する。&#xA;Dockerfileを以下のようにする。ベースイメージはanatolelucet/neovimにした。この時点でdeinを導入する。コマンドはdeinのQuick startを参照した。deinのインストールにあたってcurl、gitコマンドが必要なので、ここで導入する。&#xA;FROM anatolelucet/neovim:stable-ubuntu RUN apt-get update &amp;amp;&amp;amp; apt-get install -y curl git RUN curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh &amp;gt; installer.sh &amp;amp;&amp;amp; sh ./installer.sh ~/.cache/dein neovimの設定ファイルはコンテナ外で編集できるようにしておく。同ディレクトリにディレクトリ.config/nvim/を作成し、その上で、docker-compose.ymlを以下のようにする。&#xA;version: &amp;#39;3&amp;#39; services: nvim: build: . volumes: - .config:/root/.config entrypoint: &amp;#39;bash&amp;#39; working_dir: /root .config/nvim/の中にinit.vim、dein.toml&#39;、&#39;dein_lazy.tomlを作成。init.vimは以下の通り。&#xA;&amp;#34;dein Scripts----------------------------- if &amp;amp;compatible set nocompatible &amp;#34; Be iMproved endif &amp;#34; Required: set runtimepath+=/root/.</description>
     </item>
-    
     <item>
       <title>VimでLaTeXを使うための環境構築(Mac)</title>
       <link>https://bombrary.github.io/blog/posts/vim-latex-setup/</link>
       <pubDate>Sun, 31 May 2020 19:03:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/vim-latex-setup/</guid>
-      <description>備忘録。基本的にはMacのTerminalでやることを想定。Macをインストールしたての状態を仮定する。
-homebrewを使って、TeXLiveとSkimをインストールする。latexmkの設定をした後、vimにdein.vimを入れて、それを用いてvimtexを入れるところまでやる。おまけでvimrcの他の設定や、colorschemeの設定もやる。
-注意 なるべくコマンドを載せるようにするが、それを実行しても上手くいかない場合は、公式サイトなどを参照すること。この記事が古くなっていて、打つべきコマンドが変わっている可能性がある。
-homebrewのインストール homebrewをインストールしておくと、いろいろなソフトがbrew (cack) install ...だけでインストールできる。便利なので入れる。
-homebrewの公式サイトのインストールを参照。
-念のため、Terminalを再起動しておく。
-TeXLive(MacTeX)のインストール TeXLiveの説明についてはWikiを参照。TeX関連のあらゆるパッケージやソフトの詰め合わせ。そのMac版がMacTeX。
-MacTeXやそのインストール方法については、Wikiを参照。homebrewをインストールしたので、次のコマンドでインストールできる。以下はmactex-no-guiとしているが、もしguiアプリも入れたい場合はmactexとする。どんなguiアプリが入るのかについてはWikiを参照。
-かなり巨大なファイル群のため、インストールにかなり時間がかかった気がする。
-$ brew cask install mactex-no-gui $ sudo tlmgr update --self --all $ sudo tlmgr paper a4 念のため、Terminalを再起動しておく。
-Skimのインストール SkimとはPDFビュワーの一種で、PDFの自動リロードを行ってくれる。こちらもhomebrewでインストールできる。
-$ brew cask install Skim 起動して、環境設定を開く。「同期」タブに移動して、「ファイルの変更をチェック」と「自動的にリロードする」にチェックを入れておく。
-latexmkの設定 後でインストールするVimのプラグイン(vimtex)がlatexmkを利用するので、設定しておく。
-こちらのページは、latexmkについて分かりやすく説明してくれているので見ておくと良い。
-~/.latexmkrcを作成し、内容を以下のようにする。これは上の参考サイトの引用。
-#!/usr/bin/env perl $latex = &amp;#39;platex -synctex=1 -halt-on-error&amp;#39;; $latex_silent = &amp;#39;platex -synctex=1 -halt-on-error -interaction=batchmode&amp;#39;; $bibtex = &amp;#39;pbibtex&amp;#39;; $biber = &amp;#39;biber --bblencoding=utf8 -u -U --output_safechars&amp;#39;; $dvipdf = &amp;#39;dvipdfmx %O -o %D %S&amp;#39;; $makeindex = &amp;#39;mendex %O -o %D %S&amp;#39;; $max_repeat = 5; $pdf_mode = 3; $pvc_view_file_via_temporary = 0; $pdf_previewer = &amp;#34;open -ga /Applications/Skim.</description>
+      <description>備忘録。基本的にはMacのTerminalでやることを想定。Macをインストールしたての状態を仮定する。&#xA;homebrewを使って、TeXLiveとSkimをインストールする。latexmkの設定をした後、vimにdein.vimを入れて、それを用いてvimtexを入れるところまでやる。おまけでvimrcの他の設定や、colorschemeの設定もやる。&#xA;注意 なるべくコマンドを載せるようにするが、それを実行しても上手くいかない場合は、公式サイトなどを参照すること。この記事が古くなっていて、打つべきコマンドが変わっている可能性がある。&#xA;homebrewのインストール homebrewをインストールしておくと、いろいろなソフトがbrew (cack) install ...だけでインストールできる。便利なので入れる。&#xA;homebrewの公式サイトのインストールを参照。&#xA;念のため、Terminalを再起動しておく。&#xA;TeXLive(MacTeX)のインストール TeXLiveの説明についてはWikiを参照。TeX関連のあらゆるパッケージやソフトの詰め合わせ。そのMac版がMacTeX。&#xA;MacTeXやそのインストール方法については、Wikiを参照。homebrewをインストールしたので、次のコマンドでインストールできる。以下はmactex-no-guiとしているが、もしguiアプリも入れたい場合はmactexとする。どんなguiアプリが入るのかについてはWikiを参照。&#xA;かなり巨大なファイル群のため、インストールにかなり時間がかかった気がする。&#xA;$ brew cask install mactex-no-gui $ sudo tlmgr update --self --all $ sudo tlmgr paper a4 念のため、Terminalを再起動しておく。&#xA;Skimのインストール SkimとはPDFビュワーの一種で、PDFの自動リロードを行ってくれる。こちらもhomebrewでインストールできる。&#xA;$ brew cask install Skim 起動して、環境設定を開く。「同期」タブに移動して、「ファイルの変更をチェック」と「自動的にリロードする」にチェックを入れておく。&#xA;latexmkの設定 後でインストールするVimのプラグイン(vimtex)がlatexmkを利用するので、設定しておく。&#xA;こちらのページは、latexmkについて分かりやすく説明してくれているので見ておくと良い。&#xA;~/.latexmkrcを作成し、内容を以下のようにする。これは上の参考サイトの引用。&#xA;#!/usr/bin/env perl $latex = &amp;#39;platex -synctex=1 -halt-on-error&amp;#39;; $latex_silent = &amp;#39;platex -synctex=1 -halt-on-error -interaction=batchmode&amp;#39;; $bibtex = &amp;#39;pbibtex&amp;#39;; $biber = &amp;#39;biber --bblencoding=utf8 -u -U --output_safechars&amp;#39;; $dvipdf = &amp;#39;dvipdfmx %O -o %D %S&amp;#39;; $makeindex = &amp;#39;mendex %O -o %D %S&amp;#39;; $max_repeat = 5; $pdf_mode = 3; $pvc_view_file_via_temporary = 0; $pdf_previewer = &amp;#34;open -ga /Applications/Skim.</description>
     </item>
-    
   </channel>
 </rss>

@@ -6,21 +6,14 @@
     <description>Recent content in PageViewController on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sat, 14 Dec 2019 22:35:31 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/pageviewcontroller/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 14 Dec 2019 22:35:31 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/pageviewcontroller/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>iPhoneアプリ開発メモ - UIPageViewControllerの利用</title>
       <link>https://bombrary.github.io/blog/posts/iphone-pageview/</link>
       <pubDate>Sat, 14 Dec 2019 22:35:31 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/iphone-pageview/</guid>
-      <description>目標 ウォークスルーっぽいものを作る。
-メイン画面でボタンを押すとウォークスルー画面に飛ぶ。 ウォークスルー画面では、左右にスワイプすると画面が移動する。 画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。 登場物 Main.storyboardとViewController.swift Walkthrough.storyboardとPageViewController.swift 準備 上に書いたものをとりあえず全て作る。ただし、PageViewControllerのサブクラスはUIPageViewControllerであることに注意。
-Main.storyboard ボタンを一つ作っておく。
-Walkthrough.storyboard 配置を次のようにする
-Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;quot;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;quot;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;quot;と書かれたViewControllerのidentifierはpage3とする。 以下で、Transition Styleを&amp;quot;Scroll&amp;quot;とする。もし&amp;quot;Page Curl&amp;quot;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。
-PageViewController.swift 次のように書く。
-class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.instantiateViewController(withIdentifier: &amp;#34;page1&amp;#34;) let page2 = stb.instantiateViewController(withIdentifier: &amp;#34;page2&amp;#34;) let page3 = stb.</description>
+      <description>目標 ウォークスルーっぽいものを作る。&#xA;メイン画面でボタンを押すとウォークスルー画面に飛ぶ。 ウォークスルー画面では、左右にスワイプすると画面が移動する。 画面下に、何ページかを教えてくれる白丸(Page Control)を配置する。 登場物 Main.storyboardとViewController.swift Walkthrough.storyboardとPageViewController.swift 準備 上に書いたものをとりあえず全て作る。ただし、PageViewControllerのサブクラスはUIPageViewControllerであることに注意。&#xA;Main.storyboard ボタンを一つ作っておく。&#xA;Walkthrough.storyboard 配置を次のようにする&#xA;Page View Controllerのidentifierはwalkとする。また、classをPageViewControllerにする。 &amp;ldquo;Page1&amp;quot;と書かれたViewControllerのidentifierはpage1とする。 &amp;ldquo;Page2&amp;quot;と書かれたViewControllerのidentifierはpage2とする。 &amp;ldquo;Page3&amp;quot;と書かれたViewControllerのidentifierはpage3とする。 以下で、Transition Styleを&amp;quot;Scroll&amp;quot;とする。もし&amp;quot;Page Curl&amp;quot;とした場合は、ページをめくるようなアニメーションになる。その代わりにPage Controlが表示されない。&#xA;PageViewController.swift 次のように書く。&#xA;class PageViewController: UIPageViewController { var controllers: [UIViewController] = [] override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. view.backgroundColor = .black let stb = storyboard! let page1 = stb.instantiateViewController(withIdentifier: &amp;#34;page1&amp;#34;) let page2 = stb.instantiateViewController(withIdentifier: &amp;#34;page2&amp;#34;) let page3 = stb.</description>
     </item>
-    
   </channel>
 </rss>

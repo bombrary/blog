@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PureScriptメモ - Generics | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-note-generics/">
@@ -38,8 +38,8 @@ data Person = Alice | Bob | Carol instance serializerUser :: Serializer Person w
 <meta property="article:published_time" content="2020-11-03T13:17:39+09:00" />
 <meta property="article:modified_time" content="2020-11-06T08:53:07+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="PureScriptメモ - Generics"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="PureScriptメモ - Generics"/>
 <meta name="twitter:description" content="purescript-generics-repパッケージを使ってGenericなSerializer型クラスを作った。以下はそのメモ。
 準備 プロジェクトを作成。
 $ spago init Arrayを使うので、パッケージをインストールしてsrc/Main.pursにimport文を書き込んでいく。 本記事の本命であるgenerics-rep入れる。 $ spago install arrays $ spago install generics-rep import Data.Array ((:)) REPLで色々実験するので、あらかじめ起動しておく。 $ spago repl &gt; import Main 以降はsrc/Main.pursに色々書き足していく。REPLで:r(もしくは:reload)とコマンドを打てばモジュールが再読み込みされるので、src/Main.pursを書き換える度にこのコマンドを打つと良い。

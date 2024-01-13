@@ -6,148 +6,77 @@
     <description>Recent content in Elm on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 10 Aug 2021 17:10:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/elm/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 Aug 2021 17:10:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/categories/elm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Elmでテトリスを作った話</title>
       <link>https://bombrary.github.io/blog/posts/elm-tetris/</link>
       <pubDate>Tue, 10 Aug 2021 17:10:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-tetris/</guid>
-      <description>Elmでテトリスを作った。この記事では実装にあたって考えたポイントをメモしておく。 コードは説明のために断片的に載せる。
-製作物 ここで遊べる．
-Repositryはこちら。
-実装しなければいけない処理 大まかに作らなければいけないのは以下の処理．
-ボード・テトリミノのデータ構造 テトリミノの出現・回転・落下・固定 テトリミノの衝突判定 ラインがそろった時に消滅する処理 ゲームオーバー処理 キー操作 画面描画 この中からいくつかの項目について説明する。
-ボードのデータ構造 ボードの落とす場は10x20のブロックで構成されている。 壁をボードに含めるかどうか、上部にマージンを設けるかどうかで、実際のボードサイズは変わる。
-まず、ボードのブロックをセルと呼ぶことにする。セルを次のように定義する。Colorは適当に定義しておく。
-type Cell = Block Color | Empty このセルを使ってボードを定義したいが、悩ましい選択が現れる。
-セルを要素に持つList。セルの座標はリストの添字で判断する。 (座標, セル)を要素に持つList。 キーを座標、値をセルとしたDict。 ListをArrayにした実装も考えられる。参考までに、3つは以下のように定義できる。
-type alias Board = List Cell type alias Board = List { pos : Vec Int , cell : Cell } type alias Board = Dict (Vec Int) Cell ボードのデータ構造によって諸々の関数の実装方法が大きく変わってくるので、どれを選ぶか慎重になる必要がある。
-2つ目と3つ目のデータ構造はelm-gamesのRepositoryに載っているテトリスのコードから発見した。 それらのコードを見つけた時にはすでに1番目で作ってしまっていたので、現状の自分の実装は1番目のものである。
-TEAのView関数としての扱いやすさを考えるなら、2番目の実装が一番良いと思う。例えばセルの描画関数をviewCellとして、viewBoardは次のように書ける。
-import Svg viewBoard : Board -&amp;gt; Svg Msg viewBoard board = Svg.</description>
+      <description>Elmでテトリスを作った。この記事では実装にあたって考えたポイントをメモしておく。 コードは説明のために断片的に載せる。&#xA;製作物 ここで遊べる．&#xA;Repositryはこちら。&#xA;実装しなければいけない処理 大まかに作らなければいけないのは以下の処理．&#xA;ボード・テトリミノのデータ構造 テトリミノの出現・回転・落下・固定 テトリミノの衝突判定 ラインがそろった時に消滅する処理 ゲームオーバー処理 キー操作 画面描画 この中からいくつかの項目について説明する。&#xA;ボードのデータ構造 ボードの落とす場は10x20のブロックで構成されている。 壁をボードに含めるかどうか、上部にマージンを設けるかどうかで、実際のボードサイズは変わる。&#xA;まず、ボードのブロックをセルと呼ぶことにする。セルを次のように定義する。Colorは適当に定義しておく。&#xA;type Cell = Block Color | Empty このセルを使ってボードを定義したいが、悩ましい選択が現れる。&#xA;セルを要素に持つList。セルの座標はリストの添字で判断する。 (座標, セル)を要素に持つList。 キーを座標、値をセルとしたDict。 ListをArrayにした実装も考えられる。参考までに、3つは以下のように定義できる。&#xA;type alias Board = List Cell type alias Board = List { pos : Vec Int , cell : Cell } type alias Board = Dict (Vec Int) Cell ボードのデータ構造によって諸々の関数の実装方法が大きく変わってくるので、どれを選ぶか慎重になる必要がある。&#xA;2つ目と3つ目のデータ構造はelm-gamesのRepositoryに載っているテトリスのコードから発見した。 それらのコードを見つけた時にはすでに1番目で作ってしまっていたので、現状の自分の実装は1番目のものである。&#xA;TEAのView関数としての扱いやすさを考えるなら、2番目の実装が一番良いと思う。例えばセルの描画関数をviewCellとして、viewBoardは次のように書ける。&#xA;import Svg viewBoard : Board -&amp;gt; Svg Msg viewBoard board = Svg.</description>
     </item>
-    
     <item>
       <title>Elmメモ ドラッグ移動の実現(2) - elm-draggableの利用</title>
       <link>https://bombrary.github.io/blog/posts/elm-drag02/</link>
       <pubDate>Thu, 27 Feb 2020 12:39:44 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-drag02/</guid>
-      <description>前回はBrowsertやSvgなどの標準的なパッケージを利用してドラッグ機能を実現した。今回はelm-draggableというパッケージを使ってドラッグ機能を実現してみる。
-準備 Elmのプロジェクトを作成して、src/Main.elmとsrc/Circle.elmを作成。
-Circle.elm 前回と同じなのでコードだけ載せる。
-module Circle exposing (..) type alias Id = Int type alias Circle = { id : Id , x : Float , y : Float , r : Float } type alias Circles = { all : List Circle , nextId : Id } empty : Circles empty = { all = [] , nextId = 0 } type alias CircleNoId = { x : Float , y : Float , r : Float } add : CircleNoId -&amp;gt; Circles -&amp;gt; Circles add c circles = let circle = { id = circles.</description>
+      <description>前回はBrowsertやSvgなどの標準的なパッケージを利用してドラッグ機能を実現した。今回はelm-draggableというパッケージを使ってドラッグ機能を実現してみる。&#xA;準備 Elmのプロジェクトを作成して、src/Main.elmとsrc/Circle.elmを作成。&#xA;Circle.elm 前回と同じなのでコードだけ載せる。&#xA;module Circle exposing (..) type alias Id = Int type alias Circle = { id : Id , x : Float , y : Float , r : Float } type alias Circles = { all : List Circle , nextId : Id } empty : Circles empty = { all = [] , nextId = 0 } type alias CircleNoId = { x : Float , y : Float , r : Float } add : CircleNoId -&amp;gt; Circles -&amp;gt; Circles add c circles = let circle = { id = circles.</description>
     </item>
-    
     <item>
       <title>Elmメモ ドラッグ移動の実現(1)</title>
       <link>https://bombrary.github.io/blog/posts/elm-drag01/</link>
       <pubDate>Tue, 25 Feb 2020 19:15:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-drag01/</guid>
-      <description>ElmでSVGの要素をドラッグ移動したいと思った。ドラッグ操作を実現するパッケージにelm-draggableがある。今回は勉強として、それに頼らず実装することを試みる。elm-draggableを用いた方法については次回やる。
-初期状態 詳細は省略するが、Elmプロジェクトを作成してelm/svgとelm/jsonをインストールしておく。
-src/Main.elmは以下のようにしておく。elm reactorで動くことを確認する。
-module Main exposing (..) import Browser import Browser.Events as BE import Html exposing (..) import Html.Attributes exposing (..) import Json.Decode as JD import Svg as S exposing (Svg) import Svg.Attributes as SA import Svg.Events as SE main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type alias Model = {} type Msg = Dummy init : () -&amp;gt; ( Model, Cmd Msg ) init _ = ( {}, Cmd.</description>
+      <description>ElmでSVGの要素をドラッグ移動したいと思った。ドラッグ操作を実現するパッケージにelm-draggableがある。今回は勉強として、それに頼らず実装することを試みる。elm-draggableを用いた方法については次回やる。&#xA;初期状態 詳細は省略するが、Elmプロジェクトを作成してelm/svgとelm/jsonをインストールしておく。&#xA;src/Main.elmは以下のようにしておく。elm reactorで動くことを確認する。&#xA;module Main exposing (..) import Browser import Browser.Events as BE import Html exposing (..) import Html.Attributes exposing (..) import Json.Decode as JD import Svg as S exposing (Svg) import Svg.Attributes as SA import Svg.Events as SE main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type alias Model = {} type Msg = Dummy init : () -&amp;gt; ( Model, Cmd Msg ) init _ = ( {}, Cmd.</description>
     </item>
-    
     <item>
       <title>Elmメモ - 画像のプレビュー機能を作る</title>
       <link>https://bombrary.github.io/blog/posts/elm-image-preview/</link>
       <pubDate>Mon, 13 Jan 2020 11:00:50 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-image-preview/</guid>
-      <description>Elmを利用して、画像を選択してそれを表示するアプリを作る。
-ファイル読み込みの方法 Select.file関数を利用する。これはファイル選択用のエクスプローラを開くためのCmd Msgを作成してくれる。選択したファイルはMsgに載せられる。
-適切なMIMEタイプを指定すると、エクスプローラ上にてそのタイプのファイルしか選択できなくなる。例えば、text/plainを選択しておけば、拡張子.txtのファイルしか選択できなくなる。
-Select.file &amp;#34;MIMEタイプのリスト&amp;#34; &amp;#34;Msg&amp;#34; 画像ファイルへの変換 こうして得られたファイルはFileと呼ばれる型で保持される。
-もしファイルを文字列として扱いたいなら、File.toStringを利用する。
-もし画像として扱いたいなら、File.toUrlを利用する。これは画像をBase64符号化した文字列を作る。これをimgタグのsrc属性に指定すれば、画像が表示される。
-画像を選択し、それを表示するアプリの作成 準備 プロジェクトを作成して、elm/fileをインストール。
-$ elm init $ elm install elm/file src/Main.elmの雛形を作る。
-module Main exposing (..) import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (..) import File exposing (File) import File.Select as Select import Task main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type alias Model = { } init : () -&amp;gt; (Model, Cmd Msg) init _ = ( { } , Cmd.</description>
+      <description>Elmを利用して、画像を選択してそれを表示するアプリを作る。&#xA;ファイル読み込みの方法 Select.file関数を利用する。これはファイル選択用のエクスプローラを開くためのCmd Msgを作成してくれる。選択したファイルはMsgに載せられる。&#xA;適切なMIMEタイプを指定すると、エクスプローラ上にてそのタイプのファイルしか選択できなくなる。例えば、text/plainを選択しておけば、拡張子.txtのファイルしか選択できなくなる。&#xA;Select.file &amp;#34;MIMEタイプのリスト&amp;#34; &amp;#34;Msg&amp;#34; 画像ファイルへの変換 こうして得られたファイルはFileと呼ばれる型で保持される。&#xA;もしファイルを文字列として扱いたいなら、File.toStringを利用する。&#xA;もし画像として扱いたいなら、File.toUrlを利用する。これは画像をBase64符号化した文字列を作る。これをimgタグのsrc属性に指定すれば、画像が表示される。&#xA;画像を選択し、それを表示するアプリの作成 準備 プロジェクトを作成して、elm/fileをインストール。&#xA;$ elm init $ elm install elm/file src/Main.elmの雛形を作る。&#xA;module Main exposing (..) import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (..) import File exposing (File) import File.Select as Select import Task main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type alias Model = { } init : () -&amp;gt; (Model, Cmd Msg) init _ = ( { } , Cmd.</description>
     </item>
-    
     <item>
       <title>Elmメモ - 文字列をIPアドレスに変換(2) Parserを用いる方法</title>
       <link>https://bombrary.github.io/blog/posts/elm-ipaddr-parse/</link>
       <pubDate>Sun, 05 Jan 2020 14:29:15 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-ipaddr-parse/</guid>
-      <description>準備 前回のsrc/IPAddr.elmを全て消し、内容を以下の通りにする。
-module IPAddr exposing (..) import Parser type IPAddr = IPAddr Int Int Int Int $ elm repl &gt; import Parser exposing (..) &gt; import IPAddr exposing (..) Parserの基本 以下の2つのステップに分かれる。
-Parserを作る Parserを実行する - Parser.runを用いる ライブラリでは、標準で用意されているParserと、それらを組み合わせて新たなParserを作るための関数が用意されている。
-&gt; run int &#34;123&#34; Ok 123 : Result (List Parser.DeadEnd) Int &gt; run int &#34;123abc&#34; Ok 123 : Result (List Parser.DeadEnd) Int &gt; run int &#34;abc123abc&#34; Err [{ col = 1, problem = ExpectingInt, row = 1 }] : Result (List Parser.</description>
+      <description>準備 前回のsrc/IPAddr.elmを全て消し、内容を以下の通りにする。&#xA;module IPAddr exposing (..) import Parser type IPAddr = IPAddr Int Int Int Int $ elm repl &gt; import Parser exposing (..) &gt; import IPAddr exposing (..) Parserの基本 以下の2つのステップに分かれる。&#xA;Parserを作る Parserを実行する - Parser.runを用いる ライブラリでは、標準で用意されているParserと、それらを組み合わせて新たなParserを作るための関数が用意されている。&#xA;&gt; run int &#34;123&#34; Ok 123 : Result (List Parser.DeadEnd) Int &gt; run int &#34;123abc&#34; Ok 123 : Result (List Parser.DeadEnd) Int &gt; run int &#34;abc123abc&#34; Err [{ col = 1, problem = ExpectingInt, row = 1 }] : Result (List Parser.</description>
     </item>
-    
     <item>
       <title>Elmメモ - 文字列をIPアドレスに変換(1) splitを用いる方法</title>
       <link>https://bombrary.github.io/blog/posts/elm-ipaddr-split/</link>
       <pubDate>Sun, 05 Jan 2020 11:27:01 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-ipaddr-split/</guid>
-      <description>IPv4アドレスの文字列&amp;quot;192.168.1.1&amp;quot;をパースする方法を考える。IPAddrの内部表現は次のようにする。
-type IPAddr = IPAddr Int Int Int Int 思いつくのは次の2通り。
-ピリオドでsplitして、整数値に変換する。 パーサを利用する。 いずれにしても結構面倒。この記事では前者だけやる。
-準備 適当なディレクトリで次のコマンドを実行。
-$ elm init $ elm install elm/parser src/IPAddr.elmを作り、内容を以下の通りにする。
-module IPAddr exposing (..) type IPAddr = IPAddr Int Int Int Int $ elm repl &gt; import IPAddr exposing (..) 方針 次の処理を行う関数をfromStringとして定義する。
-文字列を.でsplitする。 Listの要素数が4でなければ失敗。 Listの各要素にString.toIntを適用し、どれか一つでも失敗すれば全体としても失敗。 Listを[a,b,c,d]としたとき、IPAddr a b c dを返す。 traverseの実装 3の処理は、次の関数として抽象化できる: リストの各要素にfを適用し、その結果すべてがJustを返したときだけ、全体の結果を返す。
-traverse : (a -&amp;gt; Maybe b) -&amp;gt; List a -&amp;gt; Maybe List b 原始的な実装 なるべくfoldrとかを使わずに書こうとするとこんな感じになる。</description>
+      <description>IPv4アドレスの文字列&amp;quot;192.168.1.1&amp;quot;をパースする方法を考える。IPAddrの内部表現は次のようにする。&#xA;type IPAddr = IPAddr Int Int Int Int 思いつくのは次の2通り。&#xA;ピリオドでsplitして、整数値に変換する。 パーサを利用する。 いずれにしても結構面倒。この記事では前者だけやる。&#xA;準備 適当なディレクトリで次のコマンドを実行。&#xA;$ elm init $ elm install elm/parser src/IPAddr.elmを作り、内容を以下の通りにする。&#xA;module IPAddr exposing (..) type IPAddr = IPAddr Int Int Int Int $ elm repl &gt; import IPAddr exposing (..) 方針 次の処理を行う関数をfromStringとして定義する。&#xA;文字列を.でsplitする。 Listの要素数が4でなければ失敗。 Listの各要素にString.toIntを適用し、どれか一つでも失敗すれば全体としても失敗。 Listを[a,b,c,d]としたとき、IPAddr a b c dを返す。 traverseの実装 3の処理は、次の関数として抽象化できる: リストの各要素にfを適用し、その結果すべてがJustを返したときだけ、全体の結果を返す。&#xA;traverse : (a -&amp;gt; Maybe b) -&amp;gt; List a -&amp;gt; Maybe List b 原始的な実装 なるべくfoldrとかを使わずに書こうとするとこんな感じになる。</description>
     </item>
-    
     <item>
       <title>Elmメモ - ランダムな位置に円を描画する</title>
       <link>https://bombrary.github.io/blog/posts/elm-random-circle/</link>
       <pubDate>Wed, 01 Jan 2020 21:03:50 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-random-circle/</guid>
-      <description>乱数の練習に。
-準備 プロジェクト用のディレクトリを適当に作り、そこで以下のコマンドを実行。
-$ elm init 必要なモジュールを入れる。
-$ elm install elm/svg $ elm install elm/random Main.elmを作成し、最低限の文を定義しておく。
-module Main exposing (..) import Browser import Svg exposing (..) import Svg.Attributes as SA exposing (..) import Svg.Events as SE exposing (..) import Random 円の描画 こんな感じの円を描画する。
-1 SVGでは次のように書く。
-&amp;lt;svg width=&amp;#34;100px&amp;#34; height=&amp;#34;100px&amp;#34;&amp;gt; &amp;lt;g transform=&amp;#34;translate(50, 50)&amp;#34;&amp;gt; &amp;lt;circle r=&amp;#34;10&amp;#34; fill=&amp;#34;white&amp;#34; stroke=&amp;#34;black&amp;#34; /&amp;gt; &amp;lt;text text-anchor=&amp;#34;middle&amp;#34; dominant-baseline=&amp;#34;central&amp;#34;&amp;gt;1&amp;lt;/text&amp;gt; &amp;lt;/g&amp;gt; &amp;lt;/svg&amp;gt; 円の情報で必要なのは次の4つ:
-x座標 y座標 半径 text要素の文字列 そこで円は次のように定義する。
-type alias Circle = { r: Float , x: Float , y: Float , text: String } Elmでは宣言的にSVGやHTMLを書けるので、SVGの文法とほとんど似た構造でかける。直感的で嬉しい。</description>
+      <description>乱数の練習に。&#xA;準備 プロジェクト用のディレクトリを適当に作り、そこで以下のコマンドを実行。&#xA;$ elm init 必要なモジュールを入れる。&#xA;$ elm install elm/svg $ elm install elm/random Main.elmを作成し、最低限の文を定義しておく。&#xA;module Main exposing (..) import Browser import Svg exposing (..) import Svg.Attributes as SA exposing (..) import Svg.Events as SE exposing (..) import Random 円の描画 こんな感じの円を描画する。&#xA;1 SVGでは次のように書く。&#xA;&amp;lt;svg width=&amp;#34;100px&amp;#34; height=&amp;#34;100px&amp;#34;&amp;gt; &amp;lt;g transform=&amp;#34;translate(50, 50)&amp;#34;&amp;gt; &amp;lt;circle r=&amp;#34;10&amp;#34; fill=&amp;#34;white&amp;#34; stroke=&amp;#34;black&amp;#34; /&amp;gt; &amp;lt;text text-anchor=&amp;#34;middle&amp;#34; dominant-baseline=&amp;#34;central&amp;#34;&amp;gt;1&amp;lt;/text&amp;gt; &amp;lt;/g&amp;gt; &amp;lt;/svg&amp;gt; 円の情報で必要なのは次の4つ:&#xA;x座標 y座標 半径 text要素の文字列 そこで円は次のように定義する。&#xA;type alias Circle = { r: Float , x: Float , y: Float , text: String } Elmでは宣言的にSVGやHTMLを書けるので、SVGの文法とほとんど似た構造でかける。直感的で嬉しい。</description>
     </item>
-    
     <item>
       <title>JavaScript/Elm ビット演算のときにはまったこと</title>
       <link>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</link>
       <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</guid>
-      <description>結論 JavaScriptにおいて、&amp;gt;&amp;gt;&amp;gt;以外のビット演算は32ビット符号付き整数値として扱われる。
-→ 例えば&amp;amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。 JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい JavaScriptにおいて、x &amp;gt;&amp;gt;&amp;gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。 これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。 ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。 各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース) 検証コード $ elm init src/MyBitwise.elmを作成し、内容を以下のようにする。
-module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&amp;gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &amp;gt; 0 then (toBinaryString rem) ++ (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。
-$ elm repl &gt; import Bitwise &gt; import MyBitwise exposing (..) 232-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。</description>
+      <description>結論 JavaScriptにおいて、&amp;gt;&amp;gt;&amp;gt;以外のビット演算は32ビット符号付き整数値として扱われる。&#xA;→ 例えば&amp;amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。 JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい JavaScriptにおいて、x &amp;gt;&amp;gt;&amp;gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。 これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。 ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。 各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース) 検証コード $ elm init src/MyBitwise.elmを作成し、内容を以下のようにする。&#xA;module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&amp;gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &amp;gt; 0 then (toBinaryString rem) ++ (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。&#xA;$ elm repl &gt; import Bitwise &gt; import MyBitwise exposing (..) 232-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。</description>
     </item>
-    
     <item>
       <title>Elm/JavaScript ローカルサーバーで通信する際にハマったこと</title>
       <link>https://bombrary.github.io/blog/posts/elm-with-localserver/</link>
       <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-with-localserver/</guid>
-      <description>今回たまたまクライアント側でElmを使ったけど、これはElmに限ったことではない。
-結論 Client側での留意点 urlはlocalhost:[port]ではなくhttp://localhost:[port]と指定しなければならない。つまり、URLにはちゃんとスキーム名を指定する。 Server側での留意点 Access-Control-Allow-Originに関連するヘッダーをちゃんと設定する。 成功コード プログラムの内容 サーバーは{ &amp;quot;msg&amp;quot; : &amp;quot;Hello, World!&amp;quot; }という内容のJSONを送ってくるので、クライアントはその値を受け取って&amp;quot;Success: Hello, World!&amp;ldquo;を出力する。それだけ。
-Client: Elm module Main exposing (..) import Browser exposing (..) import Json.Decode exposing (..) import Http exposing (..) import Html exposing (..) import Html.Attributes exposing (..) main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type Model = Loading | Failed | Success String init : () -&amp;gt; (Model, Cmd Msg) init _ = ( Loading, getServer ) type Msg = GotData (Result Http.</description>
+      <description>今回たまたまクライアント側でElmを使ったけど、これはElmに限ったことではない。&#xA;結論 Client側での留意点 urlはlocalhost:[port]ではなくhttp://localhost:[port]と指定しなければならない。つまり、URLにはちゃんとスキーム名を指定する。 Server側での留意点 Access-Control-Allow-Originに関連するヘッダーをちゃんと設定する。 成功コード プログラムの内容 サーバーは{ &amp;quot;msg&amp;quot; : &amp;quot;Hello, World!&amp;quot; }という内容のJSONを送ってくるので、クライアントはその値を受け取って&amp;quot;Success: Hello, World!&amp;ldquo;を出力する。それだけ。&#xA;Client: Elm module Main exposing (..) import Browser exposing (..) import Json.Decode exposing (..) import Http exposing (..) import Html exposing (..) import Html.Attributes exposing (..) main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type Model = Loading | Failed | Success String init : () -&amp;gt; (Model, Cmd Msg) init _ = ( Loading, getServer ) type Msg = GotData (Result Http.</description>
     </item>
-    
     <item>
       <title>Elmで超簡易Todoリスト</title>
       <link>https://bombrary.github.io/blog/posts/elm-todo-list/</link>
       <pubDate>Sun, 10 Nov 2019 21:08:12 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-todo-list/</guid>
-      <description>Todoリストと言っても、フィールドに入力した内容がli要素として追加されるだけ。
-Elm習いたてなので、何か無駄があるかも。
-個人的になるほどと思った点はList.mapを利用してli要素を生成するところで、これは要素を生成する関数が子要素のリストを引数に取るから実現できる。
-import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (onClick, onInput) main = Browser.sandbox { init = init, update = update, view = view } --Model type alias Todo = { description : String } type alias Model = { todos : List Todo , input : Todo } init : Model init = { todos = [] , input = Todo &amp;#34;&amp;#34; } type Msg = Add | Change String --Update update : Msg -&amp;gt; Model -&amp;gt; Model update msg model = case msg of Add -&amp;gt; { model | todos = model.</description>
+      <description>Todoリストと言っても、フィールドに入力した内容がli要素として追加されるだけ。&#xA;Elm習いたてなので、何か無駄があるかも。&#xA;個人的になるほどと思った点はList.mapを利用してli要素を生成するところで、これは要素を生成する関数が子要素のリストを引数に取るから実現できる。&#xA;import Browser import Html exposing (..) import Html.Attributes exposing (..) import Html.Events exposing (onClick, onInput) main = Browser.sandbox { init = init, update = update, view = view } --Model type alias Todo = { description : String } type alias Model = { todos : List Todo , input : Todo } init : Model init = { todos = [] , input = Todo &amp;#34;&amp;#34; } type Msg = Add | Change String --Update update : Msg -&amp;gt; Model -&amp;gt; Model update msg model = case msg of Add -&amp;gt; { model | todos = model.</description>
     </item>
-    
   </channel>
 </rss>

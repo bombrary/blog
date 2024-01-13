@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PureScriptでじゃんけんゲーム(CUI)を作る | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-janken/">
@@ -41,8 +41,8 @@ judge :: Hand -&gt; Hand -&gt; Judgement judge Rock Rock = Draw judge Scissors S
 <meta property="article:published_time" content="2020-06-25T09:05:09+09:00" />
 <meta property="article:modified_time" content="2020-06-25T12:50:16+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="PureScriptでじゃんけんゲーム(CUI)を作る"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="PureScriptでじゃんけんゲーム(CUI)を作る"/>
 <meta name="twitter:description" content="プログラミングの初歩で作りそうなじゃんけんゲームを作る。ただし、PureScriptで作る。
 方針 Jankenというモジュールを作る グー・チョキ・パーをHandとして定義する じゃんけんの勝負の結果をJudgementとして定義する コンピュータが出す手はランダムに出したいので、ランダムな手を出す関数randomを作っておく 入力は文字列にしたいので、文字列から手に変換する関数fromStringを作っておく 入出力はMainに書く。Node.ReadLineモジュールの力で入力を受け付ける。 準備 適当なプロジェクトディレクトリを作っておいて、
 $ spago init /src/Main.pursと/src/Janken.pursを作っておく。

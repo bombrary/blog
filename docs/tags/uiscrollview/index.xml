@@ -6,24 +6,14 @@
     <description>Recent content in UIScrollView on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 22 Dec 2019 15:10:30 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/uiscrollview/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 22 Dec 2019 15:10:30 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/uiscrollview/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (2)</title>
       <link>https://bombrary.github.io/blog/posts/iphone-barchart-cg02/</link>
       <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-cg02/</guid>
-      <description>目標 前回の棒グラフを複数ページにする 今回は、1ページに最大5本の棒が並ぶ、とする。 ページは横スライドで切り替える プロジェクトは前回のものを引き継がず、新しく作る。
-用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。
-var dataSource = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。
-UScrollViewの配置 Main.storyboardにUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。
-その後、UIScrollViewのOutlet接続をViewController.swiftに対して行う。
-UIScrollVieの設定 「スクロールの対象となるコンテンツを中に入れる」だけで、スクロール可能なViewが作れる。ただし、思い通りの表示にするためには、UIScrollViewやコンテンツのサイズを設定しておく必要がある。
-複数ページを持つコンテンツを作りたいので、コンテンツ用Viewの中にページ用のViewが複数存在する状態になる。なのでページの位置やサイズもちゃんと設定する。
-ScrollViewのレイアウト こんな感じにする。
-なのでコードはこんな感じにする。
-class ViewController: UIViewController { @IBOutlet weak var scrollView: UIScrollView! let marginX: CGFloat = 80 let marginY: CGFloat = 40 override func viewDidLoad() { super.</description>
+      <description>目標 前回の棒グラフを複数ページにする 今回は、1ページに最大5本の棒が並ぶ、とする。 ページは横スライドで切り替える プロジェクトは前回のものを引き継がず、新しく作る。&#xA;用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。&#xA;var dataSource = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。&#xA;UScrollViewの配置 Main.storyboardにUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。&#xA;その後、UIScrollViewのOutlet接続をViewController.swiftに対して行う。&#xA;UIScrollVieの設定 「スクロールの対象となるコンテンツを中に入れる」だけで、スクロール可能なViewが作れる。ただし、思い通りの表示にするためには、UIScrollViewやコンテンツのサイズを設定しておく必要がある。&#xA;複数ページを持つコンテンツを作りたいので、コンテンツ用Viewの中にページ用のViewが複数存在する状態になる。なのでページの位置やサイズもちゃんと設定する。&#xA;ScrollViewのレイアウト こんな感じにする。&#xA;なのでコードはこんな感じにする。&#xA;class ViewController: UIViewController { @IBOutlet weak var scrollView: UIScrollView! let marginX: CGFloat = 80 let marginY: CGFloat = 40 override func viewDidLoad() { super.</description>
     </item>
-    
   </channel>
 </rss>

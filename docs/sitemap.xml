@@ -3,7 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://bombrary.github.io/blog/categories/</loc>
-    <lastmod>2023-06-30T06:23:28+09:00</lastmod>
+    <lastmod>2024-01-13T13:08:42+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/nixos/</loc>
+    <lastmod>2024-01-13T13:08:42+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/posts/nixos-wsl-setup/</loc>
+    <lastmod>2024-01-13T13:08:42+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/posts/</loc>
+    <lastmod>2024-01-13T13:08:42+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/categories/setup/</loc>
+    <lastmod>2024-01-13T13:08:42+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/</loc>
+    <lastmod>2024-01-13T13:08:42+09:00</lastmod>
+  </url><url>
+    <loc>https://bombrary.github.io/blog/tags/wsl/</loc>
+    <lastmod>2024-01-13T13:08:42+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/fastapi/</loc>
     <lastmod>2023-06-30T06:23:28+09:00</lastmod>
@@ -14,16 +32,10 @@
     <loc>https://bombrary.github.io/blog/tags/oauth2/</loc>
     <lastmod>2023-06-30T06:23:28+09:00</lastmod>
   </url><url>
-    <loc>https://bombrary.github.io/blog/posts/</loc>
-    <lastmod>2023-06-30T06:23:28+09:00</lastmod>
-  </url><url>
     <loc>https://bombrary.github.io/blog/categories/python/</loc>
     <lastmod>2023-06-30T06:23:28+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/ropc/</loc>
-    <lastmod>2023-06-30T06:23:28+09:00</lastmod>
-  </url><url>
-    <loc>https://bombrary.github.io/blog/tags/</loc>
     <lastmod>2023-06-30T06:23:28+09:00</lastmod>
   </url><url>
     <loc>https://bombrary.github.io/blog/tags/alembic/</loc>

@@ -6,24 +6,14 @@
     <description>Recent content in Audio on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 24 Dec 2021 21:12:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/audio/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Dec 2021 21:12:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/audio/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Web Audio API 備忘録</title>
       <link>https://bombrary.github.io/blog/posts/web-audio-api-note01/</link>
       <pubDate>Fri, 24 Dec 2021 21:12:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/web-audio-api-note01/</guid>
-      <description>Web Audio APIで色々遊んだメモ。
-サイン波を鳴らす HTMLファイルを作成。適当にindex.htmlとしておく。
-&amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;button id=&amp;#34;play_btn&amp;#34;&amp;gt;play&amp;lt;/button&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.jsは以下のようにしておく。
-const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); document.getElementById(&amp;#39;play_btn&amp;#39;) .addEventListener(&amp;#39;click&amp;#39;, function() { oscillatorNode.start(); }, false); これで、&amp;ldquo;play&amp;rdquo; ボタンを押すとサイン波が再生される(音量に注意)。
-説明 Web Audio APIの枠組みでは、色々な音やエフェクトをノードとして繋いでいく。最終的な出力を担うノードはAppContext.destinationである。
-まずAudioContextのインスタンスを作成する。このContextというのはプログラミングをやっていると色々なところで現れるが (Canvas要素に描画する際にもgetContextが出てくるし、WinAPIだとデバイスコンテキストハンドル、AndroidアプリのプログラミングでもContextがある)、自分は「Audioについて色々な情報を提供してくれるオブジェクト」くらいの理解をしている。
-const audioContext = new AudioContext(); 続いて、音源としてOscillatorNodeを作成し、繋いでやる。
-const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start()で実際に音源が再生される。今回はclickイベントが起こったときに再生されるようにしている。
-(補足) ページ読み込み時の再生はできないという仕様 Chrome/Safariの場合、以下のようにページを開いた瞬間に音がなるようなコードを書いたとしても、実際には鳴らない。
-const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start(); これは、「ボタンが押す」のような、ユーザーが明示的な操作をしない限り再生されない仕様となっているかららしい。 実際 Chrome の場合、上のコードを書くと以下の警告がDevalopper Toolで表示される。</description>
+      <description>Web Audio APIで色々遊んだメモ。&#xA;サイン波を鳴らす HTMLファイルを作成。適当にindex.htmlとしておく。&#xA;&amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;button id=&amp;#34;play_btn&amp;#34;&amp;gt;play&amp;lt;/button&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.jsは以下のようにしておく。&#xA;const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); document.getElementById(&amp;#39;play_btn&amp;#39;) .addEventListener(&amp;#39;click&amp;#39;, function() { oscillatorNode.start(); }, false); これで、&amp;ldquo;play&amp;rdquo; ボタンを押すとサイン波が再生される(音量に注意)。&#xA;説明 Web Audio APIの枠組みでは、色々な音やエフェクトをノードとして繋いでいく。最終的な出力を担うノードはAppContext.destinationである。&#xA;まずAudioContextのインスタンスを作成する。このContextというのはプログラミングをやっていると色々なところで現れるが (Canvas要素に描画する際にもgetContextが出てくるし、WinAPIだとデバイスコンテキストハンドル、AndroidアプリのプログラミングでもContextがある)、自分は「Audioについて色々な情報を提供してくれるオブジェクト」くらいの理解をしている。&#xA;const audioContext = new AudioContext(); 続いて、音源としてOscillatorNodeを作成し、繋いでやる。&#xA;const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start()で実際に音源が再生される。今回はclickイベントが起こったときに再生されるようにしている。&#xA;(補足) ページ読み込み時の再生はできないという仕様 Chrome/Safariの場合、以下のようにページを開いた瞬間に音がなるようなコードを書いたとしても、実際には鳴らない。&#xA;const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start(); これは、「ボタンが押す」のような、ユーザーが明示的な操作をしない限り再生されない仕様となっているかららしい。 実際 Chrome の場合、上のコードを書くと以下の警告がDevalopper Toolで表示される。</description>
     </item>
-    
   </channel>
 </rss>

@@ -6,20 +6,14 @@
     <description>Recent content in ロジスティック回帰 on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 11 Jul 2021 12:40:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/%E3%83%AD%E3%82%B8%E3%82%B9%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E5%9B%9E%E5%B8%B0/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 11 Jul 2021 12:40:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/%E3%83%AD%E3%82%B8%E3%82%B9%E3%83%86%E3%82%A3%E3%83%83%E3%82%AF%E5%9B%9E%E5%B8%B0/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ロジスティック回帰 メモ</title>
       <link>https://bombrary.github.io/blog/posts/logistic-regression/</link>
       <pubDate>Sun, 11 Jul 2021 12:40:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/logistic-regression/</guid>
-      <description>式変形の一部はProbabilistic Machine Learning: An Introductionを参考にしている。
-問題設定 データが $N$ 個あり、入力は $\bm{x}_n = (x_{n1}, x_{n2}, \ldots, x_{nD})$、出力は $y_n \in \{ 0, 1 \}$ とする。 このとき、入力 $\bm{x}$ が与えられたとき出力 $y$ を予測したい。
-確率モデルの定義 ここでは確率的なモデルを考える。すなわち、 データ $\bm{x}$ が与えられたとき、 $y = 0, 1$ のどちらの確率が高いのかを考える。
-$y$ は2値だから、ベルヌーイ分布としてモデル化できる。
-$$ p(y ; \mu) = \mu^y (1 - \mu)^{1 - y} $$
-これは、$y = 1$ である確率が $\mu$ 、$y = 0$ である確率が $1 - \mu$ であることを意味する。 $\mu$ は確率だから、$0 \le \mu \le 1$ である必要がある。</description>
+      <description>式変形の一部はProbabilistic Machine Learning: An Introductionを参考にしている。&#xA;問題設定 データが $N$ 個あり、入力は $\bm{x}_n = (x_{n1}, x_{n2}, \ldots, x_{nD})$、出力は $y_n \in \{ 0, 1 \}$ とする。 このとき、入力 $\bm{x}$ が与えられたとき出力 $y$ を予測したい。&#xA;確率モデルの定義 ここでは確率的なモデルを考える。すなわち、 データ $\bm{x}$ が与えられたとき、 $y = 0, 1$ のどちらの確率が高いのかを考える。&#xA;$y$ は2値だから、ベルヌーイ分布としてモデル化できる。&#xA;$$ p(y ; \mu) = \mu^y (1 - \mu)^{1 - y} $$&#xA;これは、$y = 1$ である確率が $\mu$ 、$y = 0$ である確率が $1 - \mu$ であることを意味する。 $\mu$ は確率だから、$0 \le \mu \le 1$ である必要がある。</description>
     </item>
-    
   </channel>
 </rss>

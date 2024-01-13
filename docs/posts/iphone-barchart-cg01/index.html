@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-cg01/">
@@ -63,8 +63,8 @@ class GraphView: UIView { override func awakeFromNib() { } let data: [(String, C
 <meta property="article:published_time" content="2019-12-21T20:10:36+09:00" />
 <meta property="article:modified_time" content="2019-12-22T15:09:44+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1)"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1)"/>
 <meta name="twitter:description" content="iPhoneアプリで棒グラフを描く方法として考えられるのは次の3通り。
 ライブラリを使う - Chartsというライブラリがある。おそらくこれが一般的な選択肢。 Viewを棒グラフに見立てる - UIStackViewをうまく使った例にこんなのがある。 CoreGraphicsを使って手で描画する - 厳密にはUIKit側でこれを扱いやすくしたものがあるみたいで、Drawingとしてまとめられている。 ここではCoreGraphicsの練習を兼ねて、3つ目の方法で棒グラフを書いてみる。
 目標 棒グラフを表示する 棒グラフの先端に値を表示する 今回用いるデータは(ラベル, 整数値)とする 整数値を棒グラフの高さとし、棒グラフの頂点にその数字を描く ラベルは棒グラフの下に描く 整数値が最も大きなものの色をオレンジ色にする 画面の大きさに関わらない図を作る 要するに以下のようなものを作る。

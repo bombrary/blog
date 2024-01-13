@@ -6,54 +6,28 @@
     <description>Recent content in Web on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 03 Jun 2021 23:29:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/web/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 03 Jun 2021 23:29:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/categories/web/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>PythonとFlask(&#43;α)で作るToDoリストAPI</title>
       <link>https://bombrary.github.io/blog/posts/todo-api-flask/</link>
       <pubDate>Thu, 03 Jun 2021 23:29:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/todo-api-flask/</guid>
-      <description>シンプルなToDoリストのWeb APIを作る。 今までWSGIの仕様のみ、Werkzeug の2通りで実装したが、今回はFlaskといくつかのライブラリを使う。使うのは以下の通り。
-Flask: WSGIアプリフレームワーク。 peewee: ORMライブラリ。 marshmallow: データの変換やvalidationをするためのライブラリ。 Flaskとは WSGIのWebアプリを作るためのフレームワーク。 フレームワークであるため、Flaskが用意した作法に従ってコードを書くことで比較的手軽にWebアプリが作成できる。 前回との比較でいうならば、例えばルーティングの仕組みをプログラマが書く必要はない。これはFlaskに備わっている。
-Djangoのようなフレームワークとは違って、持っている機能は少ない。必要に応じて外部ライブラリを組み合わせる。 例えば、Djangoではデフォルトでデータベースの仕組みが内蔵されているが、Flaskにはない。その代わりに、 データベースのライブラリとしてsqlite3やSQLAlchemy、peeweeなど、好きなものを用いれば良い。
-ToDoリストAPIの仕様 今回ToDoのデータは以下キーと値を持つJSONデータとする。
-key value id ID content ToDoの内容 created_at 作成日時 (ISO8601) updated_at 更新日時 (ISO8601) APIの仕様は以下の通り。
-URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データはSQLiteで管理する。
-雛形 todo_listディレクトリを作成。todo_list/__init__.pyを以下のようにする。
-from flask import Flask def create_app(): app = Flask(__name__) @app.route(&amp;#39;/&amp;#39;) def hello(): return &amp;#39;Hello, World&amp;#39; return app exportコマンドで環境変数を設定する。</description>
+      <description>シンプルなToDoリストのWeb APIを作る。 今までWSGIの仕様のみ、Werkzeug の2通りで実装したが、今回はFlaskといくつかのライブラリを使う。使うのは以下の通り。&#xA;Flask: WSGIアプリフレームワーク。 peewee: ORMライブラリ。 marshmallow: データの変換やvalidationをするためのライブラリ。 Flaskとは WSGIのWebアプリを作るためのフレームワーク。 フレームワークであるため、Flaskが用意した作法に従ってコードを書くことで比較的手軽にWebアプリが作成できる。 前回との比較でいうならば、例えばルーティングの仕組みをプログラマが書く必要はない。これはFlaskに備わっている。&#xA;Djangoのようなフレームワークとは違って、持っている機能は少ない。必要に応じて外部ライブラリを組み合わせる。 例えば、Djangoではデフォルトでデータベースの仕組みが内蔵されているが、Flaskにはない。その代わりに、 データベースのライブラリとしてsqlite3やSQLAlchemy、peeweeなど、好きなものを用いれば良い。&#xA;ToDoリストAPIの仕様 今回ToDoのデータは以下キーと値を持つJSONデータとする。&#xA;key value id ID content ToDoの内容 created_at 作成日時 (ISO8601) updated_at 更新日時 (ISO8601) APIの仕様は以下の通り。&#xA;URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データはSQLiteで管理する。&#xA;雛形 todo_listディレクトリを作成。todo_list/__init__.pyを以下のようにする。&#xA;from flask import Flask def create_app(): app = Flask(__name__) @app.route(&amp;#39;/&amp;#39;) def hello(): return &amp;#39;Hello, World&amp;#39; return app exportコマンドで環境変数を設定する。</description>
     </item>
-    
     <item>
       <title>PythonとWerkzeugで作るToDoリストAPI</title>
       <link>https://bombrary.github.io/blog/posts/todo-api-werkzeug/</link>
       <pubDate>Sun, 30 May 2021 11:49:40 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/todo-api-werkzeug/</guid>
-      <description>シンプルなToDoリストのWeb APIを作る。 前回はWSGIの仕様のみを参考にして作ったが、 今回はWerkzeugというライブラリを利用する。
-Werkzeugとは Werkzeugのドキュメントの &amp;ldquo;Werkzeug is a comprehensive WSGI web application library.&amp;ldquo;という文面にもある通り、 これはWSGIのWebアプリを作るためのライブラリである。 あくまでフレームワークではなく、ライブラリであることに注意する。 Webアプリを作るうえで、便利なクラスや関数が用意された「道具箱」のようなイメージを持つとよいかもしれない (そもそも&amp;quot;werkzeug&amp;quot;という単語はドイツ語で「道具」という意味)。 あくまで道具があるだけなので、どういう設計を行うかなどを考える余地がある。
-ToDoリストAPIの仕様 前回と同じだが、再掲する。
-簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、{ id: 0, &amp;quot;content&amp;quot;: &amp;quot;やること&amp;quot; }というJSON形式とする。
-APIの仕様は以下の通り。
-URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データは最終的にはSQLiteで管理する。
-雛形 app.pyを以下のようにする。
-from werkzeug.wrappers import Response def app(env, start_response): response = Response(&amp;#39;Hello, World&amp;#39;) return response(env, start_response) if __name__ == &amp;#39;__main__&amp;#39;: from werkzeug.</description>
+      <description>シンプルなToDoリストのWeb APIを作る。 前回はWSGIの仕様のみを参考にして作ったが、 今回はWerkzeugというライブラリを利用する。&#xA;Werkzeugとは Werkzeugのドキュメントの &amp;ldquo;Werkzeug is a comprehensive WSGI web application library.&amp;ldquo;という文面にもある通り、 これはWSGIのWebアプリを作るためのライブラリである。 あくまでフレームワークではなく、ライブラリであることに注意する。 Webアプリを作るうえで、便利なクラスや関数が用意された「道具箱」のようなイメージを持つとよいかもしれない (そもそも&amp;quot;werkzeug&amp;quot;という単語はドイツ語で「道具」という意味)。 あくまで道具があるだけなので、どういう設計を行うかなどを考える余地がある。&#xA;ToDoリストAPIの仕様 前回と同じだが、再掲する。&#xA;簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、{ id: 0, &amp;quot;content&amp;quot;: &amp;quot;やること&amp;quot; }というJSON形式とする。&#xA;APIの仕様は以下の通り。&#xA;URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データは最終的にはSQLiteで管理する。&#xA;雛形 app.pyを以下のようにする。&#xA;from werkzeug.wrappers import Response def app(env, start_response): response = Response(&amp;#39;Hello, World&amp;#39;) return response(env, start_response) if __name__ == &amp;#39;__main__&amp;#39;: from werkzeug.</description>
     </item>
-    
     <item>
       <title>PythonとWSGIで作るToDoリストAPI</title>
       <link>https://bombrary.github.io/blog/posts/todo-api-wsgi/</link>
       <pubDate>Sat, 29 May 2021 13:00:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/todo-api-wsgi/</guid>
-      <description>シンプルなToDoリストを作る。 今回は勉強のため、Webアプリケーションフレームワークは使わずに、 敢えてWSGIの仕様のみ参考にして書く．
-WSGIとは WSGIとは、WebサーバーとWebアプリとの間の標準的なインターフェース。 WSGIの仕様に沿ってWebアプリを作れば、 WSGI対応のどんなWebサーバーとも連携することができる。
-WSGIの仕様はPEP3333に書かれている．
-ToDoリストAPIの仕様 簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、{ id: 0, &amp;quot;content&amp;quot;: &amp;quot;やること&amp;quot; }というJSON形式とする。
-APIの仕様は以下の通り。
-URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。
-雛形 まずはサーバーを作る。この時点ではルーティング処理を書いていない。 どのようなリクエストをしてもHello, Worldをレスポンスとして返す。
-from wsgiref.simple_server import make_server def app(env, start_response): start_response(&amp;#39;200 OK&amp;#39;, [(&amp;#39;Content-type&amp;#39;, &amp;#39;text/plain; charset=utf-8&amp;#39;)]) return [b&amp;#39;Hello, World.&amp;#39;] if __name__ == &amp;#39;__main__&amp;#39;: httpd = make_server(&amp;#39;&amp;#39;, 5000, app) httpd.</description>
+      <description>シンプルなToDoリストを作る。 今回は勉強のため、Webアプリケーションフレームワークは使わずに、 敢えてWSGIの仕様のみ参考にして書く．&#xA;WSGIとは WSGIとは、WebサーバーとWebアプリとの間の標準的なインターフェース。 WSGIの仕様に沿ってWebアプリを作れば、 WSGI対応のどんなWebサーバーとも連携することができる。&#xA;WSGIの仕様はPEP3333に書かれている．&#xA;ToDoリストAPIの仕様 簡単のため、今回ToDoのデータはidと内容のみ持つデータとし、{ id: 0, &amp;quot;content&amp;quot;: &amp;quot;やること&amp;quot; }というJSON形式とする。&#xA;APIの仕様は以下の通り。&#xA;URL Method 説明 返却値 /todo/ GET 全てのToDoを取得。 ToDoのデータのリスト /todo/ POST ToDoを作成。 なし (LocationヘッダにそのToDoへのURLを乗せる) /todo/&amp;lt;todo_id&amp;gt; GET todo_idのidを持つToDoを取得。 ToDoのデータ /todo/&amp;lt;todo_id&amp;gt; PUT todo_idのidを持つToDoを変更。 なし /todo/&amp;lt;todo_id&amp;gt; DELETE todo_idのidを持つToDoを削除 なし データは最終的にはSQLiteで保存するが、最初は単純にlistで扱う。&#xA;雛形 まずはサーバーを作る。この時点ではルーティング処理を書いていない。 どのようなリクエストをしてもHello, Worldをレスポンスとして返す。&#xA;from wsgiref.simple_server import make_server def app(env, start_response): start_response(&amp;#39;200 OK&amp;#39;, [(&amp;#39;Content-type&amp;#39;, &amp;#39;text/plain; charset=utf-8&amp;#39;)]) return [b&amp;#39;Hello, World.&amp;#39;] if __name__ == &amp;#39;__main__&amp;#39;: httpd = make_server(&amp;#39;&amp;#39;, 5000, app) httpd.</description>
     </item>
-    
   </channel>
 </rss>

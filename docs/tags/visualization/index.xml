@@ -6,124 +6,56 @@
     <description>Recent content in Visualization on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 24 Dec 2021 21:12:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/visualization/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Dec 2021 21:12:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/visualization/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Web Audio API 備忘録</title>
       <link>https://bombrary.github.io/blog/posts/web-audio-api-note01/</link>
       <pubDate>Fri, 24 Dec 2021 21:12:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/web-audio-api-note01/</guid>
-      <description>Web Audio APIで色々遊んだメモ。
-サイン波を鳴らす HTMLファイルを作成。適当にindex.htmlとしておく。
-&amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;button id=&amp;#34;play_btn&amp;#34;&amp;gt;play&amp;lt;/button&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.jsは以下のようにしておく。
-const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); document.getElementById(&amp;#39;play_btn&amp;#39;) .addEventListener(&amp;#39;click&amp;#39;, function() { oscillatorNode.start(); }, false); これで、&amp;ldquo;play&amp;rdquo; ボタンを押すとサイン波が再生される(音量に注意)。
-説明 Web Audio APIの枠組みでは、色々な音やエフェクトをノードとして繋いでいく。最終的な出力を担うノードはAppContext.destinationである。
-まずAudioContextのインスタンスを作成する。このContextというのはプログラミングをやっていると色々なところで現れるが (Canvas要素に描画する際にもgetContextが出てくるし、WinAPIだとデバイスコンテキストハンドル、AndroidアプリのプログラミングでもContextがある)、自分は「Audioについて色々な情報を提供してくれるオブジェクト」くらいの理解をしている。
-const audioContext = new AudioContext(); 続いて、音源としてOscillatorNodeを作成し、繋いでやる。
-const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start()で実際に音源が再生される。今回はclickイベントが起こったときに再生されるようにしている。
-(補足) ページ読み込み時の再生はできないという仕様 Chrome/Safariの場合、以下のようにページを開いた瞬間に音がなるようなコードを書いたとしても、実際には鳴らない。
-const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start(); これは、「ボタンが押す」のような、ユーザーが明示的な操作をしない限り再生されない仕様となっているかららしい。 実際 Chrome の場合、上のコードを書くと以下の警告がDevalopper Toolで表示される。</description>
+      <description>Web Audio APIで色々遊んだメモ。&#xA;サイン波を鳴らす HTMLファイルを作成。適当にindex.htmlとしておく。&#xA;&amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;button id=&amp;#34;play_btn&amp;#34;&amp;gt;play&amp;lt;/button&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.jsは以下のようにしておく。&#xA;const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); document.getElementById(&amp;#39;play_btn&amp;#39;) .addEventListener(&amp;#39;click&amp;#39;, function() { oscillatorNode.start(); }, false); これで、&amp;ldquo;play&amp;rdquo; ボタンを押すとサイン波が再生される(音量に注意)。&#xA;説明 Web Audio APIの枠組みでは、色々な音やエフェクトをノードとして繋いでいく。最終的な出力を担うノードはAppContext.destinationである。&#xA;まずAudioContextのインスタンスを作成する。このContextというのはプログラミングをやっていると色々なところで現れるが (Canvas要素に描画する際にもgetContextが出てくるし、WinAPIだとデバイスコンテキストハンドル、AndroidアプリのプログラミングでもContextがある)、自分は「Audioについて色々な情報を提供してくれるオブジェクト」くらいの理解をしている。&#xA;const audioContext = new AudioContext(); 続いて、音源としてOscillatorNodeを作成し、繋いでやる。&#xA;const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start()で実際に音源が再生される。今回はclickイベントが起こったときに再生されるようにしている。&#xA;(補足) ページ読み込み時の再生はできないという仕様 Chrome/Safariの場合、以下のようにページを開いた瞬間に音がなるようなコードを書いたとしても、実際には鳴らない。&#xA;const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start(); これは、「ボタンが押す」のような、ユーザーが明示的な操作をしない限り再生されない仕様となっているかららしい。 実際 Chrome の場合、上のコードを書くと以下の警告がDevalopper Toolで表示される。</description>
     </item>
-    
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(Chartsの利用)</title>
       <link>https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/</link>
       <pubDate>Sun, 29 Dec 2019 22:37:26 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/</guid>
-      <description>今度は外部ライブラリChartsを利用して、棒グラフを作成してみる。
-目標 値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる 1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
-ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。 その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。
-Chartsのインストール まず、CocoaPodsがインストールされていることが前提。
-プロジェクトフォルダで以下のコマンドを実行。
-$ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。
-pod &amp;#39;Charts&amp;#39; プロジェクトフォルダで以下のコマンドを実行。
-$ pod install 以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。
-基本 import UIKit import Charts struct BarChartModel { let value: Int let name: String } class ViewController: UIViewController { let barItems = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] override func viewDidLoad() { super.</description>
+      <description>今度は外部ライブラリChartsを利用して、棒グラフを作成してみる。&#xA;目標 値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる 1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。&#xA;ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。 その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。&#xA;Chartsのインストール まず、CocoaPodsがインストールされていることが前提。&#xA;プロジェクトフォルダで以下のコマンドを実行。&#xA;$ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。&#xA;pod &amp;#39;Charts&amp;#39; プロジェクトフォルダで以下のコマンドを実行。&#xA;$ pod install 以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。&#xA;基本 import UIKit import Charts struct BarChartModel { let value: Int let name: String } class ViewController: UIViewController { let barItems = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] override func viewDidLoad() { super.</description>
     </item>
-    
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (2) アニメーションとタップ処理</title>
       <link>https://bombrary.github.io/blog/posts/iphone-barchart-view02/</link>
       <pubDate>Thu, 26 Dec 2019 10:00:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-view02/</guid>
-      <description>棒グラフをアニメーションさせたり、タップしたら詳細画面に遷移するようにしたい。
-(寄り道) StackViewのアニメーション 自分がいままでやったことがあるのは以下のような感じで、frameやlayer.positionをいじるパターン。
-UIView.animate(withDuration: 1, animations: { view.position.x += 100 view.frame.size.height += 20 }); ただし、これをAutoLayoutと混ぜて使おうとすると動かなかったり、動いたとしても変な挙動を起こす。そもそも、AutoLayoutは制約を設定して位置やサイズを決定する仕組みで、frameは位置やサイズを手動で決める仕組み。これが競合を起こすのは当たり前な気もする。
-StackViewはframeを設定しても何も反応しない。これは内部的にAutoLayoutっぽいことをやっているからなのかもしれない。例えば次のようにしてもStackViewの子要素は変更されない。
-subView.frame.size.height = 100 stackView.addArrangedSubview(subView) その代わり、次のようにすると、ちゃんと子要素の高さは100になる。
-subView.heightAnchor.constraint(equalToConstant: 100).isActive = true stackView.addArrangedSubview(subView) よって、StackViewでアニメーションするためには、AutoLayoutでのアニメーションの方法を知る必要がある。
-AutoLayoutでのアニメーション 例えば、「ボタンを押すと長方形が0から伸びる」アニメーションを実現したい。
-まずは次のように、高さ制約を0に設定しておく。ただし、それを何か変数に入れておく。
-var constraint: NSLayoutConstraint view.addSubview(view0) constraint = view0.heightAnchor.constraint(equalToConstant: 0) constraint.isActive = true アニメーションをしたいタイミングで、次のように書けば良い。
-UIView.animate(withDuration: 1, animations: { constraint.constant = 100 view.layoutIfNeeded() }) constraintにはconstantプロパティがあるので、そこで制約の定数を変更できる。layoutIfNeededは、アプリにレイアウト変更を直ちにさせるメソッド。
-画面遷移後、下から長方形が伸びてくる処理は次のように書ける。
-class ViewController: UIViewController { var constraint: NSLayoutConstraint! override func viewDidLoad() { super.viewDidLoad() let myView = UIView() myView.</description>
+      <description>棒グラフをアニメーションさせたり、タップしたら詳細画面に遷移するようにしたい。&#xA;(寄り道) StackViewのアニメーション 自分がいままでやったことがあるのは以下のような感じで、frameやlayer.positionをいじるパターン。&#xA;UIView.animate(withDuration: 1, animations: { view.position.x += 100 view.frame.size.height += 20 }); ただし、これをAutoLayoutと混ぜて使おうとすると動かなかったり、動いたとしても変な挙動を起こす。そもそも、AutoLayoutは制約を設定して位置やサイズを決定する仕組みで、frameは位置やサイズを手動で決める仕組み。これが競合を起こすのは当たり前な気もする。&#xA;StackViewはframeを設定しても何も反応しない。これは内部的にAutoLayoutっぽいことをやっているからなのかもしれない。例えば次のようにしてもStackViewの子要素は変更されない。&#xA;subView.frame.size.height = 100 stackView.addArrangedSubview(subView) その代わり、次のようにすると、ちゃんと子要素の高さは100になる。&#xA;subView.heightAnchor.constraint(equalToConstant: 100).isActive = true stackView.addArrangedSubview(subView) よって、StackViewでアニメーションするためには、AutoLayoutでのアニメーションの方法を知る必要がある。&#xA;AutoLayoutでのアニメーション 例えば、「ボタンを押すと長方形が0から伸びる」アニメーションを実現したい。&#xA;まずは次のように、高さ制約を0に設定しておく。ただし、それを何か変数に入れておく。&#xA;var constraint: NSLayoutConstraint view.addSubview(view0) constraint = view0.heightAnchor.constraint(equalToConstant: 0) constraint.isActive = true アニメーションをしたいタイミングで、次のように書けば良い。&#xA;UIView.animate(withDuration: 1, animations: { constraint.constant = 100 view.layoutIfNeeded() }) constraintにはconstantプロパティがあるので、そこで制約の定数を変更できる。layoutIfNeededは、アプリにレイアウト変更を直ちにさせるメソッド。&#xA;画面遷移後、下から長方形が伸びてくる処理は次のように書ける。&#xA;class ViewController: UIViewController { var constraint: NSLayoutConstraint! override func viewDidLoad() { super.viewDidLoad() let myView = UIView() myView.</description>
     </item>
-    
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIStackView) (1)</title>
       <link>https://bombrary.github.io/blog/posts/iphone-barchart-view01/</link>
       <pubDate>Tue, 24 Dec 2019 13:07:39 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-view01/</guid>
-      <description>前に頑張ってCoreGraphicsを使って棒グラフを描いたが、やはりViewを棒に見立てて扱った方が良さそうだ。考えられる利点は次の3つ。
-タップ時に何かアクションを起こせる。例えば、棒グラフをタップしたら、そのデータに関する詳細ページに飛ぶ、などの処理が実装できる。 アニメーションについてのコードを描きやすい。例えば棒グラフの高さを0から伸ばしていくアニメーションが実現できる。 StackViewで棒を管理すれば、棒のサイズや棒同士の間隔を自動で設定してくれる これはやるしかない。
-基本的にはこちらを参考にしながら進めていく。
-UIStackViewをコード上で使う基本 とりあえず使い方を確認する。
-Main.storyboard こんな感じにする。
-ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.layoutMargins.right = 20 for (color, percentage) in zip(colors, percentages) { addBar(bgColor: color, percentage: percentage) } } private func addBar(bgColor: UIColor, percentage: CGFloat ) { let view = UIView() let height = graphStackView.</description>
+      <description>前に頑張ってCoreGraphicsを使って棒グラフを描いたが、やはりViewを棒に見立てて扱った方が良さそうだ。考えられる利点は次の3つ。&#xA;タップ時に何かアクションを起こせる。例えば、棒グラフをタップしたら、そのデータに関する詳細ページに飛ぶ、などの処理が実装できる。 アニメーションについてのコードを描きやすい。例えば棒グラフの高さを0から伸ばしていくアニメーションが実現できる。 StackViewで棒を管理すれば、棒のサイズや棒同士の間隔を自動で設定してくれる これはやるしかない。&#xA;基本的にはこちらを参考にしながら進めていく。&#xA;UIStackViewをコード上で使う基本 とりあえず使い方を確認する。&#xA;Main.storyboard こんな感じにする。&#xA;ViewController.swift class ViewController: UIViewController { let colors: [UIColor] = [.systemRed, .systemBlue, .systemPink, .systemGreen, .systemIndigo] let percentages: [CGFloat] = [0.1, 0.2, 0.5, 0.3, 0.9] @IBOutlet weak var graphStackView: UIStackView! override func viewDidLoad() { super.viewDidLoad() // Do any additional setup after loading the view. graphStackView.distribution = .fillEqually graphStackView.alignment = .bottom graphStackView.spacing = 20 graphStackView.isLayoutMarginsRelativeArrangement = true graphStackView.layoutMargins.left = 20 graphStackView.layoutMargins.right = 20 for (color, percentage) in zip(colors, percentages) { addBar(bgColor: color, percentage: percentage) } } private func addBar(bgColor: UIColor, percentage: CGFloat ) { let view = UIView() let height = graphStackView.</description>
     </item>
-    
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (2)</title>
       <link>https://bombrary.github.io/blog/posts/iphone-barchart-cg02/</link>
       <pubDate>Sun, 22 Dec 2019 15:10:30 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-cg02/</guid>
-      <description>目標 前回の棒グラフを複数ページにする 今回は、1ページに最大5本の棒が並ぶ、とする。 ページは横スライドで切り替える プロジェクトは前回のものを引き継がず、新しく作る。
-用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。
-var dataSource = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。
-UScrollViewの配置 Main.storyboardにUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。
-その後、UIScrollViewのOutlet接続をViewController.swiftに対して行う。
-UIScrollVieの設定 「スクロールの対象となるコンテンツを中に入れる」だけで、スクロール可能なViewが作れる。ただし、思い通りの表示にするためには、UIScrollViewやコンテンツのサイズを設定しておく必要がある。
-複数ページを持つコンテンツを作りたいので、コンテンツ用Viewの中にページ用のViewが複数存在する状態になる。なのでページの位置やサイズもちゃんと設定する。
-ScrollViewのレイアウト こんな感じにする。
-なのでコードはこんな感じにする。
-class ViewController: UIViewController { @IBOutlet weak var scrollView: UIScrollView! let marginX: CGFloat = 80 let marginY: CGFloat = 40 override func viewDidLoad() { super.</description>
+      <description>目標 前回の棒グラフを複数ページにする 今回は、1ページに最大5本の棒が並ぶ、とする。 ページは横スライドで切り替える プロジェクトは前回のものを引き継がず、新しく作る。&#xA;用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。&#xA;var dataSource = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。&#xA;UScrollViewの配置 Main.storyboardにUIScrollViewを配置する。サイズ設定はコードで行うので、ここでは単に配置するだけ。&#xA;その後、UIScrollViewのOutlet接続をViewController.swiftに対して行う。&#xA;UIScrollVieの設定 「スクロールの対象となるコンテンツを中に入れる」だけで、スクロール可能なViewが作れる。ただし、思い通りの表示にするためには、UIScrollViewやコンテンツのサイズを設定しておく必要がある。&#xA;複数ページを持つコンテンツを作りたいので、コンテンツ用Viewの中にページ用のViewが複数存在する状態になる。なのでページの位置やサイズもちゃんと設定する。&#xA;ScrollViewのレイアウト こんな感じにする。&#xA;なのでコードはこんな感じにする。&#xA;class ViewController: UIViewController { @IBOutlet weak var scrollView: UIScrollView! let marginX: CGFloat = 80 let marginY: CGFloat = 40 override func viewDidLoad() { super.</description>
     </item>
-    
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (1)</title>
       <link>https://bombrary.github.io/blog/posts/iphone-barchart-cg01/</link>
       <pubDate>Sat, 21 Dec 2019 20:10:36 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-cg01/</guid>
-      <description>iPhoneアプリで棒グラフを描く方法として考えられるのは次の3通り。
-ライブラリを使う - Chartsというライブラリがある。おそらくこれが一般的な選択肢。 Viewを棒グラフに見立てる - UIStackViewをうまく使った例にこんなのがある。 CoreGraphicsを使って手で描画する - 厳密にはUIKit側でこれを扱いやすくしたものがあるみたいで、Drawingとしてまとめられている。 ここではCoreGraphicsの練習を兼ねて、3つ目の方法で棒グラフを書いてみる。
-目標 棒グラフを表示する 棒グラフの先端に値を表示する 今回用いるデータは(ラベル, 整数値)とする 整数値を棒グラフの高さとし、棒グラフの頂点にその数字を描く ラベルは棒グラフの下に描く 整数値が最も大きなものの色をオレンジ色にする 画面の大きさに関わらない図を作る 要するに以下のようなものを作る。
-細かいレイアウト 画面の大きさに応じて棒グラフのサイズを変更する必要があるため、レイアウトについてそれなりに決めておく。テキストについては適当なサイズに設定する。
-ビューの幅を$W$、barWidthを$w$、データの個数を$n$とする。するとpadXの個数は$n+1$である。このとから、$w$は次のように計算できる。
-$$ \begin{aligned} &amp;amp; wn + \frac{w}{2}(n+1) = W \\ \Leftrightarrow&amp;amp;\ w = \frac{2W}{3n + 1} \end{aligned} $$
-この計算結果をbarWidthとして利用する。
-準備 Main.storyboardを次のようにしておく。
-GraphViewのClassをGraphViewにする。新たにGraphView.swiftを作っておく。
-GraphView.swiftを作る 以下が雛形。
-class GraphView: UIView { override func awakeFromNib() { } let data: [(String, CGFloat)] = [(7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;)] override func draw(_ rect: CGRect) { } } Viewの枠線 layer.</description>
+      <description>iPhoneアプリで棒グラフを描く方法として考えられるのは次の3通り。&#xA;ライブラリを使う - Chartsというライブラリがある。おそらくこれが一般的な選択肢。 Viewを棒グラフに見立てる - UIStackViewをうまく使った例にこんなのがある。 CoreGraphicsを使って手で描画する - 厳密にはUIKit側でこれを扱いやすくしたものがあるみたいで、Drawingとしてまとめられている。 ここではCoreGraphicsの練習を兼ねて、3つ目の方法で棒グラフを書いてみる。&#xA;目標 棒グラフを表示する 棒グラフの先端に値を表示する 今回用いるデータは(ラベル, 整数値)とする 整数値を棒グラフの高さとし、棒グラフの頂点にその数字を描く ラベルは棒グラフの下に描く 整数値が最も大きなものの色をオレンジ色にする 画面の大きさに関わらない図を作る 要するに以下のようなものを作る。&#xA;細かいレイアウト 画面の大きさに応じて棒グラフのサイズを変更する必要があるため、レイアウトについてそれなりに決めておく。テキストについては適当なサイズに設定する。&#xA;ビューの幅を$W$、barWidthを$w$、データの個数を$n$とする。するとpadXの個数は$n+1$である。このとから、$w$は次のように計算できる。&#xA;$$ \begin{aligned} &amp;amp; wn + \frac{w}{2}(n+1) = W \\ \Leftrightarrow&amp;amp;\ w = \frac{2W}{3n + 1} \end{aligned} $$&#xA;この計算結果をbarWidthとして利用する。&#xA;準備 Main.storyboardを次のようにしておく。&#xA;GraphViewのClassをGraphViewにする。新たにGraphView.swiftを作っておく。&#xA;GraphView.swiftを作る 以下が雛形。&#xA;class GraphView: UIView { override func awakeFromNib() { } let data: [(String, CGFloat)] = [(7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;)] override func draw(_ rect: CGRect) { } } Viewの枠線 layer.</description>
     </item>
-    
     <item>
       <title>D3.js 01信号の可視化</title>
       <link>https://bombrary.github.io/blog/posts/d3js-01signal/</link>
       <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/d3js-01signal/</guid>
-      <description>信号に関する授業を聴いていたらふと思い立ったのでやってみた。
-コード index.html 個人的テンプレを書く。
-&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html lang=&amp;#34;ja&amp;#34;&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;title&amp;gt;0-1 Signal&amp;lt;/title&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;h1&amp;gt;0-1 Signale&amp;lt;/h1&amp;gt; &amp;lt;svg&amp;gt; &amp;lt;/svg&amp;gt; &amp;lt;script src=&amp;#34;https://d3js.org/d3.v5.min.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.js JavaScriptでflatMap使うのはこれが初めてかも。
-const format = (data, w) =&amp;gt; { const pairs = d3.pairs(data); const deltas = pairs.flatMap(e =&amp;gt; { let sig = e.toString() if (sig == &amp;#39;0,0&amp;#39;) { return [[1,0]]; } else if (sig == &amp;#39;0,1&amp;#39;) { return [[1,0],[0,-1]]; } else if (sig == &amp;#39;1,0&amp;#39;) { return [[1,0],[0,1]]; } else if (sig == &amp;#39;1,1&amp;#39;) { return [[1,0]]; } else { throw new Error(&amp;#39;invalid element.</description>
+      <description>信号に関する授業を聴いていたらふと思い立ったのでやってみた。&#xA;コード index.html 個人的テンプレを書く。&#xA;&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html lang=&amp;#34;ja&amp;#34;&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;title&amp;gt;0-1 Signal&amp;lt;/title&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;h1&amp;gt;0-1 Signale&amp;lt;/h1&amp;gt; &amp;lt;svg&amp;gt; &amp;lt;/svg&amp;gt; &amp;lt;script src=&amp;#34;https://d3js.org/d3.v5.min.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.js JavaScriptでflatMap使うのはこれが初めてかも。&#xA;const format = (data, w) =&amp;gt; { const pairs = d3.pairs(data); const deltas = pairs.flatMap(e =&amp;gt; { let sig = e.toString() if (sig == &amp;#39;0,0&amp;#39;) { return [[1,0]]; } else if (sig == &amp;#39;0,1&amp;#39;) { return [[1,0],[0,-1]]; } else if (sig == &amp;#39;1,0&amp;#39;) { return [[1,0],[0,1]]; } else if (sig == &amp;#39;1,1&amp;#39;) { return [[1,0]]; } else { throw new Error(&amp;#39;invalid element.</description>
     </item>
-    
   </channel>
 </rss>

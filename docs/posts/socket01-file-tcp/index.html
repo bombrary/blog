@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Socket通信の勉強(1) - ディスクリプタ/TCPによる通信 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/socket01-file-tcp/">
@@ -42,8 +42,8 @@ openでファイルを開く 開きたいファイルのパスと、読み書き
 <meta property="article:published_time" content="2019-11-24T17:08:19+09:00" />
 <meta property="article:modified_time" content="2021-03-03T22:28:04+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Socket通信の勉強(1) - ディスクリプタ/TCPによる通信"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Socket通信の勉強(1) - ディスクリプタ/TCPによる通信"/>
 <meta name="twitter:description" content="Socket通信を勉強する。
 前提 プログラムはMac(Mojave)で動かす。 ネットワークに関する知識はほんの少しある。 使うプログラミング言語はC&#43;&#43;だが、ここではbetter Cの意味でしか用いない。 (寄り道) ファイル入出力 Socket通信を学んでいると、ファイルディスクリプタが出てきたので、まずはそこから勉強する。
 関数定義についてはJM Projectから引用したものを用いる。これはLinuxマニュアルと同じらしいので、恐らくmanコマンドで出力されるものと同じである(ただし英語であるが)。

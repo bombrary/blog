@@ -6,106 +6,49 @@
     <description>Recent content in JavaScript on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 24 Dec 2021 21:12:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/javascript/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Dec 2021 21:12:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/categories/javascript/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Web Audio API 備忘録</title>
       <link>https://bombrary.github.io/blog/posts/web-audio-api-note01/</link>
       <pubDate>Fri, 24 Dec 2021 21:12:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/web-audio-api-note01/</guid>
-      <description>Web Audio APIで色々遊んだメモ。
-サイン波を鳴らす HTMLファイルを作成。適当にindex.htmlとしておく。
-&amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;button id=&amp;#34;play_btn&amp;#34;&amp;gt;play&amp;lt;/button&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.jsは以下のようにしておく。
-const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); document.getElementById(&amp;#39;play_btn&amp;#39;) .addEventListener(&amp;#39;click&amp;#39;, function() { oscillatorNode.start(); }, false); これで、&amp;ldquo;play&amp;rdquo; ボタンを押すとサイン波が再生される(音量に注意)。
-説明 Web Audio APIの枠組みでは、色々な音やエフェクトをノードとして繋いでいく。最終的な出力を担うノードはAppContext.destinationである。
-まずAudioContextのインスタンスを作成する。このContextというのはプログラミングをやっていると色々なところで現れるが (Canvas要素に描画する際にもgetContextが出てくるし、WinAPIだとデバイスコンテキストハンドル、AndroidアプリのプログラミングでもContextがある)、自分は「Audioについて色々な情報を提供してくれるオブジェクト」くらいの理解をしている。
-const audioContext = new AudioContext(); 続いて、音源としてOscillatorNodeを作成し、繋いでやる。
-const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start()で実際に音源が再生される。今回はclickイベントが起こったときに再生されるようにしている。
-(補足) ページ読み込み時の再生はできないという仕様 Chrome/Safariの場合、以下のようにページを開いた瞬間に音がなるようなコードを書いたとしても、実際には鳴らない。
-const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start(); これは、「ボタンが押す」のような、ユーザーが明示的な操作をしない限り再生されない仕様となっているかららしい。 実際 Chrome の場合、上のコードを書くと以下の警告がDevalopper Toolで表示される。</description>
+      <description>Web Audio APIで色々遊んだメモ。&#xA;サイン波を鳴らす HTMLファイルを作成。適当にindex.htmlとしておく。&#xA;&amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;button id=&amp;#34;play_btn&amp;#34;&amp;gt;play&amp;lt;/button&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.jsは以下のようにしておく。&#xA;const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); document.getElementById(&amp;#39;play_btn&amp;#39;) .addEventListener(&amp;#39;click&amp;#39;, function() { oscillatorNode.start(); }, false); これで、&amp;ldquo;play&amp;rdquo; ボタンを押すとサイン波が再生される(音量に注意)。&#xA;説明 Web Audio APIの枠組みでは、色々な音やエフェクトをノードとして繋いでいく。最終的な出力を担うノードはAppContext.destinationである。&#xA;まずAudioContextのインスタンスを作成する。このContextというのはプログラミングをやっていると色々なところで現れるが (Canvas要素に描画する際にもgetContextが出てくるし、WinAPIだとデバイスコンテキストハンドル、AndroidアプリのプログラミングでもContextがある)、自分は「Audioについて色々な情報を提供してくれるオブジェクト」くらいの理解をしている。&#xA;const audioContext = new AudioContext(); 続いて、音源としてOscillatorNodeを作成し、繋いでやる。&#xA;const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start()で実際に音源が再生される。今回はclickイベントが起こったときに再生されるようにしている。&#xA;(補足) ページ読み込み時の再生はできないという仕様 Chrome/Safariの場合、以下のようにページを開いた瞬間に音がなるようなコードを書いたとしても、実際には鳴らない。&#xA;const audioContext = new AudioContext(); const oscillatorNode = audioContext.createOscillator(); oscillatorNode.connect(audioContext.destination); oscillatorNode.start(); これは、「ボタンが押す」のような、ユーザーが明示的な操作をしない限り再生されない仕様となっているかららしい。 実際 Chrome の場合、上のコードを書くと以下の警告がDevalopper Toolで表示される。</description>
     </item>
-    
     <item>
       <title>webpackに入門する - p5.jsの開発環境作り</title>
       <link>https://bombrary.github.io/blog/posts/webpack-intro-p5/</link>
       <pubDate>Thu, 19 Mar 2020 09:44:48 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/webpack-intro-p5/</guid>
-      <description>webpackを利用してp5.jsの開発環境を作り、ボールが弾むプログラムを作成する。
-使用するパッケージのバージョン webpack@5.15.0 webpack-cli@4.3.1 webpack-dev-server@3.11.2 p5@1.2.0 動機 ふとしたきっかけで久々にp5.jsを触りたくなった。
-昔使っていたときは、p5.jsのファイルをダウンロードしてscriptタグに直接指定することで書いていた。しかし最近、Vue.jsのガイドを読んでいてwebpackの存在を知った。名前は知っていたのだが、具体的に何をするためのものなのかはよく分かっていなかったので調べた。
-webpackとは 以下、個人的に調べた限りの理解を書く。
-Conceptによれば、webpackとは&amp;quot;module bundler&amp;quot;の一種。bundleという意味から、「複数のモジュールを一つに束ねるツール」だと予想できる。JSのプログラムを、モジュールとして複数の単位に分割して開発する。それを一つのファイルにまとめ上げてくれるのがwebpack。
-例えばp5.jsで、ボールが弾むだけのプログラムを書こう、と思った場合、
-ボールを管理するモジュールをBall.jsに書く スケッチを管理するモジュールをsketch.jsに書く メインの処理をindex.jsに書く みたいにモジュールを分けられる。
-ただし、モジュールを扱うための機能であるimport/export文はES2015の仕様で標準採用され、多くのブラウザで実装されている。じゃあwebpackの他の強みは何かというと、おそらく「JS以外のファイルもまとめてくれる点」だと思う。例えばcssやsassのファイルもJSに埋め込むことができる。TypeScriptやJSXのファイルもwebpackでまとめられる。ただしwebpackの核の機能はあくまでJSのモジュールをまとめることなので、JS以外のファイルはloaderと呼ばれる変換器を通しておく必要がある。とはいえ、「このファイルはこのloaderに通してね」というのをあらかじめ設定ファイルに書いておけば、少ないコマンドで変換からbundleまでやってくれるので、便利である。
-今回はp5.jsの開発環境づくりのためにwebpackを用意するのだが、JSのモジュールしか扱うつもりはない。なのでwebpackの恩恵は少ないかもしれない。しかし練習として使ってみる。
-webpackの導入と動作確認 まず適当にプロジェクト用のディレクトリを作る。npmでプロジェクトを初期化する。
-$ mkdir p5-sandbox $ cd p5-sandbox $ npm init -y 以下、このプロジェクトのルートディレクトリを/で表す。
-webpack本体を入れる。webpackをコマンドラインから実行するためにはwebpack-cliが必要なので、それも入れる。個人で使う分にはどうでもよいと思うが、これらは開発のみに利用されるパッケージなので、--save-devをつけておく。
-$ npm install webpack webpack-cli --save-dev ディレクトリの作成 今回は次のようにする。
-ソースコードは/src/index.jsに書く。 bundle後のファイルは/public/js/bundle.jsとして出力されるようにする。 あらかじめディレクトリを作成しておく。
-$ mkdir src $ mkdir -p public/js index.jsの作成 /src/index.jsを作成。動作確認のため適当に書く。
-console.log(&amp;#34;Hello, World&amp;#34;); webpackの設定 /webpack.config.jsを作成する。
-const path = require(&amp;#39;path&amp;#39;); module.exports = { mode: &amp;#39;development&amp;#39;, entry: &amp;#39;./src/index.js&amp;#39;, output: { filename: &amp;#39;bundle.</description>
+      <description>webpackを利用してp5.jsの開発環境を作り、ボールが弾むプログラムを作成する。&#xA;使用するパッケージのバージョン webpack@5.15.0 webpack-cli@4.3.1 webpack-dev-server@3.11.2 p5@1.2.0 動機 ふとしたきっかけで久々にp5.jsを触りたくなった。&#xA;昔使っていたときは、p5.jsのファイルをダウンロードしてscriptタグに直接指定することで書いていた。しかし最近、Vue.jsのガイドを読んでいてwebpackの存在を知った。名前は知っていたのだが、具体的に何をするためのものなのかはよく分かっていなかったので調べた。&#xA;webpackとは 以下、個人的に調べた限りの理解を書く。&#xA;Conceptによれば、webpackとは&amp;quot;module bundler&amp;quot;の一種。bundleという意味から、「複数のモジュールを一つに束ねるツール」だと予想できる。JSのプログラムを、モジュールとして複数の単位に分割して開発する。それを一つのファイルにまとめ上げてくれるのがwebpack。&#xA;例えばp5.jsで、ボールが弾むだけのプログラムを書こう、と思った場合、&#xA;ボールを管理するモジュールをBall.jsに書く スケッチを管理するモジュールをsketch.jsに書く メインの処理をindex.jsに書く みたいにモジュールを分けられる。&#xA;ただし、モジュールを扱うための機能であるimport/export文はES2015の仕様で標準採用され、多くのブラウザで実装されている。じゃあwebpackの他の強みは何かというと、おそらく「JS以外のファイルもまとめてくれる点」だと思う。例えばcssやsassのファイルもJSに埋め込むことができる。TypeScriptやJSXのファイルもwebpackでまとめられる。ただしwebpackの核の機能はあくまでJSのモジュールをまとめることなので、JS以外のファイルはloaderと呼ばれる変換器を通しておく必要がある。とはいえ、「このファイルはこのloaderに通してね」というのをあらかじめ設定ファイルに書いておけば、少ないコマンドで変換からbundleまでやってくれるので、便利である。&#xA;今回はp5.jsの開発環境づくりのためにwebpackを用意するのだが、JSのモジュールしか扱うつもりはない。なのでwebpackの恩恵は少ないかもしれない。しかし練習として使ってみる。&#xA;webpackの導入と動作確認 まず適当にプロジェクト用のディレクトリを作る。npmでプロジェクトを初期化する。&#xA;$ mkdir p5-sandbox $ cd p5-sandbox $ npm init -y 以下、このプロジェクトのルートディレクトリを/で表す。&#xA;webpack本体を入れる。webpackをコマンドラインから実行するためにはwebpack-cliが必要なので、それも入れる。個人で使う分にはどうでもよいと思うが、これらは開発のみに利用されるパッケージなので、--save-devをつけておく。&#xA;$ npm install webpack webpack-cli --save-dev ディレクトリの作成 今回は次のようにする。&#xA;ソースコードは/src/index.jsに書く。 bundle後のファイルは/public/js/bundle.jsとして出力されるようにする。 あらかじめディレクトリを作成しておく。&#xA;$ mkdir src $ mkdir -p public/js index.jsの作成 /src/index.jsを作成。動作確認のため適当に書く。&#xA;console.log(&amp;#34;Hello, World&amp;#34;); webpackの設定 /webpack.config.jsを作成する。&#xA;const path = require(&amp;#39;path&amp;#39;); module.exports = { mode: &amp;#39;development&amp;#39;, entry: &amp;#39;./src/index.js&amp;#39;, output: { filename: &amp;#39;bundle.</description>
     </item>
-    
     <item>
       <title>Vue.js勉強メモ(1) - 簡易Todoリストの作成</title>
       <link>https://bombrary.github.io/blog/posts/viewjs01-todo/</link>
       <pubDate>Sun, 16 Feb 2020 18:52:20 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/viewjs01-todo/</guid>
-      <description>公式ガイドの、コンポーネントの詳細の手前まで読み終えたので、この時点でTodoリストっぽいものを作ってみる。データベースを用意しないため、厳密にはTodoリストではない。
-コンポーネントについてはまだ学んでいないため、これから書くコードにはまだ改善の余地があるだろう。
-準備 index.htmlを用意する。
-&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html lang=&amp;#34;ja&amp;#34;&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charet=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;script src=&amp;#34;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;h1&amp;gt;Todo List&amp;lt;/h1&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; 以下の部分でVue.jsを読み込んでいる。
-&amp;lt;script src=&amp;#34;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; script.jsを作成しておく。中身はまだ空。
-実装する機能 初めにも述べたが、データベースは用意しない。以下の簡単な機能だけ実装する。
-入力エリア Todoリスト表示エリア 各要素に削除ボタンをつける。 勉強を兼ねて、いくらか遠回りしながら作っていく。
-配列の要素をli要素として表示 index.htmlに追記する。
-&amp;lt;div id=&amp;#34;app&amp;#34;&amp;gt; &amp;lt;ul&amp;gt; &amp;lt;li v-for=&amp;#34;todo in todos&amp;#34;&amp;gt;{{ todo }}&amp;lt;/li&amp;gt; &amp;lt;/ul&amp;gt; &amp;lt;/div&amp;gt; Vue.jsが用意したテンプレート構文をHTMLに埋め込むことによって、データとDOMを結びつけることができる。v-という接頭辞がついた属性はディレクティブと呼ばれる。今回のv-forディレクティブは、その名の通りfor文を実現する。構文から分かると思うが、JSとかPythonで使われているfor-in文と同じ文法。
-式の埋め込みは{{ 式 }}で行う。ガイドではMustache(口髭)構文と呼んでいる。良いネーミングだなと思ったけど、{{ }}の書式をそう呼ぶのはわりと一般的みたい？
-さて、そうするとtodosというデータを用意する必要がありそうだが、これはscript.jsで行う。
-const app = new Vue({ el: &amp;#39;#app&amp;#39;, data: { todos: [&amp;#39;todo1&amp;#39;, &amp;#39;todo2&amp;#39;, &amp;#39;todo3&amp;#39;, &amp;#39;todo4&amp;#39;, &amp;#39;todo5&amp;#39;] } }) elプロパティに、データと結びつく要素を指定する。これはセレクタの書式。elとは恐らくelementの略。dataプロパティに、結びつけるデータを指定する。v-forで利用するために、todosプロパティは配列にする。
-こんな感じで、Vue.jsでは「データとDOMを結びつける」みたいなコーディングを行っていくみたい。この部分に関してはD3.jsと通ずるものがある。
-index.htmlを開くとこんな感じになる。todosの各要素がli要素の内部に埋め込まれていることが分かる。</description>
+      <description>公式ガイドの、コンポーネントの詳細の手前まで読み終えたので、この時点でTodoリストっぽいものを作ってみる。データベースを用意しないため、厳密にはTodoリストではない。&#xA;コンポーネントについてはまだ学んでいないため、これから書くコードにはまだ改善の余地があるだろう。&#xA;準備 index.htmlを用意する。&#xA;&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html lang=&amp;#34;ja&amp;#34;&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charet=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;script src=&amp;#34;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;h1&amp;gt;Todo List&amp;lt;/h1&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; 以下の部分でVue.jsを読み込んでいる。&#xA;&amp;lt;script src=&amp;#34;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; script.jsを作成しておく。中身はまだ空。&#xA;実装する機能 初めにも述べたが、データベースは用意しない。以下の簡単な機能だけ実装する。&#xA;入力エリア Todoリスト表示エリア 各要素に削除ボタンをつける。 勉強を兼ねて、いくらか遠回りしながら作っていく。&#xA;配列の要素をli要素として表示 index.htmlに追記する。&#xA;&amp;lt;div id=&amp;#34;app&amp;#34;&amp;gt; &amp;lt;ul&amp;gt; &amp;lt;li v-for=&amp;#34;todo in todos&amp;#34;&amp;gt;{{ todo }}&amp;lt;/li&amp;gt; &amp;lt;/ul&amp;gt; &amp;lt;/div&amp;gt; Vue.jsが用意したテンプレート構文をHTMLに埋め込むことによって、データとDOMを結びつけることができる。v-という接頭辞がついた属性はディレクティブと呼ばれる。今回のv-forディレクティブは、その名の通りfor文を実現する。構文から分かると思うが、JSとかPythonで使われているfor-in文と同じ文法。&#xA;式の埋め込みは{{ 式 }}で行う。ガイドではMustache(口髭)構文と呼んでいる。良いネーミングだなと思ったけど、{{ }}の書式をそう呼ぶのはわりと一般的みたい？&#xA;さて、そうするとtodosというデータを用意する必要がありそうだが、これはscript.jsで行う。&#xA;const app = new Vue({ el: &amp;#39;#app&amp;#39;, data: { todos: [&amp;#39;todo1&amp;#39;, &amp;#39;todo2&amp;#39;, &amp;#39;todo3&amp;#39;, &amp;#39;todo4&amp;#39;, &amp;#39;todo5&amp;#39;] } }) elプロパティに、データと結びつく要素を指定する。これはセレクタの書式。elとは恐らくelementの略。dataプロパティに、結びつけるデータを指定する。v-forで利用するために、todosプロパティは配列にする。&#xA;こんな感じで、Vue.jsでは「データとDOMを結びつける」みたいなコーディングを行っていくみたい。この部分に関してはD3.jsと通ずるものがある。&#xA;index.htmlを開くとこんな感じになる。todosの各要素がli要素の内部に埋め込まれていることが分かる。</description>
     </item>
-    
     <item>
       <title>JavaScript/Elm ビット演算のときにはまったこと</title>
       <link>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</link>
       <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</guid>
-      <description>結論 JavaScriptにおいて、&amp;gt;&amp;gt;&amp;gt;以外のビット演算は32ビット符号付き整数値として扱われる。
-→ 例えば&amp;amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。 JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい JavaScriptにおいて、x &amp;gt;&amp;gt;&amp;gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。 これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。 ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。 各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース) 検証コード $ elm init src/MyBitwise.elmを作成し、内容を以下のようにする。
-module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&amp;gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &amp;gt; 0 then (toBinaryString rem) ++ (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。
-$ elm repl &gt; import Bitwise &gt; import MyBitwise exposing (..) 232-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。</description>
+      <description>結論 JavaScriptにおいて、&amp;gt;&amp;gt;&amp;gt;以外のビット演算は32ビット符号付き整数値として扱われる。&#xA;→ 例えば&amp;amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。 JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい JavaScriptにおいて、x &amp;gt;&amp;gt;&amp;gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。 これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。 ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。 各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース) 検証コード $ elm init src/MyBitwise.elmを作成し、内容を以下のようにする。&#xA;module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&amp;gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &amp;gt; 0 then (toBinaryString rem) ++ (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。&#xA;$ elm repl &gt; import Bitwise &gt; import MyBitwise exposing (..) 232-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。</description>
     </item>
-    
     <item>
       <title>Elm/JavaScript ローカルサーバーで通信する際にハマったこと</title>
       <link>https://bombrary.github.io/blog/posts/elm-with-localserver/</link>
       <pubDate>Thu, 19 Dec 2019 09:50:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/elm-with-localserver/</guid>
-      <description>今回たまたまクライアント側でElmを使ったけど、これはElmに限ったことではない。
-結論 Client側での留意点 urlはlocalhost:[port]ではなくhttp://localhost:[port]と指定しなければならない。つまり、URLにはちゃんとスキーム名を指定する。 Server側での留意点 Access-Control-Allow-Originに関連するヘッダーをちゃんと設定する。 成功コード プログラムの内容 サーバーは{ &amp;quot;msg&amp;quot; : &amp;quot;Hello, World!&amp;quot; }という内容のJSONを送ってくるので、クライアントはその値を受け取って&amp;quot;Success: Hello, World!&amp;ldquo;を出力する。それだけ。
-Client: Elm module Main exposing (..) import Browser exposing (..) import Json.Decode exposing (..) import Http exposing (..) import Html exposing (..) import Html.Attributes exposing (..) main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type Model = Loading | Failed | Success String init : () -&amp;gt; (Model, Cmd Msg) init _ = ( Loading, getServer ) type Msg = GotData (Result Http.</description>
+      <description>今回たまたまクライアント側でElmを使ったけど、これはElmに限ったことではない。&#xA;結論 Client側での留意点 urlはlocalhost:[port]ではなくhttp://localhost:[port]と指定しなければならない。つまり、URLにはちゃんとスキーム名を指定する。 Server側での留意点 Access-Control-Allow-Originに関連するヘッダーをちゃんと設定する。 成功コード プログラムの内容 サーバーは{ &amp;quot;msg&amp;quot; : &amp;quot;Hello, World!&amp;quot; }という内容のJSONを送ってくるので、クライアントはその値を受け取って&amp;quot;Success: Hello, World!&amp;ldquo;を出力する。それだけ。&#xA;Client: Elm module Main exposing (..) import Browser exposing (..) import Json.Decode exposing (..) import Http exposing (..) import Html exposing (..) import Html.Attributes exposing (..) main = Browser.element { init = init , update = update , view = view , subscriptions = subscriptions } type Model = Loading | Failed | Success String init : () -&amp;gt; (Model, Cmd Msg) init _ = ( Loading, getServer ) type Msg = GotData (Result Http.</description>
     </item>
-    
     <item>
       <title>D3.js 01信号の可視化</title>
       <link>https://bombrary.github.io/blog/posts/d3js-01signal/</link>
       <pubDate>Tue, 17 Dec 2019 13:56:36 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/d3js-01signal/</guid>
-      <description>信号に関する授業を聴いていたらふと思い立ったのでやってみた。
-コード index.html 個人的テンプレを書く。
-&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html lang=&amp;#34;ja&amp;#34;&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;title&amp;gt;0-1 Signal&amp;lt;/title&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;h1&amp;gt;0-1 Signale&amp;lt;/h1&amp;gt; &amp;lt;svg&amp;gt; &amp;lt;/svg&amp;gt; &amp;lt;script src=&amp;#34;https://d3js.org/d3.v5.min.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.js JavaScriptでflatMap使うのはこれが初めてかも。
-const format = (data, w) =&amp;gt; { const pairs = d3.pairs(data); const deltas = pairs.flatMap(e =&amp;gt; { let sig = e.toString() if (sig == &amp;#39;0,0&amp;#39;) { return [[1,0]]; } else if (sig == &amp;#39;0,1&amp;#39;) { return [[1,0],[0,-1]]; } else if (sig == &amp;#39;1,0&amp;#39;) { return [[1,0],[0,1]]; } else if (sig == &amp;#39;1,1&amp;#39;) { return [[1,0]]; } else { throw new Error(&amp;#39;invalid element.</description>
+      <description>信号に関する授業を聴いていたらふと思い立ったのでやってみた。&#xA;コード index.html 個人的テンプレを書く。&#xA;&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html lang=&amp;#34;ja&amp;#34;&amp;gt; &amp;lt;head&amp;gt; &amp;lt;meta charset=&amp;#34;utf-8&amp;#34;&amp;gt; &amp;lt;title&amp;gt;0-1 Signal&amp;lt;/title&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;h1&amp;gt;0-1 Signale&amp;lt;/h1&amp;gt; &amp;lt;svg&amp;gt; &amp;lt;/svg&amp;gt; &amp;lt;script src=&amp;#34;https://d3js.org/d3.v5.min.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;script src=&amp;#34;script.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; script.js JavaScriptでflatMap使うのはこれが初めてかも。&#xA;const format = (data, w) =&amp;gt; { const pairs = d3.pairs(data); const deltas = pairs.flatMap(e =&amp;gt; { let sig = e.toString() if (sig == &amp;#39;0,0&amp;#39;) { return [[1,0]]; } else if (sig == &amp;#39;0,1&amp;#39;) { return [[1,0],[0,-1]]; } else if (sig == &amp;#39;1,0&amp;#39;) { return [[1,0],[0,1]]; } else if (sig == &amp;#39;1,1&amp;#39;) { return [[1,0]]; } else { throw new Error(&amp;#39;invalid element.</description>
     </item>
-    
   </channel>
 </rss>

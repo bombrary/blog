@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Purescriptメモ - 配列のシャッフルを様々な方法で実装する | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/purescript-shuffle/">
@@ -37,8 +37,8 @@ type ExchangeIndex = { i :: Int , j :: Int } exchangeIndicies :: Int -&gt; Effec
 <meta property="article:published_time" content="2021-01-04T13:29:19+09:00" />
 <meta property="article:modified_time" content="2021-01-05T16:53:00+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Purescriptメモ - 配列のシャッフルを様々な方法で実装する"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Purescriptメモ - 配列のシャッフルを様々な方法で実装する"/>
 <meta name="twitter:description" content="PureScriptで配列のシャッフルをしたい。型はこんな感じ。乱数は副作用を伴うため、返り値の型はEffectで包まれる。
 shuffle :: forall a. Array a -&gt; Effect (Array a) アルゴリズムはFisher-Yates ShuffleのModern Algorithmの項の2つ目を利用する。これをさまざまな方法で作成したところ、Functor, Applicative, Monadなどに関連する事項だったり、STモナドの使い方、FFIの使い方だったりが学べたので、備忘のために書く。
 準備 適当なディレクトリでプロジェクトを作成する。今回使うパッケージをインストールする。

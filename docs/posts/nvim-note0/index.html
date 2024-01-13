@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>neovimのプラグインがうまく動かなかったので原因を探した話 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/nvim-note0/">
@@ -46,8 +46,8 @@ version: &#39;3&#39; services: nvim: build: . volumes: - .config:/root/.config e
 <meta property="article:published_time" content="2021-10-01T09:19:20+09:00" />
 <meta property="article:modified_time" content="2021-12-15T19:28:56+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="neovimのプラグインがうまく動かなかったので原因を探した話"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="neovimのプラグインがうまく動かなかったので原因を探した話"/>
 <meta name="twitter:description" content="(2021/12/25追記) この記事で話題にした問題は最新のddc-nvim-lspで修正されている。こちらのissue及びこちらのcommitを参照。もっとも、この記事を書いてから大分経ったため、ddc_nvim_lsp.luaのソースコードも今では大分変わっている。
 以下の文章のまとめ バージョン違いには注意する
 ddc-nvim-lspは2021/10/1時点では、neovim 0.5.0を想定して作られているプラグインである。しかし自分はneovim 0.5.1を使ってしまっていた。neovim 0.5.1からlsp handlerの引数に破壊的変更があったため、LSPの補完が効かなかった。
@@ -175,40 +175,40 @@ version: &#39;3&#39; services: nvim: build: . volumes: - .config:/root/.config e
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;bash&#39;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">working_dir</span><span class="p">:</span><span class="w"> </span><span class="l">/root</span><span class="w">
 </span></span></span></code></pre></div><p><code>.config/nvim/</code>の中に<code>init.vim</code>、<code>dein.toml'、'dein_lazy.toml</code>を作成。<code>init.vim</code>は以下の通り。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="c">&#34;dein Scripts-----------------------------</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">if</span> &amp;<span class="nx">compatible</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="nx">set</span> <span class="nx">nocompatible</span>               <span class="c">&#34; Be iMproved</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">endif</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
-</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nx">set</span> <span class="nx">runtimepath</span><span class="p">+=</span><span class="sr">/root/</span>.<span class="nx">cache</span><span class="sr">/dein/</span><span class="nx">repos</span><span class="sr">/github.com/</span><span class="nx">Shougo</span>/<span class="nx">dein</span>.<span class="nx">vim</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
-</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">begin</span><span class="p">(</span><span class="s1">&#39;/root/.cache/dein&#39;</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
-</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Let dein manage dein</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">&#34; Required:</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">add</span><span class="p">(</span><span class="s1">&#39;/root/.cache/dein/repos/github.com/Shougo/dein.vim&#39;</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">let</span> <span class="nx">s</span>:<span class="nx">toml</span> <span class="p">=</span> <span class="s1">&#39;~/.config/nvim/dein.toml&#39;</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">let</span> <span class="nx">s</span>:<span class="nx">lazy_toml</span> <span class="p">=</span> <span class="s1">&#39;~/.config/nvim/dein_lazy.toml&#39;</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">load_toml</span><span class="p">(</span><span class="nx">s</span>:<span class="nx">toml</span><span class="p">,</span> {<span class="s1">&#39;lazy&#39;</span>: <span class="m">0</span>}<span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">load_toml</span><span class="p">(</span><span class="nx">s</span>:<span class="nx">lazy_toml</span><span class="p">,</span> {<span class="s1">&#39;lazy&#39;</span>: <span class="m">1</span>}<span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
-</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">end</span><span class="p">()</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
-</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nx">filetype</span> <span class="nx">plugin</span> <span class="nx">indent</span> <span class="nx">on</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nx">syntax</span> <span class="nx">enable</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
-</span></span></span><span class="line"><span class="cl"><span class="c">&#34; If you want to install not installed plugins on startup.</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">if</span> <span class="nx">dein</span>#<span class="nx">check_install</span><span class="p">()</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span>  <span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">install</span><span class="p">()</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">endif</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">
-</span></span></span><span class="line"><span class="cl"><span class="c">&#34;End dein Scripts-------------------------</span><span class="err">
-</span></span></span></code></pre></div><p><code>dein.toml</code>、<code>dein_lazy.toml</code>については長くなるため省略するが、必要なプラグインを導入する。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="c">&#34;dein Scripts-----------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> &amp;<span class="nx">compatible</span>
+</span></span><span class="line"><span class="cl">  <span class="k">set</span> <span class="nx">nocompatible</span>               <span class="c">&#34; Be iMproved</span>
+</span></span><span class="line"><span class="cl"><span class="k">endif</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span>
+</span></span><span class="line"><span class="cl"><span class="k">set</span> <span class="nx">runtimepath</span><span class="p">+=</span><span class="sr">/root/</span>.<span class="nx">cache</span><span class="sr">/dein/</span><span class="nx">repos</span><span class="sr">/github.com/</span><span class="nx">Shougo</span>/<span class="nx">dein</span>.<span class="nx">vim</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span>
+</span></span><span class="line"><span class="cl"><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">begin</span><span class="p">(</span><span class="s1">&#39;/root/.cache/dein&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Let dein manage dein</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span>
+</span></span><span class="line"><span class="cl"><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">add</span><span class="p">(</span><span class="s1">&#39;/root/.cache/dein/repos/github.com/Shougo/dein.vim&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">s</span>:<span class="nx">toml</span> <span class="p">=</span> <span class="s1">&#39;~/.config/nvim/dein.toml&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">s</span>:<span class="nx">lazy_toml</span> <span class="p">=</span> <span class="s1">&#39;~/.config/nvim/dein_lazy.toml&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">load_toml</span><span class="p">(</span><span class="nx">s</span>:<span class="nx">toml</span><span class="p">,</span> {<span class="s1">&#39;lazy&#39;</span>: <span class="m">0</span>}<span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">load_toml</span><span class="p">(</span><span class="nx">s</span>:<span class="nx">lazy_toml</span><span class="p">,</span> {<span class="s1">&#39;lazy&#39;</span>: <span class="m">1</span>}<span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span>
+</span></span><span class="line"><span class="cl"><span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">end</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; Required:</span>
+</span></span><span class="line"><span class="cl"><span class="k">filetype</span> <span class="nx">plugin</span> <span class="nx">indent</span> <span class="nx">on</span>
+</span></span><span class="line"><span class="cl"><span class="k">syntax</span> <span class="nx">enable</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; If you want to install not installed plugins on startup.</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">dein</span>#<span class="nx">check_install</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">call</span> <span class="nx">dein</span>#<span class="nx">install</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">endif</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34;End dein Scripts-------------------------</span>
+</span></span></code></pre></div><p><code>dein.toml</code>、<code>dein_lazy.toml</code>については長くなるため省略するが、必要なプラグインを導入する。</p>
 <p>この時点で<code>docker-compose build</code>をすればコンテナがビルドされ、その後<code>docker-compose run nvim</code>でコンテナを実行する。</p>
 <h3 id="コンテナ内での作業">コンテナ内での作業</h3>
 <p>Language Serverであるpyrightを導入する。pyrightの導入に当たって<code>python3</code>、<code>npm</code>、<code>node</code>が必要。aptコマンドだと古いバージョンしか入らないようだったので、

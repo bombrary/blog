@@ -6,23 +6,14 @@
     <description>Recent content in Charts on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 29 Dec 2019 22:37:26 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/charts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 29 Dec 2019 22:37:26 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/charts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>iPhoneアプリ開発メモ - 棒グラフの作成(Chartsの利用)</title>
       <link>https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/</link>
       <pubDate>Sun, 29 Dec 2019 22:37:26 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/</guid>
-      <description>今度は外部ライブラリChartsを利用して、棒グラフを作成してみる。
-目標 値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる 1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
-ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。 その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。
-Chartsのインストール まず、CocoaPodsがインストールされていることが前提。
-プロジェクトフォルダで以下のコマンドを実行。
-$ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。
-pod &amp;#39;Charts&amp;#39; プロジェクトフォルダで以下のコマンドを実行。
-$ pod install 以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。
-基本 import UIKit import Charts struct BarChartModel { let value: Int let name: String } class ViewController: UIViewController { let barItems = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] override func viewDidLoad() { super.</description>
+      <description>今度は外部ライブラリChartsを利用して、棒グラフを作成してみる。&#xA;目標 値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる 1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。&#xA;ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。 その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。&#xA;Chartsのインストール まず、CocoaPodsがインストールされていることが前提。&#xA;プロジェクトフォルダで以下のコマンドを実行。&#xA;$ pod init podfileが作成されるので、それを編集する。use_frameworks!の下に以下の記述を追加。&#xA;pod &amp;#39;Charts&amp;#39; プロジェクトフォルダで以下のコマンドを実行。&#xA;$ pod install 以降、プロジェクトはプロジェクト名.xcodeprojではなくプロジェクト名.xcworkspaceから開く。&#xA;基本 import UIKit import Charts struct BarChartModel { let value: Int let name: String } class ViewController: UIViewController { let barItems = [ (7, &amp;#34;太郎&amp;#34;), (1, &amp;#34;次郎&amp;#34;), (2, &amp;#34;三郎&amp;#34;), (6, &amp;#34;四郎&amp;#34;), (3, &amp;#34;五郎&amp;#34;), (9, &amp;#34;六郎&amp;#34;), (2, &amp;#34;七郎&amp;#34;), (3, &amp;#34;八郎&amp;#34;), (1, &amp;#34;九郎&amp;#34;), (5, &amp;#34;十郎&amp;#34;), (1, &amp;#34;十一郎&amp;#34;), (1, &amp;#34;十二郎&amp;#34;), (6, &amp;#34;十三郎&amp;#34;) ] override func viewDidLoad() { super.</description>
     </item>
-    
   </channel>
 </rss>

@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(Chartsの利用) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-ioscharts/">
@@ -39,8 +39,8 @@ $ pod install 以降、プロジェクトはプロジェクト名.xcodeprojで�
 <meta property="article:published_time" content="2019-12-29T22:37:26+09:00" />
 <meta property="article:modified_time" content="2019-12-29T22:42:21+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(Chartsの利用)"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(Chartsの利用)"/>
 <meta name="twitter:description" content="今度は外部ライブラリChartsを利用して、棒グラフを作成してみる。
 目標 値が最大のデータは色をオレンジにする アニメーションがある 棒グラフの上に値を表示する ページ切り替えができる棒グラフを作る タップしたらイベントを発生させる 1〜3、5は機能としてある。4だけ頑張って作る。思い通りのレイアウトにするためにはプロパティとかドキュメントとかを漁る必要があるが、どこにどのプロパティがあるのかは大体予想できる。
 ChartDataSet.colorsで各棒の色を変更できる。 BarChartView.animate(yAxisDuration:)を利用。 BarChartView.drawValueAboveBarEnabled = trueとする。表示形式を変更するためにはChartDataSet.valueFormatterにフォーマット用のオブジェクトを指定する。 ScrollViewの中ににBarChartViewを複数配置。 ChartViewDelegateを利用。 その他デフォルトの設定だと表示する情報量が多すぎるので、いくつかのプロパティをいじる。

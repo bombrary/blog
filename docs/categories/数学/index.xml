@@ -6,39 +6,21 @@
     <description>Recent content in 数学 on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 28 May 2020 10:50:13 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 May 2020 10:50:13 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/categories/%E6%95%B0%E5%AD%A6/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Eular法とRunge-Kutta法をPythonで実装する</title>
       <link>https://bombrary.github.io/blog/posts/eular_runge-kutta/</link>
       <pubDate>Thu, 28 May 2020 10:50:13 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/eular_runge-kutta/</guid>
-      <description>備忘のために。数値解析関連の話はほとんど学んだことがないため、何か間違いがあるかも。
-Eular法 以下、例に出そうとしている微分方程式が運動方程式なので、文字の使い方を力学っぽくしている(位置、速度、時間を $x, v, t$ みたいな気持ちで書いている)。
-導出(1階) まず次の常微分方程式がある。
-\[ \frac{dx}{dt} = f(t, x) \]
-上の式を以下のように近似する。$h$を十分小さくすれば、微分の定義より上の式に近づく。
-\[ \begin{aligned} \frac{x(t + h) - x(t)}{h} \simeq f(t, x) \\ \Rightarrow x(t + h) \simeq x(t) + f(t, x)h \end{aligned} \]
-これが、$x(t)$の更新式となっている。つまり、ある時刻$t_0$における値$x_0 = x(t_0)$を決めておけば、
-\[ \begin{aligned} &amp;amp; t_k := t_{k-1} + h\\ \end{aligned} \]
-とおいて、
-\[ \begin{aligned} &amp;amp; x(t_1) := x(t_0) + f(t_0, x_0)h \\ &amp;amp; x(t_2) := x(t_1) + f(t_1, x_1)h \\ &amp;amp; x(t_3) := x(t_2) + f(t_2, x_2)h \\ &amp;amp; &amp;hellip; \end{aligned} \]</description>
+      <description>備忘のために。数値解析関連の話はほとんど学んだことがないため、何か間違いがあるかも。&#xA;Eular法 以下、例に出そうとしている微分方程式が運動方程式なので、文字の使い方を力学っぽくしている(位置、速度、時間を $x, v, t$ みたいな気持ちで書いている)。&#xA;導出(1階) まず次の常微分方程式がある。&#xA;\[ \frac{dx}{dt} = f(t, x) \]&#xA;上の式を以下のように近似する。$h$を十分小さくすれば、微分の定義より上の式に近づく。&#xA;\[ \begin{aligned} \frac{x(t + h) - x(t)}{h} \simeq f(t, x) \\ \Rightarrow x(t + h) \simeq x(t) + f(t, x)h \end{aligned} \]&#xA;これが、$x(t)$の更新式となっている。つまり、ある時刻$t_0$における値$x_0 = x(t_0)$を決めておけば、&#xA;\[ \begin{aligned} &amp;amp; t_k := t_{k-1} + h\\ \end{aligned} \]&#xA;とおいて、&#xA;\[ \begin{aligned} &amp;amp; x(t_1) := x(t_0) + f(t_0, x_0)h \\ &amp;amp; x(t_2) := x(t_1) + f(t_1, x_1)h \\ &amp;amp; x(t_3) := x(t_2) + f(t_2, x_2)h \\ &amp;amp; &amp;hellip; \end{aligned} \]</description>
     </item>
-    
     <item>
       <title>置換(Permutaion)の勉強メモ(1)</title>
       <link>https://bombrary.github.io/blog/posts/permutation/</link>
       <pubDate>Tue, 12 Nov 2019 10:07:09 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/permutation/</guid>
-      <description>置換について、線形代数の教科書に出てきたけど、授業ではあまり触れられなかったので自分で勉強してみる。以下はそのメモ。
-置換の定義 定義(置換) $X_n$は$n$個の元を持つ集合とする。このとき、全単射写像 $\sigma: X_n \rightarrow X_n$ を$X_n$上の置換(Permutation)と呼ぶ。 言い換えると、$X_n$を適当に並べたとき、置換 $\sigma$ とはそれを並び替える方法を表したものである。
-置換と聞くとReplacementがまず思い浮かぶけど、ここではPermutationなのね。
-例 $X_3 = {1,2,3}$ とする。このとき、 $X_n$ の元を並べて $(1,2,3)$ としよう。このとき、 $\sigma(1)=2,\sigma(2)=3,\sigma(3)=1$ とすれば、写像 $\sigma$ は $X_3$ 上の置換となる。このとき、 $(1,2,3)$ という列が $\sigma$ によって $(2,3,1)$ に並び替えられたように見える。 $X_n$の元はなんでも良いが、以後説明のため$X_n = \lbrace 1,2,\ldots,n \rbrace$とする。
-置換は以下のように表示することがある：$\sigma(i) = p_i\ (i=1,\ldots,n)$について、
-$$ \sigma = \begin{pmatrix} 1 &amp;amp; 2 &amp;amp; \ldots &amp;amp; n \\ p_1 &amp;amp; p_2 &amp;amp; \ldots &amp;amp; p_n \end{pmatrix} $$
-先ほど置換とは $X_n$ を適当に並べたとき、置換 $\sigma$ とはそれを並び替えたもの、と表現した。実際、$\sigma$はただの写像なので、並び替えというより対応関係だけが大事である。上の表示方法はあくまで「上の段の元と下の段の元の対応関係」にだけ着目している。従って、上の段が$1,2,\ldots n$という並びになるとは限らない。</description>
+      <description>置換について、線形代数の教科書に出てきたけど、授業ではあまり触れられなかったので自分で勉強してみる。以下はそのメモ。&#xA;置換の定義 定義(置換) $X_n$は$n$個の元を持つ集合とする。このとき、全単射写像 $\sigma: X_n \rightarrow X_n$ を$X_n$上の置換(Permutation)と呼ぶ。 言い換えると、$X_n$を適当に並べたとき、置換 $\sigma$ とはそれを並び替える方法を表したものである。&#xA;置換と聞くとReplacementがまず思い浮かぶけど、ここではPermutationなのね。&#xA;例 $X_3 = {1,2,3}$ とする。このとき、 $X_n$ の元を並べて $(1,2,3)$ としよう。このとき、 $\sigma(1)=2,\sigma(2)=3,\sigma(3)=1$ とすれば、写像 $\sigma$ は $X_3$ 上の置換となる。このとき、 $(1,2,3)$ という列が $\sigma$ によって $(2,3,1)$ に並び替えられたように見える。 $X_n$の元はなんでも良いが、以後説明のため$X_n = \lbrace 1,2,\ldots,n \rbrace$とする。&#xA;置換は以下のように表示することがある：$\sigma(i) = p_i\ (i=1,\ldots,n)$について、&#xA;$$ \sigma = \begin{pmatrix} 1 &amp;amp; 2 &amp;amp; \ldots &amp;amp; n \\ p_1 &amp;amp; p_2 &amp;amp; \ldots &amp;amp; p_n \end{pmatrix} $$&#xA;先ほど置換とは $X_n$ を適当に並べたとき、置換 $\sigma$ とはそれを並び替えたもの、と表現した。実際、$\sigma$はただの写像なので、並び替えというより対応関係だけが大事である。上の表示方法はあくまで「上の段の元と下の段の元の対応関係」にだけ着目している。従って、上の段が$1,2,\ldots n$という並びになるとは限らない。</description>
     </item>
-    
   </channel>
 </rss>

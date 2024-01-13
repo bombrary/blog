@@ -6,18 +6,14 @@
     <description>Recent content in ビット演算 on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 31 Dec 2019 09:34:25 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/%E3%83%93%E3%83%83%E3%83%88%E6%BC%94%E7%AE%97/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 31 Dec 2019 09:34:25 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/%E3%83%93%E3%83%83%E3%83%88%E6%BC%94%E7%AE%97/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>JavaScript/Elm ビット演算のときにはまったこと</title>
       <link>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</link>
       <pubDate>Tue, 31 Dec 2019 09:34:25 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/js-elm-bitwise-caution/</guid>
-      <description>結論 JavaScriptにおいて、&amp;gt;&amp;gt;&amp;gt;以外のビット演算は32ビット符号付き整数値として扱われる。
-→ 例えば&amp;amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。 JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい JavaScriptにおいて、x &amp;gt;&amp;gt;&amp;gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。 これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。 ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。 各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース) 検証コード $ elm init src/MyBitwise.elmを作成し、内容を以下のようにする。
-module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&amp;gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &amp;gt; 0 then (toBinaryString rem) ++ (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。
-$ elm repl &gt; import Bitwise &gt; import MyBitwise exposing (..) 232-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。</description>
+      <description>結論 JavaScriptにおいて、&amp;gt;&amp;gt;&amp;gt;以外のビット演算は32ビット符号付き整数値として扱われる。&#xA;→ 例えば&amp;amp;|^~の計算前に、オペランドに型変換が起こる(ソース)。 JSにおいて数字はNumberという型しかないが、ビット演算のときだけ32ビット整数値に変換されるっぽい JavaScriptにおいて、x &amp;gt;&amp;gt;&amp;gt; 0を使うと符号なし整数になる。 負数を2で割り続けても、コンピュータにおける2進表現にはならない。 これはすごく当たり前だった コンピュータにおける2進数表現にしたいなら，論理シフトを使うこと。 ElmはJavaScriptに変換されるので、上の事実はすべてElmでも当てはまる。 各種ビット演算は、JSの演算をそのまま使っているっぽい(ソース) 検証コード $ elm init src/MyBitwise.elmを作成し、内容を以下のようにする。&#xA;module MyBitwise exposing (..) import Bitwise toBinaryString : Int -&amp;gt; String toBinaryString x = let bit = Bitwise.and x 1 rem = Bitwise.shiftRightZfBy 1 x in if rem &amp;gt; 0 then (toBinaryString rem) ++ (String.fromInt bit) else String.fromInt bit elm replを起動し、試す。まず必要なモジュールをimportする。&#xA;$ elm repl &gt; import Bitwise &gt; import MyBitwise exposing (..) 232-1 = 4294967295を2進表示すると、1が32個並んだ数になる。32ビット整数の2の補数表現では、-1と4294967295は同じ表現方法になる。</description>
     </item>
-    
   </channel>
 </rss>

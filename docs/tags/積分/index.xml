@@ -6,26 +6,14 @@
     <description>Recent content in 積分 on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 28 Dec 2021 08:45:00 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/%E7%A9%8D%E5%88%86/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Dec 2021 08:45:00 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/%E7%A9%8D%E5%88%86/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>モンテカルロ法による積分</title>
       <link>https://bombrary.github.io/blog/posts/monte-carlo-integral/</link>
       <pubDate>Tue, 28 Dec 2021 08:45:00 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/monte-carlo-integral/</guid>
-      <description>今年の7月くらいに書き始め、存在をすっかり忘れていた記事をUP。
-モンテカルロ法でどうやって積分計算をするのか、重点サンプリングとはどのようなものなのかついて勉強したので、そのメモ。
-一般論 $$ \begin{aligned} \int_{\Omega_0} f(x) dx &amp;amp;= \int_{\Omega_0} \frac{f(x)}{p(x)}p(x)dx\\ &amp;amp;= \mathbb{E}\left[\frac{f(x)}{p(x)}\right] \end{aligned} $$
-ここで、$p$ は確率密度関数。上の $\mathbb{E}$ が期待値であるためには、
-$$ \int_{\Omega_0} p(x) dx = 1 $$
-である必要がある。
-大数の法則より、確率分布 $p$ に従う 標本 $x_n\ (n = 1, 2, \ldots, N)$ に対して、$N$ が十分大きければ、
-$$ \mathbb{E}\left[\frac{f(x)}{p(x)}\right] \simeq \frac{1}{N} \sum_{n=1}^{N} \frac{f(x_n)}{p(x_n)} $$
-となるから、結局、
-$$ \begin{aligned} \int_{\Omega} f(x) dx \simeq \frac{1}{N} \sum_{n=1}^{N} \frac{f(x_n)}{p(x_n)} \end{aligned} $$
-と近似できる。 ちなみに、$p(x_n) = 0$ なる $x_n$ が選ばれることは絶対に無い(確率0だから)。よって分母が0になることを心配する必要はない。
-定義域を広げる $p$ の定義域をもう少し広げられる。$\Omega \supset \Omega_0$ であれば、集合$A$に関する指示関数を $\bm{1}_A$ と書くことにして、</description>
+      <description>今年の7月くらいに書き始め、存在をすっかり忘れていた記事をUP。&#xA;モンテカルロ法でどうやって積分計算をするのか、重点サンプリングとはどのようなものなのかついて勉強したので、そのメモ。&#xA;一般論 $$ \begin{aligned} \int_{\Omega_0} f(x) dx &amp;amp;= \int_{\Omega_0} \frac{f(x)}{p(x)}p(x)dx\\ &amp;amp;= \mathbb{E}\left[\frac{f(x)}{p(x)}\right] \end{aligned} $$&#xA;ここで、$p$ は確率密度関数。上の $\mathbb{E}$ が期待値であるためには、&#xA;$$ \int_{\Omega_0} p(x) dx = 1 $$&#xA;である必要がある。&#xA;大数の法則より、確率分布 $p$ に従う 標本 $x_n\ (n = 1, 2, \ldots, N)$ に対して、$N$ が十分大きければ、&#xA;$$ \mathbb{E}\left[\frac{f(x)}{p(x)}\right] \simeq \frac{1}{N} \sum_{n=1}^{N} \frac{f(x_n)}{p(x_n)} $$&#xA;となるから、結局、&#xA;$$ \begin{aligned} \int_{\Omega} f(x) dx \simeq \frac{1}{N} \sum_{n=1}^{N} \frac{f(x_n)}{p(x_n)} \end{aligned} $$&#xA;と近似できる。 ちなみに、$p(x_n) = 0$ なる $x_n$ が選ばれることは絶対に無い(確率0だから)。よって分母が0になることを心配する必要はない。&#xA;定義域を広げる $p$ の定義域をもう少し広げられる。$\Omega \supset \Omega_0$ であれば、集合$A$に関する指示関数を $\bm{1}_A$ と書くことにして、</description>
     </item>
-    
   </channel>
 </rss>

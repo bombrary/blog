@@ -6,26 +6,14 @@
     <description>Recent content in C&#43;&#43; on Chanomic Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 24 Nov 2019 17:08:19 +0900</lastBuildDate><atom:link href="https://bombrary.github.io/blog/tags/c++/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 24 Nov 2019 17:08:19 +0900</lastBuildDate>
+    <atom:link href="https://bombrary.github.io/blog/tags/c++/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Socket通信の勉強(1) - ディスクリプタ/TCPによる通信</title>
       <link>https://bombrary.github.io/blog/posts/socket01-file-tcp/</link>
       <pubDate>Sun, 24 Nov 2019 17:08:19 +0900</pubDate>
-      
       <guid>https://bombrary.github.io/blog/posts/socket01-file-tcp/</guid>
-      <description>Socket通信を勉強する。
-前提 プログラムはMac(Mojave)で動かす。 ネットワークに関する知識はほんの少しある。 使うプログラミング言語はC++だが、ここではbetter Cの意味でしか用いない。 (寄り道) ファイル入出力 Socket通信を学んでいると、ファイルディスクリプタが出てきたので、まずはそこから勉強する。
-関数定義についてはJM Projectから引用したものを用いる。これはLinuxマニュアルと同じらしいので、恐らくmanコマンドで出力されるものと同じである(ただし英語であるが)。
-ファイルディスクリプタとは ファイルディスクリプタとは、ファイルと結びつけられた単なる整数値である。データの読み書きを行う場合は、この整数値を指定してアクセスする。例えばファイルtest.txtのファイルディスクリプタが4だった場合、読み書きをする関数read/writeには引数4を指定する。
-個人的には、ファイルとプロセスのやりとりはあるケーブルを介して行なっているイメージがある。例えば番号4の端子にはすでにtest.txtが繋がっているとしよう。このとき、プロセスがtext.txtにアクセスしたいなら、番号4の端子にアクセスすれば良い。
-ファイルの読み込み ファイルディスクリプタを用いてファイルを読み込む例を以下に示す。以下は、test.txtを読み込んで、そのファイルディスクリプタとファイルの内容を出力するプログラムである。
-#include &amp;lt;stdio.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; #include &amp;lt;fcntl.h&amp;gt; int main() { int fd = open(&amp;#34;test.txt&amp;#34;, O_RDONLY); char buf[64]; read(fd, buf, sizeof(buf)); printf(&amp;#34;fd: %d\n&amp;#34;, fd); printf(&amp;#34;%s\n&amp;#34;, buf); close(fd); return 0; } test.txtの内容は以下のようにする。
-Hello, World 実行すると、以下のように出力される。fdの値は実行環境によって異なる。
-fd: 3 Hello, World 以下説明するopen/read/closeは関数ではなく、全てシステムコールである。
-openでファイルを開く 開きたいファイルのパスと、読み書きの方法を引数に指定する。成功するとファイルディスクリプタを返す。
-#include &amp;lt;fcntl.h&amp;gt; int open(const char *pathname, int flags); readで読み込む ファイルディスクリプタと、読み取った値を保持しておくためのバッファ、また読み取るデータの長さを指定する。
-#include &amp;lt;unistd.h&amp;gt; ssize_t read(int fd, void *buf, size_t count); closeでディスクリプタを解放する openで結びつけられたファイルディスクリプタはcloseで解放しなければならないことに注意。低級寄りの処理なだけあって、自動では解放してくれない。</description>
+      <description>Socket通信を勉強する。&#xA;前提 プログラムはMac(Mojave)で動かす。 ネットワークに関する知識はほんの少しある。 使うプログラミング言語はC++だが、ここではbetter Cの意味でしか用いない。 (寄り道) ファイル入出力 Socket通信を学んでいると、ファイルディスクリプタが出てきたので、まずはそこから勉強する。&#xA;関数定義についてはJM Projectから引用したものを用いる。これはLinuxマニュアルと同じらしいので、恐らくmanコマンドで出力されるものと同じである(ただし英語であるが)。&#xA;ファイルディスクリプタとは ファイルディスクリプタとは、ファイルと結びつけられた単なる整数値である。データの読み書きを行う場合は、この整数値を指定してアクセスする。例えばファイルtest.txtのファイルディスクリプタが4だった場合、読み書きをする関数read/writeには引数4を指定する。&#xA;個人的には、ファイルとプロセスのやりとりはあるケーブルを介して行なっているイメージがある。例えば番号4の端子にはすでにtest.txtが繋がっているとしよう。このとき、プロセスがtext.txtにアクセスしたいなら、番号4の端子にアクセスすれば良い。&#xA;ファイルの読み込み ファイルディスクリプタを用いてファイルを読み込む例を以下に示す。以下は、test.txtを読み込んで、そのファイルディスクリプタとファイルの内容を出力するプログラムである。&#xA;#include &amp;lt;stdio.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; #include &amp;lt;fcntl.h&amp;gt; int main() { int fd = open(&amp;#34;test.txt&amp;#34;, O_RDONLY); char buf[64]; read(fd, buf, sizeof(buf)); printf(&amp;#34;fd: %d\n&amp;#34;, fd); printf(&amp;#34;%s\n&amp;#34;, buf); close(fd); return 0; } test.txtの内容は以下のようにする。&#xA;Hello, World 実行すると、以下のように出力される。fdの値は実行環境によって異なる。&#xA;fd: 3 Hello, World 以下説明するopen/read/closeは関数ではなく、全てシステムコールである。&#xA;openでファイルを開く 開きたいファイルのパスと、読み書きの方法を引数に指定する。成功するとファイルディスクリプタを返す。&#xA;#include &amp;lt;fcntl.h&amp;gt; int open(const char *pathname, int flags); readで読み込む ファイルディスクリプタと、読み取った値を保持しておくためのバッファ、また読み取るデータの長さを指定する。&#xA;#include &amp;lt;unistd.h&amp;gt; ssize_t read(int fd, void *buf, size_t count); closeでディスクリプタを解放する openで結びつけられたファイルディスクリプタはcloseで解放しなければならないことに注意。低級寄りの処理なだけあって、自動では解放してくれない。</description>
     </item>
-    
   </channel>
 </rss>

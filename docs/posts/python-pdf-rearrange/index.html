@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>PythonでPDFの順序並び替えと空白ページ挿入(2種類の方法) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/python-pdf-rearrange/">
@@ -37,8 +37,8 @@ $ pdftk A=input.pdf B=blank." />
 <meta property="article:published_time" content="2021-01-07T11:50:37+09:00" />
 <meta property="article:modified_time" content="2021-01-07T11:58:48+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="PythonでPDFの順序並び替えと空白ページ挿入(2種類の方法)"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="PythonでPDFの順序並び替えと空白ページ挿入(2種類の方法)"/>
 <meta name="twitter:description" content="平綴じ印刷ができるように、PDFの順序を入れ替えたり、空白ページを挿入するプログラムを書いた。 方法1はPython &#43; いろんなコマンドで、方法2はPythonのPDFライブラリであるPyPDF4を利用した方法。 実装してみた結果、後者が圧倒的に簡単だった。
 動機 平綴じがしたい場面が出てきたが、印刷機に専用の設定が見つからなかった。 なので平綴じになるようにPDFのページ順を1,2,3,4,5,6,7,8,&hellip;から4,1,2,3,8,5,6,7,..に変え、それをプリンタで両面刷り(短辺綴じ)・2ページ割付で印刷することを考えた。
 平綴じの場合、紙に両面4ページずつ印刷されることになる。するとPDFのページ数は4の倍数でなくてはならない。よって、4の倍数でなかった場合はその分を空白ページで埋めなければならない。

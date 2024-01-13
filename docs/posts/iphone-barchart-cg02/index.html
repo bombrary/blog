@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (2) | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/iphone-barchart-cg02/">
@@ -40,8 +40,8 @@ class ViewController: UIViewController { @IBOutlet weak var scrollView: UIScroll
 <meta property="article:published_time" content="2019-12-22T15:10:30+09:00" />
 <meta property="article:modified_time" content="2019-12-24T21:19:21+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (2)"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="iPhoneアプリ開発メモ - 棒グラフの作成(UIKit/CoreGraphics) (2)"/>
 <meta name="twitter:description" content="目標 前回の棒グラフを複数ページにする 今回は、1ページに最大5本の棒が並ぶ、とする。 ページは横スライドで切り替える プロジェクトは前回のものを引き継がず、新しく作る。
 用いるデータ ViewController.swiftが次のようなデータを持っていることを想定する。
 var dataSource = [ (7, &#34;太郎&#34;), (1, &#34;次郎&#34;), (2, &#34;三郎&#34;), (6, &#34;四郎&#34;), (3, &#34;五郎&#34;), (9, &#34;六郎&#34;), (2, &#34;七郎&#34;), (3, &#34;八郎&#34;), (1, &#34;九郎&#34;), (5, &#34;十郎&#34;), (1, &#34;十一郎&#34;), (1, &#34;十二郎&#34;), (6, &#34;十三郎&#34;) ] このデータは、後で整形してグラフ描画用のデータに変換する。

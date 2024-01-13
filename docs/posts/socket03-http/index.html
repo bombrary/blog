@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>Socket通信勉強(3) - 簡易HTTPサーバー作成 | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/socket03-http/">
@@ -41,8 +41,8 @@ def run_server(port: int): with server_socket(port) as soc: while True: conn, ad
 <meta property="article:published_time" content="2021-03-06T22:00:00+09:00" />
 <meta property="article:modified_time" content="2021-03-06T22:20:06+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Socket通信勉強(3) - 簡易HTTPサーバー作成"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Socket通信勉強(3) - 簡易HTTPサーバー作成"/>
 <meta name="twitter:description" content="1年以上前に書いた記事 で、HTTPサーバーもどき(リクエストを読まず、ただ一方的にレスポンスを返すだけのサーバ)を書いた。 今回はもう少しだけこれを進化させる。
 動機 非常にどうでもいいのだが動機を記しておく。
 Land of Lispの13章でソケット通信が出てきた。 Land of Lispで扱っているCommon Lispの処理系がCLISPなのに対し、今自分が利用しているのはSBCLなので、 本文中のコードが動かない。そこで色々調べて、usocketを利用しようと思いつく。 その後なんとか書き上げる。ところがChromeやcurlでは動くのに、Safari(現バージョンは14.0.2)では動かない。ページを読み込んだ後、タイムアウトしたかのような挙動を起こす。

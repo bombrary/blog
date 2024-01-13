@@ -2,7 +2,7 @@
 <html lang="ja-jp">
 <title>FastAPIとOAuth2でユーザログイン機能（備忘録） | Chanomic Blog</title>
 <meta charset="utf-8">
-<meta name="generator" content="Hugo 0.113.0">
+<meta name="generator" content="Hugo 0.121.1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://bombrary.github.io/blog/css/index.css">
 <link rel="canonical" href="https://bombrary.github.io/blog/posts/fastapi-oauth-ropc/">
@@ -33,8 +33,8 @@ DBに関するCRUDs処理はcrudsモジュールに書く。 DBと対応する�
 <meta property="article:published_time" content="2023-06-29T20:34:00+09:00" />
 <meta property="article:modified_time" content="2023-06-30T06:23:28+09:00" />
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="FastAPIとOAuth2でユーザログイン機能（備忘録）"/>
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="FastAPIとOAuth2でユーザログイン機能（備忘録）"/>
 <meta name="twitter:description" content="何をするか 以下の3つの機能を実装する。
 ユーザを作成する。 ユーザを認証してトークンを生成し返す。 ユーザがログインしていないと401を返す：ここでは「ユーザ情報を返すAPI」を作成。 ユーザがログインしているかどうかで異なるレスポンスを返す：ここでは「ログインしているかどうかを真偽値で返すAPI」を作成。 方針 使う技術・フレームワーク、ライブラリなど PythonとMySQLはDocker Composeで動かす。 PythonのパッケージはPoetryで管理する。 APIサーバーはFastAPI &#43; uvicornで動かす。 認可の方式としてOAuth2.0を用いる。認可グラントのタイプはシンプルなROPC。 なぜこれを選んだのかというと、単純にFastAPIのドキュメントに書かれていたのがこれだったため。いつかほかのタイプも実装してみたい。 DBのマイグレーションはalbemicを使用してみる。今回はユーザ情報しか作らないので、alembicの使用は間違いなくオーバーなのだが、勉強のため使ってみる。 プロジェクト構成 プロジェクトディレクトリは次のようにする。
 DBに関するCRUDs処理はcrudsモジュールに書く。 DBと対応するモデルはmodelモジュールに書く。 APIのリクエストボディ、レスポンスボディの形式はschemas.pyに書く。 DBのセッションの作成はdb.pyに書く。 . ├── api │ ├── cruds │ │ ├── __init__.py │ │ └── user.py │ ├── models │ │ ├── __init__.py │ │ └── user.py │ ├── routers │ │ ├── __init__.py │ │ └── auth.py │ ├── schemas │ │ ├── __init__.py │ │ └── user.py │ ├── db."/>
