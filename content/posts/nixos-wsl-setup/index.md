@@ -31,14 +31,20 @@ sudo nix-channel --add https://nixos.org/channels/nixos-23.11 nixos
 sudo nix-channel --update
 ```
 
-次にVimとGitを入れる
+次にVimとGitを入れる。Vimはテキスト編集のため、Gitはnix-flakeの動作のために必要。
+
 ```sh
 nix-shell -p vim git
 ```
 
-[NixOSで最強のLinuxデスクトップを作ろう](https://zenn.dev/asa1984/articles/nixos-is-the-best#flake%E5%8C%96)や[Using nix flakes with NixOS](https://nixos.wiki/wiki/Flakes#Using_nix_flakes_with_NixOS)に書かれている内容を参考に進めていく。まず`configuration.nix`を持ってくる。
+[NixOSで最強のLinuxデスクトップを作ろう](https://zenn.dev/asa1984/articles/nixos-is-the-best#flake%E5%8C%96)や[Using nix flakes with NixOS](https://nixos.wiki/wiki/Flakes#Using_nix_flakes_with_NixOS)に書かれている内容を参考に進めていく。
+
+まずホームディレクトリに移動し、適当なディレクトリ`nixos-config`を作り、そこにNixOSの設定ファイル（`configuration.nix`）を持ってくる。
 
 ```sh
+cd ~
+mkdir nixos-config
+cd nixos-config
 cp /etc/nixos/* .
 ```
 
@@ -134,6 +140,7 @@ sudo nixos-rebuild switch --flake .#wsl
 
 - `configuration.nix`で、自分ユーザの設定を追加しておく。
 -  今ログインしている`nixos`ユーザの設定を変えるのは余計なトラブルの元になりそうなので避ける
+- お好みでshellを設定する
 
 ```nix
 { config, lib, pkgs, nixos-wsl, ... }:
@@ -146,6 +153,8 @@ sudo nixos-rebuild switch --flake .#wsl
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
+
+  programs.fish.enable = true;
 
   security.sudo = {
     enable = true;
@@ -196,16 +205,22 @@ instead.
 
 ## home-managerの設定
 
-自分のユーザでログインする。
+ユーザを作成したら、一応NixOSの再起動を行い、自分が作ったユーザでログインする。
 
+```ps
+wsl --shutdown NixOS
+wsl -d NixOS -u ユーザ名
+```
+
+また設定ファイルを掻くので、gitをvimを入れておく。
 ```sh
-su ユーザ名
 nix-shell -p git vim
 ```
 
-`.doftiles`を持ってくる
+先程作った設定ファイルを持ってくる
 ```sh
-cp -r /home/nixos/.dotfiles .
+sudo mv -r /home/nixos/nixos-config .
+sudo chown ユーザ名 -R nixos-config
 ```
 
 `flake.nix`にhome-managerの設定を追記する。
@@ -255,7 +270,7 @@ cp -r /home/nixos/.dotfiles .
 
 初回設定の適用
 ```sh
-> nix run home-manager -- switch --flake .#myHome
+nix run home-manager -- switch --flake .#myHome
 ```
 
 後は`home.nix`を書き換えて好きなパッケージを入れる。
