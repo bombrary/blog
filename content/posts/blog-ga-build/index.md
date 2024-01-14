@@ -125,7 +125,7 @@ jobs:
 やっている内容としては、
 - `on: push: branches: master`で、masterブランチにpushされたときにこのworkflowが実行される
   - 最近だとデフォルトがmainブランチのはずだが、このブログを作ったときはmasterがデフォルトだった。**新しく静的サイトを公開する場合はここがmainである**ことがほとんどだと思うので注意。
-- jobとしてbuildとdeployと呼ばれるものを定義する。以下のように、job単位で何らかの処理が実行される。
+- jobとしてbuildとdeployと呼ばれるものを定義する。workflowではjob単位で何らかの処理が実行される。
 - buildとdeployの大まかな処理は以下の通り。
   1. buildでページをビルドして、それをartifactという形でアップロードする
   2. artifactをdeployが受け取って、GitHub Pagesとしてデプロイする
@@ -142,8 +142,8 @@ Actionsタブの、最新のworkflowを見てみると、以下のようにbuild
 
 {{< figure src="upload-step.jpg" >}}
 
-そして、deployジョブがそれを受け取ってデプロイを実行していることが確認できる
+そして、deployジョブがそれを受け取ってデプロイを実行していることが確認できる。
 
 {{< figure src="deploy-step.jpg" >}}
 
-これで `https://ユーザ名.github.io/リポジトリ名` にアクセスすれば、自分のブログが生成されていることがわかる。
+これで `https://ユーザ名.github.io/リポジトリ名` に静的ページがデプロイされる。
