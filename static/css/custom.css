@@ -176,3 +176,8 @@ code, pre.cui {
   font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
 }
 
+.footer-msg {
+  margin: 0 0 0 0;
+  opacity: 0.5;
+  font-size: 0.9rem;
+}
