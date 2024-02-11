@@ -1,7 +1,6 @@
 ---
 title: "NixOS & Home Managerのセットアップメモ"
 date: 2024-02-11T18:00:00+09:00
-draft: true
 tags: []
 categories: ["NixOS"]
 ---
