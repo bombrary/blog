@@ -650,7 +650,7 @@ Home Managerでは、.tmux.confやvimrcなどのdotfileを配置する設定が�
       inputs.nixpkgs.follows = "nixpkgs";
     };
     dotfiles = {
-      url = "./dotfiles";
+      url = "path:./dotfiles";
       flake = false;
     };
   };
