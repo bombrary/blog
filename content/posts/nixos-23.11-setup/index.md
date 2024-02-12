@@ -7,6 +7,16 @@ categories: ["NixOS"]
 
 NixOS 23.11をセットアップした時のメモ。
 
+## 目標
+
+* NixOS環境については以前構築したことがあるが、勉強のためもう一度一から構築する
+* 今後、NixOSの環境をすぐに構築できるような設定ファイル、リポジトリを作る
+  * なるべくNix Flakesを使う
+
+NixOSの設定ファイルはNix言語で記述するが、自由度が結構高くて、どうファイル分け、ディレクトリ分けをしていくのかが悩ましい。
+今回は[Wiki](https://nixos.wiki/wiki/Applications)の紹介されていた[dotfiles](https://github.com/hlissner/dotfiles/tree/master)リポジトリを参考にしようと思う。
+とはいえ、まだまだNixOSの初学者のため、小さな部分を少し真似して作っていく。
+
 ## インストールディスクの起動
 
 [Download Nix](https://nixos.org/download)のページ下部にある「NixOS the Linux distributeion」からISOイメージをダウンロードしてくる。
@@ -126,7 +136,7 @@ Number  Start   End     Size    Type     File system  Flags
 
 続いて、ディスクのフォーマットをする。
 * `/dev/sda1`をext4でフォーマット
-* `/dev/sda2`をswapでフォーマットし
+* `/dev/sda2`をswapでフォーマット
 * `/dev/sda3`をfat32でフォーマット
 
 ```shell-session
@@ -151,6 +161,18 @@ LABEL=swap, UUID=d50a6577-8177-4b57-91d4-1fd3072de068
 [root@nixos:~]# mkfs.fat -F 32 -n boot /dev/sda3
 mkfs.fat 4.2 (2021-01-31)
 mkfs.fat: Warning: lowercase labels might not work properly on some systems
+```
+
+つけたラベルとデバイスの対応関係の確認。
+```console
+[root@nixos:~]# ls -la /dev/disk/by-label/
+total 0
+drwxr-xr-x 2 root root 120 Feb 12 01:24 .
+drwxr-xr-x 9 root root 180 Feb 12 01:24 ..
+lrwxrwxrwx 1 root root  10 Feb 12 01:24 boot -> ../../sda3
+lrwxrwxrwx 1 root root  10 Feb 12 01:24 nixos -> ../../sda1
+lrwxrwxrwx 1 root root   9 Feb 12  2024 nixos-minimal-23.11-x86_64 -> ../../sr0
+lrwxrwxrwx 1 root root  10 Feb 12 01:24 swap -> ../../sda2
 ```
 
 デバイスのマウント。
@@ -185,7 +207,11 @@ writing /mnt/etc/nixos/configuration.nix...
 For more hardware-specific settings, see https://github.com/NixOS/nixos-hardware.
 ```
 
-コメント文をもとに適当に編集する。後で一般ユーザに入って細かい設定をするので、ここでは仮のものを作る。
+コメント文をもとに適当に編集する。
+* 今回はGUI環境を作らないので、xserverとかsoundの設定は無視してよいはず
+* 後で一般ユーザに入って細かい設定をすればよいので、ここでは仮のものを作る
+* 後でFlakes系のコマンドを使うので、 `nix.settings.experimental-features` の設定をする
+
 ```nix
 { config, lib, pkgs, ... }:
 
@@ -212,6 +238,7 @@ For more hardware-specific settings, see https://github.com/NixOS/nixos-hardware
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim
+    git
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -244,15 +271,7 @@ passwd: password updated successfully
 installation finished!
 ```
 
-最後にパスワード設定を促されたと思うが、これはrootのパスワードである。一般ユーザのパスワードを忘れず行う。
-```shell-session
-[root@nixos:~]# passwd bombrary
-New password:
-Retype new password:
-passwd: password updated successfully
-```
-
-アンマウントしたうえで再起動する。
+アンマウントしたうえで再起動する。このとき、CD・ISOを取り外した上で再起動する。
 
 ```shell-session
 [root@nixos:~]# umount /mnt/boot
@@ -266,7 +285,13 @@ Broadcast message from root@nixos on pts/1 (Tue 2024-02-06 11:25:37 UTC):
 The system will reboot now!
 ```
 
-このとき、CD・ISOを取り外した上で再起動する。
+再起動前にパスワード設定を促されたと思うが、それはrootのパスワードである。一般ユーザのパスワード変更を行う（これはSSHではなくコンソール上でやる必要がある）。
+```shell-session
+[root@nixos:~]# passwd bombrary
+New password:
+Retype new password:
+passwd: password updated successfully
+```
 
 SSHで一般ユーザでログインできることを確認する。
 ```shell-session
@@ -281,21 +306,22 @@ Last login: Tue Feb  6 20:30:18 2024 from 192.168.11.6
 
 再利用の観点から、Nix Flakesを利用した方法に切り替える。やり方としては
 
-* [Using nix flakes with NixOS](https://nixos.wiki/wiki/Flakes#Using%20nix%20flakes%20with%20NixOS)
-* [NixOSで最強のLinuxデスクトップを作ろう](https://zenn.dev/asa1984/articles/nixos-is-the-best)
+* [Using nix flakes with NixOS - NixOS Wiki](https://nixos.wiki/wiki/Flakes#Using%20nix%20flakes%20with%20NixOS)
+* [NixOSで最強のLinuxデスクトップを作ろう - Zenn](https://zenn.dev/asa1984/articles/nixos-is-the-best)
+* [hlissner/dotfiles - GitHub](https://github.com/hlissner/dotfiles/tree/master)
 
 が参考になる。
 
 適当な作業ディレクトリを作ってその中で作業する。
 ```shell-session
-[bombrary@nixos:~]$ mkdir config
-[bombrary@nixos:~]$ cd config
+[bombrary@nixos:~]$ mkdir dotfiles
+[bombrary@nixos:~]$ cd dotfiles
 ```
 
 先ほど作った`/etc/nixos/configuration.nix`と、自動生成されている`/etc/nixos/hardware-configuration.nix`を持ってくる。「必要最小限の構成にしたOS設定」という体で、適当に`minimal`などというディレクトリを作ってそこに設定ファイルを入れる。
 ```shell-session
-[bombrary@nixos:~/config]$ mkdir -p os-configs/minimal/
-[bombrary@nixos:~/config]$ cp /etc/nixos/* os-configs/minimal/
+[bombrary@nixos:~/dotfiles]$ mkdir -p hosts/minimal
+[bombrary@nixos:~/dotfiles]$ cp /etc/nixos/* hosts/minimal/
 ```
 
 `flake.nix`のひな形を作る。
@@ -350,17 +376,19 @@ wrote: /home/bombrary/config/flake.nix
 * `nixos.lib.nixosSystem`の`modules`に、先ほど持ってきた`configuration.nix`を指定する
 ```nix
 {
-  description = "NixOS Configuration";
+  description = "NixOS and Home Manager Configuration";
 
   inputs = {
     nixos.url = github:NixOS/nixpkgs/nixos-23.11;
   };
 
-  outputs = { self, nixpkgs }: {
+  outputs = { self, nixos }: {
     nixosConfigurations = {
       minimal = nixos.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [ ./os-configs/minimal/configuration.nix ];
+        modules = [
+          ./hosts/minimal/configuration.nix
+        ];
       };
     };
   };
@@ -466,7 +494,7 @@ global flake:templates github:NixOS/templates
 
 OSの構成は最小限に抑えて、ユーザがメインで使うエディタやユーティリティコマンドはhome-managerで管理することにする。
 
-まずはマニュアルを見てみる。マニュアルの開き方についてドキュメントの記載箇所が見つけられなかったが、、[home-managerのflake.nix](https://github.com/nix-community/home-manager/blob/master/flake.nix)を読むと、outputsの`docs-manpages`がmanpageのderivationになっていることがわかる。なのでそこからマニュアルを入手する。
+まずはマニュアルを見てみる。マニュアルの開き方についてドキュメントの記載箇所が見つけられなかったが、[home-managerのflake.nix](https://github.com/nix-community/home-manager/blob/master/flake.nix)を読むと、outputsの`docs-manpages`がmanpageのderivationになっていることがわかる。なのでそこからマニュアルを入手する。
 
 `nix shell [flake-registry]#[package]`で、一時的にパッケージを導入した状態で新しいシェルに入る。`nix-shell -p [package]`コマンドというのもあるが、
 * `nix-shell`は、デフォルトでは環境変数`NIX_PATH`に指定された`nixpkgs`のパスから
@@ -494,18 +522,17 @@ init [--switch [dir]]
        command also generates a flake.nix file.
 ```
 
-ここまでわかったところで、実際に設定を作成していく。まず適当にディレクトリを切って、`home.nix`を作成する。ここでは、`home-configs/<ユーザ名>/`に作成することにする。
+ここまでわかったところで、実際に設定を作成していく。記事冒頭で参考にするといっていた[dotfiles](https://github.com/hlissner/dotfiles/tree/master)ではhomeConfigurationsを用いていないので、どうディレクトリを構成していくのか悩ましいが、ここでは`home/<ユーザ名>/home.nix`を作成することにする。
 ```console
-[bombrary@nixos:~/config]$ mkdir -p home-configs
-
-[bombrary@nixos:~/config]$ nix run home-manager -- init home-configs/bombrary
-Creating home-configs/bombrary/home.nix...
-Creating home-configs/bombrary/flake.nix...
+[bombrary@nixos:~/dotfiles]$ mkdir home
+[bombrary@nixos:~/dotfiles]$ nix run home-manager -- init home/bombrary
+Creating home/bombrary/home.nix...
+Creating home/bombrary/flake.nix...
 ```
 
 `flake.nix`はすでに作成済みであり、余計なので消す。
 ```
-[bombrary@nixos:~/config]$ rm home-configs/bombrary/flake.nix
+[bombrary@nixos:~/dotfiles]$ rm home/bombrary/flake.nix
 ```
 
 `home.nix`の中身は後で見るとして、これを `flake.nix` に紐づける。`flake.nix`を編集。
@@ -519,22 +546,24 @@ Creating home-configs/bombrary/flake.nix...
 
 ```nix
 {
-  description = "NixOS and home-mamager Configuration";
+  description = "NixOS and Home Manager Configuration";
 
   inputs = {
     nixos.url = github:NixOS/nixpkgs/nixos-23.11;
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = github:nix-community/home-manager;
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixos, home-manager, nixpkgs, ... }: {
+  outputs = { self, nixos, nixpkgs, home-manager }: {
     nixosConfigurations = {
       minimal = nixos.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [ ./os-configs/minimal/configuration.nix ];
+        modules = [
+          ./hosts/minimal/configuration.nix
+        ];
       };
     };
 
@@ -544,7 +573,7 @@ Creating home-configs/bombrary/flake.nix...
           system = "x86_64-linux";
         };
         modules = [
-          ./home-configs/bombrary/home.nix
+          ./home/bombrary/home.nix
         ];
       };
     };
@@ -554,8 +583,16 @@ Creating home-configs/bombrary/flake.nix...
 
 チェックしてビルド。
 ```shell-session
-[bombrary@nixos:~/config]$ nix flake check
-[bombrary@nixos:~/config]$ nix run home-manager -- switch --flake .#bombrary
+[bombrary@nixos:~/dotfiles]$ nix flake check
+warning: updating lock file '/home/bombrary/dotfiles/flake.lock':
+• Added input 'home-manager':
+    'github:nix-community/home-manager/21b078306a2ab68748abf72650db313d646cf2ca' (2024-02-11)
+• Added input 'home-manager/nixpkgs':
+    follows 'nixpkgs'
+• Added input 'nixpkgs':
+    'github:NixOS/nixpkgs/d934204a0f8d9198e1e4515dd6fec76a139c87f0' (2024-02-10)
+
+[bombrary@nixos:~/dotfiles]$ nix run home-manager -- switch --flake .#bombrary
 ```
 
 `flake.nix`に`programs.home-manager.enable=true`が設定されているので、この時点で`home-manager`コマンドが使えるようになっていることを確認する。
@@ -576,12 +613,6 @@ shared-mime-info-2.4
 [bombrary@nixos:~/config]$ home-manager switch --flake .#bombrary
 ```
 
-gitが無いみたいなエラーが出た場合は、以下のようにgitを一時的に追加したうえでhome-managerを動かす。
-```console
-[bombrary@nixos:~/config]$ nix shell nixpkgs#git
-[bombrary@nixos:~/config]$ home-manager switch --flake .#bombrary
-```
-
 ## Home Managerの設定
 
 * まずは`home.nix`のひな形に親切なコメントがたくさんあるので、それを読みつつ編集する。
@@ -593,19 +624,41 @@ gitが無いみたいなエラーが出た場合は、以下のようにgitを�
 ## パッケージを入れる
 
 必要なパッケージを入れる。
+* アプリケーションに寄っては、`programs.<application>`での指定方法と`home.packages`に指定する方法が2つあるが、後者のほうがユーザに親切なオプションがついていることがあるので、[Appendix A Home Manager Configuration Examples](https://nix-community.github.io/home-manager/options.xhtml)を漁ってみるとよいかも
+* エイリアスは`programs.<shell名>.shellAliases`で設定可能
+  * bashの場合は[programs.bash.shellAliases](https://nix-community.github.io/home-manager/options.xhtml#opt-programs.bash.shellAliases)
+  * [home.shellAliases](https://nix-community.github.io/home-manager/options.xhtml#opt-home.shellAliases)は、なぜか反応しない
 ```nix
 {
   ...
   home.packages = with pkgs; [
     tmux
-    neovim
-    git
-    eza
     ripgrep
-    delta
+    eza
     bat
     fd
+    zig
+    deno
   ];
+
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+  };
+
+  programs.git = {
+    enable = true;
+    userName = "（ユーザ名）";
+    userEmail = "（メールアドレス）";
+  };
+
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      ls = "eza --icons";
+      cat = "bat";
+    };
+  };
   ...
 }
 ```
@@ -616,82 +669,58 @@ Home Managerでは、.tmux.confやvimrcなどのdotfileを配置する設定が�
 
 そのdotfilesをどうやって管理するかだが、いろいろやりようはあると思う。
 * 別リポジトリで管理
-  * flakeのinputsにdotfilesのリポジトリを指定する
-  * submoduleとしてdotfilesのリポジトリを追加する。
-* 今のディレクトリにdotfilesのようなディレクトリを作成
-  * flakeのinputsにdotfilesへのパスを指定する
-  * `home.nix`に直接dotfilesへのパスを指定する
+  * flakeのinputsにconfigのリポジトリを指定する
+  * submoduleとしてconfigのリポジトリを追加する
+    * flakeにinputsにパス指定
+    * `home.nix`に直接パス指定
+* 今のディレクトリにconfigのようなディレクトリを作成
+  * flakeのinputsにconfigへのパス指定
+  * `home.nix`に直接configへのパス指定
 
-などやり方が考えられる。どれを選ぶかを考える上で、変更の容易さという観点は気に留めたほうが良い。その観点でいうと、「別リポジトリ管理 & flakeのinputに指定」という方法に関しては、設定ファイルをいじるのが簡単ではなくなってしまう。なぜなら、flakeのinputで取り込んだファイルはread-only file system扱いになるからである（NixOS自体、環境の高い再現性を目指したシステムなので、これは仕方ない）。なので、例えばビルド後に `.config/nvim/init.nvim` を直接編集することはできない。
+などやり方が考えられる。どれを選ぶかを考える上で、変更の容易さという観点は気に留めたほうが良い。Nixで指定されたファイルはすべて`/nix/store`に取り込まれ、read-only fileシステムになる。そのため、例えばビルド後に`~/.config/nvim/init.nvim`を直接編集することはできない。
 
-（面倒でなければ、設定ファイルの動作確認をする環境を作ってしまうのもありか。しかし、CUIツールの環境であればDockerで作れるが、例えばi3のconfigみたいな、GUIに依存するソフトウェアの設定ファイルをいじる環境を作るとなると、別VMを立ててそこで検証することになりかなり大掛かりになってしまいそう）
+その観点で考えると、例えば「少しずつ設定ファイルをいじりながら様子を見たい」という場合、手間が少なく一番楽なのは最後の「今のディレクトリにconfigディレクトリ作成 & home.nix にconfigへのパス指定」の方法だと思われる。なのでそれで進めていく。
 
-逆に上記の基準以外は好みな気がするが、ここでは「今のディレクトリにdotfilesディレクトリ作成 & flake.nix にdotfilesへのパス指定」の方法をとってみたいと思う。
-`dotfiles`ディレクトリを作成し、そこに各種設定ファイルを入れていく。自分の場合は過去育ててきたファイルたちがあるのでそれを入れる。
+`config`ディレクトリを作成し、そこに各種設定ファイルを入れていく。自分の場合は過去育ててきたファイルたちがあるのでそれを入れる。configの構成としては、「`nvim`ディレクトリにneovim関連、`tmux`ディレクトリにtmux関連の設定ファイル」のように分ける
 ```console
-[bombrary@nixos:~/config]$ mkdir dotfiles
+[bombrary@nixos:~/dotfiles]$ mkdir config
+
+（ファイルを追加する）
+
+[bombrary@nixos:~/dotfiles]$ nix run nixpkgs#tree -- -a config
+config
+├── nvim
+│   ├── init.lua
+│   └── lua
+│       └── plugins
+│           ├── ddu.lua
+│           ├── global.lua
+│           └── lsp.lua
+└── tmux
+    └── .tmux.conf
+
+5 directories, 5 files
 ```
 
-まず`flake.nix`を編集する。
-* `inputs`に新たに`dotfiles`を指定する
-  * `url`には`dotfiles`へのパスを指定
-  * `flake`ではなくただの設定ファイルの集まりのため、`flake=false`を指定
-* `outputs`の引数に`dotfiles`を追加
-* `homeConfigurations.<name>.extraSpecialArgs`に`dotfiles`を追加
+`home.nix`では、以下のように`home.file.<name>`の`source`と`target`でパスを指定する。
 ```nix
-{
-  description = "NixOS Configuration";
-
-  inputs = {
-    nixos.url = github:NixOS/nixpkgs/nixos-23.11;
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    dotfiles = {
-      url = "path:./dotfiles";
-      flake = false;
-    };
-  };
-
-  outputs = { self, nixos, home-manager, nixpkgs, dotfiles, ... }: {
-    nixosConfigurations = {
-      minimal = nixos.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [ ./os-configs/minimal/configuration.nix ];
-      };
-    };
-
-    homeConfigurations = {
-      bombrary = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {
-          system = "x86_64-linux";
-        };
-        extraSpecialArgs = {
-          inherit dotfiles;
-        };
-        modules = [
-          ./home-configs/bombrary/home.nix
-        ];
-      };
-    };
-  };
-}
-```
-
-`home.nix`では、
-* 引数に`dotfiles`を追加する
-* `home.file.<置く先のパス>.source = <実ファイルのパス>`で設定ファイルを置く
-```nix
-{ config, pkgs, dotfiles, ... }:
+{ config, pkgs, myconfig, ... }:
 
 {
   ...
   home.file = {
-    ".tmux.conf".source = "${dotfiles}/.tmux.conf";
-    ".config/nvim/init.lua".source = "${dotfiles}/.config/nvim/init.lua";
-    ".config/nvim/lua".source = "${dotfiles}/.config/nvim/lua";
+    ".tmux.conf" = {
+      source = ../../config/tmux/.tmux.conf;
+      target = ".tmux.conf";
+    };
+    "init.lua" = {
+      source = ../../config/nvim/init.lua;
+      target = ".config/nvim/init.lua";
+    };
+    "lua" = {
+      source = ../../config/nvim/lua;
+      target = ".config/nvim/lua";
+    };
   };
   ...
 }
@@ -699,4 +728,4 @@ Home Managerでは、.tmux.confやvimrcなどのdotfileを配置する設定が�
 
 これで`home-manager switch --flake .#<name>`を実行すれば、dotfilesが想定通りの位置に配置される。
 
-とりあえず現時点での設定はここまで。これから試行錯誤して、書き方とかディレクトリ構成とかを改善していく。
+とりあえず現時点での設定はここまで。これから試行錯誤して、書き方とかディレクトリ構成とかを改善していく。あと、Nixのmodule機能をあまり使わずに構成しているので、そのあたりも勉強して使いつつ、設定を育てていきたい。
