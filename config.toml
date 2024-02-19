@@ -8,7 +8,6 @@ enableInlineShortcodes = true
 footnoteReturnLinkContents = "^"
 theme = "contrast-hugo-with-ogp"
 pygmentsUseClasses = true
-googleAnalytics="UA-152083322-1"
 enableGitInfo = true
 
 [params]
