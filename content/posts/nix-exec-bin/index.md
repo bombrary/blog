@@ -189,9 +189,9 @@ Nixはあらゆるファイルを`/nix/store/`で管理するため、そもそ�
 * patchelfでinterpreterのパスを `/lib64/ld-linux-x86-64.so.2` から `/nix/store/***-glibc-*-*/lib/ld-linux-x86-64.so.2` に書き換える
 * nix-ldを使って、`/lib/ld-linux-x86-64.so.2` を自動生成する
 
-### 解決策1 外部で作られた実行バイナリを動かすのをあきらめ、Nixでビルドされたものを使う
+### （推奨）解決策1 外部で作られた実行バイナリを動かすのをあきらめ、Nixでビルドされたものを使う
 
-本末転倒感があるが、そもそも外部から持ってきた実行バイナリを使わず、Nixの世界だけで完結するよう頑張るのも一つの手である。
+本末転倒感があるが、そもそも外部から持ってきた実行バイナリを使わず、Nixの世界だけで完結するよう頑張るのも一つの手である。実際そのほうが、余計なトラブル無く動作する可能性が高い。例えば後述の解決策4でも、[うまく動かないケース](#sol4-not-working)が存在する。
 
 Ryeの利用に限って言うと、Ryeを使うのをあきらめ、Nix + Pythonでプロジェクト管理する、ということになる。[NixOS Wiki](https://nixos.wiki/wiki/Python)に詳しいことが乗っているが、`python.withPackages`を使うことでプロジェクトが作成可能だ。
 
@@ -265,7 +265,9 @@ Hello 6
 
 ### 解決策4 nix-ldを使って /lib/ld-linux-x86-64.so.2 を自動生成する
 
-これがおそらく現時点で最もシンプルな解決策。[nix-ld](https://github.com/Mic92/nix-ld)というプログラムを導入することで、`/lib/ld-linux-x86-64.so.2`を自動生成する（なお[FAQ](https://github.com/Mic92/nix-ld?tab=readme-ov-file#does-this-work-on-non-nixos-system)で言及されているが、NixOS以外のシステムでこれをやってはいけない）。
+これがおそらく現時点で最もシンプルな解決策。シンプルではあるものの、特定の条件ではプログラムが正常に動かない場合があるため注意。これについては[後述](#sol4-not-working)。
+
+[nix-ld](https://github.com/Mic92/nix-ld)というプログラムを導入することで、`/lib/ld-linux-x86-64.so.2`を自動生成する（なお[FAQ](https://github.com/Mic92/nix-ld?tab=readme-ov-file#does-this-work-on-non-nixos-system)で言及されているが、NixOS以外のシステムでこれをやってはいけない）。
 
 やり方としては、`configuration.nix`に以下の一文を追加し、`nixos-rebuild switch`するだけである。
 ```nix
@@ -353,6 +355,7 @@ For more information read https://mitsuhiko.github.io/rye/guide/installation
 
 All done!
 ```
+
 
 ## 足りない共有ライブラリを補う
 
@@ -552,3 +555,164 @@ Done!
 をすればよい。
 
 関連するツールとして他にも[nix-alien](https://github.com/thiagokokada/nix-alien)とか[nix-autobahn](https://github.com/Lassulus/nix-autobahn)があるらしいが、これらは今後調べてみようと思う。
+
+
+## （追記：解決策4 補足） nix-ldでも正しく動かないケース {#sol4-not-working}
+
+### Ryeのバージョンアップで動かなくなった件
+
+Ryeのバージョンアップによる追記。0.29.0で確認した事象。
+```console
+[bombrary@nixos:~/tmp/rye-test]$ nix run nixpkgs#rye -- --version
+rye 0.29.0
+commit: 0.29.0 (1980-01-01)
+platform: linux (x86_64)
+self-python: not bootstrapped (target: cpython@3.12)
+symlink support: true
+uv enabled: false
+```
+
+いつからかのバージョンから、syncが正しく動作しなくなった。venvの実行に失敗しているようである。
+```console
+[bombrary@nixos:~/tmp/rye-test]$ nix run nixpkgs#rye -- sync
+Bootstrapping rye internals
+Found a compatible Python version: cpython@3.12.2
+  × Failed to detect the operating system version: could not detect either glibc version nor musl libc version, at least one of which is required
+error: could not sync because bootstrap failed
+
+Caused by:
+    Failed to create self venv using /home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3. uv exited with status: exit status: 1
+```
+
+straceでexecveを見てみよう
+
+```console
+[bombrary@nixos:~/tmp/rye-test]$ strace -s 10000 -f nix run nixpkgs#rye -- sync 2>&1 | grep execve
+execve("/run/current-system/sw/bin/nix", ["nix", "run", "nixpkgs#rye", "--", "sync"], 0x7ffeab00aaa8 /* 47 vars */) = 0
+[pid 140768] execve("/nix/store/8hp47i45bd3pl3v541314zsqmray88a3-rye-0.29.0/bin/rye", ["/nix/store/8hp47i45bd3pl3v541314zsqmray88a3-rye-0.29.0/bin/rye", "sync"], 0x7ffea9b00408 /* 47 vars */ <unfinished ...>
+<... execve resumed>)                   = 0
+[pid 140774] execve("/run/wrappers/bin/ldd", ["ldd", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x7ffd0636e2d0 /* 47 vars */) = -1 ENOENT (No such file or directory)
+[pid 140774] execve("/home/bombrary/.nix-profile/bin/ldd", ["ldd", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x7ffd0636e2d0 /* 47 vars */) = -1 ENOENT (No such file or directory)
+[pid 140774] execve("/nix/profile/bin/ldd", ["ldd", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x7ffd0636e2d0 /* 47 vars */) = -1 ENOENT (No such file or directory)
+[pid 140774] execve("/home/bombrary/.local/state/nix/profile/bin/ldd", ["ldd", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x7ffd0636e2d0 /* 47 vars */) = -1 ENOENT (No such file or directory)
+[pid 140774] execve("/etc/profiles/per-user/bombrary/bin/ldd", ["ldd", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x7ffd0636e2d0 /* 47 vars */) = -1 ENOENT (No such file or directory)
+[pid 140774] execve("/nix/var/nix/profiles/default/bin/ldd", ["ldd", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x7ffd0636e2d0 /* 47 vars */) = -1 ENOENT (No such file or directory)
+[pid 140774] execve("/run/current-system/sw/bin/ldd", ["ldd", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x7ffd0636e2d0 /* 47 vars */ <unfinished ...>
+[pid 140774] <... execve resumed>)      = 0
+[pid 140775] execve("/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27/lib64/ld-linux-x86-64.so.2", ["/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27/lib64/ld-linux-x86-64.so.2", "--verify", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x14ccd70 /* 47 vars */) = 0
+[pid 140778] execve("/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27/lib64/ld-linux-x86-64.so.2", ["/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27/lib64/ld-linux-x86-64.so.2", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3"], 0x14dac30 /* 51 vars */) = 0
+
+[pid 140779] execve("/home/bombrary/.rye/uv/0.1.17/uv", ["/home/bombrary/.rye/uv/0.1.17/uv", "--quiet", "venv", "--python", "/home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3", "/home/bombrary/.rye/self"], 0x560d660ff200 /* 48 vars */ <unfinished ...>
+[pid 140779] <... execve resumed>)      = 0
+[pid 140784] execve("/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27/lib/ld-linux-x86-64.so.2", ["/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27/lib/ld-linux-x86-64.so.2"], 0x7ffe7a9405c0 /* 48 vars */ <unfinished ...>
+[pid 140784] <... execve resumed>)      = 0
+[pid 140785] execve("nixpkgxpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos/ldd", ["ldd", "--version"], 0x7ffe7a9405c0 /* 48 vars */) = -1 ENOENT (No such file or directory)
+[pid 140785] execve("nixos-config=/etc/nixos/configuration.nix/ldd", ["ldd", "--version"], 0x7ffe7a9405c0 /* 48 vars */) = -1 ENOENT (No such file or directory)
+[pid 140785] execve("/nix/var/nix/profiles/per-user/root/channels/ldd", ["ldd", "--version"], 0x7ffe7a9405c0 /* 48 vars */) = -1 ENOENT (No such file or directory)
+```
+
+どうやら、コマンド
+```sh
+/home/bombrary/.rye/uv/0.1.17/uv --quiet venv --python /home/bombrary/.rye/py/cpython@3.12.2/install/bin/python3 /home/bombrary/.rye/self
+```
+が実行され、`~/.rye/self` にvenvを作ろうとしているが、それに失敗しているようである。最後のlddの呼び出しを見るに、glibcかmuslの判定を`ldd --version`で行おうとしているが、なぜかlddのパスが解決できない。
+
+いくつかのパスについてexecveが通るか試みているように見えるが、これはexecvpの挙動である。execvpを使っていることは、
+* [0.1.17のplatform-host/src/linux.rs](https://github.com/astral-sh/uv/blob/0.1.17/crates/platform-host/src/linux.rs#L44)では、`std::process::Command`を使ってlddを呼び出している
+* `std::process`は`sys::process`のラッパーで、そこで[execvpの呼び出しの記述](https://doc.rust-lang.org/1.73.0/src/std/sys/unix/process/process_unix.rs.html#405)がある
+
+と辿ることで分かる。でexecvpはなんの情報をもとにいくつかのパスを試しているのかというと、それは環境変数`PATH`である（[実際のソースコード](https://elixir.bootlin.com/glibc/latest/source/posix/execvpe.c#L71)）。`PATH`に書かれているディレクトリについて、末尾に`ldd`をつけた上で片っ端からexecveすることで試している。
+
+ところがよく見ると、その調べるディレクトリがなにかおかしいことに気づく。
+```
+execve("nixpkgxpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos/ldd", ["ldd", "--version"], 0x7ffe7a9405c0 /* 48 vars */) = -1 ENOENT (No such file or directory)
+execve("nixos-config=/etc/nixos/configuration.nix/ldd", ["ldd", "--version"], 0x7ffe7a9405c0 /* 48 vars */) = -1 ENOENT (No such file or directory)
+execve("/nix/var/nix/profiles/per-user/root/channels/ldd", ["ldd", "--version"], 0x7ffe7a9405c0 /* 48 vars */) = -1 ENOENT (No such file or directory)
+```
+ここに書かれている3種類は、 **PATHではなくNIX_PATHにかかれているもの** のはずである。試しに `strace` に `-v` をつけることで、どんな環境変数が付けられているのか見てみる
+
+```
+[bombrary@nixos:~/tmp/rye-test]$ echo $NIX_PATH
+nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos:nixos-config=/etc/nixos/configuration.nix:/nix/var/nix/profiles/per-user/root/channels
+
+[bombrary@nixos:~/tmp/rye-test]$ echo $PATH
+/run/wrappers/bin:/home/bombrary/.nix-profile/bin:/nix/profile/bin:/home/bombrary/.local/state/nix/profile/bin:/etc/profiles/per-user/bombrary/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin
+
+[bombrary@nixos:~/tmp/rye-test]$ strace -v -s 10000 -f nix run nixpkgs#rye -- sync 2>&1 | grep execve | tail -1 | tr "," "\n" | grep "\"NIX_PATH="
+
+[bombrary@nixos:~/tmp/rye-test]$ strace -v -s 10000 -f nix run nixpkgs#rye -- sync 2>&1 | grep execve | tail -1 | tr "," "\n" | grep "\"PATH="
+ "PATH=nixpkgxpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos:nixos-config=/etc/nixos/configuration.nix:/nix/var/nix/profiles/per-user/root/channels"
+ "PATH=/run/wrappers/bin:/home/bombrary/.nix-profile/bin:/nix/profile/bin:/home/bombrary/.local/state/nix/profile/bin:/etc/profiles/per-user/bombrary/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin"
+```
+
+なぜか、`NIX_PATH`が`PATH`に書き換わっている。しかもそれが最初に現れるから、execvpのパス検索に使われてしまう。
+
+### 手軽な事象の再現方法
+
+次の手順を踏むと、`NIX_PATH`が`PATH`に書き換わる事象が再現できる
+
+まず以下のように、`env`を入れた上でprocessを実行するRustコードを書く。
+```rust
+use std::process::Command;
+
+fn main() {
+    let mut cmd = Command::new("./program");
+    cmd.env("FOO", "BAR");
+
+    let output = cmd.output()
+        .expect("Failed to execute command");
+    println!("{}", std::str::from_utf8(&output.stdout).unwrap());
+}
+```
+
+Nix外（例：Ubuntuのコンテナ）で以下のCコードをコンパイルする。プログラム名は`program`にする。内容は、環境変数`PATH`が見つかればそれを出力するだけである。
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char *argv[], char *envp[]) {
+  int i;
+  for (i = 0; envp[i]; i++){
+    char key[5] = "";
+    strncpy(key, envp[i], 4);
+    if (strcmp(key, "PATH") == 0) {
+      printf("%s\n", envp[i]);
+    }
+  }
+  return 0;
+}
+```
+
+Docker上での場合のコンパイル例。
+
+```console
+[bombrary@nixos:~/tmp/cargo-test]$ docker run --rm -it -v`pwd`:/app/ -w/app gcc:13.2.0
+root@a6ca8112f5c8:/app# gcc -o program program.c
+```
+
+これで、Rustのプログラムをビルドしたうえで実行すると、意図しない`PATH`が現れることが確認できる。
+```console
+[bombrary@nixos:~/tmp/cargo-test]$ cargo build
+    Finished dev [unoptimized + debuginfo] target(s) in 0.03s
+
+[bombrary@nixos:~/tmp/cargo-test]$ ./target/debug/cargo-test
+PATH=nixpkgxpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos:nixos-config=/etc/nixos/configuration.nix:/nix/var/nix/profiles/per-user/root/channels
+PATH=/nix/store/nhcidacc2bad8jaq965i3bwwnf777b6r-cargo-1.76.0/bin:/nix/store/yp1f9ya9r4qjssxavfnpqv28ryf3ibfh-rustc-wrapper-1.76.0/bin:/nix/store/qhpw32pz39y6i30b3vrbw5fw6zv5549f-gcc-wrapper-13.2.0/bin:/nix/store/7vc88ixc6yca2hwgszjk51dh23j3g2nr-gcc-13.2.0/bin:/nix/store/m9b4wcy4yyn5xcy394h74x7klb28nm2c-glibc-2.38-44-bin/bin:/nix/store/mb488rr560vq1xnl10hinnyfflcrd51n-coreutils-9.4/bin:/nix/store/7hhd9smnjspppk4k6n47bkw64fdbgbrz-binutils-wrapper-2.41/bin:/nix/store/bczmlm8brs93gp4lscwvc1dnn2ipymnc-binutils-2.41/bin:/nix/store/avlyab878080nxxwy386vwx99js7w4l7-gdb-14.1/bin:/nix/store/3125ahv429pk8sxnfhj5l3f2ph7jllrk-patchelf-0.15.0/bin:/nix/store/mb488rr560vq1xnl10hinnyfflcrd51n-coreutils-9.4/bin:/nix/store/rr5pqqck5f6fjkv7agwjyhaljvh27ncn-findutils-4.9.0/bin:/nix/store/n6i46dn14q3iq82gqgb5qkl74aqhwr77-diffutils-3.10/bin:/nix/store/q7kq0naays5251ihghw0ccsz39id7kk5-gnused-4.9/bin:/nix/store/320v66ili0mwnyrxj3dwbxm0z8ndkbw7-gnugrep-3.11/bin:/nix/store/sgpv5hm93gzkcm4s536nmkpag3q5d22s-gawk-5.2.2/bin:/nix/store/zq7c5lha3pzixhs8vgy0c0k2sn9s6kq9-gnutar-1.35/bin:/nix/store/p27jyrx9ghhxbl5j82114fdy50lr33z3-gzip-1.13/bin:/nix/store/f7i053lqqbppa3nx3nbmk6y46wy06shj-bzip2-1.0.8-bin/bin:/nix/store/3wwka0sn2h96cmqxyclj2vba26a5sk1s-gnumake-4.4.1/bin:/nix/store/4vzal97iq3dmrgycj8r0gflrh51p8w1s-bash-5.2p26/bin:/nix/store/yb3vxdqkdx672wl4hg92xf1zhykjjppr-patch-2.7.6/bin:/nix/store/p6iz6wa3lqwzf5nbihpv52zpp1ji9243-xz-5.6.0-bin/bin:/nix/store/pqraddz55s3qlsjxs71zwjchj0c4csfw-file-5.45/bin:/run/wrappers/bin:/home/bombrary/.nix-profile/bin:/nix/profile/bin:/home/bombrary/.local/state/nix/profile/bin:/etc/profiles/per-user/bombrary/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin
+```
+
+### どこに問題があるのか
+
+いくつか試した限りだと、
+* Rustコードの中の`cmd.env("FOO", "BAR")`を取り除くと、正常に動く
+* `cmd.env(...)`があったとしても、`cargo build`ではなく`cargo run`なら正常に動く
+* `patchelf --set-interpreter ... ./program` で `program` のldをちゃんと設定してあげると、`cargo build`でも正常に動く
+
+という事実が確認できた。このことから、事象の再現条件は
+* プログラムが、Nix外部でビルドされたプログラムを呼び出すこと
+* `cmd.env(...)` で環境変数に手を入れること
+* `cargo build`でビルドすること
+
+という複雑なものになっている。`env`を入れるというだけで意図しない環境変数の書き換えが起こるので、明らかに万人が期待する動作になっていない。とても興味深く厄介な挙動であるが、なぜこんなことが起こるのかの解析は（少なくとも自分の実力では）困難だった（どこで環境変数の書き換えが起こっているのかを特定するためにはデバッガをうまく使えばできるのかもしれないが、未勉強）。
+
+ここから得られる教訓の一つとしては、Nix外部でビルドされたバイナリは、100%動くとは限らないということ…。
