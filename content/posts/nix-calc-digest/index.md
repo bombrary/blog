@@ -1,8 +1,8 @@
 ---
-title: "Nixのstore path、ハッシュの計算方法メモ"
+title: "Nixのstore path導出をやってみる"
 date: 2024-03-03T08:43:16+09:00
 draft: true
-tags: []
+tags: ["hash", "sha256"]
 categories: ["Nix"]
 ---
 
@@ -19,21 +19,21 @@ Nixでは、パッケージの再現性を担保するために、`/nix/store/`�
 ほとんど[Store Path](https://nixos.org/manual/nix/unstable/protocols/store-path)の書き起こしみたいになってしまうが書いておく。
 
 まずstore pathは、`/nix/store/<digest>-<name>`の形式を持っている。
-* `<digest>`というのは、fingerprint（後述）をSHA-256でハッシュ化し、その先頭160bitをNix32形式にしたものである
+* `<digest>`というのは、fingerprint（後述）をSHA-256でハッシュ化し、その先頭160bitをNix32形式にしたもの
   * ドキュメントではいまだBase32表現と記載があるが、[Release Note 2.20](https://nixos.org/manual/nix/unstable/release-notes/rl-2.20)でNix32という名前に改められた。理由としては[通常の意味のBase32表現](https://ja.wikipedia.org/wiki/%E4%B8%89%E5%8D%81%E4%BA%8C%E9%80%B2%E6%B3%95#Base32)とは処理が異なり紛らわしいためのようだ
-  * 先頭160bitをNix32表現にするというのは、Nix32表現に直した文字列の先頭20文字を切り取ることと同義である。
+  * 先頭160bitをNix32表現にするというのは、Nix32表現に直した文字列の先頭20文字を切り取ることと同義である
 * fingerprintは、`<type>:sha256:<inner-digest>:/nix/store:<name>`の形式
   * `<type>`というのは以下のいずれか
     * `text:<input store path>:<input store path>:...`：derivation。`<input store path>`には、（存在すれば）derivationが参照する他のファイルのパスを指定する
     * `source:<input store path>:<input store path>:...`：外部から持ってきたファイルをNAR形式でアーカイブ化したもの
     * `output:<id>`：derivationからビルドされたもの、もしくはビルド予定のものを表す。`<id>`には通常`out`が入るが、ビルド出力結果を複数分けているようなパッケージでは`bin`や`lib`、`dev`などが指定されうる。
-  * `<inner-digest>`は、`inner-fingerprint`をSHA256でハッシュ化し、Base16表現にしたもの。
+  * `<inner-digest>`は、`inner-fingerprint`をSHA256でハッシュ化し、Base16表現にしたもの
     * `inner-fingerprint`の計算方法は、上述の`type`によって異なるが、これは後々実際に計算してみつつ解説する
 
 いろいろと書いてあるが、結局`/nix/store`下におかれるパスの種類は実質`fingerprint`の種類であり、すなわち3種類である。
 * text：derivationを表す
 * source：ビルドに必要なファイル、ソースコードを表す
-* output：ビルド生成物を置くディレクトリを表す
+* output：ビルド生成物そのもの、ないしディレクトリを表す
 
 それでは実際にハンズオンとして、fingerprintの計算を手動でやってみる。
 
@@ -119,8 +119,7 @@ gcc $src -o $out/hello
 }
 ```
 
-これで`nix build`コマンドを実行すると、`results`ディレクトリが生成されていることがわかる
-* `/nix/store/<digest>-sample`へのシンボリックリンクになっている
+これで`nix build`コマンドを実行すると、`results`ディレクトリが生成されていることがわかる。それは`/nix/store/<digest>-sample`へのシンボリックリンクになっている
 
 ```console
 [bombrary@nixos:~/tmp/drv-test]$ nix build .#sample
@@ -487,9 +486,9 @@ lxgb38my517cf4605zm4pp39lpszvzjh
 
 ### シンプルなケース
 
-上記の`hello.c`をコンパイルするケースは想像以上に計算が大変なので、まずは別のシンプルなケースで計算してみよう。
+上記の`hello.c`をコンパイルするケースは、コマンドを手で打って計算するのは現実的に不可能である（理由は後述）、そのため別のシンプルなケースで計算してみよう。
 
-まずは以下のように、`flake.nix`に`foo-input`と`foo`を追加する。`foo`というderivationの依存関係として`foo-input`がある、という想定。
+まずは以下のように、`flake.nix`に`foo`、`bar`、`baz`を追加し、依存関係として `foo <- bar <- baz` が満たされるようにする。
 ```nix
 {
   description = "A very basic flake";
@@ -609,41 +608,286 @@ Derive([("out","","","")],[("679584e662eaccaf5810935a21dbed2155f627d5369ba9a4ab8
 
 これを指定の形式でSHA256ハッシュ化し、Nix32表現にすれば、digestの完成で、ちゃんと`xpp1hb67nl8f6mmxg54sidvc96xkhh43`となっていることが確認できた。
 ```console
-[bombrary@nixos:~/tmp/drv-test]$ echo -n 'output:out:sha256:5269760e7ff34e22f60238b25a8a0c535d4dd03af483f97acff61dc515a01d8e:/nix/store:foo' > foo.str
+[bombrary@nixos:~/tmp/drv-test]$ cat foo.drv | sha256sum | cut -d ' ' -f 1 | xargs -I{} echo -n 'output:out:sha256:{}:/nix/store:foo' > foo.str
 
 [bombrary@nixos:~/tmp/drv-test]$ nix-hash --type sha256 --base32 --truncate --flat foo.str
 xpp1hb67nl8f6mmxg54sidvc96xkhh43
 ```
 
-### 実際のケース
+### 実際のケースで手計算するのは現実的に無理という話
 
-outputは以下のファイルであった。
-* `/nix/store/ahrkz8b85n3qcxdsnhr0m6jhg4kw96c3-sample`
-
-このdigestが`ahrkz8b85n3qcxdsnhr0m6jhg4kw96c3`になるのか確認してみよう。
-
-fingerprintの形式は、`output:<id>:sha256:<inner-digest>:/nix/store:<name>`になる。`<id>`はデフォルトでは`out`、`<name>`は`sample`のはずだから、`output:out:sha256:<inner-digest>:/nix/store:sample`の形式になるはずである。
-あとはinner-digestを計算すればよい。これはdrvファイル
-* `/nix/store/rg9vdgc8wf0l1aa2x417fdfl4xv8n60f-sample.drv`
-
-で、outputのパスが空の状態だったものをsha256ハッシュ化することで得られる。
+上記は、`foo.drv <- bar.drv <- baz.drv` とシンプルかつ少ない依存関係だったのでoutputのdigestを手軽に計算できた。しかし、初めのほうで作った`hello.c`をコンパイルするderivationの場合はそうはいかない。実際、その依存関係を見てみよう。
 
 ```console
-[bombrary@nixos:~/tmp/drv-test]$ sed 's,/nix/store/ahrkz8b85n3qcxdsnhr0m6jhg4kw96c3-sample,,g' /nix/store/rg9vdgc8wf0l1aa2x417fdfl4xv8n60f-sample.drv | sha256sum
-5ac78f90e024fc294832d4c92fcbba1382528573715ee5b17077fc195ca80257  -
+[bombrary@nixos:~/tmp/drv-test]$ nix derivation show ./result | jq -r 'to_entries[].value.inputDrvs | to_entries[].key'
+/nix/store/hpkl2vyxiwf7rwvjh9lpij7swp7igilx-bash-5.2-p15.drv
+/nix/store/svc566dmzacxdvdy6d1w4ahhcm9qc8zf-gcc-wrapper-12.3.0.drv
+/nix/store/zf1sc2qhyv3dn4xmkkxb9n23v422bb15-coreutils-9.3.drv
 ```
 
-あとはこれからfingerprintを作成し、sha256ハッシュ化してNix32表現にすれば完成。
+これらのハッシュを計算するためには、それぞれの依存関係となるdrvのハッシュも計算する必要がある。
 ```console
-[bombrary@nixos:~/tmp/drv-test]$ echo -n "output:out:sha256:5ac78f90e024fc294832d4c92fcbba1382528573715ee5b17077fc195ca80257:/nix/store:sample" > sample-out.str
-
-[bombrary@nixos:~/tmp/drv-test]$ nix-hash --type sha256 --base32 --flat --truncate sample-out.str
-msiwqizkl7lisy4scjgf6n9zwp9ih0n9
+[bombrary@nixos:~/tmp/drv-test]$ nix derivation show ./result | jq -r 'to_entries[].value.inputDrvs | to_entries[].key' | xargs -I{} nix derivation show '{}^*' | jq -r 'to_entries[].value.inputDrvs | to_entries[].key' | sort
+/nix/store/0ky7cdwf28g9v5721k3f6avjnmd2j7b5-bootstrap-stage4-gcc-wrapper-12.3.0.drv
+/nix/store/19dxnzhfshi8wgrzz81dlssfi575hvli-acl-2.3.1.drv
+/nix/store/1rfn1ylygzdbca5b54qjs6n4vnnsx85f-bash52-006.drv
+/nix/store/2nhkd5d495jl6k5j7yqjg3hj50znngqr-bootstrap-stage4-stdenv-linux.drv
+/nix/store/3fd7s6gjwi6rxfqw00bjq9ghnvazvnnn-glibc-2.38-44.drv
+/nix/store/3fr8xi1g9ij4mch4si2hdmhlzkd0mprq-xz-5.4.4.drv
+/nix/store/5jrd75v747s76s16zxk59384xfcjqn58-bash-5.2.tar.gz.drv
+/nix/store/6awqwnrnpvpyps8ww32dw9xih0va84y0-binutils-wrapper-2.40.drv
+/nix/store/6k05dfl68y2m382xd5hanfvj7j8c73p1-bash52-003.drv
+/nix/store/6xwbrn3wdxwyphpj64rphhms41vxvqxb-bash52-009.drv
+/nix/store/7j0r588ymbv6dq8c98wvzklcsk42wvpb-bash52-014.drv
+/nix/store/8f2h184nxqib0jc70g6gbkyh8h1ly2fd-coreutils-9.3.tar.xz.drv
+/nix/store/a68j9bys24cr3m1bixy4bz92q27bmx7k-bash52-005.drv
+/nix/store/ag9cnvb4pcgcj0rbkzva6qdz54fnr8fg-bash52-012.drv
+/nix/store/ah8jsm934168mfnmkf54fh0ms38k6nsm-bash52-015.drv
+/nix/store/cd2jkj7g81df8drk4imgishgj9blr8a4-attr-2.5.1.drv
+/nix/store/chvzhib9l03rzvapkrww26bskj576vsc-expand-response-params.drv
+/nix/store/dfx2vbpsj6jxvdh8lrn61cv73b5j9fhl-gcc-12.3.0.drv
+/nix/store/dp1g2b9khk97gddvrk04y86kv6a4k193-perl-5.38.2.drv
+/nix/store/f9hs49y4q8bvg4ffdiycbafd5r1gb13r-bash52-008.drv
+/nix/store/hpkl2vyxiwf7rwvjh9lpij7swp7igilx-bash-5.2-p15.drv
+/nix/store/j2zlvksmwzs79zvsqmz45jn39zsyr31f-bash52-002.drv
+/nix/store/khx67l585s1z60g8bc6lg21vziaxnwld-bison-3.8.2.drv
+/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv
+/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv
+/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv
+/nix/store/kssqadrh4044p2na6fclnyh6pv3r9l5s-bash52-013.drv
+/nix/store/l81h2pb34h1hrgf8hgayzl28zzmqnfm0-bash52-010.drv
+/nix/store/lz83gw2vn97i4phf7ngr49jc68qcginl-gnugrep-3.11.drv
+/nix/store/nb8wd3xgfp34vic7xw7rkb186pq7hwfh-bash52-001.drv
+/nix/store/nsw82ybp208qkgs87s5b2h74978lrgd8-bash52-011.drv
+/nix/store/pk6bdyws4n421ak7mwvk5nkg0li7cvq2-bash52-004.drv
+/nix/store/rz74q7y5r38in9zdzq9r2brf5yh6lpy5-bash52-007.drv
+/nix/store/sjlm8agj6m3cpglc5v11d40cj7j6kin2-fix-static.patch.drv
+/nix/store/w2dimn64nvcm6zl5663h9g6xkz4gn1sk-autoreconf-hook.drv
+/nix/store/xcqgww1cccv488clnp192k5xjdadavb8-bootstrap-stage4-stdenv-linux.drv
+/nix/store/xcqgww1cccv488clnp192k5xjdadavb8-bootstrap-stage4-stdenv-linux.drv
+/nix/store/yqbbb8nzvisk9pxxi9z2xcri4ivbj1dw-gmp-with-cxx-6.3.0.drv
+/nix/store/zf1sc2qhyv3dn4xmkkxb9n23v422bb15-coreutils-9.3.drv
 ```
 
-### 補足
+そしてこれらのdrvに依存するdrvについても同じようにハッシュを計算することになるので、手で計算するのが絶望的であることがわかる。
+さらに[libstore/derivation.cc](https://github.com/NixOS/nix/blob/2.21.0/src/libstore/derivations.cc#L822)を見るに、derivationにはtypeの概念があるらしく、typeによっても計算方法を変えなければいけないのがさらに手計算を厳しくする。
+
+また、上記の出力で同じパスが重複しているものがあるのがわかるだろう。このような、別の依存関係のツリーの中で同じdrvファイルが見つかった場合、そのハッシュを計算するのは二度手間になってしまうので、高速化のためにはメモ化をやっておく必要がある。
 
 outputのhashの計算方法については以下が参考になる。
 * `libstore/derivation.cc`の`DrvHash hashDerivationModulo()`
 * `libstore/derivation.cc`の`DrvHash pathDerivationModulo()`
 * `libstore/derivation.cc`の`unparse()`関数
+
+## （おまけ）依存関係を列挙するPythonスクリプト
+
+drvファイルを雑にパースし、inputDrvsを再帰的にたどってツリー形式で表示するスクリプトを書いてみた。すでに現れたdrvについては省略するようにした。
+
+```python
+import sys
+
+
+class State:
+    def __init__(self, s):
+        self.i = 0
+        self.s = s
+
+    def next(self, di=1):
+        self.i += di
+
+    def get(self) -> str:
+        return self.s[self.i]
+
+    def rest(self) -> str:
+        return self.s[self.i :]
+
+
+def consume(s: State, expected: str):
+    for i in range(len(expected)):
+        assert s.get() == expected[i]
+        s.next()
+
+
+def skip_brace(s: State):
+    consume(s, "[")
+    cnt = 1
+    while cnt > 0:
+        match s.get():
+            case "[":
+                cnt += 1
+            case "]":
+                cnt -= 1
+        s.next()
+
+
+def parse_drv(state: State) -> tuple[list[str], list[str]]:
+    consume(state, "Derive(")
+    output_paths = parse_output_paths(state)
+    consume(state, ",")
+    input_drvs = parse_input_drvs(state)
+    return output_paths, input_drvs
+
+
+def parse_output_paths(state: State) -> list[str]:
+    consume(state, "[")
+    output_paths = []
+    while True:
+        if state.get() == "(":
+            output_path = parse_output_path(state)
+            output_paths.append(output_path)
+            if state.get() == ",":
+                consume(state, ",")
+        else:
+            break
+    consume(state, "]")
+    return output_paths
+
+
+def parse_output_path(s: State) -> str:
+    consume(s, "(")
+    _ = parse_str(s)
+    consume(s, ",")
+    path = parse_str(s)
+    consume(s, ",")
+    _ = parse_str(s)
+    consume(s, ",")
+    _ = parse_str(s)
+    consume(s, ")")
+    return path
+
+
+def parse_input_drvs(state: State) -> list[str]:
+    consume(state, "[")
+    input_drvs = []
+    while True:
+        if state.get() == "(":
+            drv = parse_input_drv(state)
+            input_drvs.append(drv)
+            if state.get() == ",":
+                consume(state, ",")
+        else:
+            break
+
+    return input_drvs
+
+
+def parse_input_drv(s: State) -> str:
+    consume(s, "(")
+    drv = parse_str(s)
+    consume(s, ",")
+    skip_brace(s)
+    consume(s, ")")
+    return drv
+
+
+def parse_str(s: State) -> str:
+    consume(s, '"')
+
+    i = s.rest().find('"')
+    drv = s.rest()[:i]
+    s.next(i)
+
+    consume(s, '"')
+    return drv
+
+
+SET = set()
+
+
+def list_input_drvs(path: str, last: bool, header=""):
+    with open(path) as f:
+        s = f.read()
+        state = State(s)
+        _, input_drvs = parse_drv(state)
+
+        for i, input_drv in enumerate(input_drvs):
+            last = i == len(input_drvs) - 1
+            if input_drv not in SET:
+                SET.add(input_drv)
+                print_drv(input_drv, "", last, header)
+
+                if last:
+                    children_header = header + "   "
+                else:
+                    children_header = header + "│  "
+                list_input_drvs(input_drv, last, children_header)
+            else:
+                print_drv(input_drv, ": cached", last, header)
+
+
+def print_drv(drv: str, msg: str, last: bool, header: str):
+    print(header, end="")
+    if last:
+        print("└──", end="")
+    else:
+        print("├──", end="")
+    print(drv, end="")
+    print(msg)
+
+
+if __name__ == "__main__":
+    path = sys.argv[1]
+    list_input_drvs(path, True, "")
+```
+
+実行結果。
+```console
+[bombrary@nixos:~/tmp/drv-test]$ nix run nixpkgs#python3 -- main.py /nix/store/0hyv285szbkl1gxiyjblv07wj1s6gdqb-sample.drv
+├──/nix/store/hpkl2vyxiwf7rwvjh9lpij7swp7igilx-bash-5.2-p15.drv
+│  ├──/nix/store/0ky7cdwf28g9v5721k3f6avjnmd2j7b5-bootstrap-stage4-gcc-wrapper-12.3.0.drv
+│  │  ├──/nix/store/3fd7s6gjwi6rxfqw00bjq9ghnvazvnnn-glibc-2.38-44.drv
+│  │  │  ├──/nix/store/1jifgbdffb6nnkhjsycfsx7m6rrlbl9y-xgcc-12.3.0.drv
+│  │  │  │  ├──/nix/store/2gc1d4sfrvvb10ii4ynmjq25vp0wljgf-bootstrap-stage-xgcc-stdenv-linux.drv
+│  │  │  │  │  ├──/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv
+│  │  │  │  │  │  ├──/nix/store/b7irlwi2wjlx5aj1dghx4c8k3ax6m56q-busybox.drv
+│  │  │  │  │  │  └──/nix/store/bzq60ip2z5xgi7jk6jgdw8cngfiwjrcm-bootstrap-tools.tar.xz.drv
+│  │  │  │  │  ├──/nix/store/rsd37xysabh6hn4ra3ldvf9hlg6l21hl-bootstrap-stage-xgcc-gcc-wrapper-.drv
+│  │  │  │  │  │  ├──/nix/store/i5d026pciprf1m4vwjbw33qlv64hs2pp-bootstrap-stage0-glibc-bootstrapFiles.drv
+
+...
+
+│  │        ├──/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv: cached
+│  │        ├──/nix/store/xcqgww1cccv488clnp192k5xjdadavb8-bootstrap-stage4-stdenv-linux.drv: cached
+│  │        └──/nix/store/z4x4wa4ahsc6xn40j847dsrnagxd41w0-gmp-6.3.0.tar.bz2.drv: cached
+│  ├──/nix/store/chvzhib9l03rzvapkrww26bskj576vsc-expand-response-params.drv: cached
+│  ├──/nix/store/dfx2vbpsj6jxvdh8lrn61cv73b5j9fhl-gcc-12.3.0.drv: cached
+│  ├──/nix/store/hpkl2vyxiwf7rwvjh9lpij7swp7igilx-bash-5.2-p15.drv: cached
+│  ├──/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv: cached
+│  ├──/nix/store/lz83gw2vn97i4phf7ngr49jc68qcginl-gnugrep-3.11.drv: cached
+│  └──/nix/store/zf1sc2qhyv3dn4xmkkxb9n23v422bb15-coreutils-9.3.drv: cached
+└──/nix/store/zf1sc2qhyv3dn4xmkkxb9n23v422bb15-coreutils-9.3.drv: cached
+```
+
+例えば次のようにすれば、derivationが依存するパッケージを列挙できる。
+```
+[bombrary@nixos:~/tmp/drv-test]$ nix run nixpkgs#python3 -- main.py /nix/store/0hyv285szbkl1gxiyjblv07wj1s6gdqb-sample.drv | grep -v cached | sed 's,.*\(/nix/store/.*\)\.drv,\1,g'
+/nix/store/hpkl2vyxiwf7rwvjh9lpij7swp7igilx-bash-5.2-p15
+/nix/store/0ky7cdwf28g9v5721k3f6avjnmd2j7b5-bootstrap-stage4-gcc-wrapper-12.3.0
+/nix/store/3fd7s6gjwi6rxfqw00bjq9ghnvazvnnn-glibc-2.38-44
+/nix/store/1jifgbdffb6nnkhjsycfsx7m6rrlbl9y-xgcc-12.3.0
+/nix/store/2gc1d4sfrvvb10ii4ynmjq25vp0wljgf-bootstrap-stage-xgcc-stdenv-linux
+...
+/nix/store/hbd9bkhy0x7qfnl8p85793hh45yzdzsy-attr-2.5.1.tar.gz
+/nix/store/x30m3rvz7j39imcm6i25mf444kiavlbp-acl-2.3.1.tar.gz
+/nix/store/8f2h184nxqib0jc70g6gbkyh8h1ly2fd-coreutils-9.3.tar.xz
+/nix/store/yqbbb8nzvisk9pxxi9z2xcri4ivbj1dw-gmp-with-cxx-6.3.0
+```
+
+## nix derivation showコマンドはどこからoutput pathを読み込んでいるのか
+
+`nix derivation show`コマンドは、`nix derivation show ./result`のように`./result`を指定してそれに関連するderivationを出力してくれるが、これはoutput pathからderivation pathを引いているように見える。output pathはderivationの情報をもとにハッシュ化して作られているが、ハッシュは不可逆であるから、そこからderivationを直接引くことは不可能のはずである。そうするとあり得る可能性としては、
+* 毎回 `/nix/store` からdrvファイルを全探索している
+* 対応関係をキャッシュとして保存しているDBのが存在する
+
+が考えられるが、どうやら後者のようである。 調べたところ、`/nix/var/nix/db/db.sqlite`にSQLiteデータベースとしてデータを格納しているらしい。これについては少しだけ[Glossaly](https://nixos.org/manual/nix/unstable/glossary#gloss-nix-database)に載っている。
+
+実際、ソースコードをたどってみると、以下の事実がわかる。
+* `libcmd/installables.cc`の`Installable::toDerivations`で、`derivedPath`に対応するderiverを呼び出す
+* `libcmd/installables.cc`の`getDeriver`がさらに上記の処理を担う
+* `libstore/local-store.cc`の`LocalStore::queryValidDerivers`でSQLiteの呼び出しがされている
+* `libstore/local-store.cc`の`LocalStore::openDB`で`dbPath`が指定されている：`${dbDir}/db.sqlite`である
+* `libstore/local-store.cc`の`LocalStore`のコンストラクタで`dbDir`が設定されている
+
+```sh
+nix run nixpkgs#sqlite -- 'file:///nix/var/nix/db/db.sqlite?immutable=1'
+```
