@@ -1,22 +1,32 @@
 ---
-title: "Nixでderivationとその依存関係を調べる"
-date: 2024-03-31T03:54:17Z
-draft: true
-tags: []
-categories: []
+title: "Nixのパッケージ、derivation、その依存関係を調べる"
+date: 2024-04-01T09:00:00Z
+tags: ["derivation", "package", "nix-index", "nix-tree", "nixos"]
+categories: ["Nix"]
+toc: true
 ---
 
 Nixで、あるderivationに依存しているderivationを列挙する方法を知りたくなったので調べ、スクリプトを作成した。
 
-## （前置き）パッケージのビルドとderivationについて
+## 前置き
 
-NixOSを使うとなるとたいていは`configuration.nix`や`home.nix`を設定するだけなので、もしかしたらderivationを知らないという人も少なからずいそうなので、初めに簡単に解説する。
+### 用語解説
+
+[Glossary](https://nixos.org/manual/nix/stable/glossary.html)を参考にする。
+* [パッケージ](https://nixos.org/manual/nix/stable/glossary.html#package)：ファイルやデータの集まり。
+* [derivation](https://nixos.org/manual/nix/stable/glossary.html#gloss-derivation)：何らかのビルドタスクを行うための記述書。端的にはパッケージを作るための仕様書である。次の節で詳しく述べる
+
+### パッケージのビルドとderivationについて
+
+NixOSを使うとなるとたいていは`configuration.nix`や`home.nix`を設定するだけなので、derivationに触れない場合が多いかもしれないので、一応ここで少し詳細な解説をはさむ。
 
 derivationは、（一つの使い道としては）ビルドの仕様書である。原義としては、[公式doc](https://nixos.org/manual/nix/stable/language/derivations.html)を引用すると、
 > a specification for running an executable on precisely defined input files to repeatably produce output files at uniquely determined file system paths
+
 である。「正確に定義された入力ファイルをもとに繰り返し出力ファイルを生成し、一意に定められたシステムパスにそれを配置するための実行ファイルを動かすための仕様書」ということになる。つまり、derivationには、
 * 入力
 * （何らかの出力を生成する）実行ファイル
+
 を書くことができる。
 
 この特徴はプログラムのビルドに使える。例えば何らかのプログラムをビルドしたいという場合、ライブラリを持ってきて、それをコンパイルして、適当な所に生成物を配置する、という過程を踏むことになる。この情報をderivationに書くことができる。
@@ -24,23 +34,37 @@ Nixではあらゆるツールやアプリケーションのビルド方法をde
 
 もちろん、derivationの定義としては別にビルドに限らず使える。例えば[buildEnv](https://nixos.org/manual/nixpkgs/stable/#sec-building-environment)は、アプリケーションをビルドするのではなく、アプリケーションを集めたディレクトリ構造を生成する。
 
-## 準備
+## あるアプリ・ツールがどのパッケージに収録されているのかを知る
 
-今回パッケージの列挙に用いるパッケージを適当に作ってビルドしてみよう。
+### インストール済みの場合
 
-まず、flakeのひな形を作成。
-```console
-bombrary@nixos:~/deps$ nix flake init
-wrote: /home/bombrary/deps/flake.nix
-```
+すでにアプリ・ツールが自分の環境に入っており、それがどのパッケージに収録されていたのかを特定したい場合。
 
-## あるアプリケーションがどのderivationでビルドされたかを特定する
-
-derivation名だけ知りたいのであれば、`which`と`realpath`を組み合わせて、アプリケーションが`/nix/store`のどのディレクトリに配置されているのかを見ればよい。以下は、lsコマンドが`coreutils-full-9.3`に含まれていることを特定する例。
+`which`と`realpath`を組み合わせて、アプリケーションが`/nix/store`のどのディレクトリに配置されているのかを見ればよい。以下は、lsコマンドが`coreutils-full-9.3`に含まれていることを特定する例。
 ```console
 bombrary@nixos:~$ realpath `which ls`
 /nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3/bin/coreutils
 ```
+
+### インストール済み出ない場合
+
+まだアプリが自分の環境にインストールされておらず、どのパッケージを入れれば目的のアプリが手に入るのか分からない場合。
+
+その場合は[nix-index](https://github.com/nix-community/nix-index)を使う。
+
+nix-indexを使うためには一度データベースを作成する必要があるが、生成には時間がかかるため、代わりにすでに作成済みのnix-indexである[nix-index-database](https://github.com/nix-community/nix-index-database)を使うとよい。
+
+以下は、lsコマンドの入っているパッケージを検索する例。`-r` 引数をつければ正規表現で検索できる。
+```console
+bombrary@nixos:~$ nix run github:nix-community/nix-index-database -- -r 'bin/ls$' | head
+(zulip.out)                                           0 s /nix/store/lq69lvdricnhah5drlw3114rfc81pwr8-zulip-5.11.0-fhs/usr/bin/ls
+(zulip.out)                                           0 s /nix/store/cyadcn0rq5q59ysqvs212y0rhyvf0i7p-zulip-5.11.0-usr-target/bin/ls
+(zsnes2.out)                                          0 s /nix/store/997sgfzlfi3794d3b3qgprbkrzh6w7g1-coreutils-9.4/bin/ls
+(zettlr.out)                                          0 s /nix/store/c4j1a63mwzb96xym5ncbrvl4nk3wvrgl-zettlr-3.0.2-fhs/usr/bin/ls
+...
+```
+
+## あるアプリ・ツールがどのderivationでビルドされたのかを知る
 
 derivationファイルそのものを見たい場合は、[nix derivation showコマンド](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-derivation-show)を使う。
 
