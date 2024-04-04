@@ -1,20 +1,30 @@
 ---
-title: "Nixのパッケージ、derivation、その依存関係を調べる"
-date: 2024-04-01T09:00:00Z
+title: "Nixのパッケージ・derivationの探り方まとめ"
+date: 2024-04-04T09:00:00+09:00
 tags: ["derivation", "package", "nix-index", "nix-tree", "nixos"]
 categories: ["Nix"]
 toc: true
 ---
 
-Nixで、あるderivationに依存しているderivationを列挙する方法を知りたくなったので調べ、スクリプトを作成した。
+Nixで、あるパッケージがどのパッケージに依存しているのかを調べたくなったのを発端に、パッケージやその依存関係の調べ方についていろいろ調べた。
 
 ## 前置き
 
 ### 用語解説
 
-[Glossary](https://nixos.org/manual/nix/stable/glossary.html)を参考にする。
+いろいろとNix固有（？）の言葉が出てくるため、ここでまとめて解説しておく。
+
+[Glossary](https://nixos.org/manual/nix/stable/glossary.html)と[Nix Pills Chapter9](https://nixos.org/guides/nix-pills/automatic-runtime-dependencies)を参考にする。
 * [パッケージ](https://nixos.org/manual/nix/stable/glossary.html#package)：ファイルやデータの集まり。
 * [derivation](https://nixos.org/manual/nix/stable/glossary.html#gloss-derivation)：何らかのビルドタスクを行うための記述書。端的にはパッケージを作るための仕様書である。次の節で詳しく述べる
+  * [output](https://nixos.org/manual/nix/stable/glossary#gloss-output)：derivationから生成されたもの
+* [store object](https://nixos.org/manual/nix/stable/glossary#gloss-store-object)：Nixによって管理されているあらゆるオブジェクトをさす。通常は`/nix/store/`に保管されているはず
+* [store path](https://nixos.org/manual/nix/stable/glossary#gloss-store-path)：store objectが置かれている場所。通常は`/nix/store/`にあるはず
+* [build depencencies](https://nixos.org/guides/nix-pills/automatic-runtime-dependencies#id1399)：ビルドの時点で必要になる依存関係。ビルドに必要なソースコードや、derivationの中で参照されている別のderivationを指す。これはderivationに記載されている
+* [runtime dependencies](https://nixos.org/guides/nix-pills/automatic-runtime-dependencies#id1401)：実行時に必要になる依存関係。動的ライブラリや、ほかのパッケージの実行ファイルなどを指す
+  * これを検出する方法はかなり素朴で、生成したパッケージをNAR形式で固め、そこに埋め込まれているoutputのパスがruntime dependenciesである
+* [closure](https://nixos.org/manual/nix/stable/glossary#gloss-closure)：あるstore pathに直接または間接的に依存するstore pathの集合
+  * 閉包（closure）という名の通り、closureの任意のstore pathについて、それに依存するstore pathは必ずそのclosureの要素になっている（言い換えると、ある要素に対して「その依存関係を列挙する」という操作を定義したとき、closureはその操作について閉じている）
 
 ### パッケージのビルドとderivationについて
 
@@ -36,17 +46,22 @@ Nixではあらゆるツールやアプリケーションのビルド方法をde
 
 ## あるアプリ・ツールがどのパッケージに収録されているのかを知る
 
-### インストール済みの場合
+### パッケージ名を推測して調べる場合
+
+* [NixOS Search](https://search.nixos.org/packages)を用いる
+* CLI上で調べたいなら、`nix search`コマンドを用いる。例えば`nix search nixpkgs <正規表現>`で、nixpkgsの中から`<正規表現>`に合致するパッケージを検索してくれる。
+
+### インストール済みのバイナリ・ファイルから調べたい場合
 
 すでにアプリ・ツールが自分の環境に入っており、それがどのパッケージに収録されていたのかを特定したい場合。
 
-`which`と`realpath`を組み合わせて、アプリケーションが`/nix/store`のどのディレクトリに配置されているのかを見ればよい。以下は、lsコマンドが`coreutils-full-9.3`に含まれていることを特定する例。
+`which`と`realpath`を組み合わせて、アプリケーションが`/nix/store`のどのディレクトリに配置されているのかを確認する。
 ```console
 bombrary@nixos:~$ realpath `which ls`
 /nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3/bin/coreutils
 ```
 
-### インストール済み出ない場合
+### インストール済みでないバイナリ・ファイルから調べたい場合
 
 まだアプリが自分の環境にインストールされておらず、どのパッケージを入れれば目的のアプリが手に入るのか分からない場合。
 
@@ -64,9 +79,15 @@ bombrary@nixos:~$ nix run github:nix-community/nix-index-database -- -r 'bin/ls$
 ...
 ```
 
-## あるアプリ・ツールがどのderivationでビルドされたのかを知る
+## パッケージがどのderivationでビルドされたのかを知る
 
-derivationファイルそのものを見たい場合は、[nix derivation showコマンド](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-derivation-show)を使う。
+`niq-store --query --deriver`を用いる。以下はlsコマンドがどのパッケージに収録されているのかを見る例。
+```console
+bombrary@nixos:~/deps$ nix-store --query --deriver `which ls`
+/nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
+```
+
+derivationファイルの内容を確認したい場合、[nix derivation showコマンド](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-derivation-show)を使う。
 
 以下はlsコマンドが収録されているパッケージのderivationの情報を出力する例。
 ```console
@@ -169,28 +190,7 @@ bombrary@nixos:~$ nix derivation show `which ls`
 nix derivation show /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv^*
 ```
 
-derivationから、以下のことがわかる。
-* パッケージ名とバージョン：coreutils-full-9.3にlsが収録されている
-* 依存関係：coreutilsをビルドするためには、さらに次のderivationが必要である
-
-```console
-bombrary@nixos:~$ nix derivation show `which ls` | jq -r 'to_entries[].key'
-/nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
-
-bombrary@nixos:~$ nix derivation show `which ls` | jq -r 'to_entries[].value.inputDrvs | to_entries[].key'
-/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
-/nix/store/98sv0g544bqmks49d6vgylbkh9sccdvm-attr-2.5.1.drv
-/nix/store/9jcfzyyb0h86mvc31s9qmxs6lncqrwhc-acl-2.3.1.drv
-/nix/store/akpwym6q116hivciyq2vqj9n5jk9f5i6-xz-5.4.4.drv
-/nix/store/d1qldhg6iix84bqncbzml2a1nw8p95bg-gmp-with-cxx-6.3.0.drv
-/nix/store/ks5ivc59k57kwii93qlsfgcx2a7xma1k-autoreconf-hook.drv
-/nix/store/mnrjvk62d35v8514kc5w31fg3py0smr8-coreutils-9.3.tar.xz.drv
-/nix/store/mvvhw7jrrr8wnjihpalw4s3y3g7jihgw-stdenv-linux.drv
-/nix/store/szciaprmwb7kdj7zv1b56midf7jfkjnw-bash-5.2-p15.drv
-/nix/store/wd100hlzyh5w9zkfljkaagp87b7h7733-openssl-3.0.12.drv
-```
-
-なお、derivationファイルの実態は `/nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv` であり、ATermという形式で書かれている（[参考](https://nixos.org/manual/nix/stable/protocols/derivation-aterm)）。`nix derivation show` コマンドではこれをJSONに変換して出力している。生のデータを見てみたいなら直接 `cat` で見てみるとよい。以下はcoreutilsの結果（分かりやすく改行している）。
+なお、`nix derivation show` コマンドは `/nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv` をJSONで分かりやすく出力しているに過ぎず、drvファイル自体はATermという形式で書かれている（[参考](https://nixos.org/manual/nix/stable/protocols/derivation-aterm)）。これをJSONに変換して出力している。生のデータを見てみたいなら直接 `cat` で見てみるとよい。以下はcoreutilsの結果（分かりやすく改行している）。
 ```console
 bombrary@nixos:~$ nix derivation show `which ls` | jq -r 'to_entries[].key'
 /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
@@ -259,12 +259,13 @@ Derive(
 )
 ```
 
-## derivationに依存するderivationの特定
+## derivationのbuild dependenciesを知る
 
-先述のとおり、`nix derivation show` コマンドで出力されたJSON結果のうち、`inputDrvs`に書かれているものがそれである。
+`nix derivation show` コマンドで出力されたJSON結果のうち、`inputDrvs`と`inputSrcs`に書かれているものがそれである。
 
 ```console
-bombrary@nixos:~$ nix derivation show `which ls` | jq -r 'to_entries[].value.inputDrvs | to_entries[].key'
+bombrary@nixos:~/deps$ nix derivation show `which ls` | jq -r 'to_entries[].value | (.inputDrvs | to_entries[].key),(.inputSrcs[])' | sort
+/nix/store/1cwqp9msvi5z8517czfl88dd42yhrdwg-separate-debug-info.sh
 /nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
 /nix/store/98sv0g544bqmks49d6vgylbkh9sccdvm-attr-2.5.1.drv
 /nix/store/9jcfzyyb0h86mvc31s9qmxs6lncqrwhc-acl-2.3.1.drv
@@ -274,188 +275,96 @@ bombrary@nixos:~$ nix derivation show `which ls` | jq -r 'to_entries[].value.inp
 /nix/store/mnrjvk62d35v8514kc5w31fg3py0smr8-coreutils-9.3.tar.xz.drv
 /nix/store/mvvhw7jrrr8wnjihpalw4s3y3g7jihgw-stdenv-linux.drv
 /nix/store/szciaprmwb7kdj7zv1b56midf7jfkjnw-bash-5.2-p15.drv
+/nix/store/v6x3cs394jgqfbi0a42pam708flxaphh-default-builder.sh
+/nix/store/wd100hlzyh5w9zkfljkaagp87b7h7733-openssl-3.0.12.drv
+```
+
+上記のように調べてもよいが、`nix-store --query --references`のほうがシンプルな解決策かもしれない。`--references`オプションを用いることで、derivationに直接依存する入力を検索する。
+
+```console
+bombrary@nixos:~/deps$ nix-store --query --references /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv | sort
+/nix/store/1cwqp9msvi5z8517czfl88dd42yhrdwg-separate-debug-info.sh
+/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
+/nix/store/98sv0g544bqmks49d6vgylbkh9sccdvm-attr-2.5.1.drv
+/nix/store/9jcfzyyb0h86mvc31s9qmxs6lncqrwhc-acl-2.3.1.drv
+/nix/store/akpwym6q116hivciyq2vqj9n5jk9f5i6-xz-5.4.4.drv
+/nix/store/d1qldhg6iix84bqncbzml2a1nw8p95bg-gmp-with-cxx-6.3.0.drv
+/nix/store/ks5ivc59k57kwii93qlsfgcx2a7xma1k-autoreconf-hook.drv
+/nix/store/mnrjvk62d35v8514kc5w31fg3py0smr8-coreutils-9.3.tar.xz.drv
+/nix/store/mvvhw7jrrr8wnjihpalw4s3y3g7jihgw-stdenv-linux.drv
+/nix/store/szciaprmwb7kdj7zv1b56midf7jfkjnw-bash-5.2-p15.drv
+/nix/store/v6x3cs394jgqfbi0a42pam708flxaphh-default-builder.sh
 /nix/store/wd100hlzyh5w9zkfljkaagp87b7h7733-openssl-3.0.12.drv
 ```
 
 さらに深い階層をインタラクティブに確認したい、という場合には、[nix-tree](https://github.com/utdemir/nix-tree)を使うとよい。
 
-## 再帰的に依存関係を調べる
+## derivationの間接的なbuild dependenciesもすべて知る
 
-nix-treeではインタラクティブに深い階層の依存関係を探れるが、一括で全部表示するためにはどうすればよいのだろうか。
-これに関しては、いまいち調べ方がわからず、コマンドでの調べ方が見つからない。そのためPythonスクリプトを書いた。
-
-### drvファイルのパース
-
-drvファイルの中に依存関係が書かれているため、まずはdrvファイルをパースする。drvファイルをぐっとにらむと、データ型としては以下のパターンしかなさそうだとわかる。
-* 文字列：`"` でくくられている
-* リスト：`[`と`]`でくくられている
-* タプル：`(`と`)`でくくられている
-
-最初の`Derive(...)`もタプルとして解釈することにすると、drvの形式をパースする関数`parse_drv`は次のように実装できる。ほとんどの`parse_*`関数は、返り値を`(パースした値, 残りの文字列)`のタプルで返すように実装している。
-
-```python
-def parse_drv(s: str) -> tuple:
-    s = s[len("Derive("):]
-    r, _ = parse_tuple(s)
-    return r
-
-def parse_ch(s: str) -> tuple[str, str]:
-    return s[0], s[1:]
-
-def parse_prim(head: str, s: str) -> tuple[tuple|list|str, str]:
-    match head:
-        case "(":
-            return parse_tuple(s)
-        case "[":
-            return parse_list(s)
-        case "\"":
-            return parse_str(s)
-        case _:
-            raise ValueError("Invalid token")
-
-def parse_tuple(s: str) -> tuple[tuple, str]:
-    res = []
-    while True:
-        c, s = parse_ch(s)
-        match c:
-            case ")":
-                break
-            case ",":
-               pass
-            case _:
-                r, s = parse_prim(c, s)
-                res.append(r)
-    return tuple(res), s
-
-def parse_list(s: str) -> tuple[list, str]:
-    res = []
-    while True:
-        c, s = parse_ch(s)
-        match c:
-            case "]":
-                break
-            case ",":
-                pass
-            case _:
-                r, s = parse_prim(c, s)
-                res.append(r)
-    return res, s
-
-def parse_str(s: str) -> tuple[str, str]:
-    res = ""
-    while True:
-        match s[0]:
-            case "\"":
-                c, s = parse_ch(s)
-                if res and res[-1] == "\\":
-                    res += c
-                else:
-                    break
-            case _:
-                c, s = parse_ch(s)
-                res += c
-    return res, s
-```
-
-### 依存関係の再帰的な読み取りと出力
-
-上記の関数をもとに、再帰的に依存関係を探る関数`show_deps`を実装する
-* `nix derivation show`コマンドでのinputDrvsは、drvファイルでは`Derive(...)`の2番目の要素に入っているので、そこから取り出す
-* ある依存関係がほかのderivationの依存関係になっていることがあるが、同じものが出てきた場合は省略する。省略のためのメモとして`SET`を用意している
-* ツリー構造として読み込んだ後、`show_tree`で出力する
-
-```python
-import sys
-
-SET = set()
-
-Tree = None | dict[str, "Tree"]
-
-
-def load_drv(path: str) -> tuple:
-    with open(path) as f:
-        return parse_drv(f.read())
-
-
-def dump_deps(path: str) -> Tree:
-      if path not in SET:
-          SET.add(path)
-
-          drv = load_drv(path)
-          input_drvs = drv[1]
-          return { input_drv_path: dump_deps(input_drv_path) for input_drv_path, _ in input_drvs }
-      else:
-          return None
-
-
-def show_tree(tree: Tree, last: bool, header=""):
-    if tree is None:
-        return
-
-    for i, (k, v) in enumerate(tree.items()):
-        last = i == len(tree) - 1
-        print(header, end="")
-        if last:
-            print("└──", end="")
-        else:
-            print("├──", end="")
-
-        if v is None:
-            print(f'{k}: cached')
-        else:
-            print(k)
-
-            if last:
-                header_children = header + "   "
-            else:
-                header_children = header + "│  "
-            show_tree(v, last, header_children)
-
-
-if __name__ == "__main__":
-    tree = dump_deps(sys.argv[1])
-    show_tree(tree, True, "")
-```
-
-実行例。
+`nix-store --query --requisites`で可能。`--requisites`をつけることで、依存関係の[閉包（closure）](https://nixos.org/manual/nix/stable/glossary#gloss-closure)を求めることができる。
+閉包という名のとおり、このコマンドで出力されたdrvの集合に対して、どのdrvもそれに依存するdrvが集合の中に存在する（つまり集合の中で「閉じている」という状態）。
 
 ```console
-bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv | head
-├──/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
-│  ├──/nix/store/1vzpfyxn64qx5my47kc0hjys37404hls-gcc-12.3.0.drv
-│  │  ├──/nix/store/1032as2ph6j8pwan8dijl60jmfnzfi6b-perl-5.38.2.drv
-│  │  │  ├──/nix/store/2zsw6v5l9zzhslrrdqpljnb425njg1pf-perl-5.38.2.tar.gz.drv
-│  │  │  ├──/nix/store/9xhbdxvc93v7hc4vplng07z3y3lmfwvq-bootstrap-stage1-stdenv-linux.drv
-│  │  │  │  ├──/nix/store/271ydjn02v2r49l5nn6yw5lr3nc5ydbi-update-autotools-gnu-config-scripts-hook.drv
-│  │  │  │  │  ├──/nix/store/303sqdqr3x78jlgs00pixbdwv7hqizq1-gnu-config-2023-09-19.drv
-│  │  │  │  │  │  ├──/nix/store/h11pn2l5rszzgjrl84qw2ifr33rdkjcq-config.sub-28ea239.drv
-│  │  │  │  │  │  ├──/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv
-│  │  │  │  │  │  │  ├──/nix/store/b7irlwi2wjlx5aj1dghx4c8k3ax6m56q-busybox.drv
+bombrary@nixos:~/deps$ nix-store --query --requisites /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv | sort
+/nix/store/001gp43bjqzx60cg345n2slzg7131za8-nix-nss-open-files.patch
+/nix/store/00qr10y7z2fcvrp9b2m46710nkjvj55z-update-autotools-gnu-config-scripts.sh
+/nix/store/03glsh6vz72mzrwf22w4p7a6aasa3f8n-python-setup-hook.sh.drv
+/nix/store/0b8qs04dfrc3ni8b1xkzsvb0rj85ji4j-libssh2-1.11.0.drv
+/nix/store/0bmmg6xn0jnicvp7jk099k6356n32m0k-lambda-ICE-PR109241.patch
+/nix/store/0df8rz15sp4ai6md99q5qy9lf0srji5z-0001-Revert-libtool.m4-fix-nm-BSD-flag-detection.patch
+/nix/store/0fakyqwlvwjpqshals88ax5f6n2lff3p-locales-setup-hook.sh.drv
+/nix/store/0khd36ikc7fqqkdzk5fjrnrmanlsq7rv-python-setup-hook.sh.drv
+/nix/store/0x1r5kahv0xjkqa7n3v862dc8b2n25q6-python3-minimal-3.11.6.drv
+/nix/store/0y5flakfvnf813cwrr8rygf1jnk0gfnc-CVE-2019-13636.patch
 ...
-   ├──/nix/store/2cv1xd90as2wkga6wg8yv53gz7lg95if-openssl-3.0.12.tar.gz.drv
-   │  ├──/nix/store/6ic1qxk57sy6zqjfj3v9zpwizq90ljja-stdenv-linux.drv: cached
-   │  ├──/nix/store/h1y9767im7cxdc2rqg6qyfiiq8ijgk41-mirrors-list.drv: cached
-   │  ├──/nix/store/kvq4wg5d44bbpg6820hqixdhwbvm5yhb-curl-8.4.0.drv: cached
-   │  └──/nix/store/szciaprmwb7kdj7zv1b56midf7jfkjnw-bash-5.2-p15.drv: cached
-   ├──/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv: cached
-   ├──/nix/store/a6a7nrfmpkj7lapckk8h5qmvr6f8542h-coreutils-9.3.drv: cached
-   ├──/nix/store/jm8hin39q3ms3gffpa2w3xk8bxmychm3-make-shell-wrapper-hook.drv: cached
-   ├──/nix/store/mvvhw7jrrr8wnjihpalw4s3y3g7jihgw-stdenv-linux.drv: cached
-   └──/nix/store/szciaprmwb7kdj7zv1b56midf7jfkjnw-bash-5.2-p15.drv: cached
 ```
 
-ツリー構造ではなくただ一覧で表示したい & cachedの行はいらない場合は、適当にsedやgrepで整形すればよい。
-```
-bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv | sed 's/.*\(\/nix\/store\/.*\)/\1/' | grep -v cached
-/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
-/nix/store/1vzpfyxn64qx5my47kc0hjys37404hls-gcc-12.3.0.drv
-/nix/store/1032as2ph6j8pwan8dijl60jmfnzfi6b-perl-5.38.2.drv
-/nix/store/2zsw6v5l9zzhslrrdqpljnb425njg1pf-perl-5.38.2.tar.gz.drv
-/nix/store/9xhbdxvc93v7hc4vplng07z3y3lmfwvq-bootstrap-stage1-stdenv-linux.drv
-/nix/store/271ydjn02v2r49l5nn6yw5lr3nc5ydbi-update-autotools-gnu-config-scripts-hook.drv
-/nix/store/303sqdqr3x78jlgs00pixbdwv7hqizq1-gnu-config-2023-09-19.drv
-/nix/store/h11pn2l5rszzgjrl84qw2ifr33rdkjcq-config.sub-28ea239.drv
-/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv
-/nix/store/b7irlwi2wjlx5aj1dghx4c8k3ax6m56q-busybox.drv
+ツリー形式で出力したいなら、`nix-store --query --tree`で可能。 `[...]` で省略されているものはおそらく、同じ出力が出ないようにキャッシュされているもの（いわゆる枝狩り）。
+
+```console
+bombrary@nixos:~/deps$ nix-store --query --tree /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv | head
+/nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
+├───/nix/store/1cwqp9msvi5z8517czfl88dd42yhrdwg-separate-debug-info.sh
+├───/nix/store/v6x3cs394jgqfbi0a42pam708flxaphh-default-builder.sh
+├───/nix/store/98sv0g544bqmks49d6vgylbkh9sccdvm-attr-2.5.1.drv
+│   ├───/nix/store/ks6kir3vky8mb8zqpfhchwasn0rv1ix6-bootstrap-tools.drv
+│   │   ├───/nix/store/b7irlwi2wjlx5aj1dghx4c8k3ax6m56q-busybox.drv
+│   │   ├───/nix/store/bzq60ip2z5xgi7jk6jgdw8cngfiwjrcm-bootstrap-tools.tar.xz.drv
+│   │   └───/nix/store/i9nx0dp1khrgikqr95ryy2jkigr4c5yv-unpack-bootstrap-tools.sh
+│   ├───/nix/store/v6x3cs394jgqfbi0a42pam708flxaphh-default-builder.sh [...]
+│   ├───/nix/store/5w8l933if7cnsw59hjq6iyhl1xshcs84-gettext-0.21.1.drv
 ...
+```
+
+## パッケージのruntime dependenciesを知る
+
+これも`nix-store --query --references`で可能。drvではなくバイナリのパスを指定すれば、それに依存するruntime dependenciesを知ることができる。
+
+```console
+bombrary@nixos:~/deps$ nix-store --query --references `which ls`
+/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27
+/nix/store/9vv53vzx4k988d51xfiq2p46fqrjshv0-gmp-with-cxx-6.3.0
+/nix/store/idwlqkj1z2cgjcijgnnxgyp0zgzpv7c5-attr-2.5.1
+/nix/store/l0rxwrg41k3lsdiybf8q0rf3nk430zr8-openssl-3.0.12
+/nix/store/wmsmw09x6l3kcl4ng3qs3ircj8h73si3-acl-2.3.1
+/nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
+```
+
+## パッケージの間接的なruntime dependenciesもすべて知る
+
+これも`nix-store --query --requisites`で可能。drvではなくバイナリのパスを指定すれば、それに依存するruntime dependenciesを知ることができる。
+
+```console
+bombrary@nixos:~/deps$ nix-store --query --requisites `which ls`
+/nix/store/iyw6mm7a75i49h9szc0m08ynay1p7kka-gcc-12.3.0-libgcc
+/nix/store/80dld61hbpvy1ay1sdwaqyy4jzhm48xx-libunistring-1.1
+/nix/store/4h5isrbr87jjw69rgdnhi8psi7hhk5im-libidn2-2.3.4
+/nix/store/fhws3x2s9j5932r6ah660nsh41bkrq27-xgcc-12.3.0-libgcc
+/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27
+/nix/store/giyri337jb6sa1qyff6qp771qfq10yhf-gcc-12.3.0-lib
+/nix/store/9vv53vzx4k988d51xfiq2p46fqrjshv0-gmp-with-cxx-6.3.0
+/nix/store/idwlqkj1z2cgjcijgnnxgyp0zgzpv7c5-attr-2.5.1
+/nix/store/l0rxwrg41k3lsdiybf8q0rf3nk430zr8-openssl-3.0.12
+/nix/store/wmsmw09x6l3kcl4ng3qs3ircj8h73si3-acl-2.3.1
+/nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
 ```
