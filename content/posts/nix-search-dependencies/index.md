@@ -22,7 +22,10 @@ Nixで、あるパッケージがどのパッケージに依存しているの�
 * [store path](https://nixos.org/manual/nix/stable/glossary#gloss-store-path)：store objectが置かれている場所。通常は`/nix/store/`にあるはず
 * [build depencencies](https://nixos.org/guides/nix-pills/automatic-runtime-dependencies#id1399)：ビルドの時点で必要になる依存関係。ビルドに必要なソースコードや、derivationの中で参照されている別のderivationを指す。これはderivationに記載されている
 * [runtime dependencies](https://nixos.org/guides/nix-pills/automatic-runtime-dependencies#id1401)：実行時に必要になる依存関係。動的ライブラリや、ほかのパッケージの実行ファイルなどを指す
-  * これを検出する方法はかなり素朴で、生成したパッケージをNAR形式で固め、そこに埋め込まれているoutputのパスがruntime dependenciesである
+  * これを検出する方法は素朴で、生成したパッケージをNAR形式で固め、そこに埋め込まれているoutputのパスがruntime dependenciesと判定するだけである
+* [NAR (Nix Archive)](https://nixos.org/manual/nix/stable/glossary#gloss-nar)：tarのように複数ファイルを1つのファイルに固めた形式。ただし、同じアーカイブ対象であればまったく同じNARファイルができるように、tarに比べてシンプルなつくりになっている。例えば、tarだとアーカイブする度にタイムスタンプ（`mtime`フィールド）が埋め込まれるが、NARにはそれがない（[参考](https://nixos.org/guides/nix-pills/automatic-runtime-dependencies#id1400)）
+  * NARが作られた背景について、[edolstra氏のPh.D論文](https://edolstra.github.io/pubs/phd-thesis.pdf)のp.91が詳しい
+  * `nix nar dump-path <ファイル・ディレクトリ名>`で、NAR形式がどんなものか見ることが可能（バイナリなので、odやhexdumpコマンドを嚙ませたほうが見やすいかも）
 * [closure](https://nixos.org/manual/nix/stable/glossary#gloss-closure)：あるstore pathに直接または間接的に依存するstore pathの集合
   * 閉包（closure）という名の通り、closureの任意のstore pathについて、それに依存するstore pathは必ずそのclosureの要素になっている（言い換えると、ある要素に対して「その依存関係を列挙する」という操作を定義したとき、closureはその操作について閉じている）
 
