@@ -1,22 +1,96 @@
 ---
 title: "Nixのいくつかの処理をPythonで実装してみる"
-date: 2024-04-04T00:05:01Z
-draft: true
-tags: ["Python", "derivation"]
+date: 2024-04-05T00:05:00+09:00
+tags: ["Python", "derivation", "NAR"]
 categories: ["Nix"]
 toc: true
 ---
 
+[Nixのパッケージ・derivationの探り方まとめ]({{< ref "/posts/nix-search-dependencies" >}})にて色々なコマンドを紹介したが、それらがNix内部でどう処理されているのかを知りたくなり、その過程でPython実装を書いた。
 
+目的は、以下の2つの処理をPythonで実装することである。
+* build dependenciesを（間接的なものも含め）出力する
+* runtime dependenciesを（間接的なものも含め）出力する
+
+なお、公式ではどちらも`nix-store --query --requisites`ないし`nix-store --query --tree`で出力可能である。
 
 ## derivationをパースする
 
-drvファイルをぐっとにらむと、データ型としては以下のパターンしかなさそうだとわかる。
+この先の処理を実装するにあたって、drvから情報を取り出す必要があるので、ここでパーサーを実装する。
+
+まずdrvのファイル形式は以下のようなものであった。見やすいように改行を挟んでいるが、実際には無い。
+
+```console
+bombrary@nixos:~$ nix derivation show `which ls` | jq -r 'to_entries[].key' | xargs cat
+Derive(
+ [("debug","/nix/store/b073nwng2fy24zaqbdx6zbimxkad7dyk-coreutils-full-9.3-debug","",""),
+  ("info","/nix/store/1pd076gkjwh0wdv8cnxy6p7kl141jnk2-coreutils-full-9.3-info","",""),
+  ("out","/nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3","","")],
+ [("/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv",["out"]),
+  ("/nix/store/98sv0g544bqmks49d6vgylbkh9sccdvm-attr-2.5.1.drv",["dev"]),
+  ("/nix/store/9jcfzyyb0h86mvc31s9qmxs6lncqrwhc-acl-2.3.1.drv",["dev"]),
+  ("/nix/store/akpwym6q116hivciyq2vqj9n5jk9f5i6-xz-5.4.4.drv",["bin"]),
+  ("/nix/store/d1qldhg6iix84bqncbzml2a1nw8p95bg-gmp-with-cxx-6.3.0.drv",["dev"]),
+  ("/nix/store/ks5ivc59k57kwii93qlsfgcx2a7xma1k-autoreconf-hook.drv",["out"]),
+  ("/nix/store/mnrjvk62d35v8514kc5w31fg3py0smr8-coreutils-9.3.tar.xz.drv",["out"]),
+  ("/nix/store/mvvhw7jrrr8wnjihpalw4s3y3g7jihgw-stdenv-linux.drv",["out"]),
+  ("/nix/store/szciaprmwb7kdj7zv1b56midf7jfkjnw-bash-5.2-p15.drv",["out"]),
+  ("/nix/store/wd100hlzyh5w9zkfljkaagp87b7h7733-openssl-3.0.12.drv",["dev"])],
+ ["/nix/store/1cwqp9msvi5z8517czfl88dd42yhrdwg-separate-debug-info.sh",
+  "/nix/store/v6x3cs394jgqfbi0a42pam708flxaphh-default-builder.sh"],
+ "x86_64-linux",
+ "/nix/store/7dpxg7ki7g8ynkdwcqf493p2x8divb4i-bash-5.2-p15/bin/bash",
+ ["-e","/nix/store/v6x3cs394jgqfbi0a42pam708flxaphh-default-builder.sh"],
+ [("FORCE_UNSAFE_CONFIGURE",""),
+  ("NIX_CFLAGS_COMPILE",""),
+  ("NIX_LDFLAGS",""),
+  ("__structuredAttrs",""),
+  ("buildInputs","/nix/store/hwb08pf2byl2a1rnmaxq56f389h6b6yn-acl-2.3.1-dev /nix/store/djciacxl96yr2wd02lcxyn8z046fzrqr-attr-2.5.1-dev /nix/store/1fszsmhmlhbi4yzl2wgi08cfw0dng7pq-gmp-with-cxx-6.3.0-dev /nix/store/2d8yhfx7f2crn8scyzdk6dg3lw7y1ifh-openssl-3.0.12-dev"),
+  ("builder","/nix/store/7dpxg7ki7g8ynkdwcqf493p2x8divb4i-bash-5.2-p15/bin/bash"),
+  ("cmakeFlags",""),
+  ("configureFlags","--with-packager=https://nixos.org --enable-single-binary=symlinks --with-openssl gl_cv_have_proc_uptime=yes"),
+  ("debug","/nix/store/b073nwng2fy24zaqbdx6zbimxkad7dyk-coreutils-full-9.3-debug"),
+  ("depsBuildBuild",""),
+  ("depsBuildBuildPropagated",""),
+  ("depsBuildTarget",""),
+  ("depsBuildTargetPropagated",""),
+  ("depsHostHost",""),
+  ("depsHostHostPropagated",""),
+  ("depsTargetTarget",""),
+  ("depsTargetTargetPropagated",""),
+  ("doCheck","1"),
+  ("doInstallCheck",""),
+  ("enableParallelBuilding","1"),
+  ("enableParallelChecking","1"),
+  ("enableParallelInstalling","1"),
+  ("info","/nix/store/1pd076gkjwh0wdv8cnxy6p7kl141jnk2-coreutils-full-9.3-info"),
+  ("mesonFlags",""),
+  ("name","coreutils-full-9.3"),
+  ("nativeBuildInputs","/nix/store/nsl35d8x8jp0vy8n4xy8sx9v68gdh444-autoreconf-hook /nix/store/rza0ib08brnkwx75n7rncyjq97j76ris-perl-5.38.2 /nix/store/3q6fnwcm677l1q60vkhcf9m1gxhv83jm-xz-5.4.4-bin /nix/store/1cwqp9msvi5z8517czfl88dd42yhrdwg-separate-debug-info.sh"),
+  ("out","/nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3"),
+  ("outputs","out info debug"),
+  ("patches",""),
+  ("pname","coreutils-full"),
+  ("postInstall",""),
+  ("postPatch","# The test tends to fail on btrfs, f2fs and maybe other unusual filesystems.\nsed '2i echo Skipping dd sparse test && exit 77' -i ./tests/dd/sparse.sh\nsed '2i echo Skipping du threshold test && exit 77' -i ./tests/du/threshold.sh\nsed '2i echo Skipping cp reflink-auto test && exit 77' -i ./tests/cp/reflink-auto.sh\nsed '2i echo Skipping cp sparse test && exit 77' -i ./tests/cp/sparse.sh\nsed '2i echo Skipping rm deep-2 test && exit 77' -i ./tests/rm/deep-2.sh\nsed '2i echo Skipping du long-from-unreadable test && exit 77' -i ./tests/du/long-from-unreadable.sh\n\n# Some target platforms, especially when building inside a container have\n# issues with the inotify test.\nsed '2i echo Skipping tail inotify dir recreate test && exit 77' -i ./tests/tail-2/inotify-dir-recreate.sh\n\n# sandbox does not allow setgid\nsed '2i echo Skipping chmod setgid test && exit 77' -i ./tests/chmod/setgid.sh\nsubstituteInPlace ./tests/install/install-C.sh \\\n  --replace 'mode3=2755' 'mode3=1755'\n\n# Fails on systems with a rootfs. Looks like a bug in the test, see\n# https://lists.gnu.org/archive/html/bug-coreutils/2019-12/msg00000.html\nsed '2i print \"Skipping df skip-rootfs test\"; exit 77' -i ./tests/df/skip-rootfs.sh\n\n# these tests fail in the unprivileged nix sandbox (without nix-daemon) as we break posix assumptions\nfor f in ./tests/chgrp/{basic.sh,recurse.sh,default-no-deref.sh,no-x.sh,posix-H.sh}; do\n  sed '2i echo Skipping chgrp && exit 77' -i \"$f\"\ndone\nfor f in gnulib-tests/{test-chown.c,test-fchownat.c,test-lchown.c}; do\n  echo \"int main() { return 77; }\" > \"$f\"\ndone\n\n# intermittent failures on builders, unknown reason\nsed '2i echo Skipping du basic test && exit 77' -i ./tests/du/basic.sh\n"),
+  ("preInstall",""),
+  ("propagatedBuildInputs",""),
+  ("propagatedNativeBuildInputs",""),
+  ("separateDebugInfo","1"),
+  ("src","/nix/store/8f1x5yr083sjbdkv33gxwiybywf560nz-coreutils-9.3.tar.xz"),
+  ("stdenv","/nix/store/kv5wkk7xgc8paw9azshzlmxraffqcg0i-stdenv-linux"),
+  ("strictDeps",""),
+  ("system","x86_64-linux"),
+  ("version","9.3")]
+)
+```
+
+drvファイルをにらむと、データ型としては以下のパターンしかなさそうだとわかる。
 * 文字列：`"` でくくられている
 * リスト：`[`と`]`でくくられている
 * タプル：`(`と`)`でくくられている
 
-最初の`Derive(...)`もタプルとして解釈することにすると、drvの形式をパースする関数`parse_drv`は次のように実装できる。ほとんどの`parse_*`関数は、返り値を`(パースした値, 残りの文字列)`のタプルで返すように実装している。
+本当はdataclassとかで包んだほうが良いが、今回は簡単のため`Derive(...)`をタプルとして解釈することにする。すると、drvの形式をパースする関数`parse_drv`は次のように実装できる。ほとんどの`parse_*`関数は、返り値を`(パースした値, 残りの文字列)`のタプルで返すように実装している。
 
 ```python
 def parse_drv(s: str) -> tuple:
@@ -84,8 +158,9 @@ def parse_str(s: str) -> tuple[str, str]:
 
 ## derivationの直接的・間接的なbuild dependenciesもすべて出力する
 
-上記の関数をもとに、再帰的に依存関係を探る関数`show_deps`を実装する
+上記の関数をもとに、再帰的に依存関係を探る関数`dump_build_deps`を実装する
 * `nix derivation show`コマンドでのinputDrvsは、drvファイルでは`Derive(...)`の2番目の要素に入っているので、そこから取り出す
+* `nix derivation show`コマンドでのinputSrcsは、drvファイルでは`Derive(...)`の3番目の要素に入っているので、そこから取り出す
 * ある依存関係がほかのderivationの依存関係になっていることがあるが、同じものが出てきた場合は省略する。省略のためのメモとして`DRV_CACHE`を用意している
 * ツリー構造として読み込んだ後、`show_tree`で出力する
 
@@ -100,12 +175,12 @@ def load_drv(path: str) -> tuple:
     with open(path) as f:
         return parse_drv(f.read())
 
-def dump_deps(path: str) -> Tree:
+def dump_build_deps(path: str) -> Tree:
       if path not in DRV_CACHE:
           DRV_CACHE[path] = load_drv(path)
           input_drvs = DRV_CACHE[path][1]
           input_srcs = DRV_CACHE[path][2]
-          res = { input_drv_path: dump_deps(input_drv_path) for input_drv_path, _ in input_drvs }
+          res = { input_drv_path: dump_build_deps(input_drv_path) for input_drv_path, _ in input_drvs }
           res |= { src: "" for src in input_srcs }
           return res
       else:
@@ -136,7 +211,7 @@ def show_tree(tree: Tree, last: bool, header=""):
 
 
 if __name__ == "__main__":
-    tree = dump_deps(sys.argv[1])
+    tree = dump_build_deps(sys.argv[1])
     show_tree(tree, True, "")
 ```
 
@@ -185,7 +260,7 @@ bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py /nix/store/g0kqr7b99b7
 
 ## ファイル・ディレクトリをNAR形式に変換する
 
-同様のことは`nix nar dump-path`コマンドでも行えるが、勉強のためPythonで同様の処理を実装した。
+runtime dependenciesを出力するための前準備。なお、同様のことは`nix nar dump-path`コマンドでも行える。
 
 [edolstra氏のPh.D論文](https://edolstra.github.io/pubs/phd-thesis.pdf)のp.93のFigure 5.2をもとに作成。
 
@@ -299,9 +374,9 @@ bombrary@nixos:~/deps$ paste <(nix nar dump-path hello.txt | od -w8 -tx1z) <(nix
 
 ## output pathからderivationを引く
 
-output pathからderivationを引く方法として、公式的には`nix-store --query --deriver`コマンドを用いる方法がある。
+runtime dependenciesを出力するための前準備。
 
-しかし、そもそもoutput pathはderivationの諸々の情報を使いハッシュ化して作成されたものである。ハッシュの不可逆性により、逆にoutput pathから直接導出することは不可能のはずである。
+output pathからderivationを引く方法として、公式的には`nix-store --query --deriver`コマンドを用いる方法がある。しかし、そもそもoutput pathはderivationの諸々の情報を使いハッシュ化して作成されたものである。ハッシュの不可逆性により、逆にoutput pathから直接導出することは不可能のはずである。
 
 ではNixではどうやってこれを行っているのかというと、別に`/nix/store/`を全探索とかしている訳ではない。実は`/nix/var/nix/db/db.sqlite`にSQLiteのDBがあり、そこにいろいろな情報を保管している。このDBはNix内部で用いるものであり、情報がほとんどないのだが、一応[Glossaly](https://nixos.org/manual/nix/stable/glossary#gloss-nix-database)や[Local Store](https://nixos.org/manual/nix/stable/store/types/local-store)の説明から、その存在だけは確認できる。
 
@@ -349,46 +424,72 @@ bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py /nix/store/03167shkax5
 今まで書いたコードを総動員して、あるパッケージのruntime dependenciesを再帰的に探索するコードが書ける。
 
 ```python
-from typing import Any
-
 OUT_CACHE = set()
 
-def search_runtime_deps(nar_bytes: bytes, output_map: dict[str, Any]) -> list[str]:
-    res = []
-    for drv in output_map.values():
-        for _, out_path, _, _ in drv[0]:
-            if (out_path.encode('ascii') in nar_bytes) and (out_path not in OUT_CACHE):
-                res.append(out_path)
+def dump_runtime_deps(out_path: str) -> Tree:
+    res = {}
+    nar = archiveNAR(out_path)
+    for drv in DRV_CACHE.values():
+        # NARに埋め込まれているout_pathを取り出す
+        paths = [ out_path for _, out_path, _, _ in drv[0] if out_path.encode('ascii') in nar ]
+        for path in paths:
+            if  path not in OUT_CACHE:
                 OUT_CACHE.add(out_path)
-                res.extend(search_runtime_deps(archiveNAR(out_path), output_map))
+                res[path] = dump_runtime_deps(path)
+            else:
+                res[path] = ": cached"
     return res
 
 if __name__ == "__main__":
     with sqlite3.connect("file:///nix/var/nix/db/db.sqlite?immutable=1", uri=True) as conn:
         out_path = sys.argv[1]
-        drv = get_deriver(conn, out_path)
-        _ = dump_deps(drv) # DRV_CACHEを生成するために事前に呼び出しておく
-
-        nar = archiveNAR(out_path)
-        outputs = search_runtime_deps(nar, DRV_CACHE)
-        for output in outputs:
-            print(output)
+        drv_path = get_deriver(conn, out_path)
+        _ = dump_build_deps(drv_path) # DRV_CACHEを事前に生成
+        del(DRV_CACHE[drv_path]) # 出力が冗長になるので自身のdrvは削除しておく
+        tree = dump_runtime_deps(out_path)
+        show_tree(tree, True, "")
 ```
 
-実行結果は、`nix-store --query --requisites`のものと同じである。
+実行結果は、`nix-store --query --requisites`ないし`nix-store --query --tree`のものと同じである。
 
 ```console
 bombrary@nixos:~/deps$ OUT_PATH=/nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
-bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py $OUT_PATH | sort
-/nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
-/nix/store/4h5isrbr87jjw69rgdnhi8psi7hhk5im-libidn2-2.3.4
-/nix/store/80dld61hbpvy1ay1sdwaqyy4jzhm48xx-libunistring-1.1
-/nix/store/9vv53vzx4k988d51xfiq2p46fqrjshv0-gmp-with-cxx-6.3.0
-/nix/store/fhws3x2s9j5932r6ah660nsh41bkrq27-xgcc-12.3.0-libgcc
-/nix/store/giyri337jb6sa1qyff6qp771qfq10yhf-gcc-12.3.0-lib
-/nix/store/idwlqkj1z2cgjcijgnnxgyp0zgzpv7c5-attr-2.5.1
-/nix/store/iyw6mm7a75i49h9szc0m08ynay1p7kka-gcc-12.3.0-libgcc
-/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27
-/nix/store/l0rxwrg41k3lsdiybf8q0rf3nk430zr8-openssl-3.0.12
-/nix/store/wmsmw09x6l3kcl4ng3qs3ircj8h73si3-acl-2.3.1
+bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py $OUT_PATH
+├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27
+│  ├──/nix/store/fhws3x2s9j5932r6ah660nsh41bkrq27-xgcc-12.3.0-libgcc
+│  ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+│  └──/nix/store/4h5isrbr87jjw69rgdnhi8psi7hhk5im-libidn2-2.3.4
+│     ├──/nix/store/4h5isrbr87jjw69rgdnhi8psi7hhk5im-libidn2-2.3.4
+│     │  ├──/nix/store/4h5isrbr87jjw69rgdnhi8psi7hhk5im-libidn2-2.3.4: cached
+│     │  └──/nix/store/80dld61hbpvy1ay1sdwaqyy4jzhm48xx-libunistring-1.1
+│     │     └──/nix/store/80dld61hbpvy1ay1sdwaqyy4jzhm48xx-libunistring-1.1
+│     │        └──/nix/store/80dld61hbpvy1ay1sdwaqyy4jzhm48xx-libunistring-1.1: cached
+│     └──/nix/store/80dld61hbpvy1ay1sdwaqyy4jzhm48xx-libunistring-1.1: cached
+├──/nix/store/idwlqkj1z2cgjcijgnnxgyp0zgzpv7c5-attr-2.5.1
+│  ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+│  └──/nix/store/idwlqkj1z2cgjcijgnnxgyp0zgzpv7c5-attr-2.5.1
+│     ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+│     └──/nix/store/idwlqkj1z2cgjcijgnnxgyp0zgzpv7c5-attr-2.5.1: cached
+├──/nix/store/wmsmw09x6l3kcl4ng3qs3ircj8h73si3-acl-2.3.1
+│  ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+│  ├──/nix/store/idwlqkj1z2cgjcijgnnxgyp0zgzpv7c5-attr-2.5.1: cached
+│  └──/nix/store/wmsmw09x6l3kcl4ng3qs3ircj8h73si3-acl-2.3.1
+│     ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+│     ├──/nix/store/idwlqkj1z2cgjcijgnnxgyp0zgzpv7c5-attr-2.5.1: cached
+│     └──/nix/store/wmsmw09x6l3kcl4ng3qs3ircj8h73si3-acl-2.3.1: cached
+├──/nix/store/9vv53vzx4k988d51xfiq2p46fqrjshv0-gmp-with-cxx-6.3.0
+│  ├──/nix/store/giyri337jb6sa1qyff6qp771qfq10yhf-gcc-12.3.0-lib
+│  │  ├──/nix/store/giyri337jb6sa1qyff6qp771qfq10yhf-gcc-12.3.0-lib
+│  │  │  ├──/nix/store/giyri337jb6sa1qyff6qp771qfq10yhf-gcc-12.3.0-lib: cached
+│  │  │  ├──/nix/store/iyw6mm7a75i49h9szc0m08ynay1p7kka-gcc-12.3.0-libgcc
+│  │  │  └──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+│  │  ├──/nix/store/iyw6mm7a75i49h9szc0m08ynay1p7kka-gcc-12.3.0-libgcc
+│  │  └──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+│  ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+│  └──/nix/store/9vv53vzx4k988d51xfiq2p46fqrjshv0-gmp-with-cxx-6.3.0: cached
+└──/nix/store/l0rxwrg41k3lsdiybf8q0rf3nk430zr8-openssl-3.0.12
+   ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+   └──/nix/store/l0rxwrg41k3lsdiybf8q0rf3nk430zr8-openssl-3.0.12
+      ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
+      └──/nix/store/l0rxwrg41k3lsdiybf8q0rf3nk430zr8-openssl-3.0.12: cached
 ```
