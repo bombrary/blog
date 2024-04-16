@@ -14,7 +14,7 @@ toc: true
 
 なお、公式ではどちらも`nix-store --query --requisites`ないし`nix-store --query --tree`で出力可能である。
 
-## derivationをパースする
+## (parse) drvファイルを読み込み、パースする
 
 この先の処理を実装するにあたって、drvから情報を取り出す必要があるので、ここでパーサーを実装する。
 
@@ -90,62 +90,129 @@ drvファイルをにらむと、データ型としては以下のパターン�
 * リスト：`[`と`]`でくくられている
 * タプル：`(`と`)`でくくられている
 
-本当はdataclassとかで包んだほうが良いが、今回は簡単のため`Derive(...)`をタプルとして解釈することにする。すると、drvの形式をパースする関数`parse_drv`は次のように実装できる。ほとんどの`parse_*`関数は、返り値を`(パースした値, 残りの文字列)`のタプルで返すように実装している。
+dataclassを用いてパースしたデータを扱うことにする。すると、drvの形式をパースする関数`parse_drv`は次のように実装できる。ほとんどの`parse_*`関数は、返り値を`(パースした値, 残りの文字列)`のタプルで返すように実装している。
+
+（追記・補足）素朴にタプルやリストとしてパースするとすごくシンプルに書けるが、それだと`unparse`関数を実装するときに扱いづらかったので、dataclassを用いた実装に変えた。
 
 ```python
-def parse_drv(s: str) -> tuple:
-    s = s[len("Derive("):]
-    r, _ = parse_tuple(s)
-    return r
+from dataclasses import dataclass
+from typing import Callable
+
+@dataclass
+class Output:
+    id: str
+    path: str
+    hash_algo: str
+    hash: str
+
+@dataclass(frozen=True)
+class InputDrv:
+    path: str
+    ids: frozenset[str]
+
+@dataclass
+class Derivation:
+    outputs: list[Output]
+    input_drvs: set[InputDrv]
+    input_srcs: set[str]
+    system: str
+    builder: str
+    args: list[str]
+    envs: dict[str, str]
+
+def parse_drv(s: str) -> Derivation:
+    _, s = consume("Derive(", s)
+    outputs, s = parse_list(parse_output, s)
+    _, s = consume(",", s)
+    input_drvs, s = parse_list(parse_input_drv, s)
+    _, s = consume(",", s)
+    input_srcs, s = parse_list(parse_str, s)
+    _, s = consume(",", s)
+    system, s = parse_str(s)
+    _, s = consume(",", s)
+    builder, s = parse_str(s)
+    _, s = consume(",", s)
+    args, s = parse_list(parse_str, s)
+    _, s = consume(",", s)
+    env_entries, s = parse_list(parse_key_val, s)
+    _, s = consume(")", s)
+    return Derivation(
+        outputs=outputs,
+        input_drvs=set(input_drvs),
+        input_srcs=set(input_srcs),
+        system=system,
+        builder=builder,
+        args=args,
+        envs=dict(env_entries),
+    )
 
 def parse_ch(s: str) -> tuple[str, str]:
     return s[0], s[1:]
 
-def parse_prim(head: str, s: str) -> tuple[tuple|list|str, str]:
-    match head:
-        case "(":
-            return parse_tuple(s)
-        case "[":
-            return parse_list(s)
-        case "\"":
-            return parse_str(s)
-        case _:
-            raise ValueError("Invalid token")
+def consume(expect: str, s: str) -> tuple[str, str]:
+    actual, s = s[:len(expect)], s[len(expect):]
+    if expect != actual:
+        raise ValueError(f"Expect {expect}, but actual {actual}")
+    return actual, s
 
-def parse_tuple(s: str) -> tuple[tuple, str]:
+def parse_list[T](
+    parse_elem: Callable[[str], tuple[T, str]],
+    s: str
+) -> tuple[list[T], str]:
+    _, s = consume("[", s)
     res = []
     while True:
-        c, s = parse_ch(s)
-        match c:
-            case ")":
-                break
-            case ",":
-               pass
-            case _:
-                r, s = parse_prim(c, s)
-                res.append(r)
-    return tuple(res), s
-
-def parse_list(s: str) -> tuple[list, str]:
-    res = []
-    while True:
-        c, s = parse_ch(s)
-        match c:
+        match s[0]:
             case "]":
+                _, s = parse_ch(s)
                 break
             case ",":
-                pass
+                _, s = parse_ch(s)
             case _:
-                r, s = parse_prim(c, s)
+                r, s = parse_elem(s)
                 res.append(r)
     return res, s
 
+
+def parse_output(s: str) -> tuple[Output, str]:
+    _, s = consume("(", s)
+    id, s = parse_str(s)
+    _, s = consume(",", s)
+    path, s = parse_str(s)
+    _, s = consume(",", s)
+    hash_algo, s = parse_str(s)
+    _, s = consume(",", s)
+    hash, s = parse_str(s)
+    _, s = consume(")", s)
+    return Output(id, path, hash_algo, hash), s
+
+
+def parse_input_drv(s: str) -> tuple[InputDrv, str]:
+    _, s = consume("(", s)
+    path, s = parse_str(s)
+    _, s = consume(",", s)
+    ids, s = parse_list(parse_str, s)
+    _, s = consume(")", s)
+    return InputDrv(path, frozenset(ids)), s
+
+
+def parse_key_val(s: str) -> tuple[tuple[str, str], str]:
+    _, s = consume("(", s)
+    key, s = parse_str(s)
+    _, s = consume(",", s)
+    val, s = parse_str(s)
+    _, s = consume(")", s)
+    return (key, val), s
+
 def parse_str(s: str) -> tuple[str, str]:
+    _, s = consume("\"", s)
+
     res = ""
     while True:
         match s[0]:
             case "\"":
                 c, s = parse_ch(s)
+                # エスケープされていたらbreakしない
                 if res and res[-1] == "\\":
                     res += c
                 else:
@@ -156,9 +223,70 @@ def parse_str(s: str) -> tuple[str, str]:
     return res, s
 ```
 
-## derivationの直接的・間接的なbuild dependenciesもすべて出力する
+## (unparse) Derivationクラスをdrv形式で書き出す
 
-上記の関数をもとに、再帰的に依存関係を探る関数`dump_build_deps`を実装する
+前節で作成したDerivation関数を、前節とは逆でdrv形式で書き出す処理`unparse_drv`を実装する。いくつかの要素は辞書順でソートされていないといけないので要注意。
+
+```python
+def unparse_drv(drv: Derivation) -> str:
+    outputs = sorted([ output_to_tuple(o) for o in drv.outputs ])
+    input_drvs = sorted([ input_drv_to_tuple(o) for o in drv.input_drvs ])
+    input_srcs = sorted(drv.input_srcs)
+    args = drv.args
+    envs = sorted(drv.envs.items())
+    return "Derive(" + \
+        ",".join([
+            unparse_list(unparse_output_tuple, outputs),
+            unparse_list(unparse_input_tuple, input_drvs),
+            unparse_list(unparse_str, input_srcs),
+            unparse_str(drv.system),
+            unparse_str(drv.builder),
+            unparse_list(unparse_str, args),
+            unparse_list(unparse_key_val, envs),
+        ]) + ")"
+
+def output_to_tuple(out: Output) -> tuple[str, str, str, str]:
+    return out.id, out.path, out.hash_algo, out.hash
+
+def input_drv_to_tuple(ind: InputDrv) -> tuple[str, list[str]]:
+    ids = sorted(ind.ids)
+    return ind.path, ids
+
+def unparse_output_tuple(out: tuple[str, str, str, str]) -> str:
+    return "(" + ",".join([
+        unparse_str(out[0]),
+        unparse_str(out[1]),
+        unparse_str(out[2]),
+        unparse_str(out[3]),
+    ]) + ")"
+
+def unparse_input_tuple(input: tuple[str, list[str]]) -> str:
+    return "(" + ",".join([
+        unparse_str(input[0]),
+        unparse_list(unparse_str, input[1]),
+    ]) + ")"
+
+def unparse_list[T](
+    unparse_elem: Callable[[T], str],
+    es: list[T]
+) -> str:
+    return "[" + ",".join([ unparse_elem(e) for e in es ]) + "]"
+
+def unparse_str(s: str) -> str:
+    return f"\"{s}\""
+
+def unparse_key_val(
+    keyval: tuple[str, str],
+) -> str:
+    return "(" + ",".join([
+        unparse_str(keyval[0]),
+        unparse_str(keyval[1]),
+    ]) + ")"
+```
+
+## derivationの直接的・間接的なbuild dependenciesをすべて出力する
+
+再帰的に依存関係を探る関数`dump_build_deps`を実装する。
 * `nix derivation show`コマンドでのinputDrvsは、drvファイルでは`Derive(...)`の2番目の要素に入っているので、そこから取り出す
 * `nix derivation show`コマンドでのinputSrcsは、drvファイルでは`Derive(...)`の3番目の要素に入っているので、そこから取り出す
 * ある依存関係がほかのderivationの依存関係になっていることがあるが、同じものが出てきた場合は省略する。省略のためのメモとして`DRV_CACHE`を用意している
@@ -167,20 +295,20 @@ def parse_str(s: str) -> tuple[str, str]:
 ```python
 import sys
 
-DRV_CACHE = {}
+DRV_CACHE: dict[str, Derivation] = {}
 
 Tree = str | dict[str, "Tree"]
 
-def load_drv(path: str) -> tuple:
+def load_drv(path: str) -> Derivation:
     with open(path) as f:
         return parse_drv(f.read())
 
 def dump_build_deps(path: str) -> Tree:
       if path not in DRV_CACHE:
           DRV_CACHE[path] = load_drv(path)
-          input_drvs = DRV_CACHE[path][1]
-          input_srcs = DRV_CACHE[path][2]
-          res = { input_drv_path: dump_build_deps(input_drv_path) for input_drv_path, _ in input_drvs }
+          input_drvs = DRV_CACHE[path].input_drvs
+          input_srcs = DRV_CACHE[path].input_srcs
+          res = { input_drv.path: dump_build_deps(input_drv.path) for input_drv in input_drvs }
           res |= { src: "" for src in input_srcs }
           return res
       else:
@@ -209,7 +337,6 @@ def show_tree(tree: Tree, last: bool, header=""):
                 header_children = header + "│  "
             show_tree(v, last, header_children)
 
-
 if __name__ == "__main__":
     tree = dump_build_deps(sys.argv[1])
     show_tree(tree, True, "")
@@ -218,7 +345,7 @@ if __name__ == "__main__":
 実行例。
 
 ```console
-bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
+bombrary@nixos:~/deps$ nix run nixpkgs#python312 -- dump.py /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
 ├──/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
 │  ├──/nix/store/1vzpfyxn64qx5my47kc0hjys37404hls-gcc-12.3.0.drv
 │  │  ├──/nix/store/1032as2ph6j8pwan8dijl60jmfnzfi6b-perl-5.38.2.drv
@@ -244,7 +371,7 @@ bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py /nix/store/g0kqr7b99b7
 
 ツリー構造ではなくただ一覧で表示したい & cachedの行はいらない場合は、適当にsedやgrepで整形すればよい。
 ```
-bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv | sed 's/.*\(\/nix\/store\/.*\)/\1/' | grep -v cached
+bombrary@nixos:~/deps$ nix run nixpkgs#python312 -- dump.py /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv | sed 's/.*\(\/nix\/store\/.*\)/\1/' | grep -v cached
 /nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
 /nix/store/1vzpfyxn64qx5my47kc0hjys37404hls-gcc-12.3.0.drv
 /nix/store/1032as2ph6j8pwan8dijl60jmfnzfi6b-perl-5.38.2.drv
@@ -352,7 +479,7 @@ if __name__ == "__main__":
 `nix nar dump-path` コマンドの結果と一致していることが分かる。
 ```console
 bombrary@nixos:~/deps$ echo "Hello, World" > hello.txt
-bombrary@nixos:~/deps$ paste <(nix nar dump-path hello.txt | od -w8 -tx1z) <(nix run nixpkgs#python3 -- dump.py hello.txt | od -w8 -tx1z)
+bombrary@nixos:~/deps$ paste <(nix nar dump-path hello.txt | od -w8 -tx1z) <(nix run nixpkgs#python312 -- dump.py hello.txt | od -w8 -tx1z)
 0000000 0d 00 00 00 00 00 00 00  >........<     0000000 0d 00 00 00 00 00 00 00  >........<
 0000010 6e 69 78 2d 61 72 63 68  >nix-arch<     0000010 6e 69 78 2d 61 72 63 68  >nix-arch<
 0000020 69 76 65 2d 31 00 00 00  >ive-1...<     0000020 69 76 65 2d 31 00 00 00  >ive-1...<
@@ -372,11 +499,11 @@ bombrary@nixos:~/deps$ paste <(nix nar dump-path hello.txt | od -w8 -tx1z) <(nix
 0000200 0000200
 ```
 
-## output pathからderivationを引く
+## output pathからderivationを見つける
 
 runtime dependenciesを出力するための前準備。
 
-output pathからderivationを引く方法として、公式的には`nix-store --query --deriver`コマンドを用いる方法がある。しかし、そもそもoutput pathはderivationの諸々の情報を使いハッシュ化して作成されたものである。ハッシュの不可逆性により、逆にoutput pathから直接導出することは不可能のはずである。
+output pathからderivationを見つける方法として、公式的には`nix-store --query --deriver`コマンドを用いる方法がある。しかし、そもそもoutput pathはderivationの諸々の情報を使いハッシュ化して作成されたものである。ハッシュの不可逆性により、逆にoutput pathから直接導出することは不可能のはずである。
 
 ではNixではどうやってこれを行っているのかというと、別に`/nix/store/`を全探索とかしている訳ではない。実は`/nix/var/nix/db/db.sqlite`にSQLiteのDBがあり、そこにいろいろな情報を保管している。このDBはNix内部で用いるものであり、情報がほとんどないのだが、一応[Glossaly](https://nixos.org/manual/nix/stable/glossary#gloss-nix-database)や[Local Store](https://nixos.org/manual/nix/stable/store/types/local-store)の説明から、その存在だけは確認できる。
 
@@ -386,7 +513,7 @@ output pathからderivationを引く方法として、公式的には`nix-store 
 
 から分かる。要するに、`ValidPaths`というテーブルを`path`で引いて、`deriver`のカラムを取り出せばよい。SQL文的には
 ```sql
-select deriver from ValidPaths where path = '<output path>';
+SELECT deriver FROM ValidPaths WHERE path = '<output path>';
 ```
 
 となる。
@@ -415,7 +542,7 @@ if __name__ == "__main__":
 bombrary@nixos:~/deps$ realpath `which ls`
 /nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3/bin/coreutils
 
-bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py /nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
+bombrary@nixos:~/deps$ nix run nixpkgs#python312 -- dump.py /nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
 /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
 ```
 
@@ -431,8 +558,10 @@ def dump_runtime_deps(out_path: str) -> Tree:
     nar = archiveNAR(out_path)
     for drv in DRV_CACHE.values():
         # NARに埋め込まれているout_pathを取り出す
-        paths = [ out_path for _, out_path, _, _ in drv[0] if out_path.encode('ascii') in nar ]
+        paths = [ out.path for out in drv.outputs if out.path.encode('ascii') in nar ]
         for path in paths:
+            if path == out_path:
+                continue
             if  path not in OUT_CACHE:
                 OUT_CACHE.add(out_path)
                 res[path] = dump_runtime_deps(path)
@@ -453,8 +582,7 @@ if __name__ == "__main__":
 実行結果は、`nix-store --query --requisites`ないし`nix-store --query --tree`のものと同じである。
 
 ```console
-bombrary@nixos:~/deps$ OUT_PATH=/nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
-bombrary@nixos:~/deps$ nix run nixpkgs#python3 -- dump.py $OUT_PATH
+bombrary@nixos:~/deps$ nix run nixpkgs#python312 -- dump.py /nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
 ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27
 │  ├──/nix/store/fhws3x2s9j5932r6ah660nsh41bkrq27-xgcc-12.3.0-libgcc
 │  ├──/nix/store/j6mwswpa6zqhdm1lm2lv9iix3arn774g-glibc-2.38-27: cached
