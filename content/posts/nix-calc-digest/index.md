@@ -1,8 +1,7 @@
 ---
-title: "Nixのstore path計算方法"
-date: 2024-04-06T10:00:00+09:00
+title: "Nixのstore path計算方法メモ"
+date: 2024-04-20T09:00:00+09:00
 tags: ["hash", "sha256", "derivation"]
-draft: true
 toc: true
 categories: ["Nix"]
 ---
@@ -14,7 +13,7 @@ Nixでは、パッケージの再現性を担保するために、`/nix/store/`�
 ## 参考記事
 
 * [How Nix Isntantiation Works (Web Archive)](https://web.archive.org/web/20221001050043/https://comono.id/posts/2020-03-20-how-nix-instantiation-works/)
-* [Nix manual(unstable)ののProtocol - Store Path](https://nixos.org/manual/nix/unstable/protocols/store-path)
+* [Nix manual(unstable)Store Pathの仕様](https://nixos.org/manual/nix/unstable/protocols/store-path)
 * [Nix PillsのChapter 18](https://nixos.org/guides/nix-pills/nix-store-paths)
 
 なお、本記事では `nix derivation show` コマンドの結果からいろいろと情報を取り出すために [jq](https://jqlang.github.io/jq/) を用いる。
@@ -24,13 +23,14 @@ Nixでは、パッケージの再現性を担保するために、`/nix/store/`�
 ほとんど[Store Path](https://nixos.org/manual/nix/unstable/protocols/store-path)の書き起こしみたいになってしまうが書いておく。
 
 まずstore pathは、`/nix/store/<digest>-<name>`の形式を持っている。
-* `<digest>`というのは、fingerprint（後述）をSHA-256でハッシュ化し、160bitに圧縮したうえでNix32表現にしたもの。ドキュメントには「SHA256の先頭160bitをBase32表現にしたもの」と記載があるが、
+* `<digest>`というのは、fingerprint（後述）をSHA256でハッシュ化し、160bitに圧縮したうえでNix32表現にしたもの。ドキュメントには「SHA256の先頭160bitをBase32表現にしたもの」と記載があるが、
   * Base32という言葉は[Release Note 2.20](https://nixos.org/manual/nix/unstable/release-notes/rl-2.20)でNix32という名前に改められた。理由としては[通常の意味のBase32表現](https://ja.wikipedia.org/wiki/%E4%B8%89%E5%8D%81%E4%BA%8C%E9%80%B2%E6%B3%95#Base32)とは処理が異なり紛らわしいためのようだ
   * 先頭160bitを単純に切り取ってNix32表現にするのではなく、実装では `complressHash` という関数で圧縮処理が行われている（[該当ソース]([nix/hash.cc](https://github.com/NixOS/nix/blob/2.21.1/src/nix/hash.cc#L118))）。
 * fingerprintは、`<type>:sha256:<inner-digest>:/nix/store:<name>`の形式
   * `<type>`というのは以下のいずれか
     * `text:<input store path>:<input store path>:...`：derivation。`<input store path>`には、（存在すれば）derivationが参照する他のファイルのパスを指定する
     * `source:<input store path>:<input store path>:...`：外部から持ってきたファイルをNAR形式でアーカイブ化したもの
+      * sourceがinput store pathを持つケースってどんなときなの？と感じるが、確かに[libstore/store-api.cc](https://github.com/NixOS/nix/blob/2.21.2/src/libstore/store-api.cc#L128)にそれっぽいコードが見つかる。しかし実例がまだ良くわかっていない…。
     * `output:<id>`：derivationからビルドされたもの、もしくはビルド予定のものを表す。`<id>`には通常`out`が入るが、ビルド出力結果を複数分けているようなパッケージでは`bin`や`lib`、`dev`などが指定されうる。
   * `<inner-digest>`は、`inner-fingerprint`をSHA256でハッシュ化し、Base16表現にしたもの
     * `inner-fingerprint`の計算方法は、上述の`type`によって異なるが、これは後々実際に計算してみつつ解説する
@@ -40,13 +40,11 @@ Nixでは、パッケージの再現性を担保するために、`/nix/store/`�
 * source：ビルドに必要なファイル、ソースコードを表す
 * output：ビルド生成物そのもの、ないしディレクトリを表す
 
-それでは実際にハンズオンとして、fingerprintの計算を手動でやってみる。
-
 ## （前準備）derivationの準備
 
-今回手で計算するもととなるderivationを、超雑に書く。
+今回手で計算するもととなるderivationを簡単に書く。
 * [Nix PillsのChapter 7](https://nixos.org/guides/nix-pills/working-derivation#id1388)の内容をもとに。汎用性とかは意識せず、`x86_64-linux`前提で書く
-* ただNix Pillsそのままだと面白くないので、flakeを使って書いてみる。
+* ただNix Pillsをそのまま書き起こしになってしまうのもつまらないので、flakeを使って書いてみる。
 
 
 まずいくつかのファイルを作成する
@@ -181,7 +179,7 @@ bombrary@nixos:~/drv-test$ nix derivation show ./result
 ```
 
 上記のdrvファイルを見ると、多くのstore pathが確認できる。なお今回はnixpkgsのコミットハッシュを固定していないため、source以外のstore pathは異なる可能性がある。
-* drvファイル
+* drvファイル：nixファイルに書かれたderivationをNixのシステムが扱うための中間表現。ATermと呼ばれる形式で書かれている
   * `/nix/store/rj4yv464wz8n055r8d3z8iag33f1mgg4-sample.drv`
 * ビルドで必要な依存関係（build dependencies）
   * drvファイル
@@ -267,9 +265,9 @@ bombrary@nixos:~/drv-test$ nix-hash --type sha256 --truncate --base32 --flat sam
 rj4yv464wz8n055r8d3z8iag33f1mgg4
 ```
 
-### 補足 inputのstore pathが辞書順であることの根拠をソースコードから探す
+### 補足 inputのstore pathが辞書順であることの根拠
 
-drvのハッシュが一意であるためには、当然だがfingerprintの計算も一意に定まらなければならない。そのため、inputDrvやinputSrcの順番もまた、一意で表せるような何らかのルールが必要である。そのルールとは辞書順である。
+drvのハッシュが一意であるためには、当然だがfingerprintの計算も一意に定まらなければならない。そのため、`inputDrv`や`inputSrc`の順番もまた、一意で表せるような何らかのルールが必要である。そのルールとは辞書順である。
 
 辞書順である根拠についてはドキュメントに記載がないので[NixOS/nix](https://github.com/NixOS/nix)を読む。以下は[Nix 2.21.1](https://github.com/NixOS/nix/tree/2.21.1)時点での情報である。
 
@@ -318,7 +316,7 @@ class StorePath
 }
 ```
 
-C++の文字列比較は[std::char_traits::compare](https://cpprefjp.github.io/reference/string/char_traits/compare.html)となるので、辞書式順序による比較である
+C++の文字列比較は[std::char_traits::compare](https://cpprefjp.github.io/reference/string/char_traits/compare.html)となるので、辞書式順序による比較である。
 
 ## sourceの計算
 
@@ -419,11 +417,11 @@ bombrary@nixos:~/drv-test$ nix derivation show /nix/store/si4z7n6kbpi3ndlmwfyp2f
 output:<id>:sha256:<inner-digest>:/nix/store:<name>
 ```
 
-今回のケースだと`<id>`は`out`、`<name>`は`foo`である。ここまでは単純で良いが、`<inner-digest>`の計算がやや面倒である。これはdrvファイルについて、以下の状態になっているものをSHA256ハッシュ化したものである。
-* `output`のパスが含まれていない：outputのパスを計算しようとしてるのに最初から入っていたら自己再帰的になってしまい計算できないため、当たり前といえば当たり前
-* `inputDrvs`の要素の各drvファイルを以下の状態にし、SHA256ハッシュ化したもので置き換えられている
-  * `output`のパスは含まれている
-  * `inputDrvs`について、上記と同じようにSHA256化された状態になっている：つまり再帰的な計算が必要
+今回のケースだと`<id>`は`out`、`<name>`は`foo`である。しかし`<inner-digest>`の計算がやや面倒である。これはdrvファイルについて、以下の状態になっているものをSHA256ハッシュ化したものである。
+1. `output`のパスが含まれていない：outputのパスを計算しようとしてるのに最初から入っていたら自己再帰的になってしまい計算できないため、当たり前といえば当たり前
+2. `inputDrvs`の要素の各drvファイルを以下の状態にし、SHA256ハッシュ化したもので置き換えられている
+    * `output`のパスは含まれている
+    * `inputDrvs`について、2と同じようにSHA256化された状態になっている。**つまり再帰的な計算が必要**。
 
 それでは`foo.drv`を目的の状態になるように整形していく。まずファイルをコピーしてくる。
 ```console
@@ -447,22 +445,29 @@ Derive([("out","","","")],[("/nix/store/86np2qg3fry2zqbamcihiawcci9vcq7a-bar.drv
 
 `foo`の依存関係に`bar.drv`があるのが分かる。これをハッシュ化したいが、`bar.drv`の中にさらに`baz.drv`が依存関係にあるので、それをまずハッシュ化する。
 ```console
-bombrary@nixos:~/drv-test$ nix derivation show /nix/store/si4z7n6kbpi3ndlmwfyp2fk6wb4wyfrf-foo.drv^* | jq -r 'to_entries[].value.inputDrvs | to_entries[].key'
+bombrary@nixos:~/drv-test$ nix derivation show /nix/store/si4z7n6kbpi3ndlmwfyp2fk6wb4wyfrf-foo.drv^* | \
+  jq -r 'to_entries[].value.inputDrvs | to_entries[].key'
 /nix/store/86np2qg3fry2zqbamcihiawcci9vcq7a-bar.drv
 
-bombrary@nixos:~/drv-test$ nix derivation show /nix/store/86np2qg3fry2zqbamcihiawcci9vcq7a-bar.drv^* | jq -r 'to_entries[].value.inputDrvs | to_entries[].key'
+bombrary@nixos:~/drv-test$ nix derivation show /nix/store/86np2qg3fry2zqbamcihiawcci9vcq7a-bar.drv^* | \
+  jq -r 'to_entries[].value.inputDrvs | to_entries[].key'
 /nix/store/574hqhsqxm64xbcg1r8hgg2839abw0vm-baz.drv
 ```
 
 `baz.drv`が依存するdrvは特にないので、そのままハッシュ化する。
 ```
-bombrary@nixos:~/drv-test$ cat /nix/store/86np2qg3fry2zqbamcihiawcci9vcq7a-bar.drv | sed 's,/nix/store/574hqhsqxm64xbcg1r8hgg2839abw0vm-baz.drv,aea605729148380dc4a69b8043dc5c1a85a113226062b65626998a9bee282000,g' | sha256sum | cut -d ' ' -f 1
-c040ebdb2552e1e48c695d85079554af21637f20509d524b60150781596a9672
+bombrary@nixos:~/drv-test$ cat /nix/store/574hqhsqxm64xbcg1r8hgg2839abw0vm-baz.drv | \
+  sha256sum | \
+  cut -d ' ' -f 1
+d7e138110ee3a03c9f28cf7d124de6db8adea690ebcb2fcd901da7cccaed645c
 ```
 
 これをもとに`bar.drv`の`baz.drv`の依存関係の部分をそのハッシュに書き換え、ハッシュ化する。
 ```console
-[bombrary@nixos:~/tmp/drv-test]$ cat /nix/store/azh4hppmaxva1xgckz80khsnvp22a7x0-bar.drv | sed 's,/nix/store/f7ixslcwscmg9npjv834jcwd78m878q5-baz.drv,d7e138110ee3a03c9f28cf7d124de6db8adea690ebcb2fcd901da7cccaed645c,g' | sha256sum | cut -d ' ' -f 1
+[bombrary@nixos:~/tmp/drv-test]$ cat /nix/store/azh4hppmaxva1xgckz80khsnvp22a7x0-bar.drv | \
+  sed 's,/nix/store/f7ixslcwscmg9npjv834jcwd78m878q5-baz.drv,d7e138110ee3a03c9f28cf7d124de6db8adea690ebcb2fcd901da7cccaed645c,g' | \
+  sha256sum | \
+  cut -d ' ' -f 1
 679584e662eaccaf5810935a21dbed2155f627d5369ba9a4ab8485b7bc8f9193
 ```
 
@@ -484,7 +489,7 @@ bombrary@nixos:~/drv-test$ nix-hash --type sha256 --base32 --truncate --flat foo
 jbjk9yppbjhdnja04lh9xj87adiq1mcy
 ```
 
-## fixed outputの計算
+## fixed outputの計算 {#fixed-out-calc}
 
 fixed outputとは、outputの計算に必要なものが入力に依存せず、前もって計算できるようなoutputのこと。外部からファイルをDLしてくるような場合は、`inputDrvs`や`inputSrcs`に依存せず、あくまでDLしてきたファイルのハッシュに依存してほしいため、前節での計算方法とは異なるものが用いられる。
 
@@ -566,20 +571,34 @@ xRDjrQIAUX46FFNOSUs33Adw79cz/DXOL0Rd1JyWp9U=
 
 ### outputの計算（fixed outputの場合）
 
-[outputの計算](#outputの計算)での場合、outputのhashの計算をするためには、inputDrvsを適切なhashで置き換える必要があった。しかしfixed outputの場合inputDrvsに依存しないため、また別のhashの計算方法が用意されている。
+[outputの計算](#outputの計算)での場合、outputのハッシュを計算するためには、`inputDrvs`を適切なハッシュで置き換える必要があった。しかしfixed outputは`inputDrvs`に依存しないため、また別のハッシュの計算方法が用意されている。
 
-そこで、本節では、以下のパス
+ここでは、`hello-2.1.1.tar.gz` のoutputのパスが
 ```
 bombrary@nixos:~/drv-test$ nix derivation show /nix/store/9alvyaz7v4ljfm6kian0l3vi2vabbzz1-hello-2.1.1.tar.gz.drv^* | jq -r 'to_entries[].value.outputs.out.path'
 /nix/store/9bw6xyn3dnrlxp5vvis6qpmdyj4dq4xy-hello-2.1.1.tar.gz
 ```
 
-において、ハッシュが`9bw6xyn3dnrlxp5vvis6qpmdyj4dq4xy`になることを実際に計算することで確かめる。
+になっているが、このハッシュ`9bw6xyn3dnrlxp5vvis6qpmdyj4dq4xy`を実際に計算してみよう。
 
+今回の場合、fixed outputのinner-digestは以下の形式をSHA256でハッシュ化したものである。
+```txt
+fixed:out:sha256:(outputsに記載されていたhash):
+```
+
+補足：[ドキュメント](https://nixos.org/manual/nix/unstable/protocols/store-path)によると、実際の形式は `fixed:out:<rec>:<algo>:<hash>:` になるらしいが、`rec`の意味がまだ調査し切れていない。今回は無しでよいはず。
+
+そのため、以下のように計算できる。
 ```console
-bombrary@nixos:~/drv-test$ nix derivation show /nix/store/9alvyaz7v4ljfm6kian0l3vi2vabbzz1-hello-2.1.1.tar.gz.drv^* | jq -r 'to_entries[].value.outputs.out.hash' | xargs -I{} echo -n "fixed:out:sha256:{}:" | sha256sum
+bombrary@nixos:~/drv-test$ nix derivation show /nix/store/9alvyaz7v4ljfm6kian0l3vi2vabbzz1-hello-2.1.1.tar.gz.drv^* | \
+  jq -r 'to_entries[].value.outputs.out.hash' | \
+  xargs -I{} echo -n "fixed:out:sha256:{}:" | \
+  sha256sum
 71b997e44b3c59ab7d51f493265b099086ab9bf9d523b0db2f4a19f22ac7c4c4  -
+```
 
+fingerprintはoutputと同じで `output:out:sha256:<inner-digest>:/nix/store:<name>` の形式である。それをSHA256のNix32表現で出力すれば、求めたいハッシュの完成である。
+```console
 bombrary@nixos:~/drv-test$ echo -n "output:out:sha256:71b997e44b3c59ab7d51f493265b099086ab9bf9d523b0db2f4a19f22ac7c4c4:/nix/store:hello-2.1.1.tar.gz" > hello-src.str
 bombrary@nixos:~/drv-test$ nix-hash --type sha256 --truncate --base32 --flat hello-src.str
 9bw6xyn3dnrlxp5vvis6qpmdyj4dq4xy
@@ -614,12 +633,21 @@ bombrary@nixos:~/drv-test$ nix-store --query --tree /nix/store/rj4yv464wz8n055r8
 
 このことから、手で計算するのが絶望的であることがわかる。しかも、このoutputがfixed outputかそうでないかを見て、計算方法を変える必要がある。
 
-ここまでくるとスクリプトを書いて自動で計算してみたくなるが、長くなるので別記事に分割する。
+するとスクリプトを書いて計算してみたくなるが、長くなるので別記事に分割する。
 
 ## まとめ
 
-ハッシュの計算方法を、実際にコマンドを手打ちしながら見てきた。そのことから、nix storeにあるオブジェクトとしては以下の4つがあることが分かり、それぞれハッシュを計算するうえで依存しているものが、あったりなかったりした。
-* derivation：build dependenciesに依存
-* source：依存関係は無し
-* output：input derivationsに依存
-* fixed output：依存関係は無し
+* ハッシュの計算方法を、実際にコマンドを手打ちしながら見てきた。そのことから、nix storeにあるオブジェクトには以下の4つがあることが分かった
+  * derivation：build dependenciesに依存
+  * source：何らかのinput store pathに依存することがある
+  * output：input derivationsに依存
+  * fixed output：依存関係は無し
+* derivationとしてユーザがnixファイルに書く際には、インデントやスペースなどの表記揺れや依存関係の記述順に関係なく、同じハッシュが得られる
+  * ATermという形式に変換され、その際に辞書順にソートされる
+
+ほかの関連話題として、
+* storeの種類：storeにもlocal-storeだとかremote-storeなどで分かれている
+* fixed outputの `rec` パラメータ
+* [CA Derivation](https://nixos.wiki/wiki/Ca-derivations)
+
+などまだまだ調べていないものがあるが、調査して分かってきたらまた別記事にアウトプットしたい。
