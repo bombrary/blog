@@ -824,7 +824,7 @@ dotfilesで管理した後に、追加でほかのサーバーにNixOSを導入�
 
 `nixos-install` のときに `--flake` 引数が指定できるところがポイントである。
 
-まず [NixOS設定ファイルの作成](#create-nix-configuration) までは進める。
+まず [パーティションの作成](#make-partition) までは進める。
 
 Gitを一時的に導入し、それを用いてdotfilesリポジトリをcloneしてくる。
 ```console
