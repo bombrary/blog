@@ -2,6 +2,7 @@
 title: "NixOS & Home Managerのセットアップメモ"
 date: 2024-02-11T18:00:00+09:00
 tags: []
+toc: true
 categories: ["NixOS"]
 ---
 
@@ -17,7 +18,7 @@ NixOSの設定ファイルはNix言語で記述するが、自由度が結構高
 今回は[Wiki](https://nixos.wiki/wiki/Applications)の紹介されていた[dotfiles](https://github.com/hlissner/dotfiles/tree/master)リポジトリを参考にしようと思う。
 とはいえ、まだまだNixOSの初学者のため、小さな部分を少し真似して作っていく。
 
-## インストールディスクの起動
+## インストールディスクの起動 {#boot-from-install-disk}
 
 [Download Nix](https://nixos.org/download)のページ下部にある「NixOS the Linux distributeion」からISOイメージをダウンロードしてくる。
 
@@ -72,7 +73,7 @@ Warning: Permanently added '192.168.11.7' (ED25519) to the list of known hosts.
 [root@nixos:~]#
 ```
 
-## パーティション作成・ディスクフォーマット
+## パーティション作成・ディスクフォーマット {#make-partition}
 
 このあたりは[Arch Linux](https://wiki.archlinux.jp/index.php/%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%82%AC%E3%82%A4%E3%83%89)でも同様であるが、基本的には
 * ブートパーティション：起動時に必要なデータを入れた領域
@@ -94,12 +95,12 @@ GPTかMBRかによっても若干手順が異なるので注意。以下はGPT�
   * 512GBから、末尾に8GBだけ残してroot partition
   * 残りの末尾8Gはswap partition
 
-```shell-session
-[root@nixos:~]# parted /dev/sda -- mklabel gpt
-[root@nixos:~]# parted /dev/sda -- mkpart root ext4 512MG -8GB
-[root@nixos:~]# parted /dev/sda -- mkpart swap linux-swap -8GB 100%
-[root@nixos:~]# parted /dev/sda -- mkpart ESP fat32 1MB 512MB
-[root@nixos:~]# parted /dev/sda -- set 3 esp on
+```sh
+parted /dev/sda -- mklabel gpt
+parted /dev/sda -- mkpart root ext4 512MG -8GB
+parted /dev/sda -- mkpart swap linux-swap -8GB 100%
+parted /dev/sda -- mkpart ESP fat32 1MB 512MB
+parted /dev/sda -- set 3 esp on
 ```
 
 現在のパーティションの確認
@@ -139,6 +140,13 @@ Number  Start   End     Size    Type     File system  Flags
 * `/dev/sda2`をswapでフォーマット
 * `/dev/sda3`をfat32でフォーマット
 
+```sh
+mkfs.ext4 -L nixos /dev/sda1
+mkswap -L swap /dev/sda2
+mkfs.fat -F 32 -n boot /dev/sda3
+```
+
+実行例。
 ```shell-session
 [root@nixos:~]# mkfs.ext4 -L nixos /dev/sda1
 mke2fs 1.47.0 (5-Feb-2023)
@@ -180,13 +188,11 @@ lrwxrwxrwx 1 root root  10 Feb 12 01:24 swap -> ../../sda2
 * boot partitionの領域を `/mnt/boot` にマウント
 * swap partitionの領域をswap領域として有効化
 
-```shell-session
-[root@nixos:~]# mount /dev/sda1 /mnt
-
-[root@nixos:~]# mkdir /mnt/boot
-[root@nixos:~]# mount /dev/sda3 /mnt/boot
-
-[root@nixos:~]# swapon /dev/sda2
+```sh
+mount /dev/sda1 /mnt
+mkdir /mnt/boot
+mount /dev/sda3 /mnt/boot
+swapon /dev/sda2
 ```
 
 今一度ディスク情報を確認。マウントした領域と切ったパーティションの領域のサイズがここで一致しているのかを確認。
@@ -196,7 +202,7 @@ lrwxrwxrwx 1 root root  10 Feb 12 01:24 swap -> ../../sda2
 /dev/sda3       510M  4.1k  510M   1% /mnt/boot
 ```
 
-## NixOS設定ファイルの作成
+## NixOS設定ファイルの作成 {#create-nix-configuration}
 
 `configuration.nix`の初期ファイルを作成。
 
@@ -257,6 +263,8 @@ For more hardware-specific settings, see https://github.com/NixOS/nixos-hardware
 }
 ```
 
+## NixOSのインストール {#nixos-install}
+
 インストールを実行する。
 ```shell-session
 [root@nixos:~]# nixos-install
@@ -271,26 +279,27 @@ passwd: password updated successfully
 installation finished!
 ```
 
-アンマウントしたうえで再起動する。このとき、CD・ISOを取り外した上で再起動する。
+`nixos-enter` コマンドで、今ビルドしたNixOSのシステムに入る。一般ユーザのパスワードをそこで行う （[NixOS Wiki](https://nixos.wiki/wiki/Change_root)にて`nixos-enter`コマンドの存在を知ったので手順を追記）。
+```console
+[root@nixos:~]# nixos-enter
+setting up /etc...
 
-```shell-session
-[root@nixos:~]# umount /mnt/boot
-
-[root@nixos:~]# umount /mnt
-
-[root@nixos:~]# reboot
-
-Broadcast message from root@nixos on pts/1 (Tue 2024-02-06 11:25:37 UTC):
-
-The system will reboot now!
-```
-
-再起動前にパスワード設定を促されたと思うが、それはrootのパスワードである。一般ユーザのパスワード変更を行う（これはSSHではなくコンソール上でやる必要がある）。
-```shell-session
-[root@nixos:~]# passwd bombrary
+[root@nixos:/]# passwd bombrary
 New password:
 Retype new password:
 passwd: password updated successfully
+
+[root@nixos:/]# exit
+logout
+```
+
+アンマウントしたうえで再起動する。このとき、CD・ISOを取り外した上で再起動する。
+
+```sh
+umount /mnt/boot
+umount /mnt
+
+reboot
 ```
 
 SSHで一般ユーザでログインできることを確認する。
@@ -326,8 +335,8 @@ Last login: Tue Feb  6 20:30:18 2024 from 192.168.11.6
 
 `flake.nix`のひな形を作る。
 ```shell-session
-[bombrary@nixos:~/config]$ nix flake init
-wrote: /home/bombrary/config/flake.nix
+[bombrary@nixos:~/dotfiles]$ nix flake init
+wrote: /home/bombrary/dotfiles/flake.nix
 ```
 
 適当にinputを書き足す。
@@ -352,7 +361,7 @@ wrote: /home/bombrary/config/flake.nix
 
 文法チェック。
 ```shell-session
-[bombrary@nixos:~/config]$ nix flake check
+[bombrary@nixos:~/dotfiles]$ nix flake check
 ```
 
 続いてOSの設定を書き足す。とその前に、`nixos-rebuild` コマンドのマニュアルを確認する。
@@ -397,16 +406,16 @@ wrote: /home/bombrary/config/flake.nix
 
 文法チェックして問題なさそうならビルドする。
 ```shell-session
-[bombrary@nixos:~/config]$ nix flake check
-[bombrary@nixos:~/config]$ sudo nixos-rebuild switch --flake '.#minimal'
+[bombrary@nixos:~/dotfiles]$ nix flake check
+[bombrary@nixos:~/dotfiles]$ sudo nixos-rebuild switch --flake '.#minimal'
 ```
 
-## （おまけ）flakeの中身の確認方法
+### （おまけ）flakeの中身の確認方法
 
 ちなみに、nixosSystem関数の出力がどんなものになっているのかを確認したい場合は、`nix repl`で確認可能。[getFlake](https://nixos.org/manual/nix/stable/language/builtins.html#builtins-getFlake)関数でflakeを読み込める。
 
 ```shell-session
-[bombrary@nixos:~/config]$ nix repl
+[bombrary@nixos:~/dotfiles]$ nix repl
 Welcome to Nix 2.18.1. Type :? for help.
 
 nix-repl> flake = builtins.getFlake (toString ./.)
@@ -421,7 +430,7 @@ nix-repl> flake.nixosConfigurations.minimal
 { _module = { ... }; _type = "configuration"; class = "nixos"; config = { ... }; extendModules = «lambda @ /nix/store/ws5098bfhd2kzvg3yxwb2ggvl05h7gfd-source/nixos/lib/eval-config.nix:113:21»; extraArgs = { ... }; options = { ... }; pkgs = { ... }; type = { ... }; }
 ```
 
-## （おまけ）パッケージの検索
+### （おまけ）パッケージの検索
 
 `nixos-generate-config`で生成されて設定ファイルに以下のコメントが書かれていた。
 > List packages installed in system profile. To search, run:
@@ -430,7 +439,7 @@ nix-repl> flake.nixosConfigurations.minimal
 [NixOS Search](https://search.nixos.org/packages)でパッケージを検索できることは知っていたが、どうやら `nix search` コマンドでも検索できるらしい。
 
 ```console
-[bombrary@nixos:~/config]$ nix search nixpkgs [package name]
+[bombrary@nixos:~/dotfiles]$ nix search nixpkgs [package name]
 
 # NeoVimを検索する例
 [nix-shell:~]$ nix search nixpkgs '\.neovim'
@@ -444,7 +453,7 @@ nix-repl> flake.nixosConfigurations.minimal
 なお、引数の `nixpkgs` flake-registryに登録されたものを参照して、そこからリポジトリを引っ張って来ている模様。現在のflake-registryは以下のコマンドで確認可能。
 
 ```shell-session
-[bombrary@nixos:~/config]$ nix registry list
+[bombrary@nixos:~/dotfiles]$ nix registry list
 global flake:agda github:agda/agda
 global flake:arion github:hercules-ci/arion
 global flake:blender-bin github:edolstra/nix-warez?dir=blender
@@ -487,8 +496,87 @@ global flake:templates github:NixOS/templates
 現在のNixOSのバージョンである23.11のパッケージを検索したいなら、`-I nixpkgs=...` でパッケージのリポジトリを書き換える。
 
 ```shell-session
-[bombrary@nixos:~/config]$ nix search -I nixpkgs=flake:github:NixOS/nixpkgs/nixos-23.11 nixpkgs
+[bombrary@nixos:~/dotfiles]$ nix search -I nixpkgs=flake:github:NixOS/nixpkgs/nixos-23.11 nixpkgs
 ```
+
+## （追記）共通の設定をmoduleに分ける
+
+[設定ファイルの作成](#create-nix-configuration)で`configuration.nix`を作成したが、今後 `dotfiles` で複数のホストの設定を管理することを考えると、共通の設定を別ファイルで分割・利用できると良い。そのような場合に [NixOS modules](https://nixos.wiki/wiki/NixOS_modules)の仕組みが使える。
+
+とはいっても使い方は簡単で、単に `imports = [...]` に分割した設定ファイルへのパスを記述するだけなので、試しにやってみる。
+
+moduleを入れておくディレクトリを作成する。愚直すぎるが今回は`common.nix`という一枚岩のファイルに、共通化した設定を記述することにする。
+```console
+[bombrary@nixos:~/dotfiles]$ mkdir modules
+[bombrary@nixos:~/dotfiles]$ touch modules/common.nix
+```
+
+`common.nix`の中身は以下のようにする。タイムゾーンやユーザ、ロケール、最低限のパッケージの設定をここに分割した。
+```nix
+{ config, lib, pkgs, ... }:
+
+{
+  time.timeZone = "Asia/Tokyo";
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  users.users.bombrary = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+  };
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    vim
+    git
+  ];
+}
+```
+
+設定を `modules/common.nix` に切り出したので、 `hosts/minimal/configuration.nix` は以下のようにすっきりと書ける。`imports` の中に `modules/common.nix` へのパスを指定することで、設定を読み込んでいる。
+```nix
+{ config, lib, pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+      ../../modules/common.nix
+    ];
+
+  networking.hostName = "nixos"; # Define your hostname.
+
+  # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
+  # and migrated your data accordingly.
+  #
+  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
+  system.stateVersion = "23.11"; # Did you read the comment?
+}
+```
+
+設定が終わったら、`git add` してindexに追加した後、`nixos-rebuild`コマンドで設定を反映させる。
+
+```console
+[bombrary@nixos:~/dotfiles]$ git add modules/common.nix
+[bombrary@nixos:~/dotfiles]$ sudo nixos-rebuild switch --flake .#minimal
+```
+
+今回は `modules/common.nix` という1ファイルに設定を分割したが、汎用性を考えると、例えば
+* 共通のユーザ、SSHの公開鍵などの設定は `modules/users.nix`
+* FWやプロキシの設定は `modules/network.nix`
+* 必要最低限のパッケージ・サービスは `modules/packages.nix`
+* その他の設定は `modules/others.nix`
+
+などで分けるとよいのかもしれない。もちろん、
+* ホスト名
+* 静的IPを設定している場合はその設定
+
+などはサーバ個別の設定となるので、module分割はせず`configuration.nix`に記載すればよい。このあたりの管理の仕方はいろいろ自由が効く。
+
 
 ## Home Managerのセットアップ
 
@@ -616,10 +704,9 @@ shared-mime-info-2.4
 ## Home Managerの設定
 
 * まずは`home.nix`のひな形に親切なコメントがたくさんあるので、それを読みつつ編集する。
-* [Appendix A Home Manager Configuration Examples](https://nix-community.github.io/home-manager/options.xhtml)を参考にする
-* [Home Manager - NixOS Wiki](https://nixos.wiki/wiki/Home_Manager)
-
-を参考にする。
+* ほかには、以下のページを参考にする
+  * [Appendix A Home Manager Configuration Examples](https://nix-community.github.io/home-manager/options.xhtml)
+  * [Home Manager - NixOS Wiki](https://nixos.wiki/wiki/Home_Manager)
 
 ## パッケージを入れる
 
@@ -728,4 +815,87 @@ config
 
 これで`home-manager switch --flake .#<name>`を実行すれば、dotfilesが想定通りの位置に配置される。
 
-とりあえず現時点での設定はここまで。これから試行錯誤して、書き方とかディレクトリ構成とかを改善していく。あと、Nixのmodule機能をあまり使わずに構成しているので、そのあたりも勉強して使いつつ、設定を育てていきたい。
+## （追記）dotfiles管理後のNixOSセットアップ方法
+
+dotfilesで管理した後に、追加でほかのサーバーにNixOSを導入したい場合の手順。
+
+* dotfilesはGitのリモートリポジトリで管理していることを前提とする
+* VMの場合はovaファイルで固めれば早いのだが、物理マシンに導入するシナリオも考えて、インストールディスクからやることを想定する。
+
+`nixos-install` のときに `--flake` 引数が指定できるところがポイントである。
+
+まず [NixOS設定ファイルの作成](#create-nix-configuration) までは進める。
+
+Gitを一時的に導入し、それを用いてdotfilesリポジトリをcloneしてくる。
+```console
+[root@nixos:~]# nix shell --extra-experimental-features 'nix-command flakes' nixpkgs#git
+[root@nixos:~]# git clone (リポジトリのURL)
+[root@nixos:~]# cd dotfiles
+```
+
+`nixos-generate-config`で設定ファイルの生成を行う。
+```console
+[root@nixos:~]# nixos-generate-config --root /mnt
+writing /mnt/etc/nixos/hardware-configuration.nix...
+writing /mnt/etc/nixos/configuration.nix...
+For more hardware-specific settings, see https://github.com/NixOS/nixos-hardware.
+```
+
+生成したファイルを `hosts/<host名>` ディレクトリに移す。
+```console
+[root@nixos:~/dotfiles]# mkdir hosts/minimal2
+[root@nixos:~/dotfiles]# mv /mnt/etc/nixos/* hosts/minimal2/
+```
+
+`hosts/<host名>/configuration.nix` をよしなに編集する。例えば自作のmoduleを使いたければそれを指定する。
+```nix
+{ config, lib, pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+      ../../modules/common.nix
+    ];
+  ...
+}
+```
+
+`flake.nix`の`nixosConfigurations` に、今回追加したホストの設定をする。
+```nix
+{
+  ...
+  outputs = { self, nixos, nixpkgs, home-manager }: {
+    nixosConfigurations = {
+      ...
+      minimal2 = nixos.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/minimal2/configuration.nix
+        ];
+      };
+      ...
+    };
+}
+```
+
+`git add` でindexを追加して、 `--flake .#<flake.nixで設定したホスト名>`でNixOSのインストールを行う。
+```console
+[root@nixos:~/dotfiles]# git add .
+[root@nixos:~/dotfiles]# nixos-install --flake .#minimal2
+```
+
+そのあと、必要に応じてdotfilesをcommit、pushする。
+
+念のため、ユーザディレクトリにdotfilesを退避しておく。
+```console
+[root@nixos:~/dotfiles]# cd ../
+
+[root@nixos:~]# mv dotfiles /mnt/home/bombrary/
+```
+
+これ以降の作業は [NixOSのインストール](#nixos-install) の、インストール後の作業と同様である。 `nixos-enter` 後にユーザのパスワード設定をしたら、アンマウントして再起動すればよい。
+
+## 最後に
+
+とりあえず現時点での設定はここまで。これから試行錯誤して、書き方とかディレクトリ構成とかを改善していく。
