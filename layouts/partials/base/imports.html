@@ -1,4 +1,5 @@
 {{ range .Site.Params.customCSS }}
   <link rel="stylesheet" href="{{ . | relURL}}">
 {{ end }}
+{{- partial "tagmanager_head" . -}}
 {{- partial "analytics" . -}}

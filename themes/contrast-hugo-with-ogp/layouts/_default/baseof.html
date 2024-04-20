@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<head>
 <html lang="{{ .Site.LanguageCode | default "en" }}">
 <title>{{ if .Title }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
 <meta charset="utf-8">
@@ -21,7 +22,10 @@
 {{ end }}
 {{ template "_internal/opengraph.html" . }}
 {{ template "_internal/twitter_cards.html" . }}
+</head>
 
+<body>
+{{- partial "base/imports_body.html" . -}}
 <header>
   {{ if not (gt (len .Site.Menus) 1) }}
     <a href="{{ .Site.BaseURL }}" class="title">{{ .Site.Title }}</a>
@@ -41,4 +45,5 @@
   <p class="footer-msg">© 2024. All rights reserved.</p>
 </footer>
 
+</body>
 </html>
