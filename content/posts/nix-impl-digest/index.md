@@ -1,10 +1,24 @@
 ---
-title: "Nixでハッシュ関係の処理のPython実装"
-date: 2024-04-17T21:32:10Z
+title: "Nixでハッシュ関係の処理をPythonで実装してみる"
+date: 2024-04-21T11:30:00+09:00
 draft: true
-tags: []
-categories: []
+tags: ["Python", "hash", "Nix32", "derivation"]
+categories: ["Nix"]
+toc: true
 ---
+
+[前回の記事]({{< ref "/posts/nix-calc-digest">}})でstore pathを手で計算する方法を見てきたが、output hashの計算については手で計算するのが無理だった。これをPythonスクリプトで実装するとどうなるかをやってみた。
+
+ゴールとしてはoutput hashを計算するコードを実装することであるが、
+* Nix32表現の計算とtruncateオプションの計算はそれにあたって必要なので実装した
+* おまけでderivation hashとsource hashの計算も実装した
+
+なお、今回のコードについて
+* [Nix 2.21.1](https://github.com/NixOS/nix/blob/2.21.1/)を参考に作っている
+* すべてのパターンは網羅できていない可能性が高い（特にoutput hashの計算方法）
+* [Nixのいくつかの処理をPythonで実装してみる]({{< ref "/posts/nix-impl-some-commands-python" >}})のコードを一部使って実装する
+
+である。また、コードの実行例にあたって、[前回の記事のderivationの準備]({{< ref "/posts/nix-calc-digest">}}#prepare-derivation)にしたがって`sample`のderivationが準備されているものとする。
 
 ## Nix32表現の計算
 
@@ -54,10 +68,10 @@ def to_nix32(hash: bytes) -> str:
 `nix-hash` コマンドには `--truncate` オプションがあり、これを行うとハッシュのNix32表現が32文字になる。ただし、これは別に単純に32文字に切り取っているわけではない。
 
 * [nix/hash.cc](https://github.com/NixOS/nix/blob/2.21.1/src/nix/hash.cc#L118)の`compressHash`にて、ハッシュサイズを20バイトにする処理が行われている
-  * 20B=160bitは、Nix32表現では160bit/5(bit/文字)=32文字である
+  * 20バイト=160bitは、Nix32表現では160bit/5(bit/文字)=32文字である
 * `compressHash`の実装は[libutil/hash.cc](https://github.com/NixOS/nix/blob/2.21.1/src/libutil/hash.cc#L379-L386)にある。20バイトを超えた分の情報を失わせないように、20で割った余りに対応するindexにXORで足しこんでいる
 
-Pythonで実装すると以下のようになる。
+実装は以下の通り。
 ```python
 HASH_TRUNC_BYTES = 20
 
@@ -71,48 +85,129 @@ def compress_hash(hash: bytes) -> bytes:
 
 ## derivation hashの計算
 
-## source hashの計算
-
-## output hashの計算
-
-そのあたりの実装は[libstore/derivations.cc](https://github.com/NixOS/nix/blob/2.21.1/src/libstore/derivations.cc)が参考になる。具体的には、
-* `DrvHash hashDerivationModulo()`関数
-* `DrvHash pathDerivationModulo()`関数
-* `unparse()`関数
-
-あたりが参考になる。
+* inner digestについてはdrvファイルを単にハッシュ化するだけ
+* build dependencies(input derivation + input sources)を連結させてfingerprintを作成する
+  * derivationのパースについては[Nixのいくつかの処理をPythonで実装してみる]({{< ref "/posts/nix-impl-some-commands-python" >}})の`load_drv`関数を用いる。
 
 ```python
 import hashlib
+import os
+import sys
+
+def calc_drv_hash(path: str) -> bytes:
+    drv = load_drv(path)
+    name = drv.envs["name"]
+
+    input_drvs = [ i.path for i in drv.input_drvs ]
+    input_srcs = list(drv.input_srcs)
+    inputs = sorted(input_drvs + input_srcs)
+
+    inner_digest = hashlib.sha256(unparse_drv(drv).encode()).hexdigest()
+    fingerprint = f"text:{":".join(inputs)}:sha256:{inner_digest}:/nix/store:{name}.drv"
+
+    return hashlib.sha256(fingerprint.encode()).digest()
+
+if __name__ == "__main__":
+    hash = calc_drv_hash(sys.argv[1])
+    print(to_nix32(compress_hash(hash)))
+```
+
+実行すると、drvファイルのパスに載っているハッシュと一致していることがわかる。
+```console
+bombrary@nixos:~/drv-test$ nix run nixpkgs#python312 -- dump.py  /nix/store/rj4yv464wz8n055r8d3z8iag33f1mgg4-sample.drv
+rj4yv464wz8n055r8d3z8iag33f1mgg4
+```
+
+## source hashの計算
+
+inner digestをNARのハッシュから作って、それをもとにfingerprintを作成する。NARの処理については[Nixのいくつかの処理をPythonで実装してみる]({{< ref "/posts/nix-impl-some-commands-python" >}})の`archiveNAR`関数を用いる。
+
+```python
+import hashlib
+import os
+
+def calc_source_hash(path: str) -> bytes:
+    name = os.path.basename(path)
+
+    nar = archiveNAR(path)
+
+    inner_digest = hashlib.sha256(nar).hexdigest()
+    fingerprint = f"source:sha256:{inner_digest}:/nix/store:{name}"
+
+    return hashlib.sha256(fingerprint.encode()).digest()
+
+if __name__ == "__main__":
+    hash = calc_source_hash(sys.argv[1])
+    print(to_nix32(compress_hash(hash)))
+```
+
+`nix derivation show`に載っているsource hashと一致していることが確認できる。
+```console
+bombrary@nixos:~/drv-test$ nix derivation show /nix/store/rj4yv464wz8n055r8d3z8iag33f1mgg4-sample.drv^* | jq -r 'to_entries[].value.inputSrcs[]'
+/nix/store/cap4mlkfwzh7l2f2x5zy5lvgy8xb5ywd-hello.c
+/nix/store/in7cqd3v1mg9f8jkvlm4d0h002h1697j-mybuilder.sh
+
+bombrary@nixos:~/drv-test$ nix run nixpkgs#python312 -- dump.py ./hello.c
+cap4mlkfwzh7l2f2x5zy5lvgy8xb5ywd
+
+bombrary@nixos:~/drv-test$ nix run nixpkgs#python312 -- dump.py ./mybuilder.sh
+in7cqd3v1mg9f8jkvlm4d0h002h1697j
+```
+
+## output hashの計算
+
+この実装は[libstore/derivations.cc](https://github.com/NixOS/nix/blob/2.21.1/src/libstore/derivations.cc)を参考にした。関数としては
+* `DrvHash hashDerivationModulo()`
+* `DrvHash pathDerivationModulo()`
+* `unparse()`
+
+あたり。
+
+やっていることとしては、
+* `calc_out_hash()` がoutput hash計算のためののentry point
+* `calc_out_hash()` では以下のことを行う
+  1. outputのリスト`drv.outputs` に記載されているパスを空文字にする
+  2. 環境変数の辞書`drv.envs` にもoutputのパスが記載されているはずなので空文字にする
+  3. `input_drvs` に書かれているパスを `hash_derivation_modulo()` の結果に置換する
+  4. drvをSHA256ハッシュ化してNix32表現で返す
+* `hash_derivation_modulo()` では以下のことを行う。
+  * fixed outputの場合、そのfingerprintをSHA256ハッシュ化してBase16表現で返す
+  * そうでない場合、`input_drvs` に書かれているパスを `hash_derivation_modulo()` の結果に置換し、そのdrvをSHA256ハッシュ化してBase16表現で返す
+
+となっている。`hash_derivation_modulo` という命名については、[libstore/derivations.cc](https://github.com/NixOS/nix/blob/2.21.1/src/libstore/derivations.cc)に`hashDerivationModulo()`や`pathDerivationModulo()`といった関数があることから（しかしmoduloのニュアンスがあまり良くわかっていない…）。
+
+```python
+import hashlib
+import sys
+import functools
 
 
-def load_drv(path: str) -> Derivation:
-    with open(path) as f:
-        return parse_drv(f.read())
-
-HASH_CACHE = {}
-def replace_input_drv_path(drv: Derivation) -> set[InputDrv]:
+def replace_input_drv_path(input_drvs: set[InputDrv]) -> set[InputDrv]:
     return {
         InputDrv(
             path=hash_derivation_modulo(i.path),
             ids=i.ids,
         )
-        for i in drv.input_drvs
+        for i in input_drvs
     }
 
-def hash_derivation_modulo(path: str) -> str:
-    if path not in HASH_CACHE:
-        drv = load_drv(path)
-        # outputsの第1要素のhashが空でない場合、fixed outputのはず
-        out = drv.outputs[0]
-        if out.hash:
-            fingerprint = f"fixed:out:{out.hash_algo}:{out.hash}:{out.path}"
-            HASH_CACHE[path] = hashlib.sha256(fingerprint.encode()).hexdigest()
-        else:
-            drv.input_drvs = replace_input_drv_path(drv)
-            HASH_CACHE[path] = hashlib.sha256(unparse_drv(drv).encode()).hexdigest()
 
-    return HASH_CACHE[path]
+def is_fixed_output(drv: Derivation) -> bool:
+    # outputsの第1要素のhashが空でない場合、fixed outputのはず
+    return drv.outputs[0].hash != ""
+
+
+@functools.lru_cache()
+def hash_derivation_modulo(path: str) -> str:
+    drv = load_drv(path)
+    if is_fixed_output(drv):
+        out = drv.outputs[0]
+        fingerprint = f"fixed:out:{out.hash_algo}:{out.hash}:{out.path}"
+        return hashlib.sha256(fingerprint.encode()).hexdigest()
+    else:
+        drv.input_drvs = replace_input_drv_path(drv.input_drvs)
+        return hashlib.sha256(unparse_drv(drv).encode()).hexdigest()
+
 
 def calc_out_hash(path: str) -> bytes:
     drv = load_drv(path)
@@ -121,15 +216,24 @@ def calc_out_hash(path: str) -> bytes:
     for output in drv.outputs:
         drv.envs[output.id] = ""
 
-    drv.input_drvs = replace_input_drv_path(drv)
-    digest =  hashlib.sha256(unparse_drv(drv).encode()).hexdigest()
-    fingerprint = f"output:out:sha256:{digest}:/nix/store:{drv.envs["name"]}"
+    drv.input_drvs = replace_input_drv_path(drv.input_drvs)
+
+    inner_digest =  hashlib.sha256(unparse_drv(drv).encode()).hexdigest()
+    fingerprint = f"output:out:sha256:{inner_digest}:/nix/store:{drv.envs["name"]}"
+
     return hashlib.sha256(fingerprint.encode()).digest()
 
-
-import sys
 
 if __name__ == "__main__":
     hash = calc_out_hash(sys.argv[1])
     print(to_nix32(compress_hash(hash)))
+```
+
+`nix derivation show`に載っているoutput hashと、スクリプトの実行結果が一致していることが確認できる。
+```console
+bombrary@nixos:~/drv-test$ nix derivation show /nix/store/rj4yv464wz8n055r8d3z8iag33f1mgg4-sample.drv^* | jq -r 'to_entries[].value.outputs.out.path'
+/nix/store/2l1a42rcz7jm1mspka2n8ivgdds8jlql-sample
+
+bombrary@nixos:~/drv-test$ nix run nixpkgs#python312 -- dump.py /nix/store/rj4yv464wz8n055r8d3z8iag33f1mgg4-sample.drv
+2l1a42rcz7jm1mspka2n8ivgdds8jlql
 ```

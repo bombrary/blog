@@ -40,7 +40,7 @@ Nixでは、パッケージの再現性を担保するために、`/nix/store/`�
 * source：ビルドに必要なファイル、ソースコードを表す
 * output：ビルド生成物そのもの、ないしディレクトリを表す
 
-## （前準備）derivationの準備
+## （前準備）derivationの準備 {#prepare-derivation}
 
 今回手で計算するもととなるderivationを簡単に書く。
 * [Nix PillsのChapter 7](https://nixos.org/guides/nix-pills/working-derivation#id1388)の内容をもとに。汎用性とかは意識せず、`x86_64-linux`前提で書く
