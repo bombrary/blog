@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /blog/categories/
-Disallow: /blog/tags/
-Sitemap: https://bombrary.github.io/blog/sitemap.xml
