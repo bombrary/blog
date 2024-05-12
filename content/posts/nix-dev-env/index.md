@@ -1,7 +1,6 @@
 ---
-title: "Nixを用いたツール実行環境・開発環境を作る方法メモ"
-date: 2024-05-05T22:22:49Z
-draft: true
+title: "Nixを用いてツール実行環境・開発環境を作る方法"
+date: 2024-05-13T07:00:00+09:00
 toc: true
 tags: [ "template", "direnv", "flake", "NixOS"]
 categories: [ "Nix" ]
@@ -9,8 +8,7 @@ categories: [ "Nix" ]
 
 ## 要約
 
-この記事では、ツールを一時的に導入したり、ツールが実行可能な開発環境を整備したりする目的として、
-
+この記事では、ツールを一時的に導入したり、ツールが実行可能な開発環境を整備したりする目的として、以下の話題を扱う。
 * 各種コマンド
   * nix shell
   * nix run
@@ -18,7 +16,13 @@ categories: [ "Nix" ]
 * direnv + nix-direnv
 * nix flake init にtemplateを指定する方法
 
-を扱う。
+なお本記事ではNixOS固有の話ではなく、（パッケージマネージャとしての）Nixを使う場合の話をする。使用するNixとhome-managerのバージョンは以下の通り。
+```console
+~ $ nix --version
+nix (Nix) 2.18.1
+~ $ home-manager --version
+24.05-pre
+```
 
 ## はじめに
 
@@ -26,15 +30,11 @@ Nixではユーザ環境にパッケージを入れるために、以下の2つ�
 * [nix-env](https://nixos.org/manual/nix/stable/command-ref/nix-env)
 * [home-manager](https://github.com/nix-community/home-manager)
 
-これらは永続的にパッケージを導入する仕組みであるが、一時的に、パッケージを導入したいという場合があるだろう。そのようなケースとしては以下の2つである。
-* あるツールを使いたいが、別に永続的にそれを使う必要はない。試しに使ってみたい場合は、ある瞬間にそれが使えれば十分な場合
-* virtualenvみたいに、開発時のみに特定のバージョンの開発ツールが導入されている状態であってほしい場合
+これらは永続的にパッケージを導入する仕組みであるが、そうではなく一時的にパッケージを導入したいという場合があるだろう。具体的には、以下の2つの場合がありえる。
+* あるツールを使いたいが、別に永続的にそれを使う必要はない。試しに使ってみたい場合は、ある瞬間にそれが使えれば十分
+* virtualenvみたいに、開発時のみに特定のバージョンの開発ツールが導入されている状態であってほしい
 
-前者の場合、
-* [nix shell](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-shell)
-* [nix run](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-run)
-
-コマンドを用いる。後者の場合、[nix develop](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop)コマンドを用いる。
+前者の場合、[nix shell](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-shell)、[nix run](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-run)コマンドを用いる。後者の場合、[nix develop](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop)コマンドを用いる。
 
 ## nix shellコマンド
 
@@ -460,7 +460,6 @@ cannot open database `/nix/var/nix/profiles/per-user/root/channels/nixos/program
 ```console
 ~/flake-templates $ nix run nixpkgs#tree
 .
-├── flake.lock
 ├── flake.nix
 └── templates
     └── foo
