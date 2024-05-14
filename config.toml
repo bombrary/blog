@@ -1,59 +1,113 @@
 baseURL = "https://bombrary.github.io/blog/"
 title = "Chanomic Blog"
+paginate = 10
+theme = "PaperMod"
+
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+
 author = "bombrary"
-paginate = 3
+DefaultContentLanguage = "en"
 languageCode = "ja-jp"
-DefaultContentLanguage = "ja"
 enableInlineShortcodes = true
-footnoteReturnLinkContents = "^"
-theme = "contrast-hugo-with-ogp"
+# Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
 pygmentsUseClasses = true
-enableGitInfo = true
+
+[markup.goldmark.renderer]
+unsafe= true
+
+[outputs]
+home = [ "HTML", "RSS", "JSON" ]
+
+[minify]
+disableXML = true
+minifyOutput = true
 
 [params]
-	customCSS = ["css/custom.css", "css/syntax.css"]
- 
-[markup.goldmark.renderer]
-unsafe = true
+env = "production" # to enable google analytics, opengraph, twitter-cards and schema.
 
-[menu]
+title = "Chanomic Blog"
+description = "Chanomic Blog"
+keywords = ["Blog", "Portfolio", "PaperMod"]
+author = "Me"
+# author: ["Me", "You"] # multiple authors
+# images = ["<link or path of image for opengraph, twitter-cards>"]
+DateFormat = "2006-01-02"
+defaultTheme = "dark" # dark, light
+disableThemeToggle = false
 
-# 気が向いたら設定する
-#  [[menu.main]]
-#    identifier = "about"
-#    name = "About"
-#    url = "/about/"
-#    weight = 10
+ShowReadingTime = true
+ShowShareButtons = false
+ShowPostNavLinks = true
+ShowBreadCrumbs = true
+ShowCodeCopyButtons = true
+ShowWordCount = true
+ShowRssButtonInSectionTermList = true
+UseHugoToc = true
+disableSpecial1stPost = true
+disableScrollToTop = false
+comments = false
 
-[taxonomies]
-category = "categories"
-tag = "tags"
-series = "series"
+hidemeta = false
+hideSummary = false
 
-[privacy]
+showtoc = true
+tocopen = true
 
-  [privacy.vimeo]
-    disabled = false
-    simple = true
 
-  [privacy.twitter]
-    disabled = false
-    enableDNT = true
-    simple = true
+[params.assets]
+disableHLJS = true # to disable highlight.js
 
-  [privacy.instagram]
-    disabled = false
-    simple = true
+[params.analytics.google]
+SiteVerificationTag = "XYZabc"
 
-  [privacy.youtube]
-    disabled = false
-    privacyEnhanced = true
+[params.cover]
+hidden = true # hide everywhere but not in structured data
+hiddenInList = true # hide on list pages and home
+hiddenInSingle = true # hide on single page
 
-[services]
+# for search
+# https://fusejs.io/api/options.html
+[params.fuseOpts]
+isCaseSensitive = false
+shouldSort = true
+location = 0
+distance = 1000
+threshold = 0.4
+minMatchCharLength = 0
+limit = 10 # refer: https://www.fusejs.io/api/methods.html#search
+keys = ["title", "permalink", "summary", "content"]
 
-  [services.instagram]
-    disableInlineCSS = true
 
-  [services.twitter]
-    disableInlineCSS = true
+[[menu.main]]
+identifier = "categories"
+name = "Categories"
+url = "/categories/"
+weight = 10
 
+[[menu.main]]
+identifier = "tags"
+name = "Tags"
+url = "/tags/"
+weight = 20
+
+[[menu.main]]
+identifier = "archives"
+name = "Archive"
+url = "/archives/"
+weight = 30
+
+[[menu.main]]
+identifier = "search"
+name = "Search"
+url = "/search/"
+weight = 40
+
+[markup.highlight]
+noClasses = true
+anchorLineNos = false
+codeFences = true
+guessSyntax = true
+lineNos = true
