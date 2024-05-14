@@ -1,0 +1,24 @@
+.cui {
+  background-color: black;
+  color: white;
+  font-family: Consolas,courier new,Courier,Monaco,monospace;
+  font-size: .78em;
+  border-radius: var(--radius);
+  padding: 8px 20px;
+}
+
+.cui .magenta {
+  color: magenta;
+}
+.cui .dgray {
+  color: darkgray;
+}
+.cui .yellow {
+  color: yellow;
+}
+.cui .cyan {
+  color: cyan;
+}
+.cui .orangered {
+  color: #ff5354;
+}
