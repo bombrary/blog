@@ -15,6 +15,9 @@ enableInlineShortcodes = true
 # Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
 pygmentsUseClasses = true
 
+[services.googleAnalytics]
+ID = "G-3XDB2CF6Q4"
+
 [markup.goldmark.renderer]
 unsafe= true
 
@@ -54,7 +57,7 @@ hidemeta = false
 hideSummary = false
 
 showtoc = true
-tocopen = true
+tocopen = false
 
 
 [params.assets]
