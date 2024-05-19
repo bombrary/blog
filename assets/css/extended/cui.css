@@ -5,6 +5,7 @@
   font-size: .78em;
   border-radius: var(--radius);
   padding: 8px 20px;
+  overflow-x: scroll;
 }
 
 .cui .magenta {
