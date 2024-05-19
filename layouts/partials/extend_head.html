@@ -1,0 +1,8 @@
+{{- /* Head custom content area start */ -}}
+{{- /*     Insert any custom code (web-analytics, resources, etc.) - it will appear in the <head></head> section of every page. */ -}}
+{{- /*     Can be overwritten by partial with the same name in the global layouts. */ -}}
+{{ if or .Params.math .Site.Params.math }}
+{{ partial "math.html" . }}
+<meta name="google-site-verification" content="BkKXZW5Wg63My_E2g1_KhUdnMEVtwDSC_epgk7d584E" />
+{{ end }}
+{{- /* Head custom content area end */ -}}

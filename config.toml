@@ -1,59 +1,115 @@
 baseURL = "https://bombrary.github.io/blog/"
 title = "Chanomic Blog"
+paginate = 10
+theme = "PaperMod"
+
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+
 author = "bombrary"
-paginate = 3
+DefaultContentLanguage = "en"
 languageCode = "ja-jp"
-DefaultContentLanguage = "ja"
 enableInlineShortcodes = true
-footnoteReturnLinkContents = "^"
-theme = "contrast-hugo-with-ogp"
+# Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
 pygmentsUseClasses = true
 enableGitInfo = true
 
-[params]
-	customCSS = ["css/custom.css", "css/syntax.css"]
- 
+[services.googleAnalytics]
+ID = "G-3XDB2CF6Q4"
+
 [markup.goldmark.renderer]
-unsafe = true
+unsafe= true
 
-[menu]
+[outputs]
+home = [ "HTML", "RSS", "JSON" ]
 
-# 気が向いたら設定する
-#  [[menu.main]]
-#    identifier = "about"
-#    name = "About"
-#    url = "/about/"
-#    weight = 10
+[minify]
+disableXML = true
+minifyOutput = true
 
-[taxonomies]
-category = "categories"
-tag = "tags"
-series = "series"
+[params]
+env = "production" # to enable google analytics, opengraph, twitter-cards and schema.
 
-[privacy]
+title = "Chanomic Blog"
+description = "Chanomic Blog"
+keywords = ["Blog", "Portfolio", "PaperMod"]
+DateFormat = "2006-01-02"
+defaultTheme = "dark" # dark, light
+disableThemeToggle = false
 
-  [privacy.vimeo]
-    disabled = false
-    simple = true
+ShowReadingTime = true
+ShowShareButtons = false
+ShowPostNavLinks = true
+ShowBreadCrumbs = true
+ShowCodeCopyButtons = true
+ShowWordCount = true
+ShowRssButtonInSectionTermList = true
+UseHugoToc = true
+disableSpecial1stPost = false
+disableScrollToTop = false
+comments = false
 
-  [privacy.twitter]
-    disabled = false
-    enableDNT = true
-    simple = true
+hideauthor = true
+hidemeta = false
+hideSummary = false
 
-  [privacy.instagram]
-    disabled = false
-    simple = true
+showtoc = true
+tocopen = false
 
-  [privacy.youtube]
-    disabled = false
-    privacyEnhanced = true
 
-[services]
+[params.assets]
+disableHLJS = true # to disable highlight.js
 
-  [services.instagram]
-    disableInlineCSS = true
+[params.analytics.google]
+SiteVerificationTag = "XYZabc"
 
-  [services.twitter]
-    disableInlineCSS = true
+[params.cover]
+hidden = true # hide everywhere but not in structured data
+hiddenInList = true # hide on list pages and home
+hiddenInSingle = true # hide on single page
 
+# for search
+# https://fusejs.io/api/options.html
+[params.fuseOpts]
+isCaseSensitive = false
+shouldSort = true
+location = 0
+distance = 1000
+threshold = 0.4
+minMatchCharLength = 0
+limit = 10 # refer: https://www.fusejs.io/api/methods.html#search
+keys = ["title", "permalink", "summary", "content"]
+
+
+[[menu.main]]
+identifier = "categories"
+name = "Categories"
+url = "/categories/"
+weight = 10
+
+[[menu.main]]
+identifier = "tags"
+name = "Tags"
+url = "/tags/"
+weight = 20
+
+[[menu.main]]
+identifier = "archives"
+name = "Archive"
+url = "/archives/"
+weight = 30
+
+[[menu.main]]
+identifier = "search"
+name = "Search"
+url = "/search/"
+weight = 40
+
+[markup.highlight]
+noClasses = true
+anchorLineNos = false
+codeFences = true
+guessSyntax = true
+lineNos = true
