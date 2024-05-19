@@ -14,6 +14,7 @@ languageCode = "ja-jp"
 enableInlineShortcodes = true
 # Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
 pygmentsUseClasses = true
+enableGitInfo = true
 
 [services.googleAnalytics]
 ID = "G-3XDB2CF6Q4"
@@ -34,9 +35,6 @@ env = "production" # to enable google analytics, opengraph, twitter-cards and sc
 title = "Chanomic Blog"
 description = "Chanomic Blog"
 keywords = ["Blog", "Portfolio", "PaperMod"]
-author = "Me"
-# author: ["Me", "You"] # multiple authors
-# images = ["<link or path of image for opengraph, twitter-cards>"]
 DateFormat = "2006-01-02"
 defaultTheme = "dark" # dark, light
 disableThemeToggle = false
@@ -53,6 +51,7 @@ disableSpecial1stPost = false
 disableScrollToTop = false
 comments = false
 
+hideauthor = true
 hidemeta = false
 hideSummary = false
 
