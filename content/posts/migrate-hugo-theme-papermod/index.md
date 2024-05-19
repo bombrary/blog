@@ -1,12 +1,13 @@
 ---
 title: "HugoのテーマをPaperModに変えた"
 date: 2024-05-19T09:40:00+09:00
-draft: true
-tags: []
+tags: [ "PaperMod", "blog"]
 categories: [ "Hugo" ]
 ---
 
 今のシンプルなままでも良い気がしたが、シンプルさはそのままでもう少しだけリッチなサイトに改築してみたくなったので、それっぽいテーマを探してそちらに引っ越してみた。
+
+移行先のテーマは [PaperMod](https://github.com/adityatelange/hugo-PaperMod)。
 
 ## before と after
 
