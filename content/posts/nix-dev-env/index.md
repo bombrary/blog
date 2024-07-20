@@ -1,5 +1,5 @@
 ---
-title: "Nixを用いてツール実行環境・開発環境を作る方法"
+title: "Nix用いたツール実行・開発環境の構築方法"
 date: 2024-05-13T07:00:00+09:00
 toc: true
 tags: [ "template", "direnv", "flake", "NixOS"]
@@ -8,7 +8,7 @@ categories: [ "Nix" ]
 
 ## 要約
 
-この記事では、ツールを一時的に導入したり、ツールが実行可能な開発環境を整備したりする目的として、以下の話題を扱う。
+この記事では、Pythonでいうvirtualenv的なことをする方法について述べる。つまり、ツールを一時的に導入したり、ツールが実行可能な開発環境を整備したりする目的として、以下の話題を扱う。
 * 各種コマンド
   * nix shell
   * nix run
@@ -241,13 +241,13 @@ derivationのほとんどがbashを用いる以上、 `nix develop` が用いる
   * （その1）`shellHook` に `exec (shell名)` を記述する
     * 参考：[Using zsh/fish/... instead of bash](https://nixos-and-flakes.thiscute.world/development/intro#using-zsh-fish-instead-of-bash)
 * `nix develop` コマンドをそもそも使わない
-  * （その2）`nix shell`コマンドを用いる： `packages` に [runCommand](https://nixos.org/manual/nixpkgs/stable/#trivial-builder-runCommand) を指定
+  * （その2）`nix run`コマンドを用いる： `packages` に [runCommand](https://nixos.org/manual/nixpkgs/stable/#trivial-builder-runCommand) を指定
     * 参考：[Creating a Development Environment with pkgs.runCommand](https://nixos-and-flakes.thiscute.world/development/intro#creating-a-development-environment-with-pkgs-runcommand)
   * （その3）direnvとnix-direnvを使う
 
 ### （その1）nix developを用いる方法
 
-`nix develop` コマンドは `shellHook` を、shell起動時に実行するように作られている（ドキュメントに記載はないものの、ほぼ同機能の[nix-shell](https://nixos.org/manual/nix/stable/command-ref/nix-shell)のドキュメントには`shellHook`について記載されている）。そのため、 `shellHook` に `exec (shell名)` を指定すれば、好きなshellに入った状態にできる。
+`nix develop` コマンドは `shellHook` を、shell起動時に実行するように作られている（ドキュメントに記載はないものの、ほぼ同機能の[nix-shell](https://nixos.org/manual/nix/stable/command-ref/nix-shell)のドキュメントには`shellHook`について記載されている）。そのため、 `shellHook` に `exec (shell名)` を指定すれば、好きなshellに入った状態にできる。例えば `exec ${pkgs.fish}/bin/fish` などとすればfishが使えるし、 `exec $SHELL` などとすればユーザが現在利用中のshellが使える。
 
 ```nix
 {
@@ -267,7 +267,7 @@ derivationのほとんどがbashを用いる以上、 `nix develop` が用いる
         python312
       ];
       shellHook = ''
-        exec ${pkgs.fish}/bin/fish
+        exec $SHELL
       '';
     };
   };
@@ -282,7 +282,7 @@ derivationのほとんどがbashを用いる以上、 `nix develop` が用いる
 Python 3.12.3
 ```
 
-### （その2）nix shellを用いる方法
+### （その2）nix runを用いる方法
 
 [nix runをflake.nixから使う](#nix-run-in-flake)の応用。お好みのshellの実行ファイルをラップしたパッケージを作成する。
 
@@ -369,7 +369,7 @@ Type help for instructions on how to use fish
 Python 3.12.3
 ```
 
-`nix develop` を使った場合に比べ、環境変数の準備などやることが多いが、一からカスタマイズして開発環境を用意したい場合に有効かもしれない。
+`nix develop`を用いた方法とは違って、良くも悪くも環境変数の設定がまっさらな状態でスタートする。例えば `ln -s ${pkgs.fish}/bin/fish $out/bin/dev-shell` を `ln -s $SHELL $out/bin/dev-shell` のようにしても、shellのプロンプトなどの設定が引き継がれず思い通りにならない。その分、一からカスタマイズして開発環境を用意したい場合には有効かもしれない。
 
 ### （その3）direnvとnix-direnvの利用
 
