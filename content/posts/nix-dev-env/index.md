@@ -262,7 +262,7 @@ derivationのほとんどがbashを用いる以上、 `nix develop` が用いる
     pkgs = nixpkgs.legacyPackages.x86_64-linux;
   in
   {
-    devShells.x86_64-linux.default = pkgs.mkShell {
+    devShells.x86_64-linux.default = pkgs.mkShellNoCC {
       packages = with pkgs; [
         python312
       ];
@@ -618,7 +618,7 @@ bar qux
             ];
           };
         in
-        pkgs.devshell.mkShell {
+        pkgs.devshell.mkShellNoCC {
           imports = [ (pkgs.devshell.importTOML ./devshell.toml) ];
         };
     });
