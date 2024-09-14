@@ -1,5 +1,5 @@
 ---
-title: "Nixの外でビルドされた実行バイナリを動かすメモ"
+title: "Nixの外でビルドされた実行バイナリをNixOSで動かす"
 date: 2024-02-18T21:10:00+09:00
 tags: ["Python"]
 categories: ["NixOS"]
@@ -29,9 +29,9 @@ NixOSはNixOSの内側で生活するには十分快適だが、その外で作�
 * 共有ライブラリが足りないなどのエラーが出た場合は、`LD_LIBRARY_PATH`を指定する
   * `nix develop`で上記環境変数が設定されるようにnixファイルを書いたほうが良い
 
-## python-build-standalone版がNixOS上で動かせないことの確認
+## python-build-standaloneがNixOS上で動かせないことの確認
 
-ここでは、外部でビルドされたpythonをNixOS上で動かすことを考えてみよう。なおpythonはnixpkgsから入手可能であり、通常利用の場合はわざわざ外部からビルド済みのpythonを持ってくる必要はないのだが、今回は例のためにこれを実行することを考える。
+ここでは、外部でビルドされたpythonである[python-build-standalone](https://github.com/indygreg/python-build-standalone)をNixOS上で動かそうとしてみよう。なおpythonはnixpkgsから入手可能であり、通常利用の場合はわざわざ外部からビルド済みのpythonを持ってくる必要はないのだが、今回は例のためにこれを実行することを考える。
 
 pythonのstandaloneをDLしてくる。
 ```console
