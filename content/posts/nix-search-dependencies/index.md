@@ -8,6 +8,23 @@ toc: true
 
 Nixで、あるパッケージがどのパッケージに依存しているのかを調べたくなったのを発端に、パッケージやその依存関係の調べ方についていろいろ調べた。
 
+## 要約
+
+* アプリ・ツールがどのパッケージに収録されているのかを知る
+  * [NixOS Search](https://search.nixos.org/packages) や `nix search` コマンドを使う
+  * `which` や `realpath` コマンドから `/nix/store` 下のディレクトリがわかるのでそこからパッケージ名を知る
+  * [nix-index](https://github.com/nix-community/nix-index)、 [nix-index-databaseを使う](https://github.com/nix-community/nix-index-database)
+* derivationの詳細を知る： `nix derivation show [drv or output]`
+* output ⇔ derivation
+  * outputがどのderivationでビルドされたのかを知る： `niq-store --query --deriver [output]`
+  * derivationのoutputを知る： `nix-store --query --outputs [drv]`
+* derivationについて
+  * build dependenciesを知る： `nix-store --query --references [drv]`
+  * 間接的なbuild dependenciesもすべて知る： `nix-store --query --requisites [drv]`
+* outputについて
+  * runtime dependenciesを知る： `nix-store --query --references [output]`
+  * 間接的なruntime dependenciesもすべて知る： `nix-store --query --requisites [output]`
+
 ## 前置き
 
 ### 用語解説
@@ -64,6 +81,8 @@ bombrary@nixos:~$ realpath `which ls`
 /nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3/bin/coreutils
 ```
 
+ここで現れる `/nix/store` 直下のディレクトリ名は `{hash}-{package name}-{version}` の形式になっているはず。そのため、`{package name}` のところからパッケージ名が分かる。
+
 ### インストール済みでないバイナリ・ファイルから調べたい場合
 
 まだアプリが自分の環境にインストールされておらず、どのパッケージを入れれば目的のアプリが手に入るのか分からない場合。
@@ -82,13 +101,7 @@ bombrary@nixos:~$ nix run github:nix-community/nix-index-database -- -r 'bin/ls$
 ...
 ```
 
-## パッケージがどのderivationでビルドされたのかを知る
-
-`niq-store --query --deriver`を用いる。以下はlsコマンドがどのパッケージに収録されているのかを見る例。
-```console
-bombrary@nixos:~/deps$ nix-store --query --deriver `which ls`
-/nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
-```
+## derivationの詳細を知る
 
 derivationファイルの内容を確認したい場合、[nix derivation showコマンド](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-derivation-show)を使う。
 
@@ -262,27 +275,37 @@ Derive(
 )
 ```
 
-## derivationのbuild dependenciesを知る
+## outputがどのderivationでビルドされたのかを知る
 
-`nix derivation show` コマンドで出力されたJSON結果のうち、`inputDrvs`と`inputSrcs`に書かれているものがそれである。
-
+`niq-store --query --deriver`を用いる。以下はlsコマンドがどのderivationで生成されたのかを知る例。
 ```console
-bombrary@nixos:~/deps$ nix derivation show `which ls` | jq -r 'to_entries[].value | (.inputDrvs | to_entries[].key),(.inputSrcs[])' | sort
-/nix/store/1cwqp9msvi5z8517czfl88dd42yhrdwg-separate-debug-info.sh
-/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
-/nix/store/98sv0g544bqmks49d6vgylbkh9sccdvm-attr-2.5.1.drv
-/nix/store/9jcfzyyb0h86mvc31s9qmxs6lncqrwhc-acl-2.3.1.drv
-/nix/store/akpwym6q116hivciyq2vqj9n5jk9f5i6-xz-5.4.4.drv
-/nix/store/d1qldhg6iix84bqncbzml2a1nw8p95bg-gmp-with-cxx-6.3.0.drv
-/nix/store/ks5ivc59k57kwii93qlsfgcx2a7xma1k-autoreconf-hook.drv
-/nix/store/mnrjvk62d35v8514kc5w31fg3py0smr8-coreutils-9.3.tar.xz.drv
-/nix/store/mvvhw7jrrr8wnjihpalw4s3y3g7jihgw-stdenv-linux.drv
-/nix/store/szciaprmwb7kdj7zv1b56midf7jfkjnw-bash-5.2-p15.drv
-/nix/store/v6x3cs394jgqfbi0a42pam708flxaphh-default-builder.sh
-/nix/store/wd100hlzyh5w9zkfljkaagp87b7h7733-openssl-3.0.12.drv
+bombrary@nixos:~/deps$ nix-store --query --deriver `which ls`
+/nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv
 ```
 
-上記のように調べてもよいが、`nix-store --query --references`のほうがシンプルな解決策かもしれない。`--references`オプションを用いることで、derivationに直接依存する入力を検索する。
+## derivationのoutputを知る
+
+`nix-store --query --outputs`を使う方法が最もシンプル。
+
+```console
+[bombrary@nixos:~]$ nix-store --query --outputs /nix/store/dr9n6c6sr3p9740rmy14jqlgsg76fksv-my-env.drv
+/nix/store/d0sx0jjhn4r8rb4drzq33lzkpcx6s5ma-my-env
+```
+
+なお `nix derivation show` のjsonからも取り出せる。
+```console
+[bombrary@nixos:~]$ nix derivation show '/nix/store/dr9n6c6sr3p9740rmy14jqlgsg76fksv-my-env.drv^*' | jq 'to_entries[].value.outputs'
+{
+  "out": {
+    "path": "/nix/store/d0sx0jjhn4r8rb4drzq33lzkpcx6s5ma-my-env"
+  }
+}
+```
+
+## derivationのbuild dependenciesを知る
+
+
+`nix-store --query --references`を使う方法がシンプル。`--references`オプションを用いることで、derivationに直接依存する入力を検索する。
 
 ```console
 bombrary@nixos:~/deps$ nix-store --query --references /nix/store/g0kqr7b99b70kb10vmqg10vkj9nfk7zm-coreutils-full-9.3.drv | sort
@@ -301,6 +324,24 @@ bombrary@nixos:~/deps$ nix-store --query --references /nix/store/g0kqr7b99b70kb1
 ```
 
 さらに深い階層をインタラクティブに確認したい、という場合には、[nix-tree](https://github.com/utdemir/nix-tree)を使うとよい。
+
+なお `nix derivation show` のjsonからも取り出せる。`inputDrvs`と`inputSrcs`に書かれているものがそれである。
+
+```console
+bombrary@nixos:~/deps$ nix derivation show `which ls` | jq -r 'to_entries[].value | (.inputDrvs | to_entries[].key),(.inputSrcs[])' | sort
+/nix/store/1cwqp9msvi5z8517czfl88dd42yhrdwg-separate-debug-info.sh
+/nix/store/5q67fxm276bdp87jpmckvz3n81akw6a5-perl-5.38.2.drv
+/nix/store/98sv0g544bqmks49d6vgylbkh9sccdvm-attr-2.5.1.drv
+/nix/store/9jcfzyyb0h86mvc31s9qmxs6lncqrwhc-acl-2.3.1.drv
+/nix/store/akpwym6q116hivciyq2vqj9n5jk9f5i6-xz-5.4.4.drv
+/nix/store/d1qldhg6iix84bqncbzml2a1nw8p95bg-gmp-with-cxx-6.3.0.drv
+/nix/store/ks5ivc59k57kwii93qlsfgcx2a7xma1k-autoreconf-hook.drv
+/nix/store/mnrjvk62d35v8514kc5w31fg3py0smr8-coreutils-9.3.tar.xz.drv
+/nix/store/mvvhw7jrrr8wnjihpalw4s3y3g7jihgw-stdenv-linux.drv
+/nix/store/szciaprmwb7kdj7zv1b56midf7jfkjnw-bash-5.2-p15.drv
+/nix/store/v6x3cs394jgqfbi0a42pam708flxaphh-default-builder.sh
+/nix/store/wd100hlzyh5w9zkfljkaagp87b7h7733-openssl-3.0.12.drv
+```
 
 ## derivationの間接的なbuild dependenciesもすべて知る
 
@@ -339,7 +380,7 @@ bombrary@nixos:~/deps$ nix-store --query --tree /nix/store/g0kqr7b99b70kb10vmqg1
 ...
 ```
 
-## パッケージのruntime dependenciesを知る
+## outputのruntime dependenciesを知る
 
 これも`nix-store --query --references`で可能。drvではなくバイナリのパスを指定すれば、それに依存するruntime dependenciesを知ることができる。
 
@@ -353,7 +394,7 @@ bombrary@nixos:~/deps$ nix-store --query --references `which ls`
 /nix/store/03167shkax5dxclnv6r3sd8waa6lq7ny-coreutils-full-9.3
 ```
 
-## パッケージの間接的なruntime dependenciesもすべて知る
+## outputの間接的なruntime dependenciesもすべて知る
 
 これも`nix-store --query --requisites`で可能。drvではなくバイナリのパスを指定すれば、それに依存するruntime dependenciesを知ることができる。
 
