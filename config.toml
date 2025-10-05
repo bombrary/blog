@@ -1,6 +1,6 @@
 baseURL = "https://bombrary.github.io/blog/"
 title = "Chanomic Blog"
-paginate = 10
+pagination.pagerSize=10
 theme = "PaperMod"
 
 enableRobotsTXT = true
