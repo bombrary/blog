@@ -2,7 +2,6 @@
 title: "DaVinci Resolve 字幕をテキストファイルからスクリプトで追加する"
 date: 2025-10-13T11:30:00+09:00
 tags: []
-draft: true
 categories: ["Python", "DaVinci Resolve"]
 ---
 
