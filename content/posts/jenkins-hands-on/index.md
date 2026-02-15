@@ -1,7 +1,6 @@
 ---
 title: "Jenkinsをちょっと触ってみる"
 date: 2026-02-15T15:20:00Z
-draft: true
 tags: []
 categories: [ "Jenkins" ]
 ---
