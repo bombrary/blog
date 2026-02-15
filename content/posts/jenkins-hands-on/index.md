@@ -1,6 +1,6 @@
 ---
 title: "Jenkinsをちょっと触ってみる"
-date: 2026-02-15T15:20:00Z
+date: 2026-02-15T15:20:00+09:00
 tags: []
 categories: [ "Jenkins" ]
 ---
