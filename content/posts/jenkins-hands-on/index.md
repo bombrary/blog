@@ -392,6 +392,84 @@ pipeline {
 
 {{< figure link="./img/parameter-build-03.png" src="./img/parameter-build-03.png" width="70%" >}}
 
+## ビルド成果物（Artifact）の作成
+
+ビルド成果物を保持し、JenkinsのUIからダウンロードできるようにすることが可能。
+
+* [Recording tests and artifacts](https://www.jenkins.io/doc/pipeline/tour/tests-and-artifacts/)
+* [Cleaning up and notifications](https://www.jenkins.io/doc/pipeline/tour/post/)
+
+### Artifactの作成
+
+例えば、以下のようにパイプライン定義を書くことで、ワークスペース内に `works/` ディレクトリを作成→ファイルを作成→artifactを作成する。
+* `archiveArtifacts` で、成果物としたいファイルへのパスのパターンを記載する
+    * パターンなので、`*.txt`などのワイルドカード指定もできる
+* `deleteDir` でワークスペース内のファイルを削除する
+
+```jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+        stage('state-1') {
+            steps {
+                sh 'pwd'
+                sh 'ls -la'
+                sh 'mkdir works'
+                sh 'echo "Hello" > works/hi.txt'
+                sh 'echo "World" > works/foo.txt'
+            } 
+        }
+    }
+    post {
+        always {
+            sh 'tar -czf works.tar.gz works'
+            archiveArtifacts artifacts: 'works.tar.gz', fingerprint: true
+            archiveArtifacts artifacts: 'works/', fingerprint: true
+            deleteDir()
+        }
+    }
+}
+```
+
+これでビルドをすると、ビルドの成果物というところでファイルへのリンクが張られる。
+* `works.tar.gz` は `archiveArtifacts artifacts: 'works.tar.gz'` で指定した部分
+* `hi.txt` と `foo.txt` は `archiveArtifacts artifacts: 'works/'` で指定した部分
+
+{{< figure link="./img/build-artifacts-01.png" src="./img/build-artifacts-01.png" width="70%" >}}
+
+「ビルドの成果物」のリンクを押すと、ディレクトリ構造までちゃんと保持して出力してくれる。
+
+{{< figure link="./img/build-artifacts-02.png" src="./img/build-artifacts-02.png" width="70%" >}}
+
+### （おまけ）ワークスペース・Artifactの場所について
+
+Console logを見るとわかるが、ワークスペースは `/var/lib/jenkins/workspace/{job名}` となっている。
+
+```
+Started by user admin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/test
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (state-1)
+[Pipeline] sh
++ pwd
+/var/lib/jenkins/workspace/test
+[Pipeline] sh
+...
+```
+
+Artifactについては、 `/var/lib/jenkins/job/{job名}/builds/{build番号}/archive` にあった。
+```console
+bombrary@nixos:/var/lib/jenkins/jobs/test/builds% ls
+1  3  5  7  9   11  permalinks
+2  4  6  8  10  12
+bombrary@nixos:/var/lib/jenkins/jobs/test/builds% ls 12/archive
+works  works.tar.gz
+```
+
 ## アンインストール & クリーンアップ
 
 NixOSの場合、以下 `services.jenkins.enable = true` を消して再度 `nixos-rebuild switch` するだけ。
