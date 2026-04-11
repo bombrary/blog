@@ -9,90 +9,29 @@ sedを使ったメモ。
 
 ## 前提
 
-* GNU sed 4.9 を主で利用する
+* GNU sed 4.9
 
 ## GNU版sedをMac + home-managerで導入する
 
-nixpkgsだとgnusedから導入可能。
+nixpkgsだとgnusedから導入可能。ただMacに標準で入っているBSD版sedと被る & PATHの順序を変える方法がわからないので、別名でsedが実行できるようにしてaliasを作る。
+
+詳細は [Nixで既存パッケージのバイナリ名を別名に変える方法]({{< ref "posts/nix-binary-name" >}}) を参照。
+
 ```nix
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    gnused
-  ];
-```
-
-環境変数`PATH`の順番のせいで、通常通り`gnused`を入れてもBSD版sedが先に読まれてしまう。
-nixないしhome-managerでPATHの順序を入れ替える方法がわからなかったので、次のようにして無理やりGNU版sedを読ませるようにする。
-
-### 案1: writeShellScriptBinを使う
-
-* [writeShellScriptBin](https://nixos.org/manual/nixpkgs/stable/#trivial-builder-writeShellScriptBin) を使い、`sed` ではなく `gnused` としてラップする
-  * 参考サイト
-    * [Nix を使って複数バージョンの Neovim をインストールする方法](https://kankodori-blog.com/post/2025-06-25/)
-    * [Managing Multiple Tool Versions with Nix](https://www.danielcorin.com/til/nix/managing-multiple-tool-versions/)
-    * [Install multiple versions of a package, each with its own binary](https://discourse.nixos.org/t/install-multiple-versions-of-a-package-each-with-its-own-binary/19287/6)
-* それを `sed` のaliasとして設定
-
-```nix
-{ ... }:
-{
-  home.packages = with pkgs; [
-    (writeShellScriptBin "gnused" ''
-       exec "${gnused}/bin/sed" "$@"
+    (runCommand "my-gnused" {} ''
+        mkdir -p $out/bin
+        ln -s ${pkgs.gnused}/bin/sed $out/bin/gnused
     '')
   ];
 
-  # ...
-
   programs.zsh = {
     shellAliases = {
       sed = "gnused";
     };
-  }
-}
-```
-
-ただUsageのところに/nix/storeへの絶対パスが載ってしまうのがちょっと微妙。気にしないのであればこれがお手軽。
-```console
-bombrary@bombrary-macbookair:~/dotfiles% sed
-Usage: /nix/store/xzsihjm86aqgqarrzifrzr4sfchw4225-gnused-4.9/bin/sed [OPTION]... {script-only-if-no-other-script} [input-file]...
-
-  -n, --quiet, --silent
-                 suppress automatic printing of pattern space
-      --debug
-                 annotate program execution
-  -e script, --expression=script
-                 add the script to the commands to be executed
-```
-
-### 案2 （好み）mkDerivationを使う
-
-* mkDerivationで新しいパッケージとして作成
-  * ただ既存のgnusedのsymlinkを貼るだけのパッケージ
-* それを `sed` のaliasとして設定
-
-```nix
-{ ... }:
-{
-  home.packages = with pkgs; [
-    (stdenv.mkDerivation {
-      name = "gnused";
-      version = gnused.version;
-      buildCommand = ''
-        mkdir -p $out/bin
-        ln -s ${gnused}/bin/sed $out/bin/gnused
-      '';
-    })
-  ];
-
-  # ...
-
-  programs.zsh = {
-    shellAliases = {
-      sed = "gnused";
-    };
-  }
+  };
 }
 ```
 
