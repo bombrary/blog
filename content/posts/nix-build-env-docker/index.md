@@ -1,7 +1,6 @@
 ---
 title: "Nixで作るdocker image - buildEnvについて"
-date: 2024-09-23T06:27:18Z
-draft: true
+date: 2026-04-19T14:55:00+09:00
 tags: ["docker", "buildEnv"]
 categories: ["Nix"]
 ---
