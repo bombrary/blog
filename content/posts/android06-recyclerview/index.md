@@ -1,6 +1,5 @@
 ---
 title: "Androidアプリ開発勉強(6) - RecyclerView"
-title: "Android Recyclerview"
 date: 2019-12-07T22:41:47+09:00
 draft: true
 tags: []
