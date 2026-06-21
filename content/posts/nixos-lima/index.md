@@ -117,7 +117,7 @@ bombrary@bombrary-macbookair:~/repos/nixos-lima-config-sample%
 
 OSの設定ファイルを格納するディレクトリを作っておく。
 ```sh
-mkdir ~/dotfiles/hosts/lima/
+mkdir -p ~/dotfiles/hosts/lima/
 cp nixos-lima-config.nix ~/dotfiles/hosts/lima/
 ```
 
@@ -187,7 +187,7 @@ limactl restart nixos
 
 home-managerの設定ファイルを格納するディレクトリを作っておく。
 ```sh
-mkdir ~/dotfiles/home/lima/
+mkdir -p ~/dotfiles/home/lima/
 cp home.nix ~/dotfiles/home/lima/
 ```
 
@@ -260,7 +260,7 @@ flake.nixのhomeConfigurationsに追記。
 以下コマンドで切り替え。
 ```sh
 # 初回
-limactl shell nixos -- nix run home-manager/master -- init switch --flake '/Users/bombrary/dotfiles#bombrary@lima'
+limactl shell nixos -- nix run home-manager/master -- switch --flake '/Users/bombrary/dotfiles#bombrary@lima'
 
 # 2回目以降
 limactl shell nixos -- home-manager switch --flake '/Users/bombrary/dotfiles#bombrary@lima'
