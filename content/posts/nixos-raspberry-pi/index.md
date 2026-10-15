@@ -204,14 +204,26 @@ ssh -p22 nixos@192.168.11.7
 
 あとはNixOSでやるいつものセットアップ。
 
+rootに入る。  
+※ configuration.nixにnixosユーザを書かなければnixosユーザが消えて何もできなくなるので、この時点でrootに入っておくべき。ミスった場合はブートローダー画面で元の世代に戻ればよい
 ```sh
-sudo nixos-generate-config
+sudo -i
+```
+
+初期設定ファイルを生成
+```sh
+nixos-generate-config
 ```
 
 `/etc/nixos/configuration.nix` に設定を書いた後、システムのビルドの実行。
 
 ```sh
-sudo nixos-rebuild switch
+nixos-rebuild switch
+```
+
+ユーザを追加した場合は、初期パスワードを設定。
+```sh
+passwd <ユーザ名>
 ```
 
 あとはこのconfiguration.nixをリポジトリで管理するなり、home-managerでユーザ側のパッケージを管理するなりやれば良いが、そのあたりは[以前の記事]({{< ref "/posts/nixos-23.11-setup/" >}}) で紹介したので省略。
